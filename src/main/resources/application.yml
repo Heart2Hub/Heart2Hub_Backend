@@ -13,4 +13,13 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    user:
+      name: root
+      password: password
+heart2hub:
+  Jwt:
+    access_token_expiry: 604800000 #7 days
+    refresh_token_expiry: 1814000000000 #3 weeks
+    secret_key: "67676b613166584b3161706a794f4b6369414c4733773d3d" #secret key
 
