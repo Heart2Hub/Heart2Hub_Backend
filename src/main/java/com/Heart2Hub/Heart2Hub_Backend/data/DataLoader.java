@@ -1,6 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.data;
 
 import com.Heart2Hub.Heart2Hub_Backend.Heart2HubBackendApplication;
+import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
 import org.apache.logging.log4j.Level;
