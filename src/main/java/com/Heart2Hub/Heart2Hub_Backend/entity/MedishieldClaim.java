@@ -1,4 +1,5 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
+
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ApprovalStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.InvoiceStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PatientRequestsEnum;
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -51,5 +53,6 @@ public class MedishieldClaim {
         this.invoice = invoice;
     }
 
-    public MedishieldClaim(){}
+    public MedishieldClaim() {
+    }
 }
