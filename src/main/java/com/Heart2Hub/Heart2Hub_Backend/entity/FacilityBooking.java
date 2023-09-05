@@ -38,6 +38,10 @@ public class FacilityBooking {
     @NotNull
     private Facility facility;
 
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Admission admission;
+
     public FacilityBooking() {
 
     }

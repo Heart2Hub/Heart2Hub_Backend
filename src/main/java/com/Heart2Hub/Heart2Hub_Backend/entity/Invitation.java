@@ -31,6 +31,10 @@ public class Invitation {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private TreatmentPlanRecord treatmentPlanRecord;
 
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Staff staff;
+
     public Invitation() {
     }
 

@@ -48,6 +48,11 @@ public class Admission {
     private Patient patient;
 
     @JsonBackReference
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "admission_id", referencedColumnName = "id")
+    private FacilityBooking facilityBooking;
+
+    @JsonBackReference
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "admission_id")
     private List<PatientRequest> listOfPatientRequests;

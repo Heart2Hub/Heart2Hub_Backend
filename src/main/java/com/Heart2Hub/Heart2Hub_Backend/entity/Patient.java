@@ -47,6 +47,11 @@ public class Patient {
     @JoinColumn(name = "patient_id")
     private List<TransactionItem> listOfTransactionItem;
 
+    @JsonBackReference
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "patient_id")
+    private List<Appointment> listOfCurrentAppointments;
+
     @NotNull
     @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL)

@@ -29,6 +29,10 @@ public class Post {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ImageDocument> listOfImageDocuments;
 
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Staff staff;
+
     public Post() {
         this.listOfImageDocuments = List.of();
     }
