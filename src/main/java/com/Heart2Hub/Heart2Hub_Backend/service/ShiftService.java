@@ -9,8 +9,13 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateShiftException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateStaffException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ShiftRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,9 +40,22 @@ public class ShiftService {
   }
 
   public Shift createShift(String staffUsername, Shift newShift) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    boolean isHead = false;
+    if (authentication != null) {
+      User user = (User) authentication.getPrincipal();
+      Staff currStaff = staffRepository.findByUsername(user.getUsername()).get();
+      isHead = currStaff.getIsHead();
+    }
+    if (authentication == null || !isHead) {
+      throw new UnableToCreateShiftException("Staff " + staffUsername + " cannot allocate shifts as he/she is not a head.");
+    }
     try {
       LocalDateTime startTime = newShift.getStartTime();
       LocalDateTime endTime = newShift.getEndTime();
+      if (startTime == null || endTime == null) {
+        throw new UnableToCreateShiftException("Start time and end time must be present.");
+      }
       Staff assignedStaff = staffRepository.findByUsername(staffUsername).get();
       List<Shift> shifts = shiftRepository.findShiftByStaff(assignedStaff);
       if (startTime.isAfter(endTime)) {
@@ -46,19 +64,21 @@ public class ShiftService {
       if (!startTime.toLocalDate().equals(endTime.toLocalDate())) {
         throw new UnableToCreateShiftException("Shifts have to be allocated within the same day.");
       }
-      long hours = startTime.until(endTime, ChronoUnit.HOURS );
-      if (hours > 12) {
-        throw new UnableToCreateShiftException("Staff exceeds maximum working hours per day at " + hours + " hours. (Maximum is 12)" );
+      long hours = startTime.until(endTime, ChronoUnit.HOURS);
+      int MAXIMUM_SHIFT_HOURS = 12;
+      int HOURS_BETWEEN_DAY_NIGHT_SHIFTS = 8;
+      if (hours > MAXIMUM_SHIFT_HOURS) {
+        throw new UnableToCreateShiftException("Staff exceeds maximum working hours per day at " + hours + " hours. (Maximum is " + MAXIMUM_SHIFT_HOURS + ").");
       }
 
       for (Shift shift : shifts) {
         if (startTime.toLocalDate().equals(shift.getStartTime().toLocalDate())) {
           throw new UnableToCreateShiftException("There is already a shift allocated to staff " + staffUsername + " on " + startTime.toLocalDate());
         }
-        if (shift.getEndTime().compareTo(startTime) == -1 && shift.getEndTime().until(startTime, ChronoUnit.HOURS) < 11) {
+        if (shift.getEndTime().compareTo(startTime) == -1 && shift.getEndTime().until(startTime, ChronoUnit.HOURS) < HOURS_BETWEEN_DAY_NIGHT_SHIFTS) {
           throw new UnableToCreateShiftException("Staff has worked a night shift the previous day, and cannot work the morning shift today.");
         }
-        if (shift.getStartTime().compareTo(endTime) == 1 && endTime.until(shift.getStartTime(), ChronoUnit.HOURS) < 11) {
+        if (shift.getStartTime().compareTo(endTime) == 1 && endTime.until(shift.getStartTime(), ChronoUnit.HOURS) < HOURS_BETWEEN_DAY_NIGHT_SHIFTS) {
           throw new UnableToCreateShiftException("Staff has a day shift the following the day, and cannot work the night shift today.");
         }
       }

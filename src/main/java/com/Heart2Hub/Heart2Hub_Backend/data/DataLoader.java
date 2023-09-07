@@ -44,8 +44,9 @@ public class DataLoader implements CommandLineRunner {
   }
 
   private void createStaffData() {
-    staffService.createStaff("staff1", "password1", "staff", "1", 90000001l, RoleEnum.ADMIN);
-    staffService.createStaff("staff2", "password2", "staff", "2", 90000002l, RoleEnum.DOCTOR);
+    staffService.createStaff("staff1", "password1", "staff", "1", 90000001l, RoleEnum.ADMIN, true);
+    staffService.createStaff("staff2", "password2", "staff", "2", 90000002l, RoleEnum.DOCTOR, true);
+    staffService.createStaff("staff3", "password3", "staff", "3", 90000002l, RoleEnum.DOCTOR, false);
   }
 
 }

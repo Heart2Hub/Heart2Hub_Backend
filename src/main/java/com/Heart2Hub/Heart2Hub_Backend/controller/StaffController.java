@@ -25,10 +25,11 @@ public class StaffController {
       @RequestParam("firstname") String firstname,
       @RequestParam("lastname") String lastname,
       @RequestParam("mobileNumber") Long mobileNumber,
-      @RequestParam("roleEnum") String roleEnum) {
+      @RequestParam("roleEnum") String roleEnum,
+      @RequestParam("isHead") Boolean isHead){
     return ResponseEntity.ok(
         staffService.createStaff(username, password, firstname, lastname, mobileNumber,
-            RoleEnum.valueOf(roleEnum)));
+            RoleEnum.valueOf(roleEnum), isHead));
   }
 
   @PostMapping("/staffLogin")

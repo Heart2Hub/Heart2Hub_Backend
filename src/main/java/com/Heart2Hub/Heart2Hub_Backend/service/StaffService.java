@@ -10,6 +10,8 @@ import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import java.util.Optional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,8 +42,8 @@ public class StaffService {
   }
 
   public Staff createStaff(String username, String password, String firstname, String lastname,
-                           Long mobileNumber, RoleEnum roleEnum) {
-    Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, roleEnum);
+                           Long mobileNumber, RoleEnum roleEnum, Boolean isHead) {
+    Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, roleEnum, isHead);
     try {
       LeaveBalance balance = new LeaveBalance();
       SubDepartment subDepartment = new SubDepartment("Clinic A");

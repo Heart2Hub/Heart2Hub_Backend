@@ -88,6 +88,12 @@ public class Staff implements UserDetails {
     this.roleEnum = roleEnum;
   }
 
+  public Staff(String username, String password, String firstname, String lastname,
+               Long mobileNumber, RoleEnum roleEnum, Boolean isHead) {
+    this(username, password, firstname, lastname, mobileNumber, roleEnum);
+    this.isHead = isHead;
+  }
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of(new SimpleGrantedAuthority(roleEnum.toString()));
