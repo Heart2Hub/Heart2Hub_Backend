@@ -4,6 +4,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Shift;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.ShiftNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateShiftException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateStaffException;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +41,7 @@ public class ShiftService {
     this.staffRepository = staffRepository;
   }
 
-  public Shift createShift(String staffUsername, Shift newShift) {
+  public Shift createShift(String staffUsername, Shift newShift) throws UnableToCreateShiftException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     boolean isHead = false;
     if (authentication != null) {
@@ -57,7 +59,7 @@ public class ShiftService {
         throw new UnableToCreateShiftException("Start time and end time must be present.");
       }
       Staff assignedStaff = staffRepository.findByUsername(staffUsername).get();
-      List<Shift> shifts = shiftRepository.findShiftByStaff(assignedStaff);
+      List<Shift> shifts = shiftRepository.findShiftsByStaff(assignedStaff);
       if (startTime.isAfter(endTime)) {
         throw new UnableToCreateShiftException("Start time cannot be later than end time.");
       }
@@ -95,4 +97,18 @@ public class ShiftService {
     }
   }
 
+  public List<Shift> getAllShiftsByRole(String role) throws ShiftNotFoundException {
+    try {
+      RoleEnum roleEnum = RoleEnum.valueOf(role.toUpperCase());
+      List<Staff> staffList = staffRepository.findByRoleEnum(roleEnum);
+      List<Shift> listOfShifts = new ArrayList<>();
+      for (Staff staff : staffList) {
+        List<Shift> shifts = shiftRepository.findShiftsByStaff(staff);
+        listOfShifts.addAll(shifts);
+      }
+      return listOfShifts;
+    } catch (Exception ex) {
+      throw new ShiftNotFoundException(ex.getMessage());
+    }
+  }
 }

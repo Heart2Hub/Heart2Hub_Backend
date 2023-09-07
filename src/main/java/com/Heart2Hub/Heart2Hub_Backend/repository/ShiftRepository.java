@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface ShiftRepository extends JpaRepository<Shift, Long> {
 
-   List<Shift> findShiftByStaff(Staff staff);
+   List<Shift> findShiftsByStaff(Staff staff);
 }

@@ -33,7 +33,15 @@ public class ShiftController {
     try {
       return ResponseEntity.ok(shiftService.createShift(staffUsername, shift));
     } catch (UnableToCreateShiftException ex) {
-      System.out.println(ex.getMessage());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+  }
+
+  @GetMapping(value="/getAllShifts/{role}", produces={"application/json"})
+  public ResponseEntity getAllShifts(@PathVariable String role) {
+    try {
+      return ResponseEntity.ok(shiftService.getAllShiftsByRole(role));
+    } catch (UnableToCreateShiftException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
   }

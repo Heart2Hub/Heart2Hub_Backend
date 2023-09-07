@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
 import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
