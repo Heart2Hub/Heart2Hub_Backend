@@ -56,6 +56,11 @@ public class Appointment {
     @ManyToOne(fetch = FetchType.EAGER)
     private Staff currentAssignedStaff;
 
+    @NotNull
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Patient patient;
+
     public Appointment() {
         this.listOfStaff = List.of();
     }

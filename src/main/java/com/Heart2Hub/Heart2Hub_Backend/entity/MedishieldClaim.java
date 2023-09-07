@@ -1,4 +1,5 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
+
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ApprovalStatusEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -38,5 +39,6 @@ public class MedishieldClaim {
         this.invoice = invoice;
     }
 
-    public MedishieldClaim(){}
+    public MedishieldClaim() {
+    }
 }

@@ -74,12 +74,20 @@ public class Staff implements UserDetails {
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private List<ShiftPreference> listOfShiftPreferences;
 
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private List<Invitation> listOfInvitations;
+
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private List<Post> listOfPosts;
+
   public Staff() {
     this.listOfLeaves = List.of();
     this.listOfManagedLeaves = List.of();
     this.listOfShifts = List.of();
     this.listOfAssignedAppointments = List.of();
     this.listOfShiftPreferences = List.of();
+    this.listOfInvitations = List.of();
+    this.listOfPosts = List.of();
   }
 
   public Staff(String username, String password, String firstname, String lastname,
