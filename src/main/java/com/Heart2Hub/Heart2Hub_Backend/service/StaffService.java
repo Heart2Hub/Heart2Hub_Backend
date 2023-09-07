@@ -63,8 +63,6 @@ public class StaffService {
 
   public Staff getStaffByUsername(String username) {
      Staff staff = staffRepository.findByUsername(username).orElseThrow(() -> new StaffNotFoundException("Username Does Not Exist."));
-     staff.setPassword("");
      return staff;
-
   }
 }
