@@ -1,6 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.enumeration;
 
-public enum RoleEnum {
+public enum StaffRoleEnum {
   ADMIN,
   DOCTOR,
   NURSE,

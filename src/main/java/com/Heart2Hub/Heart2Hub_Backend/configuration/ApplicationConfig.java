@@ -31,7 +31,7 @@ public class ApplicationConfig {
       //TODO to add Patient here next
       if (staffOptional.isPresent()) {
         return User.withUsername(username).password(staffOptional.get().getPassword())
-            .roles(staffOptional.get().getRoleEnum().toString())
+            .roles(staffOptional.get().getStaffRoleEnum().toString())
             .build();
       } else {
         throw new UsernameNotFoundException("User not found");

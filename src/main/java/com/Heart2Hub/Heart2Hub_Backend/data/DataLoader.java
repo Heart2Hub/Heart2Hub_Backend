@@ -1,7 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.data;
 
 import com.Heart2Hub.Heart2Hub_Backend.Heart2HubBackendApplication;
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
@@ -43,8 +43,8 @@ public class DataLoader implements CommandLineRunner {
   }
 
   private void createStaffData() {
-    staffService.createStaff("staff1", "password1", "staff", "1", 90000001l, RoleEnum.ADMIN);
-    staffService.createStaff("staff2", "password2", "staff", "2", 90000002l, RoleEnum.DOCTOR);
+    staffService.createStaff("staff1", "password1", "staff", "1", 90000001l, StaffRoleEnum.ADMIN);
+    staffService.createStaff("staff2", "password2", "staff", "2", 90000002l, StaffRoleEnum.DOCTOR);
   }
 
 }
