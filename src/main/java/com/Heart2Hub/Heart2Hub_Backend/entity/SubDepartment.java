@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.entity;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.FacilityStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.FacilityTypeEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -24,11 +25,11 @@ public class SubDepartment {
     @NotNull
     private String description;
 
-    @JsonBackReference
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "subDepartment")
     private List<Facility> listOfFacilities;
 
-    @JsonManagedReference
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     private Department department;
 

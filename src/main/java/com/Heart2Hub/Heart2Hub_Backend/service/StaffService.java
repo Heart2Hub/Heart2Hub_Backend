@@ -2,6 +2,7 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateStaffException;
@@ -43,7 +44,9 @@ public class StaffService {
     Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, roleEnum);
     try {
       LeaveBalance balance = new LeaveBalance();
+      SubDepartment subDepartment = new SubDepartment("Clinic A");
       newStaff.setLeaveBalance(balance);
+      newStaff.setSubDepartment(subDepartment);
       staffRepository.save(newStaff);
       return newStaff;
     } catch (Exception ex) {

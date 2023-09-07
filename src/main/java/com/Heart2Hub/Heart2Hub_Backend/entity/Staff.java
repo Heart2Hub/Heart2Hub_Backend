@@ -2,6 +2,8 @@ package com.Heart2Hub.Heart2Hub_Backend.entity;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -44,19 +46,15 @@ public class Staff implements UserDetails {
   @Enumerated(EnumType.STRING)
   private RoleEnum roleEnum;
 
-  @JsonBackReference
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
   private List<Leave> listOfLeaves;
 
-  @JsonBackReference
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
   private List<Leave> listOfManagedLeaves;
 
-  @JsonBackReference
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
   private List<Shift> listOfShifts;
 
-  @JsonBackReference
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "currentAssignedStaff")
   private List<Appointment> listOfAssignedAppointments;
 
@@ -66,6 +64,10 @@ public class Staff implements UserDetails {
 
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private List<ShiftPreference> listOfShiftPreferences;
+
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @NotNull
+  private SubDepartment subDepartment;
 
   public Staff() {
     this.listOfLeaves = List.of();

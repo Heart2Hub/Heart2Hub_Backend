@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.entity;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ApprovalStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.LeaveTypeEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
@@ -34,18 +35,14 @@ public class Shift {
     @Size(max = 200)
     private String comments;
 
-    @JsonManagedReference
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @NotNull
     private Staff staff;
 
-    @JsonBackReference
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "shift")
     private List<FacilityBooking> listOfFacilityBookings;
-
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @NotNull
-    private SubDepartment subDepartment;
 
     public Shift() {
         this.listOfFacilityBookings = List.of();
