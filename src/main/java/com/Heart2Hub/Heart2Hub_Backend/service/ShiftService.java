@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.FacilityBooking;
 import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Shift;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -107,6 +109,29 @@ public class ShiftService {
         listOfShifts.addAll(shifts);
       }
       return listOfShifts;
+    } catch (Exception ex) {
+      throw new ShiftNotFoundException(ex.getMessage());
+    }
+  }
+
+  public void deleteShift(Long shiftId) throws ShiftNotFoundException {
+    try {
+      Optional<Shift> shiftOptional = shiftRepository.findById(shiftId);
+      if (shiftOptional.isPresent()) {
+        Shift shift = shiftOptional.get();
+        Staff staff = shift.getStaff();
+        staff.getListOfShifts().remove(shift);
+        List<FacilityBooking> facilityBookingList = shift.getListOfFacilityBookings();
+        shift.setListOfFacilityBookings(null);
+        for (FacilityBooking fb : facilityBookingList) {
+          if (Objects.equals(fb.getShift().getShiftId(), shiftId)) {
+            fb.setShift(null);
+          }
+        }
+        shiftRepository.delete(shift);
+      } else {
+        throw new ShiftNotFoundException("Shift with ID: " + shiftId + " is not found");
+      }
     } catch (Exception ex) {
       throw new ShiftNotFoundException(ex.getMessage());
     }

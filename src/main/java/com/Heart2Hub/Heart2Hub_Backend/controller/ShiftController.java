@@ -46,4 +46,14 @@ public class ShiftController {
     }
   }
 
+  @DeleteMapping(value="/deleteShift/{shiftId}", produces={"application/json"})
+  public ResponseEntity deleteShift(@PathVariable Long shiftId) {
+    try {
+      shiftService.deleteShift(shiftId);
+      return ResponseEntity.ok("Shift with shiftId " + shiftId + " has been deleted successfully.");
+    } catch (UnableToCreateShiftException ex) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+  }
+
 }
