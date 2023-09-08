@@ -46,5 +46,5 @@ public class Subsidy {
         this.itemTypeEnum = itemTypeEnum;
     }
 
-    private Subsidy(){}
+    public Subsidy(){}
 }

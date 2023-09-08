@@ -1,11 +1,11 @@
 package com.Heart2Hub.Heart2Hub_Backend.controller;
 
-import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,10 +25,10 @@ public class StaffController {
       @RequestParam("firstname") String firstname,
       @RequestParam("lastname") String lastname,
       @RequestParam("mobileNumber") Long mobileNumber,
-      @RequestParam("roleEnum") String roleEnum) {
+      @RequestParam("staffRoleEnum") String staffRoleEnum) {
     return ResponseEntity.ok(
         staffService.createStaff(username, password, firstname, lastname, mobileNumber,
-            RoleEnum.valueOf(roleEnum)));
+            StaffRoleEnum.valueOf(staffRoleEnum)));
   }
 
   @PostMapping("/staffLogin")
@@ -36,7 +36,17 @@ public class StaffController {
       @RequestParam("username") String username,
       @RequestParam("password") String password) {
 
+    System.out.println(username);
+    System.out.println(password);
     String jwtToken = staffService.authenticateStaff(username,password);
+    System.out.println("working fine");
     return ResponseEntity.ok(jwtToken);
   }
+
+  @GetMapping("/getStaffByUsername")
+  public ResponseEntity<Staff> getStaffByUsername(
+    @RequestParam("username") String username) {
+    return ResponseEntity.ok(staffService.getStaffByUsername(username));
+  }
+
 }
