@@ -44,6 +44,10 @@ public class ShiftConstraintsService {
                                                                 newShiftConstraints.getEndTime(),
                                                                 newShiftConstraints.getMinPax(),
                                                                 newShiftConstraints.getRoleEnum());
+      List<ShiftConstraints> listOfShiftConstraints = shiftConstraintsRepository.findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndRoleEnumEquals(newShiftConstraints.getEndTime(), newShiftConstraints.getStartTime(), newShiftConstraints.getRoleEnum());
+      if (!listOfShiftConstraints.isEmpty()) {
+        throw new UnableToCreateShiftConstraintsException("There is an overlapping shift constraint with this time for role " + newShiftConstraints.getRoleEnum() + ".");
+      }
       shiftConstraintsRepository.save(shiftConstraints);
       return shiftConstraints;
     } catch (Exception ex) {
