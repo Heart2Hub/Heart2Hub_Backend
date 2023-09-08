@@ -11,6 +11,7 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateShiftException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateStaffException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ShiftRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,13 +23,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -164,6 +164,51 @@ public class ShiftService {
         return shift;
       } else {
         throw new ShiftNotFoundException("Shift with ID: " + shiftId + " is not found");
+      }
+    } catch (Exception ex) {
+      throw new ShiftNotFoundException(ex.getMessage());
+    }
+  }
+
+  public List<Shift> viewMonthlyRoster(String username, Integer month, Integer year) throws StaffNotFoundException {
+    try {
+      Optional<Staff> optionalStaff = staffRepository.findByUsername(username);
+      if (optionalStaff.isPresent()) {
+        Staff staff = optionalStaff.get();
+        List<Shift> shifts = shiftRepository.findShiftsByStaff(staff);
+        List<Shift> listOfShifts = new ArrayList<>();
+        for (Shift shift : shifts) {
+          if (shift.getStartTime().getMonthValue() == month && shift.getStartTime().getYear() == year) {
+            listOfShifts.add(shift);
+          }
+        }
+        return listOfShifts;
+      } else {
+        throw new StaffNotFoundException("Staff with username " + username + " is not found.");
+      }
+    } catch (Exception ex) {
+      throw new ShiftNotFoundException(ex.getMessage());
+    }
+  }
+
+  public List<Shift> viewWeeklyRoster(String username, String date) throws StaffNotFoundException {
+    try {
+      Optional<Staff> optionalStaff = staffRepository.findByUsername(username);
+      if (optionalStaff.isPresent()) {
+        Staff staff = optionalStaff.get();
+        List<Shift> shifts = shiftRepository.findShiftsByStaff(staff);
+        List<Shift> listOfShifts = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.parse(date + " 00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        LocalDateTime startOfWeek = now.with(DayOfWeek.MONDAY).withHour(0).withMinute(0).withSecond(0);
+        LocalDateTime endOfWeek = now.with(DayOfWeek.SUNDAY).withHour(23).withMinute(59).withSecond(59);
+        for (Shift shift : shifts) {
+          if (!shift.getStartTime().isBefore(startOfWeek) && !shift.getEndTime().isAfter(endOfWeek)) {
+            listOfShifts.add(shift);
+          }
+        }
+        return listOfShifts;
+      } else {
+        throw new StaffNotFoundException("Staff with username " + username + " is not found.");
       }
     } catch (Exception ex) {
       throw new ShiftNotFoundException(ex.getMessage());

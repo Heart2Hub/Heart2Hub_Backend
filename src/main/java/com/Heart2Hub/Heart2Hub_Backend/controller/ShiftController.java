@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.controller;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Shift;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.ShiftNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateShiftException;
 import com.Heart2Hub.Heart2Hub_Backend.service.ShiftService;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
@@ -56,11 +57,29 @@ public class ShiftController {
     }
   }
 
-  @PutMapping(value="/updateShift/{shiftId}", produces={"application/json"})
+  @PutMapping(value="/updateShift/{shiftId}", consumes={"application/json"}, produces={"application/json"})
   public ResponseEntity updateShift(@PathVariable Long shiftId, @RequestBody Shift shift) {
     try {
       return ResponseEntity.ok(shiftService.updateShift(shiftId, shift));
     } catch (UnableToCreateShiftException ex) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+  }
+
+  @GetMapping(value="/viewMonthlyRoster/{username}", produces={"application/json"})
+  public ResponseEntity viewMonthlyRoster(@PathVariable String username, @RequestParam Integer month, @RequestParam Integer year) {
+    try {
+      return ResponseEntity.ok(shiftService.viewMonthlyRoster(username, month, year));
+    } catch (ShiftNotFoundException ex) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+  }
+
+  @GetMapping(value="/viewWeeklyRoster/{username}", produces={"application/json"})
+  public ResponseEntity viewMonthlyRoster(@PathVariable String username, @RequestParam String date) {
+    try {
+      return ResponseEntity.ok(shiftService.viewWeeklyRoster(username, date));
+    } catch (ShiftNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
   }
