@@ -5,10 +5,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Shift;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ShiftConstraints;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
-import com.Heart2Hub.Heart2Hub_Backend.exception.ShiftNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateShiftConstraintsException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateShiftException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.*;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ShiftConstraintsRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ShiftRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
@@ -52,6 +49,15 @@ public class ShiftConstraintsService {
       return shiftConstraints;
     } catch (Exception ex) {
       throw new UnableToCreateShiftConstraintsException(ex.getMessage());
+    }
+  }
+
+  public List<ShiftConstraints> getAllShiftConstraintsByRole(String role) throws ShiftConstraintsNotFoundException {
+    try {
+      RoleEnum roleEnum = RoleEnum.valueOf(role.toUpperCase());
+      return shiftConstraintsRepository.findByRoleEnum(roleEnum);
+    } catch (Exception ex) {
+      throw new ShiftConstraintsNotFoundException(ex.getMessage());
     }
   }
 }

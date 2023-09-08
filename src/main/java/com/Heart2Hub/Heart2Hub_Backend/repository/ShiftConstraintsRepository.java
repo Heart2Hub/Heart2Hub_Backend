@@ -12,4 +12,6 @@ import java.util.List;
 public interface ShiftConstraintsRepository extends JpaRepository<ShiftConstraints, Long> {
 
     List<ShiftConstraints> findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndRoleEnumEquals(LocalTime startTime, LocalTime endTime, RoleEnum roleEnum);
+
+    List<ShiftConstraints> findByRoleEnum(RoleEnum roleEnum);
 }

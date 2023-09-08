@@ -23,8 +23,16 @@ public class ShiftConstraintsController {
   @PostMapping(value="/createShiftConstraints", consumes={"application/json"}, produces={"application/json"})
   public ResponseEntity createShiftConstraints(@RequestBody ShiftConstraints shiftConstraints) {
     try {
-      System.out.println(shiftConstraints);
       return ResponseEntity.ok(shiftConstraintsService.createShiftConstraints(shiftConstraints));
+    } catch (UnableToCreateShiftConstraintsException ex) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+  }
+
+  @GetMapping(value="/getAllShiftConstraints/{role}", produces={"application/json"})
+  public ResponseEntity getAllShiftConstraints(@PathVariable String role) {
+    try {
+      return ResponseEntity.ok(shiftConstraintsService.getAllShiftConstraintsByRole(role));
     } catch (UnableToCreateShiftConstraintsException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
