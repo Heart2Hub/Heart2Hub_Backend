@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.sql.Time;
+import java.time.LocalTime;
 
 @Entity
 @Data
@@ -17,10 +18,10 @@ public class ShiftConstraints {
     private Long shiftConstraintsId;
 
     @NotNull
-    private Time startTime;
+    private LocalTime startTime;
 
     @NotNull
-    private Time endTime;
+    private LocalTime endTime;
 
     @NotNull
     private Integer minPax;
@@ -31,7 +32,7 @@ public class ShiftConstraints {
 
     public ShiftConstraints() {}
 
-    public ShiftConstraints(Time startTime, Time endTime, Integer minPax, RoleEnum roleEnum) {
+    public ShiftConstraints(LocalTime startTime, LocalTime endTime, Integer minPax, RoleEnum roleEnum) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.minPax = minPax;
