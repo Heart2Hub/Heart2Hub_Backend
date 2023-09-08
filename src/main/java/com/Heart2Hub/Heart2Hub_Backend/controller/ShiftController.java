@@ -56,4 +56,13 @@ public class ShiftController {
     }
   }
 
+  @PutMapping(value="/updateShift/{shiftId}", produces={"application/json"})
+  public ResponseEntity updateShift(@PathVariable Long shiftId, @RequestBody Shift shift) {
+    try {
+      return ResponseEntity.ok(shiftService.updateShift(shiftId, shift));
+    } catch (UnableToCreateShiftException ex) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+  }
+
 }

@@ -43,16 +43,22 @@ public class ShiftService {
     this.staffRepository = staffRepository;
   }
 
-  public Shift createShift(String staffUsername, Shift newShift) throws UnableToCreateShiftException {
+  public boolean isLoggedInUserHead() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     boolean isHead = false;
     if (authentication != null) {
       User user = (User) authentication.getPrincipal();
-      Staff currStaff = staffRepository.findByUsername(user.getUsername()).get();
-      isHead = currStaff.getIsHead();
+      Optional<Staff> currStaff = staffRepository.findByUsername(user.getUsername());
+      if (currStaff.isPresent()) {
+        isHead = currStaff.get().getIsHead();
+      }
     }
-    if (authentication == null || !isHead) {
-      throw new UnableToCreateShiftException("Staff " + staffUsername + " cannot allocate shifts as he/she is not a head.");
+    return isHead;
+  }
+
+  public Shift createShift(String staffUsername, Shift newShift) throws UnableToCreateShiftException {
+    if (!isLoggedInUserHead()) {
+      throw new UnableToCreateShiftException("Staff cannot allocate shifts as he/she is not a head.");
     }
     try {
       LocalDateTime startTime = newShift.getStartTime();
@@ -100,6 +106,9 @@ public class ShiftService {
   }
 
   public List<Shift> getAllShiftsByRole(String role) throws ShiftNotFoundException {
+    if (!isLoggedInUserHead()) {
+      throw new UnableToCreateShiftException("Staff cannot view all shifts as he/she is not a head.");
+    }
     try {
       RoleEnum roleEnum = RoleEnum.valueOf(role.toUpperCase());
       List<Staff> staffList = staffRepository.findByRoleEnum(roleEnum);
@@ -115,6 +124,9 @@ public class ShiftService {
   }
 
   public void deleteShift(Long shiftId) throws ShiftNotFoundException {
+    if (!isLoggedInUserHead()) {
+      throw new UnableToCreateShiftException("Staff cannot delete shifts as he/she is not a head.");
+    }
     try {
       Optional<Shift> shiftOptional = shiftRepository.findById(shiftId);
       if (shiftOptional.isPresent()) {
@@ -129,6 +141,27 @@ public class ShiftService {
           }
         }
         shiftRepository.delete(shift);
+      } else {
+        throw new ShiftNotFoundException("Shift with ID: " + shiftId + " is not found");
+      }
+    } catch (Exception ex) {
+      throw new ShiftNotFoundException(ex.getMessage());
+    }
+  }
+
+  public Shift updateShift(Long shiftId, Shift updatedShift) throws ShiftNotFoundException {
+    if (!isLoggedInUserHead()) {
+      throw new UnableToCreateShiftException("Staff cannot update shifts as he/she is not a head.");
+    }
+    try {
+      Optional<Shift> shiftOptional = shiftRepository.findById(shiftId);
+      if (shiftOptional.isPresent()) {
+        Shift shift = shiftOptional.get();
+        if (updatedShift.getStartTime() != null) shift.setStartTime(updatedShift.getStartTime());
+        if (updatedShift.getEndTime() != null) shift.setEndTime(updatedShift.getEndTime());
+        if (updatedShift.getComments() != null) shift.setComments(updatedShift.getComments());
+        shiftRepository.save(shift);
+        return shift;
       } else {
         throw new ShiftNotFoundException("Shift with ID: " + shiftId + " is not found");
       }
