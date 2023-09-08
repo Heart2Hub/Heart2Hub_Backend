@@ -38,4 +38,14 @@ public class ShiftConstraintsController {
     }
   }
 
+  @DeleteMapping(value="/deleteShiftConstraints/{shiftConstraintsId}", produces={"application/json"})
+  public ResponseEntity getAllShiftConstraints(@PathVariable Long shiftConstraintsId) {
+    try {
+      shiftConstraintsService.deleteShiftConstraints(shiftConstraintsId);
+      return ResponseEntity.ok("Shift constraints with id: " + shiftConstraintsId + " has been deleted successfully!");
+    } catch (UnableToCreateShiftConstraintsException ex) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+  }
+
 }

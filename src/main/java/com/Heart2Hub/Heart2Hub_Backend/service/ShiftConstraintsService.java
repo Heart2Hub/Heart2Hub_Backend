@@ -60,4 +60,16 @@ public class ShiftConstraintsService {
       throw new ShiftConstraintsNotFoundException(ex.getMessage());
     }
   }
+
+  public void deleteShiftConstraints(Long shiftConstraintsId) throws ShiftConstraintsNotFoundException {
+    try {
+      Optional<ShiftConstraints> shiftConstraintsOptional = shiftConstraintsRepository.findById(shiftConstraintsId);
+      if (shiftConstraintsOptional.isPresent()) {
+        ShiftConstraints sc = shiftConstraintsOptional.get();
+        shiftConstraintsRepository.delete(sc);
+      }
+    } catch (Exception ex) {
+      throw new ShiftConstraintsNotFoundException(ex.getMessage());
+    }
+  }
 }
