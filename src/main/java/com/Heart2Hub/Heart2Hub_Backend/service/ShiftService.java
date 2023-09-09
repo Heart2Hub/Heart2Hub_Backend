@@ -5,10 +5,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Shift;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
-import com.Heart2Hub.Heart2Hub_Backend.exception.ShiftNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateShiftException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateStaffException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.*;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ShiftRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import org.springframework.cglib.core.Local;
@@ -56,34 +53,56 @@ public class ShiftService {
     return isHead;
   }
 
-  public Shift createShift(String staffUsername, Shift newShift) throws UnableToCreateShiftException {
+  public Shift createShift(String staffUsername, Shift newShift) throws UnableToCreateShiftException, StaffNotFoundException {
     if (!isLoggedInUserHead()) {
       throw new UnableToCreateShiftException("Staff cannot allocate shifts as he/she is not a head.");
     }
     try {
-      LocalDateTime startTime = newShift.getStartTime();
-      LocalDateTime endTime = newShift.getEndTime();
-      if (startTime == null || endTime == null) {
-        throw new UnableToCreateShiftException("Start time and end time must be present.");
-      }
-      Staff assignedStaff = staffRepository.findByUsername(staffUsername).get();
-      List<Shift> shifts = shiftRepository.findShiftsByStaff(assignedStaff);
-      if (startTime.isAfter(endTime)) {
-        throw new UnableToCreateShiftException("Start time cannot be later than end time.");
-      }
-      if (!startTime.toLocalDate().equals(endTime.toLocalDate())) {
-        throw new UnableToCreateShiftException("Shifts have to be allocated within the same day.");
-      }
-      long hours = startTime.until(endTime, ChronoUnit.HOURS);
-      int MAXIMUM_SHIFT_HOURS = 12;
-      int HOURS_BETWEEN_DAY_NIGHT_SHIFTS = 8;
-      if (hours > MAXIMUM_SHIFT_HOURS) {
-        throw new UnableToCreateShiftException("Staff exceeds maximum working hours per day at " + hours + " hours. (Maximum is " + MAXIMUM_SHIFT_HOURS + ").");
-      }
+        Optional<Staff> optionalStaff = staffRepository.findByUsername(staffUsername);
+        if (optionalStaff.isPresent()) {
+          Staff assignedStaff = optionalStaff.get();
+          if (checkShiftConditions(newShift, assignedStaff)) {
+            assignedStaff.getListOfShifts().add(newShift);
+            newShift.setStaff(assignedStaff);
+            staffRepository.save(assignedStaff);
+            shiftRepository.save(newShift);
+            return newShift;
+          } else {
+            throw new UnableToCreateShiftException("Shift does not meet predefined shift constraints");
+          }
+        } else {
+          throw new StaffNotFoundException("Staff with username " + staffUsername + " not found!");
+        }
+    } catch (Exception ex) {
+      throw new UnableToCreateShiftException(ex.getMessage());
+    }
+  }
 
-      for (Shift shift : shifts) {
+  public boolean checkShiftConditions(Shift newShift, Staff assignedStaff) throws UnableToCreateShiftException {
+    LocalDateTime startTime = newShift.getStartTime();
+    LocalDateTime endTime = newShift.getEndTime();
+    if (startTime == null || endTime == null) {
+      throw new UnableToCreateShiftException("Start time and end time must be present.");
+    }
+    List<Shift> shifts = shiftRepository.findShiftsByStaff(assignedStaff);
+
+    if (startTime.isAfter(endTime)) {
+      throw new UnableToCreateShiftException("Start time cannot be later than end time.");
+    }
+    if (!startTime.toLocalDate().equals(endTime.toLocalDate())) {
+      throw new UnableToCreateShiftException("Shifts have to be allocated within the same day.");
+    }
+    long hours = startTime.until(endTime, ChronoUnit.HOURS);
+    int MAXIMUM_SHIFT_HOURS = 12;
+    int HOURS_BETWEEN_DAY_NIGHT_SHIFTS = 8;
+    if (hours > MAXIMUM_SHIFT_HOURS) {
+      throw new UnableToCreateShiftException("Staff exceeds maximum working hours per day at " + hours + " hours. (Maximum is " + MAXIMUM_SHIFT_HOURS + ").");
+    }
+
+    for (Shift shift : shifts) {
+      if (newShift.getShiftId() == null || newShift.getShiftId() != shift.getShiftId()) {
         if (startTime.toLocalDate().equals(shift.getStartTime().toLocalDate())) {
-          throw new UnableToCreateShiftException("There is already a shift allocated to staff " + staffUsername + " on " + startTime.toLocalDate());
+          throw new UnableToCreateShiftException("There is already a shift allocated to staff " + assignedStaff.getUsername() + " on " + startTime.toLocalDate());
         }
         if (shift.getEndTime().compareTo(startTime) == -1 && shift.getEndTime().until(startTime, ChronoUnit.HOURS) < HOURS_BETWEEN_DAY_NIGHT_SHIFTS) {
           throw new UnableToCreateShiftException("Staff has worked a night shift the previous day, and cannot work the morning shift today.");
@@ -92,20 +111,14 @@ public class ShiftService {
           throw new UnableToCreateShiftException("Staff has a day shift the following the day, and cannot work the night shift today.");
         }
       }
-
-      // TO-DO: CHECK FOR LEAVES
-
-      assignedStaff.getListOfShifts().add(newShift);
-      newShift.setStaff(assignedStaff);
-      staffRepository.save(assignedStaff);
-      shiftRepository.save(newShift);
-      return newShift;
-    } catch (Exception ex) {
-      throw new UnableToCreateShiftException(ex.getMessage());
     }
+
+    // TODO: CHECK FOR LEAVES
+
+    return true;
   }
 
-  public List<Shift> getAllShiftsByRole(String role) throws ShiftNotFoundException {
+  public List<Shift> getAllShiftsByRole(String role) throws RoleNotFoundException, UnableToCreateShiftException {
     if (!isLoggedInUserHead()) {
       throw new UnableToCreateShiftException("Staff cannot view all shifts as he/she is not a head.");
     }
@@ -119,11 +132,11 @@ public class ShiftService {
       }
       return listOfShifts;
     } catch (Exception ex) {
-      throw new ShiftNotFoundException(ex.getMessage());
+      throw new RoleNotFoundException(ex.getMessage());
     }
   }
 
-  public void deleteShift(Long shiftId) throws ShiftNotFoundException {
+  public void deleteShift(Long shiftId) throws ShiftNotFoundException, UnableToCreateShiftException {
     if (!isLoggedInUserHead()) {
       throw new UnableToCreateShiftException("Staff cannot delete shifts as he/she is not a head.");
     }
@@ -149,7 +162,7 @@ public class ShiftService {
     }
   }
 
-  public Shift updateShift(Long shiftId, Shift updatedShift) throws ShiftNotFoundException {
+  public Shift updateShift(Long shiftId, Shift updatedShift) throws ShiftNotFoundException, UnableToCreateShiftException {
     if (!isLoggedInUserHead()) {
       throw new UnableToCreateShiftException("Staff cannot update shifts as he/she is not a head.");
     }
@@ -160,7 +173,11 @@ public class ShiftService {
         if (updatedShift.getStartTime() != null) shift.setStartTime(updatedShift.getStartTime());
         if (updatedShift.getEndTime() != null) shift.setEndTime(updatedShift.getEndTime());
         if (updatedShift.getComments() != null) shift.setComments(updatedShift.getComments());
-        shiftRepository.save(shift);
+        if (checkShiftConditions(shift, shift.getStaff())) {
+          shiftRepository.save(shift);
+        } else {
+          throw new UnableToCreateShiftException("Shift does not meet predefined shift constraints");
+        }
         return shift;
       } else {
         throw new ShiftNotFoundException("Shift with ID: " + shiftId + " is not found");
@@ -187,7 +204,7 @@ public class ShiftService {
         throw new StaffNotFoundException("Staff with username " + username + " is not found.");
       }
     } catch (Exception ex) {
-      throw new ShiftNotFoundException(ex.getMessage());
+      throw new StaffNotFoundException(ex.getMessage());
     }
   }
 
@@ -211,7 +228,7 @@ public class ShiftService {
         throw new StaffNotFoundException("Staff with username " + username + " is not found.");
       }
     } catch (Exception ex) {
-      throw new ShiftNotFoundException(ex.getMessage());
+      throw new StaffNotFoundException(ex.getMessage());
     }
   }
 }

@@ -3,7 +3,9 @@ package com.Heart2Hub.Heart2Hub_Backend.controller;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Shift;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.RoleNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.ShiftNotFoundException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateShiftException;
 import com.Heart2Hub.Heart2Hub_Backend.service.ShiftService;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
@@ -33,7 +35,7 @@ public class ShiftController {
   public ResponseEntity createShift(@PathVariable String staffUsername, @RequestBody Shift shift) {
     try {
       return ResponseEntity.ok(shiftService.createShift(staffUsername, shift));
-    } catch (UnableToCreateShiftException ex) {
+    } catch (UnableToCreateShiftException | StaffNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
   }
@@ -42,7 +44,7 @@ public class ShiftController {
   public ResponseEntity getAllShifts(@PathVariable String role) {
     try {
       return ResponseEntity.ok(shiftService.getAllShiftsByRole(role));
-    } catch (UnableToCreateShiftException ex) {
+    } catch (UnableToCreateShiftException | RoleNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
   }
@@ -52,7 +54,7 @@ public class ShiftController {
     try {
       shiftService.deleteShift(shiftId);
       return ResponseEntity.ok("Shift with shiftId " + shiftId + " has been deleted successfully.");
-    } catch (UnableToCreateShiftException ex) {
+    } catch (UnableToCreateShiftException | ShiftNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
   }
@@ -61,7 +63,7 @@ public class ShiftController {
   public ResponseEntity updateShift(@PathVariable Long shiftId, @RequestBody Shift shift) {
     try {
       return ResponseEntity.ok(shiftService.updateShift(shiftId, shift));
-    } catch (UnableToCreateShiftException ex) {
+    } catch (UnableToCreateShiftException | ShiftNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
   }
@@ -70,7 +72,7 @@ public class ShiftController {
   public ResponseEntity viewMonthlyRoster(@PathVariable String username, @RequestParam Integer month, @RequestParam Integer year) {
     try {
       return ResponseEntity.ok(shiftService.viewMonthlyRoster(username, month, year));
-    } catch (ShiftNotFoundException ex) {
+    } catch (StaffNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
   }
@@ -79,7 +81,7 @@ public class ShiftController {
   public ResponseEntity viewMonthlyRoster(@PathVariable String username, @RequestParam String date) {
     try {
       return ResponseEntity.ok(shiftService.viewWeeklyRoster(username, date));
-    } catch (ShiftNotFoundException ex) {
+    } catch (StaffNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
   }

@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.entity;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ApprovalStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.LeaveTypeEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -26,10 +27,12 @@ public class Shift {
 
     @NotNull
     @Future
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startTime;
 
     @NotNull
     @Future
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime;
 
     @Size(max = 200)
@@ -37,6 +40,7 @@ public class Shift {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false)
     @NotNull
     private Staff staff;
 
