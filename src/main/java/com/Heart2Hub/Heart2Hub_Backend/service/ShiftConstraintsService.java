@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.management.relation.Role;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -52,12 +53,12 @@ public class ShiftConstraintsService {
     }
   }
 
-  public List<ShiftConstraints> getAllShiftConstraintsByRole(String role) throws ShiftConstraintsNotFoundException {
+  public List<ShiftConstraints> getAllShiftConstraintsByRole(String role) throws RoleNotFoundException {
     try {
       RoleEnum roleEnum = RoleEnum.valueOf(role.toUpperCase());
       return shiftConstraintsRepository.findByRoleEnum(roleEnum);
     } catch (Exception ex) {
-      throw new ShiftConstraintsNotFoundException(ex.getMessage());
+      throw new RoleNotFoundException(ex.getMessage());
     }
   }
 
@@ -67,6 +68,31 @@ public class ShiftConstraintsService {
       if (shiftConstraintsOptional.isPresent()) {
         ShiftConstraints sc = shiftConstraintsOptional.get();
         shiftConstraintsRepository.delete(sc);
+      } else {
+        throw new ShiftConstraintsNotFoundException("Shift constraints ID " + shiftConstraintsId + " not found!");
+      }
+    } catch (Exception ex) {
+      throw new ShiftConstraintsNotFoundException(ex.getMessage());
+    }
+  }
+
+  public ShiftConstraints updateShiftConstraints(Long shiftConstraintsId, ShiftConstraints updatedShiftConstraints) throws ShiftConstraintsNotFoundException, UnableToCreateShiftConstraintsException {
+    try {
+      Optional<ShiftConstraints> shiftConstraintsOptional = shiftConstraintsRepository.findById(shiftConstraintsId);
+      if (shiftConstraintsOptional.isPresent()) {
+        ShiftConstraints sc = shiftConstraintsOptional.get();
+        List<ShiftConstraints> listOfShiftConstraints = shiftConstraintsRepository.findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndRoleEnumEquals(updatedShiftConstraints.getEndTime(), updatedShiftConstraints.getStartTime(), sc.getRoleEnum());
+        if (listOfShiftConstraints.isEmpty() || (listOfShiftConstraints.size() == 1 && listOfShiftConstraints.get(0).getShiftConstraintsId() == shiftConstraintsId)) {
+          if (updatedShiftConstraints.getStartTime() != null) sc.setStartTime(updatedShiftConstraints.getStartTime());
+          if (updatedShiftConstraints.getEndTime() != null) sc.setEndTime(updatedShiftConstraints.getEndTime());
+          if (updatedShiftConstraints.getMinPax() != null) sc.setMinPax(updatedShiftConstraints.getMinPax());
+          shiftConstraintsRepository.save(sc);
+          return sc;
+        } else {
+          throw new UnableToCreateShiftConstraintsException("There is an overlapping shift constraint with this time for role " + sc.getRoleEnum() + ".");
+        }
+      } else {
+        throw new ShiftConstraintsNotFoundException("Shift with ID: " + shiftConstraintsId + " is not found");
       }
     } catch (Exception ex) {
       throw new ShiftConstraintsNotFoundException(ex.getMessage());
