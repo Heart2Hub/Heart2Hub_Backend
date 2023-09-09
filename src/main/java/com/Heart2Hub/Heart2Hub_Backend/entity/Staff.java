@@ -60,8 +60,8 @@ public class Staff implements UserDetails {
   @NotNull
   private LeaveBalance leaveBalance;
 
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  private List<ShiftPreference> listOfShiftPreferences;
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  private ShiftPreference shiftPreference;
 
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @NotNull
@@ -72,7 +72,6 @@ public class Staff implements UserDetails {
     this.listOfManagedLeaves = List.of();
     this.listOfShifts = List.of();
     this.listOfAssignedAppointments = List.of();
-    this.listOfShiftPreferences = List.of();
   }
 
   public Staff(String username, String password, String firstname, String lastname,

@@ -9,6 +9,7 @@ import lombok.Data;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Data
@@ -20,17 +21,17 @@ public class ShiftPreference {
     private Long shiftPreferenceId;
 
     @NotNull
-    private Time startTime;
+    private LocalTime startTime;
 
     @NotNull
-    private Time endTime;
+    private LocalTime endTime;
 
 
     public ShiftPreference() {
 
     }
 
-    public ShiftPreference(Time startTime, Time endTime) {
+    public ShiftPreference(LocalTime startTime, LocalTime endTime) {
         this.startTime = startTime;
         this.endTime = endTime;
     }
