@@ -34,7 +34,7 @@ public class MedicationOrderEvent {
     @NotNull
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "medication_order_id", referencedColumnName = "id")
+    @JoinColumn(name = "medication_order_id")
     private MedicationOrder medicationOrder;
 
     public MedicationOrderEvent() {

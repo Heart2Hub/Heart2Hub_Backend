@@ -24,6 +24,7 @@ public class MedicationOrder {
     @NotNull
     @JsonBackReference
     @OneToOne
+    @JoinColumn(name = "medication_id")
     private Medication medication;
 
     @NotNull
@@ -36,26 +37,23 @@ public class MedicationOrder {
     private Integer frequency;
 
     @NotNull
-    @Future
-    private LocalDateTime startDateTime;
-
-    @NotNull
     private Boolean isActive;
 
     @NotNull
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admission_id", referencedColumnName = "id")
+    @JoinColumn(name = "admission_id")
     private Admission admission;
 
     @NotNull
     @JsonBackReference
     @OneToOne
+    @JoinColumn(name = "prescription_record_id")
     private PrescriptionRecord prescriptionRecord;
 
     @NotNull
     @JsonBackReference
-    @OneToMany(mappedBy = "medication_order")
+    @OneToMany(mappedBy = "medicationOrder")
     private List<MedicationOrderEvent> listOfMedicationOrderEvents;
 
 
