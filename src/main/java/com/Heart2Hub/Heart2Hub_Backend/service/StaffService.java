@@ -66,4 +66,9 @@ public class StaffService {
         .orElseThrow(() -> new StaffNotFoundException("Staff not found"));
     return jwtService.generateToken(staff);
   }
+
+  public Staff getStaffByUsername(String username) {
+    Staff staff = staffRepository.findByUsername(username).orElseThrow(() -> new StaffNotFoundException("Username Does Not Exist."));
+    return staff;
+  }
 }

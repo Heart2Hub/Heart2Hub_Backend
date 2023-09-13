@@ -18,12 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.management.relation.Role;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -31,13 +29,16 @@ public class ShiftConstraintsService {
 
 
   private final ShiftConstraintsRepository shiftConstraintsRepository;
+  private final ShiftService shiftService;
 
-  public ShiftConstraintsService(ShiftConstraintsRepository shiftConstraintsRepository) {
+  public ShiftConstraintsService(ShiftConstraintsRepository shiftConstraintsRepository, ShiftService shiftService) {
     this.shiftConstraintsRepository = shiftConstraintsRepository;
+    this.shiftService = shiftService;
   }
 
   public ShiftConstraints createShiftConstraints(ShiftConstraints newShiftConstraints) throws UnableToCreateShiftConstraintsException {
     try {
+      System.out.println("Hello");
       ShiftConstraints shiftConstraints = new ShiftConstraints(newShiftConstraints.getStartTime(),
                                                                 newShiftConstraints.getEndTime(),
                                                                 newShiftConstraints.getMinPax(),
@@ -96,6 +97,53 @@ public class ShiftConstraintsService {
       }
     } catch (Exception ex) {
       throw new ShiftConstraintsNotFoundException(ex.getMessage());
+    }
+  }
+
+  public boolean isValidWorkDay(String role, String date) throws RoleNotFoundException {
+    try {
+      List<Shift> listOfShifts = shiftService.viewDailyRoster(date, role);
+      List<ShiftConstraints> listOfShiftConstraints = getAllShiftConstraintsByRole(role);
+      HashMap<Long, Integer> mapOfMinPax = new HashMap<>();
+      LocalTime shift1Start = LocalTime.of(0,0,0);
+      LocalTime shift2Start = LocalTime.of(8,0,0);
+      LocalTime shift3Start = LocalTime.of(16,0,0);
+      LocalTime shift3End = LocalTime.of(23,59,0);
+      for (ShiftConstraints sc : listOfShiftConstraints) {
+        LocalTime start = sc.getStartTime();
+        LocalTime end = sc.getEndTime();
+        if (start.equals(shift1Start) && end.equals(shift2Start)) {
+          mapOfMinPax.put(1L, mapOfMinPax.getOrDefault(1L, 0)+sc.getMinPax());
+        } else if (start.equals(shift2Start) && end.equals(shift3Start)) {
+          mapOfMinPax.put(2L, mapOfMinPax.getOrDefault(2L, 0)+sc.getMinPax());
+        } else if (start.equals(shift3Start) && end.equals(shift3End)) {
+          mapOfMinPax.put(3L, mapOfMinPax.getOrDefault(3L, 0)+sc.getMinPax());
+        } else {
+          mapOfMinPax.put(4L, mapOfMinPax.getOrDefault(4L, 0)+sc.getMinPax());
+        }
+      }
+      for (Shift shift : listOfShifts) {
+        LocalTime start = shift.getStartTime().toLocalTime();
+        LocalTime end = shift.getEndTime().toLocalTime();
+        if (start.equals(shift1Start) && end.equals(shift2Start)) {
+          mapOfMinPax.put(1L, mapOfMinPax.getOrDefault(1L, 0)-1);
+        } else if (start.equals(shift2Start) && end.equals(shift3Start)) {
+          mapOfMinPax.put(2L, mapOfMinPax.getOrDefault(2L, 0)-1);
+        } else if (start.equals(shift3Start) && end.equals(shift3End)) {
+          mapOfMinPax.put(3L, mapOfMinPax.getOrDefault(3L, 0)-1);
+        } else {
+          mapOfMinPax.put(4L, mapOfMinPax.getOrDefault(4L, 0)-1);
+        }
+      }
+      for (Map.Entry<Long,Integer> entry : mapOfMinPax.entrySet()) {
+        if (entry.getValue() > 0) {
+          System.out.println(entry.getKey() + " " + entry.getValue());
+          return false;
+        }
+      }
+      return true;
+    } catch (Exception ex) {
+      throw new RoleNotFoundException(ex.getMessage());
     }
   }
 }

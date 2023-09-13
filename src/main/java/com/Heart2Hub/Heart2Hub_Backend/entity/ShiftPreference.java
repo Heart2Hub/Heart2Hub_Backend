@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
@@ -20,9 +21,11 @@ public class ShiftPreference {
     private Long shiftPreferenceId;
 
     @NotNull
+    @JsonFormat(pattern="HH:mm:ss")
     private Time startTime;
 
     @NotNull
+    @JsonFormat(pattern="HH:mm:ss")
     private Time endTime;
 
 

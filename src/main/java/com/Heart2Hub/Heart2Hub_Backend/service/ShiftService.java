@@ -62,7 +62,8 @@ public class ShiftService {
         if (optionalStaff.isPresent()) {
           Staff assignedStaff = optionalStaff.get();
           if (checkShiftConditions(newShift, assignedStaff)) {
-            assignedStaff.getListOfShifts().add(newShift);
+            Shift shift = new Shift(newShift.getStartTime(), newShift.getEndTime(), newShift.getComments());
+            assignedStaff.getListOfShifts().add(shift);
             newShift.setStaff(assignedStaff);
             staffRepository.save(assignedStaff);
             shiftRepository.save(newShift);
@@ -92,17 +93,21 @@ public class ShiftService {
     if (!startTime.toLocalDate().equals(endTime.toLocalDate())) {
       throw new UnableToCreateShiftException("Shifts have to be allocated within the same day.");
     }
-    long hours = startTime.until(endTime, ChronoUnit.HOURS);
-    int MAXIMUM_SHIFT_HOURS = 12;
     int HOURS_BETWEEN_DAY_NIGHT_SHIFTS = 8;
-    if (hours > MAXIMUM_SHIFT_HOURS) {
-      throw new UnableToCreateShiftException("Staff exceeds maximum working hours per day at " + hours + " hours. (Maximum is " + MAXIMUM_SHIFT_HOURS + ").");
-    }
 
     for (Shift shift : shifts) {
       if (newShift.getShiftId() == null || newShift.getShiftId() != shift.getShiftId()) {
         if (startTime.toLocalDate().equals(shift.getStartTime().toLocalDate())) {
           throw new UnableToCreateShiftException("There is already a shift allocated to staff " + assignedStaff.getUsername() + " on " + startTime.toLocalDate());
+        }
+        // If staff has a 24 hour shift
+        if (shift.getStartTime().getHour() == 0 && shift.getStartTime().getMinute() == 0 && shift.getEndTime().getHour() == 23 && shift.getEndTime().getMinute() == 59) {
+          if (shift.getEndTime().compareTo(startTime) == -1) {
+            throw new UnableToCreateShiftException("Staff has worked a 24h shift the previous day, and cannot work on this day.");
+          }
+          if (shift.getStartTime().compareTo(endTime) == 1) {
+            throw new UnableToCreateShiftException("Staff has a 24h shift the following day, and cannot work on this day.");
+          }
         }
         if (shift.getEndTime().compareTo(startTime) == -1 && shift.getEndTime().until(startTime, ChronoUnit.HOURS) < HOURS_BETWEEN_DAY_NIGHT_SHIFTS) {
           throw new UnableToCreateShiftException("Staff has worked a night shift the previous day, and cannot work the morning shift today.");
@@ -223,12 +228,24 @@ public class ShiftService {
             listOfShifts.add(shift);
           }
         }
+        listOfShifts.sort(Comparator.comparing(Shift::getStartTime));
         return listOfShifts;
       } else {
         throw new StaffNotFoundException("Staff with username " + username + " is not found.");
       }
     } catch (Exception ex) {
       throw new StaffNotFoundException(ex.getMessage());
+    }
+  }
+
+  public List<Shift> viewDailyRoster(String date, String role) throws RoleNotFoundException {
+    try {
+      RoleEnum roleEnum = RoleEnum.valueOf(role.toUpperCase());
+      LocalDateTime start = LocalDateTime.parse(date + " 00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+      LocalDateTime end = LocalDateTime.parse(date + " 23:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+      return shiftRepository.findByStaffRoleEnumAndStartTimeBetween(roleEnum, start, end);
+    } catch (Exception ex) {
+      throw new RoleNotFoundException(ex.getMessage());
     }
   }
 }

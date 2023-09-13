@@ -55,4 +55,13 @@ public class ShiftConstraintsController {
     }
   }
 
+  @GetMapping(value="/checkIsValidWorkday", produces={"application/json"})
+  public ResponseEntity checkIsValidWorkday(@RequestParam String role, @RequestParam String date) {
+    try {
+      return ResponseEntity.ok(shiftConstraintsService.isValidWorkDay(role, date));
+    } catch (RoleNotFoundException ex) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+  }
+
 }

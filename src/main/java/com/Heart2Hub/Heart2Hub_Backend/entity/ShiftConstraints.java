@@ -1,6 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -18,9 +19,11 @@ public class ShiftConstraints {
     private Long shiftConstraintsId;
 
     @NotNull
+    @JsonFormat(pattern="HH:mm:ss")
     private LocalTime startTime;
 
     @NotNull
+    @JsonFormat(pattern="HH:mm:ss")
     private LocalTime endTime;
 
     @NotNull
