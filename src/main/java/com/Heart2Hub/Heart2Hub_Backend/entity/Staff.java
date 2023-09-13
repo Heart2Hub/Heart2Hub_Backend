@@ -84,6 +84,7 @@ public class Staff implements UserDetails {
     this.lastname = lastname;
     this.mobileNumber = mobileNumber;
     this.roleEnum = roleEnum;
+    this.leaveBalance = new LeaveBalance();
   }
 
   @Override

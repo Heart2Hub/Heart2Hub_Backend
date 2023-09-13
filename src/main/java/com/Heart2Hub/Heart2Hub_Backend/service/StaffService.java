@@ -38,6 +38,8 @@ public class StaffService {
     return staffRepository.findByUsername(username);
   }
 
+  public Optional<Staff> findById(Long id) { return staffRepository.findById(id); }
+
   public Staff createStaff(String username, String password, String firstname, String lastname,
                            Long mobileNumber, RoleEnum roleEnum) {
     Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, roleEnum);
@@ -59,5 +61,9 @@ public class StaffService {
     Staff staff = staffRepository.findByUsername(username)
         .orElseThrow(() -> new StaffNotFoundException("Staff not found"));
     return jwtService.generateToken(staff);
+  }
+
+  public Optional<Staff> getStaffByUsername(String username) {
+    return staffRepository.findByUsername(username);
   }
 }

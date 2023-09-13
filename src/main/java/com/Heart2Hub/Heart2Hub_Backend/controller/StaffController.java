@@ -6,10 +6,7 @@ import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/staff")
@@ -38,5 +35,11 @@ public class StaffController {
 
     String jwtToken = staffService.authenticateStaff(username,password);
     return ResponseEntity.ok(jwtToken);
+  }
+
+  @GetMapping("/getStaffByUsername")
+  public ResponseEntity<Staff> getStaffByUsername(
+          @RequestParam("username") String username) {
+    return ResponseEntity.ok(staffService.getStaffByUsername(username).get());
   }
 }
