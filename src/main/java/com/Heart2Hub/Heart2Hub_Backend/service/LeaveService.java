@@ -35,7 +35,7 @@ public class LeaveService {
 
     //Need to edit to make sure Managed and List of Leaves
     public List<Leave> retrieveStaffManagedLeaves(Staff staff) {
-        return leaveRepository.findByStaff(staff);
+        return leaveRepository.findByHeadStaff(staff);
     }
 
     public Optional<Leave> findById(Long id) { return leaveRepository.findById(id); }
@@ -63,43 +63,52 @@ public class LeaveService {
         LocalDateTime maxDate = currentDate.plusMonths(6);
         LocalDateTime minDate = currentDate.plusMonths(1);
 
-        List<Leave> staffLeaves = leaveRepository.findByStaff(staff);
-        Boolean dateOverlap = false;
-
-        //If dates overlap, then set to true
-        if (!staffLeaves.isEmpty()) {
-            for (int i = 0; i < staffLeaves.size(); i++) {
-                Leave l = staffLeaves.get(i);
-                LocalDateTime start = l.getStartDate();
-                LocalDateTime end = l.getEndDate();
-
-                if (start.isBefore(endDate) && end.isAfter(startDate)) {
-                    dateOverlap = true;
-                    System.out.println("True!!!");
-                }
-            }
-        }
+//        List<Leave> staffLeaves = staff.getListOfLeaves();
+//        Boolean dateOverlap = false;
+//
+//        //If dates overlap, then set to true
+//        if (staffLeaves != null) {
+//            for (int i = 0; i < staffLeaves.size(); i++) {
+//                Leave l = staffLeaves.get(i);
+//                LocalDateTime start = l.getStartDate();
+//                LocalDateTime end = l.getEndDate();
+//
+//                if (start.isBefore(endDate) && end.isAfter(startDate)) {
+//                    dateOverlap = true;
+//                    break;
+//                }
+//            }
+//        }
 
         //If start date > 1 month from now, end date < 6 months from now, and no overlapping dates: Create a new Leave
-        if (startDate.isAfter(minDate) && endDate.isBefore(maxDate) && !dateOverlap) {
+        if (startDate.isAfter(minDate) && endDate.isBefore(maxDate)) {
             Leave newLeave = new Leave(startDate, endDate, leaveTypeEnum);
             newLeave.setApprovalStatusEnum(ApprovalStatusEnum.PENDING);
-            newLeave.setStaff(staff);
-            newLeave.setHeadStaff(headStaff);
 
-            List<Leave> staffLeave = staff.getListOfLeaves();
-            List<Leave> newStaffLeave = new ArrayList<>(staffLeave);
-            newStaffLeave.add(newLeave);
-            staff.setListOfLeaves(newStaffLeave);
+            Staff assignedStaff = staffRepository.findById(staff.getStaffId()).get();
+            Staff assignedHeadStaff = staffRepository.findById(headStaff.getStaffId()).get();
 
-            //headStaff.getListOfManagedLeaves().add(newLeave);
-            List<Leave> headStaffLeave = headStaff.getListOfManagedLeaves();
-            List<Leave> newHeadStaffLeave = new ArrayList<>(headStaffLeave);
-            newHeadStaffLeave.add(newLeave);
-            headStaff.setListOfManagedLeaves(newHeadStaffLeave);
+            newLeave.setStaff(assignedStaff);
+            newLeave.setHeadStaff(assignedHeadStaff);
 
-            staffRepository.save(staff);
-            staffRepository.save(headStaff);
+            assignedStaff.getListOfLeaves().add(newLeave);
+            assignedHeadStaff.getListOfManagedLeaves().add(newLeave);
+
+
+
+//            List<Leave> staffLeave = staff.getListOfLeaves();
+//            List<Leave> newStaffLeave = new ArrayList<>(staffLeave);
+//            newStaffLeave.add(newLeave);
+//            staff.setListOfLeaves(newStaffLeave);
+//
+//            //headStaff.getListOfManagedLeaves().add(newLeave);
+//            List<Leave> headStaffLeave = headStaff.getListOfManagedLeaves();
+//            List<Leave> newHeadStaffLeave = new ArrayList<>(headStaffLeave);
+//            newHeadStaffLeave.add(newLeave);
+//            headStaff.setListOfManagedLeaves(newHeadStaffLeave);
+
+            staffRepository.save(assignedStaff);
+            staffRepository.save(assignedHeadStaff);
             leaveRepository.save(newLeave);
             return newLeave;
         } else {

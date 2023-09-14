@@ -7,6 +7,8 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import lombok.Data;
@@ -45,11 +47,11 @@ public class Staff implements UserDetails {
   private RoleEnum roleEnum;
 
   @JsonBackReference
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "staff")
   private List<Leave> listOfLeaves;
 
   @JsonBackReference
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "staff")
   private List<Leave> listOfManagedLeaves;
 
   @JsonBackReference
@@ -68,8 +70,8 @@ public class Staff implements UserDetails {
   private List<ShiftPreference> listOfShiftPreferences;
 
   public Staff() {
-    this.listOfLeaves = List.of();
-    this.listOfManagedLeaves = List.of();
+    this.listOfLeaves = new ArrayList<Leave>();;
+    this.listOfManagedLeaves = new ArrayList<Leave>();
     this.listOfShifts = List.of();
     this.listOfAssignedAppointments = List.of();
     this.listOfShiftPreferences = List.of();

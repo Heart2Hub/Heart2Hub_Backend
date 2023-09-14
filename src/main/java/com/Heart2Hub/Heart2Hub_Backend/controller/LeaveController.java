@@ -42,18 +42,16 @@ public class LeaveController {
     @GetMapping("/listLeave/{staffid}")
     public ResponseEntity<List<Leave>> getAllStaffLeaves(@PathVariable("staffid") long staffid) {
         Optional<Staff> staff = staffService.findById(staffid);
-        List<Leave> listOfLeaves = staff.get().getListOfLeaves();
 
-        return ResponseEntity.ok(listOfLeaves);
+        return ResponseEntity.ok(staff.get().getListOfLeaves());
     }
 
     //As a Head Staff, I can view Leave applications of staff members under me
     @GetMapping("/managedLeave/{staffid}")
     public ResponseEntity<List<Leave>> getAllManagedLeaves(@PathVariable("staffid") long staffid) {
         Optional<Staff> staff = staffService.findById(staffid);
-        List<Leave> listOfLeaves = staff.get().getListOfManagedLeaves();
 
-        return ResponseEntity.ok(listOfLeaves);
+        return ResponseEntity.ok(leaveService.retrieveStaffManagedLeaves(staff.get()));
     }
 
     //As a staff, I can update my PENDING leaves
@@ -71,13 +69,14 @@ public class LeaveController {
     }
 
     //As a Head Staff, I can approve a leave application of a staff member
-    @PutMapping("/leave/approveLeaveDate/{staffid}")
-    public ResponseEntity<Leave> approveLeaveDate(@PathVariable("staffid") long id, @RequestBody Leave leave) {
-        Optional<Leave> leaveData = leaveService.findById(leave.getLeaveId());
+    @PutMapping("/leave/approveLeaveDate/{leaveid}")
+    public ResponseEntity<Leave> approveLeaveDate(@PathVariable long leaveid) {
+        Optional<Leave> leaveData = leaveService.findById(leaveid);
 
         if (leaveData.isPresent()) {
-            leaveService.approveLeave(leave);
-            return ResponseEntity.ok(leave);
+            Leave l = leaveData.get();
+            leaveService.approveLeave(l);
+            return ResponseEntity.ok(l);
 
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -85,13 +84,14 @@ public class LeaveController {
     }
 
     //As a Head Staff, I can approve a leave application of a staff member
-    @PutMapping("/leave/rejectLeaveDate/{staffid}")
-    public ResponseEntity<Leave> rejectLeaveDate(@PathVariable("staffid") long id, @RequestBody Leave leave) {
-        Optional<Leave> leaveData = leaveService.findById(leave.getLeaveId());
+    @PutMapping("/leave/rejectLeaveDate/{leaveid}")
+    public ResponseEntity<Leave> rejectLeaveDate(@PathVariable long leaveid) {
+        Optional<Leave> leaveData = leaveService.findById(leaveid);
         Optional<LeaveBalance> leaveBalance = leaveBalanceService.getLeaveBalanceById(leaveData.get().getStaff().getLeaveBalance().getLeaveBalanceId());
 
         if (leaveData.isPresent()) {
             LeaveBalance lb = leaveBalance.get();
+            Leave leave = leaveData.get();
             //Find the number of days to reimburse the staff
             Duration duration = Duration.between(leave.getStartDate(), leave.getEndDate());
             Integer days = (int) duration.toDays();

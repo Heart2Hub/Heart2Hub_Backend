@@ -12,4 +12,6 @@ public interface LeaveRepository extends JpaRepository<Leave, Long> {
 
     List<Leave> findByStaff(Staff staff);
 
+    List<Leave> findByHeadStaff(Staff staff);
+
 }
