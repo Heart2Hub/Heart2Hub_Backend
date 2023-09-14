@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -79,7 +80,7 @@ public class ShiftService {
     }
   }
 
-  public boolean checkShiftConditions(Shift newShift, Staff assignedStaff) throws UnableToCreateShiftException {
+  public boolean checkShiftConditions(Shift newShift, Staff assignedStaff) throws UnableToCreateShiftException, StaffNotFoundException {
     LocalDateTime startTime = newShift.getStartTime();
     LocalDateTime endTime = newShift.getEndTime();
     if (startTime == null || endTime == null) {
@@ -94,6 +95,7 @@ public class ShiftService {
       throw new UnableToCreateShiftException("Shifts have to be allocated within the same day.");
     }
     int HOURS_BETWEEN_DAY_NIGHT_SHIFTS = 8;
+    long MAX_HOURS_PER_WEEK = 56;
 
     for (Shift shift : shifts) {
       if (newShift.getShiftId() == null || newShift.getShiftId() != shift.getShiftId()) {
@@ -105,9 +107,6 @@ public class ShiftService {
           if (shift.getEndTime().compareTo(startTime) == -1) {
             throw new UnableToCreateShiftException("Staff has worked a 24h shift the previous day, and cannot work on this day.");
           }
-          if (shift.getStartTime().compareTo(endTime) == 1) {
-            throw new UnableToCreateShiftException("Staff has a 24h shift the following day, and cannot work on this day.");
-          }
         }
         if (shift.getEndTime().compareTo(startTime) == -1 && shift.getEndTime().until(startTime, ChronoUnit.HOURS) < HOURS_BETWEEN_DAY_NIGHT_SHIFTS) {
           throw new UnableToCreateShiftException("Staff has worked a night shift the previous day, and cannot work the morning shift today.");
@@ -116,6 +115,19 @@ public class ShiftService {
           throw new UnableToCreateShiftException("Staff has a day shift the following the day, and cannot work the night shift today.");
         }
       }
+    }
+
+    List<Shift> weeklyShifts = viewWeeklyRoster(assignedStaff.getUsername(), newShift.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+    if (weeklyShifts.size() == 6) {
+      throw new UnableToCreateShiftException("Staff cannot work today as he/she requires at least 1 day of rest per week.");
+    }
+    long totalHours = 0;
+    for (Shift shift : weeklyShifts) {
+      totalHours += shift.getStartTime().until(shift.getEndTime(), ChronoUnit.HOURS);
+    }
+    totalHours += newShift.getStartTime().until(newShift.getEndTime(), ChronoUnit.HOURS);
+    if (totalHours > MAX_HOURS_PER_WEEK) {
+      throw new UnableToCreateShiftException("Staff cannot work today as he/she exceeds the maximum working hours per week (56 hours).");
     }
 
     // TODO: CHECK FOR LEAVES
