@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,24 +67,36 @@ public class LeaveService {
         Boolean dateOverlap = false;
 
         //If dates overlap, then set to true
-        for (int i = 0; i < staffLeaves.size(); i++) {
-            Leave l = staffLeaves.get(i);
-            LocalDateTime start = l.getStartDate();
-            LocalDateTime end = l.getEndDate();
+        if (!staffLeaves.isEmpty()) {
+            for (int i = 0; i < staffLeaves.size(); i++) {
+                Leave l = staffLeaves.get(i);
+                LocalDateTime start = l.getStartDate();
+                LocalDateTime end = l.getEndDate();
 
-            if (start.isBefore(endDate) && end.isAfter(startDate)) {
-                dateOverlap = true;
+                if (start.isBefore(endDate) && end.isAfter(startDate)) {
+                    dateOverlap = true;
+                    System.out.println("True!!!");
+                }
             }
         }
 
         //If start date > 1 month from now, end date < 6 months from now, and no overlapping dates: Create a new Leave
-        if (startDate.isAfter(minDate) && endDate.isBefore(currentDate) && !dateOverlap) {
+        if (startDate.isAfter(minDate) && endDate.isBefore(maxDate) && !dateOverlap) {
             Leave newLeave = new Leave(startDate, endDate, leaveTypeEnum);
             newLeave.setApprovalStatusEnum(ApprovalStatusEnum.PENDING);
             newLeave.setStaff(staff);
             newLeave.setHeadStaff(headStaff);
-            staff.getListOfLeaves().add(newLeave);
-            headStaff.getListOfManagedLeaves().add(newLeave);
+
+            List<Leave> staffLeave = staff.getListOfLeaves();
+            List<Leave> newStaffLeave = new ArrayList<>(staffLeave);
+            newStaffLeave.add(newLeave);
+            staff.setListOfLeaves(newStaffLeave);
+
+            //headStaff.getListOfManagedLeaves().add(newLeave);
+            List<Leave> headStaffLeave = headStaff.getListOfManagedLeaves();
+            List<Leave> newHeadStaffLeave = new ArrayList<>(headStaffLeave);
+            newHeadStaffLeave.add(newLeave);
+            headStaff.setListOfManagedLeaves(newHeadStaffLeave);
 
             staffRepository.save(staff);
             staffRepository.save(headStaff);
