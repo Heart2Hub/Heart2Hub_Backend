@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/staff")
 @RequiredArgsConstructor
@@ -25,10 +27,11 @@ public class StaffController {
       @RequestParam("firstname") String firstname,
       @RequestParam("lastname") String lastname,
       @RequestParam("mobileNumber") Long mobileNumber,
-      @RequestParam("staffRoleEnum") String staffRoleEnum) {
+      @RequestParam("staffRoleEnum") String staffRoleEnum,
+      @RequestParam("departmentName") String departmentName) {
     return ResponseEntity.ok(
         staffService.createStaff(username, password, firstname, lastname, mobileNumber,
-            StaffRoleEnum.valueOf(staffRoleEnum)));
+            StaffRoleEnum.valueOf(staffRoleEnum), departmentName));
   }
 
   @PostMapping("/staffLogin")
@@ -41,6 +44,11 @@ public class StaffController {
     String jwtToken = staffService.authenticateStaff(username,password);
     System.out.println("working fine");
     return ResponseEntity.ok(jwtToken);
+  }
+
+  @GetMapping("/getAllStaff")
+  public ResponseEntity<List<Staff>> getAllStaff() {
+    return ResponseEntity.ok(staffService.getAllStaff());
   }
 
   @GetMapping("/getStaffByUsername")

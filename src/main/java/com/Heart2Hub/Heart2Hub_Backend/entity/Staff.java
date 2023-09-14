@@ -69,6 +69,7 @@ public class Staff implements UserDetails {
 
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @NotNull
+  @JoinColumn(name = "leave_balance_id")
   private LeaveBalance leaveBalance;
 
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -79,6 +80,12 @@ public class Staff implements UserDetails {
 
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private List<Post> listOfPosts;
+
+  @NotNull
+  @ManyToOne
+  @JoinColumn(name = "department_id")
+  private Department department;
+
 
   public Staff() {
     this.listOfLeaves = List.of();
@@ -91,7 +98,7 @@ public class Staff implements UserDetails {
   }
 
   public Staff(String username, String password, String firstname, String lastname,
-      Long mobileNumber, StaffRoleEnum staffRoleEnum) {
+      Long mobileNumber, StaffRoleEnum staffRoleEnum, Department department, LeaveBalance leaveBalance) {
     this();
     this.username = username;
     this.password = password;
@@ -99,6 +106,8 @@ public class Staff implements UserDetails {
     this.lastname = lastname;
     this.mobileNumber = mobileNumber;
     this.staffRoleEnum = staffRoleEnum;
+    this.department = department;
+    this.leaveBalance = leaveBalance;
   }
 
   @Override
