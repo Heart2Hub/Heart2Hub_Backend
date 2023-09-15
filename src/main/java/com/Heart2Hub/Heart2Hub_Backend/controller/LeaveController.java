@@ -47,9 +47,10 @@ public class LeaveController {
     }
 
     //As a Head Staff, I can view Leave applications of staff members under me
-    @GetMapping("/managedLeave/{staffid}")
-    public ResponseEntity<List<Leave>> getAllManagedLeaves(@PathVariable("staffid") long staffid) {
-        Optional<Staff> staff = staffService.findById(staffid);
+    @GetMapping("/getAllManagedLeaves")
+    public ResponseEntity<List<Leave>> getAllManagedLeaves(@RequestParam("staffId") long staffId) {
+        System.out.println("hello test");
+        Optional<Staff> staff = staffService.findById(staffId);
 
         return ResponseEntity.ok(leaveService.retrieveStaffManagedLeaves(staff.get()));
     }

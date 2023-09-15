@@ -2,7 +2,7 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateStaffException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
@@ -44,8 +44,8 @@ public class StaffService {
   public Optional<Staff> findById(Long id) { return staffRepository.findById(id); }
 
   public Staff createStaff(String username, String password, String firstname, String lastname,
-                           Long mobileNumber, RoleEnum roleEnum) {
-    Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, roleEnum);
+                           Long mobileNumber, StaffRoleEnum staffRoleEnum) {
+    Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, staffRoleEnum);
     try {
       LeaveBalance balance = new LeaveBalance();
       newStaff.setLeaveBalance(balance);
@@ -57,8 +57,8 @@ public class StaffService {
   }
 
   public Staff createHeadStaff(String username, String password, String firstname, String lastname,
-                           Long mobileNumber, RoleEnum roleEnum) {
-    Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, roleEnum);
+                           Long mobileNumber, StaffRoleEnum staffRoleEnum) {
+    Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, staffRoleEnum);
     try {
       newStaff.setIsHead(true);
       LeaveBalance balance = new LeaveBalance();
@@ -80,8 +80,10 @@ public class StaffService {
     return jwtService.generateToken(staff);
   }
 
-  public Optional<Staff> getStaffByUsername(String username) {
-    return staffRepository.findByUsername(username);
+  public Staff getStaffByUsername(String username) {
+    Staff staff = staffRepository.findByUsername(username)
+            .orElseThrow(() -> new StaffNotFoundException("Username Does Not Exist."));
+    return staff;
   }
 
   public Optional<List<Staff>> getAllHeadStaff() {
