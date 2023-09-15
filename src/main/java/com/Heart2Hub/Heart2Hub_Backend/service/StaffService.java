@@ -26,6 +26,7 @@ public class StaffService {
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
   private final StaffRepository staffRepository;
+  //private final DepartmentRepository departmentRepository;
   private final DepartmentService departmentService;
 
   public StaffService(JwtService jwtService, PasswordEncoder passwordEncoder,
@@ -34,6 +35,7 @@ public class StaffService {
     this.passwordEncoder = passwordEncoder;
     this.authenticationManager = authenticationManager;
     this.staffRepository = staffRepository;
+    //this.departmentRepository = departmentRepository;
     this.departmentService = new DepartmentService(departmentRepository);
   }
 
@@ -53,17 +55,24 @@ public class StaffService {
                            Long mobileNumber, StaffRoleEnum roleEnum, String departmentName) {
 
     try {
-      Department department = this.departmentService.getDepartmentByName(departmentName);
+      Department department = departmentService.getDepartmentByName(departmentName);
       LeaveBalance leaveBalance = new LeaveBalance();
       Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, roleEnum, department, leaveBalance);
       staffRepository.save(newStaff);
+      department.getListOfStaff().add(newStaff);
       return newStaff;
     } catch (DepartmentNotFoundException ex) {
       throw new UnableToCreateStaffException(ex.getMessage());
     }
-
-
   }
+
+//  public Staff createStaff(Staff newStaff, String departmentName) {
+//    try {
+//      Department department = departmentRepository.findByDepartmentName(departmentName).get();
+//      LeaveBalance leaveBalance = new LeaveBalance();
+//
+//    }
+//  }
 
   //for authentication
   public String authenticateStaff(String username, String password) {
