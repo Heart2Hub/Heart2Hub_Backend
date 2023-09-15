@@ -38,6 +38,14 @@ public class LeaveService {
         return leaveRepository.findByHeadStaff(staff);
     }
 
+//    public List<ApprovalStatusEnum> retrieveApprovalStatusEnum() {
+//        return Arrays.asList(ApprovalStatusEnum.PENDING, ApprovalStatusEnum.APPROVED,ApprovalStatusEnum.REJECTED);
+//    }
+//
+//    public List<LeaveTypeEnum> retrieveLeaveTypeEnum() {
+//        return Arrays.asList(LeaveTypeEnum.ANNUAL, LeaveTypeEnum.SICK, LeaveTypeEnum.PARENTAL);
+//    }
+
     public Optional<Leave> findById(Long id) { return leaveRepository.findById(id); }
 
     //Only able to update if Leave has a Pending State

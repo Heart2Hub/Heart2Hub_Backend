@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/staff")
 @RequiredArgsConstructor
@@ -41,5 +43,10 @@ public class StaffController {
   public ResponseEntity<Staff> getStaffByUsername(
           @RequestParam("username") String username) {
     return ResponseEntity.ok(staffService.getStaffByUsername(username).get());
+  }
+
+  @GetMapping("/getAllHeadStaff")
+  public ResponseEntity<List<Staff>> getAllHeadStaff() {
+    return ResponseEntity.ok(staffService.getAllHeadStaff().get());
   }
 }

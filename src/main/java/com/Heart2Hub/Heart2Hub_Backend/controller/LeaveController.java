@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.controller;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Leave;
 import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.ApprovalStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.LeaveTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.repository.LeaveRepository;
 import com.Heart2Hub.Heart2Hub_Backend.service.LeaveBalanceService;
@@ -14,10 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.Period;
+import java.time.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -52,6 +52,17 @@ public class LeaveController {
         Optional<Staff> staff = staffService.findById(staffid);
 
         return ResponseEntity.ok(leaveService.retrieveStaffManagedLeaves(staff.get()));
+    }
+
+//    @GetMapping("/getApprovalStatusEnumList")
+//    public ResponseEntity<List<ApprovalStatusEnum>> getAllApprovalEnumList() {
+//        return ResponseEntity.ok(leaveService.retrieveApprovalStatusEnum());
+//    }
+
+    @GetMapping("/getLeaveTypeEnumList")
+    public ResponseEntity<LeaveTypeEnum[]> getAllLeaveTypList() {
+        LeaveTypeEnum[] list = LeaveTypeEnum.values();
+        return ResponseEntity.ok(list);
     }
 
     //As a staff, I can update my PENDING leaves
@@ -115,14 +126,66 @@ public class LeaveController {
         }
     }
 
+//    As as staff, I can create a Leave
+//    @PostMapping("/createLeave")
+//    public ResponseEntity<Leave> createLeave(
+//            @RequestParam("startDate") LocalDateTime startDate,
+//            @RequestParam("endDate") LocalDateTime endDate,
+//            @RequestParam("leaveTypeEnum") LeaveTypeEnum leaveTypeEnum,
+//            @RequestBody Staff staff,
+//            @RequestBody Staff headStaff) {
+//        Optional<LeaveBalance> leaveBalance = leaveBalanceService.getLeaveBalanceById(staff.getLeaveBalance().getLeaveBalanceId());
+//        Leave l;
+//
+//        if (leaveBalance.isPresent()) {
+//            LeaveBalance lb = leaveBalance.get();
+//            Duration duration = Duration.between(startDate, endDate);
+//            Integer days = (int) duration.toDays();
+//
+//            if (leaveTypeEnum == LeaveTypeEnum.ANNUAL) {
+//                if (days <= lb.getAnnualLeave()) {
+//                    l = leaveService.createLeave(startDate,endDate,leaveTypeEnum,staff,headStaff);
+//                    lb.setAnnualLeave(lb.getAnnualLeave() - days);
+//                } else {
+//                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//                }
+//
+//            } else if (leaveTypeEnum == LeaveTypeEnum.SICK) {
+//                if (days <= lb.getSickLeave()) {
+//                    l = leaveService.createLeave(startDate,endDate,leaveTypeEnum,staff,headStaff);
+//                    lb.setSickLeave(lb.getSickLeave() - days);
+//                } else {
+//                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//                }
+//            } else {
+//                if (days <= lb.getParentalLeave()) {
+//                    l = leaveService.createLeave(startDate,endDate,leaveTypeEnum,staff,headStaff);
+//                    lb.setParentalLeave(lb.getParentalLeave() - days);
+//                } else {
+//                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//                }
+//            }
+//            leaveBalanceService.updateLeaveBalance(lb);
+//        } else {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//
+//        return ResponseEntity.ok(l);
+//    }
+
     //As as staff, I can create a Leave
     @PostMapping("/createLeave")
     public ResponseEntity<Leave> createLeave(
-            @RequestParam("startDate") LocalDateTime startDate,
-            @RequestParam("endDate") LocalDateTime endDate,
-            @RequestParam("leaveTypeEnum") LeaveTypeEnum leaveTypeEnum,
-            @RequestBody Staff staff,
-            @RequestBody Staff headStaff) {
+            @RequestBody Map<String, Object> requestBody) {
+
+        LocalDateTime startDate = LocalDateTime.of(LocalDate.parse(requestBody.get("startDate").toString()), LocalTime.MIDNIGHT);
+        LocalDateTime endDate = LocalDateTime.of(LocalDate.parse(requestBody.get("endDate").toString()), LocalTime.MIDNIGHT);
+
+        LeaveTypeEnum leaveTypeEnum = LeaveTypeEnum.valueOf(requestBody.get("selectedLeaveTypeEnum").toString());
+
+        Staff staff = staffService.findById(Long.parseLong(requestBody.get("staffId").toString())).get();
+        Staff headStaff = staffService.findById(Long.parseLong(requestBody.get("selectedStaff").toString())).get();
+
         Optional<LeaveBalance> leaveBalance = leaveBalanceService.getLeaveBalanceById(staff.getLeaveBalance().getLeaveBalanceId());
         Leave l;
 
@@ -161,7 +224,5 @@ public class LeaveController {
 
         return ResponseEntity.ok(l);
     }
-
-
 
 }
