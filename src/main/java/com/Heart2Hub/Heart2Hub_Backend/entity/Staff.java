@@ -1,18 +1,14 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import lombok.Data;
@@ -30,7 +26,6 @@ public class Staff implements UserDetails {
   private Long staffId;
   @NotNull
   @Size(min = 6)
-  @Column(unique = true)
   private String username;
   @NotNull
   @Column(unique = true)
@@ -49,14 +44,14 @@ public class Staff implements UserDetails {
 
   @NotNull
   @Enumerated(EnumType.STRING)
-  private StaffRoleEnum staffRoleEnum;
+  private RoleEnum roleEnum;
 
   @JsonBackReference
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "staff")
   private List<Leave> listOfLeaves;
 
   @JsonBackReference
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "staff")
   private List<Leave> listOfManagedLeaves;
 
   @JsonBackReference
@@ -74,36 +69,29 @@ public class Staff implements UserDetails {
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private List<ShiftPreference> listOfShiftPreferences;
 
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  private List<Invitation> listOfInvitations;
-
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  private List<Post> listOfPosts;
-
   public Staff() {
-    this.listOfLeaves = List.of();
-    this.listOfManagedLeaves = List.of();
+    this.listOfLeaves = new ArrayList<Leave>();;
+    this.listOfManagedLeaves = new ArrayList<Leave>();
     this.listOfShifts = List.of();
     this.listOfAssignedAppointments = List.of();
     this.listOfShiftPreferences = List.of();
-    this.listOfInvitations = List.of();
-    this.listOfPosts = List.of();
   }
 
   public Staff(String username, String password, String firstname, String lastname,
-      Long mobileNumber, StaffRoleEnum staffRoleEnum) {
+      Long mobileNumber, RoleEnum roleEnum) {
     this();
     this.username = username;
     this.password = password;
     this.firstname = firstname;
     this.lastname = lastname;
     this.mobileNumber = mobileNumber;
-    this.staffRoleEnum = staffRoleEnum;
+    this.roleEnum = roleEnum;
+    this.leaveBalance = new LeaveBalance();
   }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of(new SimpleGrantedAuthority(staffRoleEnum.toString()));
+    return List.of(new SimpleGrantedAuthority(roleEnum.toString()));
   }
 
   @Override
