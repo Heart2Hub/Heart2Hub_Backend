@@ -31,10 +31,10 @@ public class ShiftController {
 
   private final StaffService staffService;
 
-  @PostMapping(value="/createShift/{staffUsername}", consumes={"application/json"}, produces={"application/json"})
-  public ResponseEntity createShift(@PathVariable String staffUsername, @RequestBody Shift shift) {
+  @PostMapping(value="/createShift/{staffUsername}/{facilityId}", consumes={"application/json"}, produces={"application/json"})
+  public ResponseEntity createShift(@PathVariable String staffUsername, @PathVariable Long facilityId, @RequestBody Shift shift) {
     try {
-      return ResponseEntity.ok(shiftService.createShift(staffUsername, shift));
+      return ResponseEntity.ok(shiftService.createShift(staffUsername, facilityId, shift));
     } catch (UnableToCreateShiftException | StaffNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }

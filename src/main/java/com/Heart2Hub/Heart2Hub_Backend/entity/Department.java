@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,11 +23,11 @@ public class Department {
     private String departmentName;
 
     @JsonBackReference
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "department")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "department")
     private List<SubDepartment> listOfSubDepartments;
 
     public Department() {
-        this.listOfSubDepartments = List.of();
+        this.listOfSubDepartments = new ArrayList<>();
     }
 
     public Department(String departmentName) {

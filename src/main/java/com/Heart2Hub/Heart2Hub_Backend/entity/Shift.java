@@ -12,11 +12,14 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@EqualsAndHashCode(exclude="facilityBooking")
 @Data
 @Table(name = "shift")
 public class Shift {
@@ -26,12 +29,10 @@ public class Shift {
     private Long shiftId;
 
     @NotNull
-    @Future
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startTime;
 
     @NotNull
-    @Future
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime;
 
@@ -41,15 +42,13 @@ public class Shift {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false)
-    @NotNull
     private Staff staff;
 
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "shift")
-    private List<FacilityBooking> listOfFacilityBookings;
+    @JsonManagedReference(value="shift-fb")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "shift")
+    private FacilityBooking facilityBooking;
 
     public Shift() {
-        this.listOfFacilityBookings = List.of();
     }
 
     public Shift(LocalDateTime startTime, LocalDateTime endTime) {

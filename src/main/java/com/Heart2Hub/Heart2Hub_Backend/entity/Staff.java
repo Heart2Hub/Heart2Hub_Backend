@@ -7,6 +7,8 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import lombok.Data;
@@ -50,7 +52,8 @@ public class Staff implements UserDetails {
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
   private List<Leave> listOfManagedLeaves;
 
-  @OneToMany(fetch = FetchType.EAGER, mappedBy = "staff")
+  @JsonIgnore
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "staff")
   private List<Shift> listOfShifts;
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "currentAssignedStaff")
@@ -63,15 +66,15 @@ public class Staff implements UserDetails {
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private ShiftPreference shiftPreference;
 
-  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @NotNull
   private SubDepartment subDepartment;
 
   public Staff() {
-    this.listOfLeaves = List.of();
-    this.listOfManagedLeaves = List.of();
-    this.listOfShifts = List.of();
-    this.listOfAssignedAppointments = List.of();
+    this.listOfLeaves = new ArrayList<>();
+    this.listOfManagedLeaves = new ArrayList<>();
+    this.listOfShifts = new ArrayList<>();
+    this.listOfAssignedAppointments = new ArrayList<>();
   }
 
   public Staff(String username, String password, String firstname, String lastname,

@@ -5,10 +5,16 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.RoleNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateStaffException;
+import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
+
+import java.util.List;
 import java.util.Optional;
+
+import com.Heart2Hub.Heart2Hub_Backend.repository.SubDepartmentRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,13 +31,15 @@ public class StaffService {
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
   private final StaffRepository staffRepository;
+  private final SubDepartmentRepository subDepartmentRepository;
 
   public StaffService(JwtService jwtService, PasswordEncoder passwordEncoder,
-      AuthenticationManager authenticationManager, StaffRepository staffRepository) {
+      AuthenticationManager authenticationManager, StaffRepository staffRepository, SubDepartmentRepository subDepartmentRepository) {
     this.jwtService = jwtService;
     this.passwordEncoder = passwordEncoder;
     this.authenticationManager = authenticationManager;
     this.staffRepository = staffRepository;
+    this.subDepartmentRepository = subDepartmentRepository;
   }
 
   public Long countStaff() {
@@ -47,9 +55,9 @@ public class StaffService {
     Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, roleEnum, isHead);
     try {
       LeaveBalance balance = new LeaveBalance();
-      SubDepartment subDepartment = new SubDepartment("Clinic A");
+      SubDepartment sd = subDepartmentRepository.findById(1L).get();
       newStaff.setLeaveBalance(balance);
-      newStaff.setSubDepartment(subDepartment);
+      newStaff.setSubDepartment(sd);
       staffRepository.save(newStaff);
       return newStaff;
     } catch (Exception ex) {
@@ -70,5 +78,14 @@ public class StaffService {
   public Staff getStaffByUsername(String username) {
     Staff staff = staffRepository.findByUsername(username).orElseThrow(() -> new StaffNotFoundException("Username Does Not Exist."));
     return staff;
+  }
+
+  public List<Staff> getStaffByRole(String role) throws RoleNotFoundException {
+    try {
+      RoleEnum roleEnum = RoleEnum.valueOf(role.toUpperCase());
+      return staffRepository.findByRoleEnum(roleEnum);
+    } catch (Exception ex) {
+      throw new RoleNotFoundException("Role " + role + " does not exist");
+    }
   }
 }

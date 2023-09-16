@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,6 +24,10 @@ public class SubDepartment {
 
     @Size(max = 300)
     @NotNull
+    private String name;
+
+    @Size(max = 300)
+    @NotNull
     private String description;
 
     @JsonIgnore
@@ -30,15 +35,17 @@ public class SubDepartment {
     private List<Facility> listOfFacilities;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
+    @JoinColumn(name = "department_id")
     private Department department;
 
     public SubDepartment() {
-        this.listOfFacilities = List.of();
+        this.listOfFacilities = new ArrayList<>();
     }
 
-    public SubDepartment(String description) {
+    public SubDepartment(String name, String description) {
         this();
+        this.name = name;
         this.description = description;
     }
 }

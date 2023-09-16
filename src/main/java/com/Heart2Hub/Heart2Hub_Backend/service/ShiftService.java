@@ -6,6 +6,8 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Shift;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.*;
+import com.Heart2Hub.Heart2Hub_Backend.repository.FacilityBookingRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.FacilityRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ShiftRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import org.springframework.cglib.core.Local;
@@ -35,10 +37,14 @@ public class ShiftService {
 
   private final ShiftRepository shiftRepository;
   private final StaffRepository staffRepository;
+  private final FacilityBookingRepository facilityBookingRepository;
+  private final FacilityBookingService facilityBookingService;
 
-  public ShiftService(ShiftRepository shiftRepository, StaffRepository staffRepository) {
+  public ShiftService(ShiftRepository shiftRepository, StaffRepository staffRepository, FacilityBookingService facilityBookingService, FacilityBookingRepository facilityBookingRepository) {
     this.shiftRepository = shiftRepository;
     this.staffRepository = staffRepository;
+    this.facilityBookingService = facilityBookingService;
+    this.facilityBookingRepository = facilityBookingRepository;
   }
 
   public boolean isLoggedInUserHead() {
@@ -54,21 +60,23 @@ public class ShiftService {
     return isHead;
   }
 
-  public Shift createShift(String staffUsername, Shift newShift) throws UnableToCreateShiftException, StaffNotFoundException {
+  public Shift createShift(String staffUsername, Long facilityId, Shift newShift) throws UnableToCreateShiftException, StaffNotFoundException {
     if (!isLoggedInUserHead()) {
       throw new UnableToCreateShiftException("Staff cannot allocate shifts as he/she is not a head.");
     }
+    System.out.println("hey");
     try {
         Optional<Staff> optionalStaff = staffRepository.findByUsername(staffUsername);
         if (optionalStaff.isPresent()) {
           Staff assignedStaff = optionalStaff.get();
           if (checkShiftConditions(newShift, assignedStaff)) {
-            Shift shift = new Shift(newShift.getStartTime(), newShift.getEndTime(), newShift.getComments());
-            assignedStaff.getListOfShifts().add(shift);
+            assignedStaff.getListOfShifts().add(newShift);
             newShift.setStaff(assignedStaff);
-            staffRepository.save(assignedStaff);
-            shiftRepository.save(newShift);
-            return newShift;
+            FacilityBooking fb = new FacilityBooking(newShift.getStartTime(), newShift.getEndTime(), "Shift for staff " + assignedStaff.getUsername());
+            FacilityBooking newFacilityBooking = facilityBookingService.createBooking(fb, facilityId);
+            newShift.setFacilityBooking(newFacilityBooking);
+            newFacilityBooking.setShift(newShift);
+            return shiftRepository.save(newShift);
           } else {
             throw new UnableToCreateShiftException("Shift does not meet predefined shift constraints");
           }
@@ -86,7 +94,9 @@ public class ShiftService {
     if (startTime == null || endTime == null) {
       throw new UnableToCreateShiftException("Start time and end time must be present.");
     }
+    System.out.println("check1");
     List<Shift> shifts = shiftRepository.findShiftsByStaff(assignedStaff);
+    System.out.println("check2");
 
     if (startTime.isAfter(endTime)) {
       throw new UnableToCreateShiftException("Start time cannot be later than end time.");
@@ -95,6 +105,7 @@ public class ShiftService {
       throw new UnableToCreateShiftException("Shifts have to be allocated within the same day.");
     }
     int HOURS_BETWEEN_DAY_NIGHT_SHIFTS = 8;
+    int HOURS_AFTER_24HR_SHIFT = 24;
     long MAX_HOURS_PER_WEEK = 56;
 
     for (Shift shift : shifts) {
@@ -104,7 +115,7 @@ public class ShiftService {
         }
         // If staff has a 24 hour shift
         if (shift.getStartTime().getHour() == 0 && shift.getStartTime().getMinute() == 0 && shift.getEndTime().getHour() == 23 && shift.getEndTime().getMinute() == 59) {
-          if (shift.getEndTime().compareTo(startTime) == -1) {
+          if (shift.getEndTime().compareTo(startTime) == -1 && shift.getEndTime().until(startTime, ChronoUnit.HOURS) < HOURS_AFTER_24HR_SHIFT) {
             throw new UnableToCreateShiftException("Staff has worked a 24h shift the previous day, and cannot work on this day.");
           }
         }
@@ -118,7 +129,7 @@ public class ShiftService {
     }
 
     List<Shift> weeklyShifts = viewWeeklyRoster(assignedStaff.getUsername(), newShift.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-    if (weeklyShifts.size() == 6) {
+    if (newShift.getShiftId() == null && weeklyShifts.size() == 6) {
       throw new UnableToCreateShiftException("Staff cannot work today as he/she requires at least 1 day of rest per week.");
     }
     long totalHours = 0;
@@ -163,13 +174,7 @@ public class ShiftService {
         Shift shift = shiftOptional.get();
         Staff staff = shift.getStaff();
         staff.getListOfShifts().remove(shift);
-        List<FacilityBooking> facilityBookingList = shift.getListOfFacilityBookings();
-        shift.setListOfFacilityBookings(null);
-        for (FacilityBooking fb : facilityBookingList) {
-          if (Objects.equals(fb.getShift().getShiftId(), shiftId)) {
-            fb.setShift(null);
-          }
-        }
+        facilityBookingRepository.delete(shift.getFacilityBooking());
         shiftRepository.delete(shift);
       } else {
         throw new ShiftNotFoundException("Shift with ID: " + shiftId + " is not found");

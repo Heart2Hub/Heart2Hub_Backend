@@ -38,7 +38,9 @@ public class ShiftConstraintsService {
 
   public ShiftConstraints createShiftConstraints(ShiftConstraints newShiftConstraints) throws UnableToCreateShiftConstraintsException {
     try {
-      System.out.println("Hello");
+      if (newShiftConstraints.getMinPax() < 1) {
+        throw new UnableToCreateShiftConstraintsException("Min pax must be greater than or equal to 1");
+      }
       ShiftConstraints shiftConstraints = new ShiftConstraints(newShiftConstraints.getStartTime(),
                                                                 newShiftConstraints.getEndTime(),
                                                                 newShiftConstraints.getMinPax(),
