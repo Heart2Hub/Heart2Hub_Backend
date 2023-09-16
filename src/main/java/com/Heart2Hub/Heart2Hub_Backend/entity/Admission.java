@@ -39,9 +39,6 @@ public class Admission {
     private String comments;
 
     @NotNull
-    private List<PatientRequestsEnum> listOfPatientRequestEnum;
-
-    @NotNull
     @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "admission_id", referencedColumnName = "id")
@@ -53,22 +50,26 @@ public class Admission {
     private FacilityBooking facilityBooking;
 
     @JsonBackReference
+    @OneToMany(mappedBy = "admission")
+    private List<MedicationOrder> listOfMedicationOrders;
+
+    @JsonBackReference
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "admission_id")
     private List<PatientRequest> listOfPatientRequests;
 
-    public Admission(Integer duration, LocalDateTime admissionDateTime, LocalDateTime dischargeDateTime, String comments, List<PatientRequestsEnum> listOfPatientRequestEnum, Patient patient) {
+    public Admission(){
+        this.listOfMedicationOrders = List.of();
+        this.listOfPatientRequests = List.of();
+    }
+
+    public Admission(Integer duration, LocalDateTime admissionDateTime, LocalDateTime dischargeDateTime, String comments, Patient patient) {
         this();
         this.duration = duration;
         this.admissionDateTime = admissionDateTime;
         this.dischargeDateTime = dischargeDateTime;
         this.comments = comments;
-        this.listOfPatientRequestEnum = listOfPatientRequestEnum;
         this.patient = patient;
     }
 
-    public Admission(){
-        this.listOfPatientRequestEnum = List.of();
-        this.listOfPatientRequests = List.of();
-    }
+
 }

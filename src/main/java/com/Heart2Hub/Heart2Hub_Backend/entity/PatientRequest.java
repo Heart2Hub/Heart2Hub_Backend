@@ -1,5 +1,5 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.PatientRequestsEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.PatientRequestEnum;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,14 +17,10 @@ public class PatientRequest {
     private Long patientRequestId;
 
     @NotNull
-    private PatientRequestsEnum patientRequestEnum;
+    private PatientRequestEnum patientRequestEnum;
 
-    @NotNull
-    private boolean hasAttended = false;
-
-    public PatientRequest(PatientRequestsEnum patientRequestEnum, boolean hasAttened) {
+    public PatientRequest(PatientRequestEnum patientRequestEnum) {
         this.patientRequestEnum = patientRequestEnum;
-        this.hasAttended = hasAttened;
     }
 
     public PatientRequest(){}
