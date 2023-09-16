@@ -67,10 +67,51 @@ public class ElectronicHealthRecord {
     @JoinColumn(name = "EHR_Id")
     private List<Admission> listOfPastAdmissions;
 
+    @JsonBackReference
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "EHR_Id")
+    private List<Appointment> listOfPastAppointments;
+
+    @JsonBackReference
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "EHR_Id")
+    private List<NextOfKinRecord> listOfNextOfKinRecords;
+
+    @JsonBackReference
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "EHR_Id")
+    private List<PrescriptionRecord> listOfPrescriptionRecords;
+
+    @JsonBackReference
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "EHR_Id")
+    private List<ProblemRecord> listOfProblemRecords;
+
+    @JsonBackReference
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "EHR_Id")
+    private List<MedicalHistoryRecord> listOfMedicalHistoryRecords;
+
+    @JsonBackReference
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "EHR_Id")
+    private List<TreatmentPlanRecord> listOfTreatmentPlanRecords;
+
     @JsonManagedReference
     @NotNull
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "electronicHealthRecord", fetch = FetchType.LAZY)
     private Patient patient;
+
+    public ElectronicHealthRecord(){
+        this.listOfPastAdmissions = List.of();
+        this.listOfPastAppointments = List.of();
+        this.listOfSubsidies = List.of();
+        this.listOfNextOfKinRecords = List.of();
+        this.listOfPrescriptionRecords = List.of();
+        this.listOfProblemRecords = List.of();
+        this.listOfMedicalHistoryRecords = List.of();
+        this.listOfTreatmentPlanRecords = List.of();
+    }
 
     public ElectronicHealthRecord(String nric, String firstName, String lastName, LocalDateTime dateOfBirth,
                                   String placeOfBirth, String sex, String race, String nationality, String address,
@@ -87,10 +128,5 @@ public class ElectronicHealthRecord {
         this.address = address;
         this.contactNumber = contactNumber;
         this.patient = patient;
-    }
-
-    public ElectronicHealthRecord(){
-        this.listOfPastAdmissions = List.of();
-        this.listOfSubsidies = List.of();
     }
 }

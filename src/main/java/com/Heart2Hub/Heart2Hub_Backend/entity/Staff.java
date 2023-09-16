@@ -26,6 +26,7 @@ public class Staff implements UserDetails {
   private Long staffId;
   @NotNull
   @Size(min = 6)
+  @Column(unique = true)
   private String username;
   @NotNull
   @Column(unique = true)
@@ -44,7 +45,7 @@ public class Staff implements UserDetails {
 
   @NotNull
   @Enumerated(EnumType.STRING)
-  private RoleEnum roleEnum;
+  private StaffRoleEnum staffRoleEnum;
 
   @JsonBackReference
   @OneToMany(fetch = FetchType.EAGER, mappedBy = "staff")
@@ -69,29 +70,37 @@ public class Staff implements UserDetails {
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private List<ShiftPreference> listOfShiftPreferences;
 
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private List<Invitation> listOfInvitations;
+
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private List<Post> listOfPosts;
+
   public Staff() {
     this.listOfLeaves = new ArrayList<Leave>();;
     this.listOfManagedLeaves = new ArrayList<Leave>();
     this.listOfShifts = List.of();
     this.listOfAssignedAppointments = List.of();
     this.listOfShiftPreferences = List.of();
+    this.listOfInvitations = List.of();
+    this.listOfPosts = List.of();
   }
 
   public Staff(String username, String password, String firstname, String lastname,
-      Long mobileNumber, RoleEnum roleEnum) {
+      Long mobileNumber, StaffRoleEnum staffRoleEnum) {
     this();
     this.username = username;
     this.password = password;
     this.firstname = firstname;
     this.lastname = lastname;
     this.mobileNumber = mobileNumber;
-    this.roleEnum = roleEnum;
+    this.staffRoleEnum = staffRoleEnum;
     this.leaveBalance = new LeaveBalance();
   }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of(new SimpleGrantedAuthority(roleEnum.toString()));
+    return List.of(new SimpleGrantedAuthority(staffRoleEnum.toString()));
   }
 
   @Override

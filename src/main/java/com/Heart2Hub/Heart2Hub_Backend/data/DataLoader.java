@@ -3,7 +3,6 @@ package com.Heart2Hub.Heart2Hub_Backend.data;
 import com.Heart2Hub.Heart2Hub_Backend.Heart2HubBackendApplication;
 import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.LeaveTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.service.LeaveService;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
@@ -52,10 +51,10 @@ public class DataLoader implements CommandLineRunner {
   }
 
   private void createStaffData() {
-    Staff staff1 =  staffService.createStaff("staff1", "password1", "staff", "1", 90000001l, RoleEnum.ADMIN);
-    Staff staff2 = staffService.createStaff("staff2", "password2", "staff", "2", 90000002l, RoleEnum.DOCTOR);
-    Staff staff3 = staffService.createHeadStaff("staff3", "password3", "staff", "3", 90000002l, RoleEnum.ADMIN);
-    Staff staff4 = staffService.createHeadStaff("staff4", "password4", "staff", "4", 90000002l, RoleEnum.ADMIN);
+    Staff staff1 =  staffService.createStaff("staff1", "password1", "staff", "1", 90000001l, StaffRoleEnum.ADMIN);
+    Staff staff2 = staffService.createStaff("staff2", "password2", "staff", "2", 90000002l, StaffRoleEnum.DOCTOR);
+    Staff staff3 = staffService.createHeadStaff("staff3", "password3", "staff", "3", 90000002l, StaffRoleEnum.ADMIN);
+    Staff staff4 = staffService.createHeadStaff("staff4", "password4", "staff", "4", 90000002l, StaffRoleEnum.ADMIN);
 
     leaveService.createLeave(LocalDateTime.now().plusMonths(2),
             LocalDateTime.now().plusMonths(2).plusDays(3), LeaveTypeEnum.ANNUAL, staff1, staff2

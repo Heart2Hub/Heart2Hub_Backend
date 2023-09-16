@@ -1,20 +1,12 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.util.Collection;
 import java.util.List;
 import lombok.Data;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Data
@@ -46,6 +38,11 @@ public class Patient {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "patient_id")
     private List<TransactionItem> listOfTransactionItem;
+
+    @JsonBackReference
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "patient_id")
+    private List<Appointment> listOfCurrentAppointments;
 
     @NotNull
     @JsonBackReference

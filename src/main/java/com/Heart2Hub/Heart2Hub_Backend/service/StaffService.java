@@ -44,7 +44,7 @@ public class StaffService {
   public Optional<Staff> findById(Long id) { return staffRepository.findById(id); }
 
   public Staff createStaff(String username, String password, String firstname, String lastname,
-                           Long mobileNumber, RoleEnum roleEnum) {
+                           Long mobileNumber, StaffRoleEnum roleEnum) {
     Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, roleEnum);
     try {
       LeaveBalance balance = new LeaveBalance();
