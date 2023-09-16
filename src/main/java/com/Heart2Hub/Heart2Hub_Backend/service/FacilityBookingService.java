@@ -44,5 +44,20 @@ public class FacilityBookingService {
     return facilityBookingRepository.save(booking);
   }
 
+  public void updateBooking(Long facilityBookingId, Long facilityId) {
+    System.out.println("here1");
+    FacilityBooking facilityBooking = facilityBookingRepository.findById(facilityBookingId).get();
+    System.out.println("here2");
+    Facility oldFacility = facilityBooking.getFacility();
+    System.out.println("here3");
+    oldFacility.getListOfFacilityBookings().remove(facilityBooking);
+    System.out.println("here4");
+    Facility facility = facilityRepository.findById(facilityId).get();
+    System.out.println("here5");
+    facility.getListOfFacilityBookings().add(facilityBooking);
+    System.out.println("here6");
+    facilityBooking.setFacility(facility);
+  }
+
 
 }

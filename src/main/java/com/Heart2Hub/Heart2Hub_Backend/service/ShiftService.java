@@ -184,7 +184,7 @@ public class ShiftService {
     }
   }
 
-  public Shift updateShift(Long shiftId, Shift updatedShift) throws ShiftNotFoundException, UnableToCreateShiftException {
+  public Shift updateShift(Long shiftId, Long facilityId, Shift updatedShift) throws ShiftNotFoundException, UnableToCreateShiftException {
     if (!isLoggedInUserHead()) {
       throw new UnableToCreateShiftException("Staff cannot update shifts as he/she is not a head.");
     }
@@ -195,6 +195,9 @@ public class ShiftService {
         if (updatedShift.getStartTime() != null) shift.setStartTime(updatedShift.getStartTime());
         if (updatedShift.getEndTime() != null) shift.setEndTime(updatedShift.getEndTime());
         if (updatedShift.getComments() != null) shift.setComments(updatedShift.getComments());
+        if (shift.getFacilityBooking().getFacility().getFacilityId() != facilityId) {
+          facilityBookingService.updateBooking(shift.getFacilityBooking().getFacilityBookingId(), facilityId);
+        }
         if (checkShiftConditions(shift, shift.getStaff())) {
           shiftRepository.save(shift);
         } else {

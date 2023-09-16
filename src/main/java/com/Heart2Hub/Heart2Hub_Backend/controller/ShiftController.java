@@ -59,10 +59,10 @@ public class ShiftController {
     }
   }
 
-  @PutMapping(value="/updateShift/{shiftId}", consumes={"application/json"}, produces={"application/json"})
-  public ResponseEntity updateShift(@PathVariable Long shiftId, @RequestBody Shift shift) {
+  @PutMapping(value="/updateShift/{shiftId}/{facilityId}", consumes={"application/json"}, produces={"application/json"})
+  public ResponseEntity updateShift(@PathVariable Long shiftId, @PathVariable Long facilityId, @RequestBody Shift shift) {
     try {
-      return ResponseEntity.ok(shiftService.updateShift(shiftId, shift));
+      return ResponseEntity.ok(shiftService.updateShift(shiftId, facilityId, shift));
     } catch (UnableToCreateShiftException | ShiftNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
