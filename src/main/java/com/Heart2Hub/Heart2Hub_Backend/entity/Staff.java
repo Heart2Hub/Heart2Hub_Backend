@@ -1,6 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;

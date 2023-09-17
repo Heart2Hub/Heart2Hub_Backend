@@ -1,19 +1,22 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.Leave;
+import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ApprovalStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.LeaveTypeEnum;
-import com.Heart2Hub.Heart2Hub_Backend.exception.LeaveNotPendingException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.*;
+import com.Heart2Hub.Heart2Hub_Backend.repository.LeaveBalanceRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.LeaveRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,10 +30,14 @@ public class LeaveService {
     @Autowired
     private final StaffRepository staffRepository;
 
+    @Autowired
+    private final LeaveBalanceRepository leaveBalanceRepository;
 
-    public LeaveService(LeaveRepository leaveRepository, StaffRepository staffRepository) {
+
+    public LeaveService(LeaveRepository leaveRepository, StaffRepository staffRepository, LeaveBalanceRepository leaveBalanceRepository) {
         this.leaveRepository = leaveRepository;
         this.staffRepository = staffRepository;
+        this.leaveBalanceRepository = leaveBalanceRepository;
     }
 
     //Need to edit to make sure Managed and List of Leaves
@@ -38,15 +45,9 @@ public class LeaveService {
         return leaveRepository.findByHeadStaff(staff);
     }
 
-//    public List<ApprovalStatusEnum> retrieveApprovalStatusEnum() {
-//        return Arrays.asList(ApprovalStatusEnum.PENDING, ApprovalStatusEnum.APPROVED,ApprovalStatusEnum.REJECTED);
-//    }
-//
-//    public List<LeaveTypeEnum> retrieveLeaveTypeEnum() {
-//        return Arrays.asList(LeaveTypeEnum.ANNUAL, LeaveTypeEnum.SICK, LeaveTypeEnum.PARENTAL);
-//    }
-
-    public Optional<Leave> findById(Long id) { return leaveRepository.findById(id); }
+    public Optional<Leave> findById(Long id) {
+        return leaveRepository.findById(id);
+    }
 
     //Only able to update if Leave has a Pending State
     public void updateLeaveDate(Leave leave) {
@@ -66,62 +67,75 @@ public class LeaveService {
 
     }
 
-    public Leave createLeave(LocalDateTime startDate, LocalDateTime endDate, LeaveTypeEnum leaveTypeEnum, Staff staff, Staff headStaff) {
+    public Leave createLeave(LocalDateTime startDate, LocalDateTime endDate, LeaveTypeEnum leaveTypeEnum, Staff staff, Staff headStaff, String comments) {
         LocalDateTime currentDate = LocalDateTime.now();
         LocalDateTime maxDate = currentDate.plusMonths(6);
         LocalDateTime minDate = currentDate.plusMonths(1);
 
-//        List<Leave> staffLeaves = staff.getListOfLeaves();
-//        Boolean dateOverlap = false;
-//
-//        //If dates overlap, then set to true
-//        if (staffLeaves != null) {
-//            for (int i = 0; i < staffLeaves.size(); i++) {
-//                Leave l = staffLeaves.get(i);
-//                LocalDateTime start = l.getStartDate();
-//                LocalDateTime end = l.getEndDate();
-//
-//                if (start.isBefore(endDate) && end.isAfter(startDate)) {
-//                    dateOverlap = true;
-//                    break;
-//                }
-//            }
-//        }
-
-        //If start date > 1 month from now, end date < 6 months from now, and no overlapping dates: Create a new Leave
+        // Check if the startDate and endDate are within the allowed date ranges
         if (startDate.isAfter(minDate) && endDate.isBefore(maxDate)) {
-            Leave newLeave = new Leave(startDate, endDate, leaveTypeEnum);
-            newLeave.setApprovalStatusEnum(ApprovalStatusEnum.PENDING);
+            // Check if the startDate is before the endDate
+            if (startDate.isBefore(endDate)) {
+                // Check for overlapping leaves
+                List<Leave> staffLeaves = leaveRepository.findByStaff(staff);
 
-            Staff assignedStaff = staffRepository.findById(staff.getStaffId()).get();
-            Staff assignedHeadStaff = staffRepository.findById(headStaff.getStaffId()).get();
+                // Check for overlaps in the fetched leaves
+                boolean hasOverlap = staffLeaves.stream()
+                        .anyMatch(leave -> (startDate.isBefore(leave.getEndDate()) || startDate.isEqual(leave.getEndDate())) &&
+                                (endDate.isAfter(leave.getStartDate()) || endDate.isEqual(leave.getStartDate())));
 
-            newLeave.setStaff(assignedStaff);
-            newLeave.setHeadStaff(assignedHeadStaff);
+                if (!hasOverlap) {
 
-            assignedStaff.getListOfLeaves().add(newLeave);
-            assignedHeadStaff.getListOfManagedLeaves().add(newLeave);
+                    Leave newLeave = new Leave(startDate, endDate, leaveTypeEnum);
+                    newLeave.setApprovalStatusEnum(ApprovalStatusEnum.PENDING);
 
+                    Staff assignedStaff = staffRepository.findById(staff.getStaffId()).get();
+                    Staff assignedHeadStaff = staffRepository.findById(headStaff.getStaffId()).get();
+                    LeaveBalance lb = leaveBalanceRepository.findById(assignedStaff.getLeaveBalance().getLeaveBalanceId()).get();
 
+                    Duration duration = Duration.between(startDate, endDate);
+                    int days = (int) duration.toDays();
 
-//            List<Leave> staffLeave = staff.getListOfLeaves();
-//            List<Leave> newStaffLeave = new ArrayList<>(staffLeave);
-//            newStaffLeave.add(newLeave);
-//            staff.setListOfLeaves(newStaffLeave);
-//
-//            //headStaff.getListOfManagedLeaves().add(newLeave);
-//            List<Leave> headStaffLeave = headStaff.getListOfManagedLeaves();
-//            List<Leave> newHeadStaffLeave = new ArrayList<>(headStaffLeave);
-//            newHeadStaffLeave.add(newLeave);
-//            headStaff.setListOfManagedLeaves(newHeadStaffLeave);
+                    if (leaveTypeEnum == LeaveTypeEnum.ANNUAL) {
+                        if (days <= lb.getAnnualLeave()) {
+                        } else {
+                            throw new InsufficientLeaveBalanceException("Insufficient annual leave balance.");
+                        }
 
-            staffRepository.save(assignedStaff);
-            staffRepository.save(assignedHeadStaff);
-            leaveRepository.save(newLeave);
-            return newLeave;
+                    } else if (leaveTypeEnum == LeaveTypeEnum.SICK) {
+                        if (days <= lb.getSickLeave()) {
+
+                        } else {
+                            throw new InsufficientLeaveBalanceException("Insufficient sick leave balance.");
+                        }
+                    } else {
+                        if (days <= lb.getParentalLeave()) {
+                        } else {
+                            throw new InsufficientLeaveBalanceException("Insufficient parental leave balance.");
+                        }
+                    }
+
+                    newLeave.setStaff(assignedStaff);
+                    newLeave.setHeadStaff(assignedHeadStaff);
+                    newLeave.setComments(comments);
+
+                    assignedStaff.getListOfLeaves().add(newLeave);
+                    assignedHeadStaff.getListOfManagedLeaves().add(newLeave);
+
+                    staffRepository.save(assignedStaff);
+                    staffRepository.save(assignedHeadStaff);
+                    leaveRepository.save(newLeave);
+                    return newLeave;
+                } else {
+                    throw new LeaveOverlapException("Leave overlaps with existing leaves.");
+                }
+            } else {
+                throw new InvalidDateRangeException("End date must be later than start date.");
+            }
         } else {
-            throw new LeaveNotPendingException();
+            throw new InvalidDateRangeException("Start date and end date must be within allowed date ranges.");
         }
+
     }
 
     //For Head staff to approve
@@ -152,4 +166,97 @@ public class LeaveService {
             throw new LeaveNotPendingException(ex.getMessage());
         }
     }
+
+    public void deleteLeave(long leaveId) {
+        Leave l = leaveRepository.findById(leaveId).get();
+        Staff staff = staffRepository.findById(l.getStaff().getStaffId()).get();
+        Staff headStaff = staffRepository.findById(l.getHeadStaff().getStaffId()).get();
+        LeaveBalance lb = leaveBalanceRepository.findById(staff.getLeaveBalance().getLeaveBalanceId()).get();
+
+        Duration duration = Duration.between(l.getStartDate(), l.getEndDate());
+        Integer days = (int) duration.toDays();
+        if (l.getLeaveTypeEnum() == LeaveTypeEnum.ANNUAL) {
+            lb.setAnnualLeave(lb.getAnnualLeave() + days);
+        } else if (l.getLeaveTypeEnum() == LeaveTypeEnum.SICK) {
+            lb.setSickLeave(lb.getSickLeave() + days);
+        } else {
+            lb.setParentalLeave(lb.getParentalLeave() + days);
+        }
+
+        staff.getListOfLeaves().remove(l);
+        headStaff.getListOfManagedLeaves().remove(l);
+
+        leaveRepository.delete(l);
+        staffRepository.save(staff);
+        staffRepository.save(headStaff);
+        leaveBalanceRepository.save(lb);
+
+    }
+
+    public Leave updateLeave(
+            Long leaveId,
+            LocalDateTime newStartDate,
+            LocalDateTime newEndDate,
+            String newComments,
+            Long staffId) {
+
+        Optional<Leave> leaveOptional = leaveRepository.findById(leaveId);
+
+        if (leaveOptional.isPresent()) {
+            Leave leaveToUpdate = leaveOptional.get();
+
+            LocalDateTime currentDate = LocalDateTime.now();
+            LocalDateTime maxDate = currentDate.plusMonths(6);
+            LocalDateTime minDate = currentDate.plusMonths(1);
+
+            if (newStartDate.isAfter(minDate) && newEndDate.isBefore(maxDate)) {
+                if (newStartDate.isBefore(newEndDate)) {
+                    List<Leave> staffLeaves = staffRepository.findById(staffId).get().getListOfLeaves();
+
+                    // Check for overlaps in the fetched leaves, excluding the leave being updated
+                    boolean hasOverlap = staffLeaves.stream()
+                            .filter(leave -> !leave.equals(leaveToUpdate))
+                            .anyMatch(leave -> (newStartDate.isBefore(leave.getEndDate()) || newStartDate.isEqual(leave.getEndDate())) &&
+                                    (newEndDate.isAfter(leave.getStartDate()) || newEndDate.isEqual(leave.getStartDate())));
+
+                    if (!hasOverlap) {
+
+                        Duration duration1 = Duration.between(leaveToUpdate.getStartDate(), leaveToUpdate.getEndDate());
+                        Integer plusDays = (int) duration1.toDays();
+
+                        Duration duration2 = Duration.between(newStartDate, newEndDate);
+                        Integer minusDays = (int) duration2.toDays();
+
+                        LeaveBalance lb = staffRepository.findById(staffId).get().getLeaveBalance();
+
+                        if (leaveToUpdate.getLeaveTypeEnum() == LeaveTypeEnum.ANNUAL) {
+                            lb.setAnnualLeave(lb.getAnnualLeave() - minusDays + plusDays);
+                        } else if (leaveToUpdate.getLeaveTypeEnum() == LeaveTypeEnum.SICK) {
+                            lb.setSickLeave(lb.getSickLeave() - minusDays + plusDays);
+                        } else {
+                            lb.setParentalLeave(lb.getParentalLeave() - minusDays + plusDays);
+                        }
+
+                        leaveToUpdate.setStartDate(newStartDate);
+                        leaveToUpdate.setEndDate(newEndDate);
+                        leaveToUpdate.setComments(newComments);
+
+                        leaveRepository.save(leaveToUpdate);
+                        leaveBalanceRepository.save(lb);
+
+                        return leaveToUpdate;
+                    } else {
+                        throw new LeaveOverlapException("Leave overlaps with existing leaves.");
+                    }
+                } else {
+                    throw new InvalidDateRangeException("End date must be later than start date.");
+                }
+            } else {
+                throw new InvalidDateRangeException("Start date and end date must be within allowed date ranges.");
+            }
+        } else {
+            throw new LeaveNotFoundException("Leave with ID " + leaveId + " not found.");
+        }
+    }
 }
+

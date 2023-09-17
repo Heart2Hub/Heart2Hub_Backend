@@ -5,6 +5,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ApprovalStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.LeaveTypeEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.InvalidDateRangeException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.LeaveRepository;
 import com.Heart2Hub.Heart2Hub_Backend.service.LeaveBalanceService;
 import com.Heart2Hub.Heart2Hub_Backend.service.LeaveService;
@@ -16,12 +17,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/leave")
 @RequiredArgsConstructor
 public class LeaveController {
 
@@ -31,15 +34,15 @@ public class LeaveController {
     private final StaffService staffService;
 
     //As a staff, I can check my leave Balance
-    @GetMapping("/leaveBalance/{staffid}")
-    public ResponseEntity<LeaveBalance> getLeaveBalance (@PathVariable("staffid") long staffid) {
+    @GetMapping("/getLeaveBalance/{staffid}")
+    public ResponseEntity<LeaveBalance> getLeaveBalance(@PathVariable("staffid") long staffid) {
         Optional<Staff> staff = staffService.findById(staffid);
         return ResponseEntity.ok(staff.get().getLeaveBalance());
 
     }
 
     //As a staff, I can view my upcoming leaves
-    @GetMapping("/listLeave/{staffid}")
+    @GetMapping("/getAllStaffLeaves/{staffid}")
     public ResponseEntity<List<Leave>> getAllStaffLeaves(@PathVariable("staffid") long staffid) {
         Optional<Staff> staff = staffService.findById(staffid);
 
@@ -60,7 +63,7 @@ public class LeaveController {
 //    }
 
     @GetMapping("/getLeaveTypeEnumList")
-    public ResponseEntity<LeaveTypeEnum[]> getAllLeaveTypList() {
+    public ResponseEntity<LeaveTypeEnum[]> getAllLeaveTypeEnumList() {
         LeaveTypeEnum[] list = LeaveTypeEnum.values();
         return ResponseEntity.ok(list);
     }
@@ -126,52 +129,6 @@ public class LeaveController {
         }
     }
 
-//    As as staff, I can create a Leave
-//    @PostMapping("/createLeave")
-//    public ResponseEntity<Leave> createLeave(
-//            @RequestParam("startDate") LocalDateTime startDate,
-//            @RequestParam("endDate") LocalDateTime endDate,
-//            @RequestParam("leaveTypeEnum") LeaveTypeEnum leaveTypeEnum,
-//            @RequestBody Staff staff,
-//            @RequestBody Staff headStaff) {
-//        Optional<LeaveBalance> leaveBalance = leaveBalanceService.getLeaveBalanceById(staff.getLeaveBalance().getLeaveBalanceId());
-//        Leave l;
-//
-//        if (leaveBalance.isPresent()) {
-//            LeaveBalance lb = leaveBalance.get();
-//            Duration duration = Duration.between(startDate, endDate);
-//            Integer days = (int) duration.toDays();
-//
-//            if (leaveTypeEnum == LeaveTypeEnum.ANNUAL) {
-//                if (days <= lb.getAnnualLeave()) {
-//                    l = leaveService.createLeave(startDate,endDate,leaveTypeEnum,staff,headStaff);
-//                    lb.setAnnualLeave(lb.getAnnualLeave() - days);
-//                } else {
-//                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//                }
-//
-//            } else if (leaveTypeEnum == LeaveTypeEnum.SICK) {
-//                if (days <= lb.getSickLeave()) {
-//                    l = leaveService.createLeave(startDate,endDate,leaveTypeEnum,staff,headStaff);
-//                    lb.setSickLeave(lb.getSickLeave() - days);
-//                } else {
-//                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//                }
-//            } else {
-//                if (days <= lb.getParentalLeave()) {
-//                    l = leaveService.createLeave(startDate,endDate,leaveTypeEnum,staff,headStaff);
-//                    lb.setParentalLeave(lb.getParentalLeave() - days);
-//                } else {
-//                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//                }
-//            }
-//            leaveBalanceService.updateLeaveBalance(lb);
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//
-//        return ResponseEntity.ok(l);
-//    }
 
     //As as staff, I can create a Leave
     @PostMapping("/createLeave")
@@ -186,8 +143,11 @@ public class LeaveController {
         Staff staff = staffService.findById(Long.parseLong(requestBody.get("staffId").toString())).get();
         Staff headStaff = staffService.findById(Long.parseLong(requestBody.get("selectedStaff").toString())).get();
 
+        String comments = (String) requestBody.get("comments").toString();
+
         Optional<LeaveBalance> leaveBalance = leaveBalanceService.getLeaveBalanceById(staff.getLeaveBalance().getLeaveBalanceId());
-        Leave l;
+        Leave l = new Leave();
+
 
         if (leaveBalance.isPresent()) {
             LeaveBalance lb = leaveBalance.get();
@@ -195,34 +155,58 @@ public class LeaveController {
             Integer days = (int) duration.toDays();
 
             if (leaveTypeEnum == LeaveTypeEnum.ANNUAL) {
-                if (days <= lb.getAnnualLeave()) {
-                    l = leaveService.createLeave(startDate,endDate,leaveTypeEnum,staff,headStaff);
-                    lb.setAnnualLeave(lb.getAnnualLeave() - days);
-                } else {
-                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-                }
+                l = leaveService.createLeave(startDate, endDate, leaveTypeEnum, staff, headStaff, comments);
+                lb.setAnnualLeave(lb.getAnnualLeave() - days);
+
 
             } else if (leaveTypeEnum == LeaveTypeEnum.SICK) {
-                if (days <= lb.getSickLeave()) {
-                    l = leaveService.createLeave(startDate,endDate,leaveTypeEnum,staff,headStaff);
-                    lb.setSickLeave(lb.getSickLeave() - days);
-                } else {
-                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-                }
+                l = leaveService.createLeave(startDate, endDate, leaveTypeEnum, staff, headStaff, comments);
+                lb.setSickLeave(lb.getSickLeave() - days);
+
             } else {
-                if (days <= lb.getParentalLeave()) {
-                    l = leaveService.createLeave(startDate,endDate,leaveTypeEnum,staff,headStaff);
-                    lb.setParentalLeave(lb.getParentalLeave() - days);
-                } else {
-                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-                }
+//                if (days <= lb.getParentalLeave()) {
+                l = leaveService.createLeave(startDate, endDate, leaveTypeEnum, staff, headStaff, comments);
+                lb.setParentalLeave(lb.getParentalLeave() - days);
+//                } else {
+//                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//                }
             }
             leaveBalanceService.updateLeaveBalance(lb);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         return ResponseEntity.ok(l);
     }
 
+    @DeleteMapping("/deleteLeave/{leaveId}")
+    public ResponseEntity<String> deleteLeave(@PathVariable Long leaveId) {
+        try {
+            leaveService.deleteLeave(leaveId);
+
+            return ResponseEntity.ok("Leave record deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete leave record");
+        }
+    }
+
+    @PutMapping("/updateLeave/{leaveId}/{staffId}")
+    public ResponseEntity<Leave> updateLeave(
+            @PathVariable Long leaveId,
+            @PathVariable Long staffId,
+            @RequestBody Map<String, Object> requestBody) {
+
+
+        try {
+            LocalDateTime newStartDate = LocalDateTime.of(LocalDate.parse(requestBody.get("startDate").toString()), LocalTime.MIDNIGHT);
+            LocalDateTime newEndDate = LocalDateTime.of(LocalDate.parse(requestBody.get("endDate").toString()), LocalTime.MIDNIGHT);
+            String newComments = requestBody.get("comments").toString();
+
+            Leave updatedLeave = leaveService.updateLeave(leaveId, newStartDate, newEndDate, newComments, staffId);
+            return ResponseEntity.ok(updatedLeave);
+        } catch (Exception ex) {
+
+            throw new InvalidDateRangeException("End date must be later than start date.");
+
+        }
+
+    }
 }
