@@ -131,6 +131,13 @@ public class LeaveService {
         try {
             Leave l = optionalLeave.get();
             l.setApprovalStatusEnum(ApprovalStatusEnum.APPROVED);
+            if (l.getLeaveTypeEnum().equals(LeaveTypeEnum.ANNUAL)) {
+                l.getStaff().getLeaveBalance().setAnnualLeave(l.getStaff().getLeaveBalance().getAnnualLeave()-1);
+            } else if (l.getLeaveTypeEnum().equals(LeaveTypeEnum.SICK)) {
+                l.getStaff().getLeaveBalance().setSickLeave(l.getStaff().getLeaveBalance().getSickLeave()-1);
+            } else if (l.getLeaveTypeEnum().equals(LeaveTypeEnum.PARENTAL)) {
+                l.getStaff().getLeaveBalance().setParentalLeave(l.getStaff().getLeaveBalance().getParentalLeave()-1);
+            }
             leaveRepository.save(l);
 
         } catch (Exception ex) {
