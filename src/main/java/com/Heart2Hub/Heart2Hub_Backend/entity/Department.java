@@ -2,11 +2,13 @@ package com.Heart2Hub.Heart2Hub_Backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,17 +24,12 @@ public class Department {
     @NotNull
     private String departmentName;
 
-    @JsonBackReference
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "department")
-    private List<SubDepartment> listOfSubDepartments;
-
     @JsonIgnore
     @OneToMany(mappedBy = "department")
-    private List<Staff> listOfStaff;
+    private List<SubDepartment> listOfSubDepartments;
 
     public Department() {
-        this.listOfSubDepartments = List.of();
-        this.listOfStaff = List.of();
+        this.listOfSubDepartments = new ArrayList<>();
     }
 
     public Department(String departmentName) {

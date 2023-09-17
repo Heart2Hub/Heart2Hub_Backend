@@ -5,6 +5,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.service.DepartmentService;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
+import com.Heart2Hub.Heart2Hub_Backend.service.SubDepartmentService;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.CommandLineRunner;
@@ -19,10 +20,12 @@ public class DataLoader implements CommandLineRunner {
 
   private final StaffService staffService;
   private final DepartmentService departmentService;
+  private final SubDepartmentService subDepartmentService;
 
-  public DataLoader(StaffService staffService, DepartmentService departmentService) {
+  public DataLoader(StaffService staffService, DepartmentService departmentService, SubDepartmentService subDepartmentService) {
     this.staffService = staffService;
     this.departmentService = departmentService;
+    this.subDepartmentService = subDepartmentService;
   }
 
   @Override
@@ -37,6 +40,7 @@ public class DataLoader implements CommandLineRunner {
 
     //code starts here
     createDepartmentData();
+    createSubDepartmentData();
     createStaffData();
 
     //code ends here
@@ -64,9 +68,16 @@ public class DataLoader implements CommandLineRunner {
     departmentService.createDepartment("Urology");
   }
 
+  private void createSubDepartmentData() {
+    subDepartmentService.createSubDepartment("Cardio Clinic A", "Cardiology");
+    subDepartmentService.createSubDepartment("Derma Clinic A", "Dermatology");
+  }
+
   private void createStaffData() {
-    Staff superAdmin = staffService.createStaff("elginchan", "password", "Elgin", "Chan", 90000001l, StaffRoleEnum.ADMIN, "Cardiology");
-    superAdmin.setIsHead(true);
+    Staff superAdmin = new Staff("elginchan", "password", "Elgin", "Chan", 90000000l, StaffRoleEnum.valueOf("ADMIN"));
+    Staff doctor = new Staff("doctortest", "password", "Elgin", "Chan", 90000001l, StaffRoleEnum.valueOf("DOCTOR"));
+    staffService.createStaff(superAdmin, "Cardio Clinic A");
+    staffService.createStaff(doctor, "Cardio Clinic A");
   }
 
 }
