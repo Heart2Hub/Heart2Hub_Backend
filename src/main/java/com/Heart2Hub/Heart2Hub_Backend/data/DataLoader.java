@@ -74,8 +74,8 @@ public class DataLoader implements CommandLineRunner {
   }
 
   private void createStaffData() {
-    Staff superAdmin = new Staff("elginchan", "password", "Elgin", "Chan", 90000000l, StaffRoleEnum.valueOf("ADMIN"));
-    Staff doctor = new Staff("doctortest", "password", "Elgin", "Chan", 90000001l, StaffRoleEnum.valueOf("DOCTOR"));
+    Staff superAdmin = new Staff("elginchan", "password", "Elgin", "Chan", 90000000l, StaffRoleEnum.valueOf("ADMIN"), true);
+    Staff doctor = new Staff("doctortest", "password", "Elgin", "Chan", 90000001l, StaffRoleEnum.valueOf("DOCTOR"), false);
     staffService.createStaff(superAdmin, "Cardio Clinic A");
     staffService.createStaff(doctor, "Cardio Clinic A");
   }

@@ -53,6 +53,16 @@ public class StaffController {
       return ResponseEntity.ok(staffService.createStaff(staff, subDepartmentName));
   }
 
+  @PutMapping(value="/updateStaff/{subDepartmentName}", consumes={"application/json"}, produces={"application/json"})
+  public ResponseEntity<Staff> updateStaff(@PathVariable String subDepartmentName, @RequestBody Staff staff) {
+    return ResponseEntity.ok(staffService.updateStaff(staff, subDepartmentName));
+  }
+
+  @PutMapping("/disableStaff/{username}")
+  public ResponseEntity<Staff> disableStaff(@PathVariable String username) {
+    return ResponseEntity.ok(staffService.disableStaff(username));
+  }
+
   @PostMapping("/staffLogin")
   public ResponseEntity<String> staffLogin(
       @RequestParam("username") String username,

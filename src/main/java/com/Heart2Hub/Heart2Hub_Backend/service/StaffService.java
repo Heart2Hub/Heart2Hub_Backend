@@ -84,7 +84,25 @@ public class StaffService {
       } catch (Exception ex) {
           throw new UnableToCreateStaffException("Username already exists");
       }
+  }
 
+  public Staff updateStaff(Staff updatedStaff, String subDepartmentName) {
+      String username = updatedStaff.getUsername();
+      Staff existingStaff = getStaffByUsername(username);
+      existingStaff.setMobileNumber(updatedStaff.getMobileNumber());
+      existingStaff.setIsHead(updatedStaff.getIsHead());
+      SubDepartment subDepartment = subDepartmentRepository.findBySubDepartmentName(subDepartmentName)
+              .orElseThrow(() -> new SubDepartmentNotFoundException("Sub-Department not found"));
+      existingStaff.setSubDepartment(subDepartment);
+      staffRepository.save(existingStaff);
+      return existingStaff;
+  }
+
+  public Staff disableStaff(String username) {
+      Staff existingStaff = getStaffByUsername(username);
+      existingStaff.setDisabled(true);
+      staffRepository.save(existingStaff);
+      return existingStaff;
   }
 
   //for authentication

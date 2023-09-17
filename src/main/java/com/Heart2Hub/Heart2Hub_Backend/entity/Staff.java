@@ -47,7 +47,7 @@ public class Staff implements UserDetails {
   private Long mobileNumber;
 
   @NotNull
-  private Boolean isHead = false;
+  private Boolean isHead;
 
   @NotNull
   @Enumerated(EnumType.STRING)
@@ -91,6 +91,9 @@ public class Staff implements UserDetails {
   @JoinColumn(name = "sub_department_id")
   private SubDepartment subDepartment;
 
+  @NotNull
+  private Boolean disabled = false;
+
   public Staff() {
     this.listOfLeaves = List.of();
     this.listOfManagedLeaves = List.of();
@@ -102,7 +105,7 @@ public class Staff implements UserDetails {
   }
 
   public Staff(String username, String password, String firstname, String lastname,
-      Long mobileNumber, StaffRoleEnum staffRoleEnum) {
+      Long mobileNumber, StaffRoleEnum staffRoleEnum, Boolean isHead) {
     this();
     this.username = username;
     this.password = password;
@@ -110,6 +113,7 @@ public class Staff implements UserDetails {
     this.lastname = lastname;
     this.mobileNumber = mobileNumber;
     this.staffRoleEnum = staffRoleEnum;
+    this.isHead = isHead;
   }
 
   @Override
