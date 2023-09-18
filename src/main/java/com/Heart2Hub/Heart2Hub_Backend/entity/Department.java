@@ -1,11 +1,13 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,18 +21,18 @@ public class Department {
 
     @Size(max = 100)
     @NotNull
-    private String departmentName;
+    private String name;
 
-    @JsonBackReference
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "department")
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "department")
     private List<SubDepartment> listOfSubDepartments;
 
     public Department() {
-        this.listOfSubDepartments = List.of();
+        this.listOfSubDepartments = new ArrayList<>();
     }
 
     public Department(String departmentName) {
         this();
-        this.departmentName = departmentName;
+        this.name = departmentName;
     }
 }
