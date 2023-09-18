@@ -44,7 +44,9 @@ public class SecurityConfig {
         .authorizeHttpRequests((authorizeHttpRequests) -> // 1
             authorizeHttpRequests
                 .requestMatchers("/staff/staffLogin").permitAll()
-                .requestMatchers("/staff/**").hasRole("ADMIN")
+                .requestMatchers("/staff/getStaffByUsername").permitAll()
+                .requestMatchers("/staff/changePassword").permitAll()
+                .requestMatchers("/staff/**").permitAll()
                 .anyRequest().authenticated() // 2
         )
         .sessionManagement((httpSecuritySessionManagementConfigurer -> //3

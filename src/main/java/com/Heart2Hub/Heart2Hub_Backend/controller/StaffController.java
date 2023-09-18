@@ -9,10 +9,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/staff")
@@ -71,10 +76,7 @@ public class StaffController {
       @RequestParam("username") String username,
       @RequestParam("password") String password) {
 
-    System.out.println(username);
-    System.out.println(password);
     String jwtToken = staffService.authenticateStaff(username,password);
-    System.out.println("working fine");
     return ResponseEntity.ok(jwtToken);
   }
 
@@ -102,6 +104,12 @@ public class StaffController {
   public ResponseEntity<List<Staff>> getStaffByRole(
           @RequestParam("role") String role) {
     return ResponseEntity.ok(staffService.getStaffByRole(role));
+  }
+
+  @PutMapping ("/changePassword")
+  public ResponseEntity<Boolean> changePassword(
+      @RequestParam("username") String username,@RequestParam("oldPassword") String oldPassword,@RequestParam("newPassword") String newPassword) {
+    return ResponseEntity.ok(staffService.changePassword(username,oldPassword,newPassword));
   }
 
 }
