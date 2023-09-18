@@ -2,7 +2,6 @@ package com.Heart2Hub.Heart2Hub_Backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -22,7 +21,7 @@ public class Department {
 
     @Size(max = 100)
     @NotNull
-    private String departmentName;
+    private String name;
 
     @JsonIgnore
     @OneToMany(mappedBy = "department")
@@ -32,8 +31,8 @@ public class Department {
         this.listOfSubDepartments = new ArrayList<>();
     }
 
-    public Department(String departmentName) {
+    public Department(String name) {
         this();
-        this.departmentName = departmentName;
+        this.name = name;
     }
 }

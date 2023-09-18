@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,24 +22,27 @@ public class SubDepartment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long subDepartmentId;
 
+    @NotNull
+    private String name;
+
     @Size(max = 300)
     @NotNull
-    private String subDepartmentName;
+    private String description;
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "subDepartment")
     private List<Facility> listOfFacilities;
 
-
     @ManyToOne
     private Department department;
 
     public SubDepartment() {
-        this.listOfFacilities = List.of();
+        this.listOfFacilities = new ArrayList<>();
     }
 
-    public SubDepartment(String subDepartmentName) {
+    public SubDepartment(String name, String description) {
         this();
-        this.subDepartmentName = subDepartmentName;
+        this.name = name;
+        this.description = description;
     }
 }

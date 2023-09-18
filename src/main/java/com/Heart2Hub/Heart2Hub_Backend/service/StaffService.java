@@ -7,6 +7,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.DepartmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.SubDepartmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateStaffException;
@@ -57,12 +58,12 @@ public class StaffService {
     return staffRepository.findByUsername(username);
   }
 
-//  public Staff createStaff(String username, String password, String firstname, String lastname,
-//                           Long mobileNumber, RoleEnum roleEnum, Boolean isHead) {
+//  public Staff createAdmin(String username, String password, String firstname, String lastname,
+//                           Long mobileNumber, StaffRoleEnum staffRoleEnum, Boolean isHead) {
 //    Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, roleEnum, isHead);
 //    try {
 //      LeaveBalance balance = new LeaveBalance();
-//      SubDepartment subDepartment = new SubDepartment("Clinic A");
+//      SubDepartment subDepartment = new SubDepartment("");
 //      newStaff.setLeaveBalance(balance);
 //      newStaff.setSubDepartment(subDepartment);
 //      staffRepository.save(newStaff);
@@ -72,11 +73,17 @@ public class StaffService {
 //    }
 //  }
 
+    public Staff createSuperAdmin(Staff superAdmin) {
+        String password = superAdmin.getPassword();
+        superAdmin.setPassword(passwordEncoder.encode(password));
+      staffRepository.save(superAdmin);
+      return superAdmin;
+    }
+
   public Staff createStaff(Staff newStaff, String subDepartmentName) {
       String password = newStaff.getPassword();
       newStaff.setPassword(passwordEncoder.encode(password));
-      SubDepartment subDepartment = subDepartmentRepository.findBySubDepartmentName(subDepartmentName)
-              .orElseThrow(() -> new SubDepartmentNotFoundException("Sub-Department not found"));
+      SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
       newStaff.setSubDepartment(subDepartment);
       try {
           staffRepository.save(newStaff);
@@ -91,8 +98,7 @@ public class StaffService {
       Staff existingStaff = getStaffByUsername(username);
       existingStaff.setMobileNumber(updatedStaff.getMobileNumber());
       existingStaff.setIsHead(updatedStaff.getIsHead());
-      SubDepartment subDepartment = subDepartmentRepository.findBySubDepartmentName(subDepartmentName)
-              .orElseThrow(() -> new SubDepartmentNotFoundException("Sub-Department not found"));
+      SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
       existingStaff.setSubDepartment(subDepartment);
       staffRepository.save(existingStaff);
       return existingStaff;

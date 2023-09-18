@@ -22,7 +22,7 @@ public class PrescriptionRecord {
     private String medicationName;
 
     @NotNull
-    private String medicationQuantity;
+    private Integer medicationQuantity;
 
     @NotNull
     private Integer dosage;
@@ -43,7 +43,7 @@ public class PrescriptionRecord {
     public PrescriptionRecord() {
     }
 
-    public PrescriptionRecord(LocalDateTime createdDate, String medicationName, String medicationQuantity, Integer dosage, String description, String comments, String prescribedBy, PrescriptionStatusEnum prescriptionStatusEnum) {
+    public PrescriptionRecord(LocalDateTime createdDate, String medicationName, Integer medicationQuantity, Integer dosage, String description, String comments, String prescribedBy, PrescriptionStatusEnum prescriptionStatusEnum) {
         this.createdDate = createdDate;
         this.medicationName = medicationName;
         this.medicationQuantity = medicationQuantity;

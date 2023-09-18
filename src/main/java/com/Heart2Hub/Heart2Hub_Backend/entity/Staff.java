@@ -47,7 +47,7 @@ public class Staff implements UserDetails {
   private Long mobileNumber;
 
   @NotNull
-  private Boolean isHead;
+  private Boolean isHead = false;
 
   @NotNull
   @Enumerated(EnumType.STRING)
@@ -86,7 +86,10 @@ public class Staff implements UserDetails {
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private List<Post> listOfPosts;
 
-  @NotNull
+  @JsonBackReference
+  @OneToOne(cascade = CascadeType.ALL, optional = true)
+  private ImageDocument profilePicture;
+
   @ManyToOne
   @JoinColumn(name = "sub_department_id")
   private SubDepartment subDepartment;
