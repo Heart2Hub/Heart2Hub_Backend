@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/staff")
 @RequiredArgsConstructor
@@ -69,7 +71,10 @@ public class StaffController {
       @RequestParam("username") String username,
       @RequestParam("password") String password) {
 
+    System.out.println(username);
+    System.out.println(password);
     String jwtToken = staffService.authenticateStaff(username,password);
+    System.out.println("working fine");
     return ResponseEntity.ok(jwtToken);
   }
 
@@ -84,6 +89,10 @@ public class StaffController {
     return ResponseEntity.ok(staffService.getStaffByUsername(username));
   }
 
+  @GetMapping("/getAllHeadStaff")
+  public ResponseEntity<List<Staff>> getAllHeadStaff() {
+    return ResponseEntity.ok(staffService.getAllHeadStaff().get());
+  }
   @GetMapping("/getStaffRoles")
   public ResponseEntity<List<String>> getStaffRoles() {
     return ResponseEntity.ok(staffService.getStaffRoles());

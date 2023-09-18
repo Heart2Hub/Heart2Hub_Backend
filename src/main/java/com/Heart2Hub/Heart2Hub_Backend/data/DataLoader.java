@@ -1,6 +1,12 @@
 package com.Heart2Hub.Heart2Hub_Backend.data;
 
 import com.Heart2Hub.Heart2Hub_Backend.Heart2HubBackendApplication;
+import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
+import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.LeaveTypeEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.service.LeaveService;
+import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.*;
 import com.Heart2Hub.Heart2Hub_Backend.service.*;
@@ -29,6 +35,8 @@ import java.util.List;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import java.time.LocalDateTime;
+
 @Component("loader")
 @Transactional
 public class DataLoader implements CommandLineRunner {
@@ -48,6 +56,7 @@ public class DataLoader implements CommandLineRunner {
   private final ProblemRecordService problemRecordService;
   private final MedicalHistoryRecordService medicalHistoryRecordService;
   private final TreatmentPlanRecordService treatmentPlanRecordService;
+  private final LeaveService leaveService;
 
     public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, FacilityBookingService facilityBookingService, AuthenticationManager authenticationManager, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService) {
         this.staffService = staffService;
@@ -65,7 +74,7 @@ public class DataLoader implements CommandLineRunner {
         this.treatmentPlanRecordService = treatmentPlanRecordService;
     }
 
-    @Override
+  @Override
   public void run(String... args) {
     if (staffService.countStaff() == 0) {
       loadData();
@@ -89,9 +98,8 @@ public class DataLoader implements CommandLineRunner {
     createDepartmentData();
     createSubDepartmentData();
     createStaffData();
-    createPatientData();
-    createFacilityData();
-    createShiftData();
+
+    //code ends here
 
     long endTime = System.currentTimeMillis();
     String message =
@@ -100,8 +108,8 @@ public class DataLoader implements CommandLineRunner {
   }
 
       private void createStaffData() {
-          staffService.createStaff(new Staff("staff2", "password2", "Tharman", "Shanmugaratnamtan", 90000002l, StaffRoleEnum.DOCTOR, true), "Heart Failure Clinic");
-          staffService.createStaff(new Staff("staff3", "password3", "Beow", "Tan", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy");
+          Staff staff2 = staffService.createStaff(new Staff("staff2", "password2", "Tharman", "Shanmugaratnamtan", 90000002l, StaffRoleEnum.DOCTOR, true), "Heart Failure Clinic");
+          Staff staff3 = staffService.createStaff(new Staff("staff3", "password3", "Beow", "Tan", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy");
           staffService.createStaff(new Staff("staff4", "password4", "Erling", "Haaland", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy");
           staffService.createStaff(new Staff("staff5", "password5", "Uncle", "Raymond", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy");
           staffService.createStaff(new Staff("staff6", "password6", "Kurt", "Tay", 90000001l, StaffRoleEnum.NURSE, true), "Interventional Cardiology");
@@ -110,6 +118,13 @@ public class DataLoader implements CommandLineRunner {
           staffService.createStaff(new Staff("staff9", "password9", "James", "Charles", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
           staffService.createStaff(new Staff("staff10", "password10", "Adolf", "-", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
 
+          leaveService.createLeave(LocalDateTime.now().plusMonths(2),
+                  LocalDateTime.now().plusMonths(2).plusDays(3), LeaveTypeEnum.ANNUAL, staff3, staff2, ""
+          );
+          leaveService.createLeave(LocalDateTime.now().plusMonths(3),
+                  LocalDateTime.now().plusMonths(3).plusDays(3), LeaveTypeEnum.SICK, staff3, staff2, ""
+          );
+      }
 
       }
 

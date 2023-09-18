@@ -15,4 +15,6 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
   Optional<Staff> findByUsername(String username);
   List<Staff> findByStaffRoleEnum(StaffRoleEnum staffRoleEnum);
 
+
+  Optional <List<Staff>> findAllByIsHead(Boolean b);
 }
