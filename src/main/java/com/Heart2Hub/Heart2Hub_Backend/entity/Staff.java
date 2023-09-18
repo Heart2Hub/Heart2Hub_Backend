@@ -1,6 +1,12 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
@@ -24,6 +30,7 @@ public class Staff implements UserDetails {
   private Long staffId;
   @NotNull
   @Size(min = 6)
+  @Column(unique = true)
   private String username;
   @NotNull
   @Column(unique = true)
@@ -42,7 +49,7 @@ public class Staff implements UserDetails {
 
   @NotNull
   @Enumerated(EnumType.STRING)
-  private RoleEnum roleEnum;
+  private StaffRoleEnum staffRoleEnum;
 
   @JsonBackReference
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
@@ -84,19 +91,19 @@ public class Staff implements UserDetails {
   }
 
   public Staff(String username, String password, String firstname, String lastname,
-      Long mobileNumber, RoleEnum roleEnum) {
+      Long mobileNumber, StaffRoleEnum staffRoleEnum) {
     this();
     this.username = username;
     this.password = password;
     this.firstname = firstname;
     this.lastname = lastname;
     this.mobileNumber = mobileNumber;
-    this.roleEnum = roleEnum;
+    this.staffRoleEnum = staffRoleEnum;
   }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of(new SimpleGrantedAuthority(roleEnum.toString()));
+    return List.of(new SimpleGrantedAuthority(staffRoleEnum.toString()));
   }
 
   @Override

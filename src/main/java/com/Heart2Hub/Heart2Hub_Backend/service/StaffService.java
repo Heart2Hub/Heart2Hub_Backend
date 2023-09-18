@@ -2,7 +2,7 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateStaffException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
@@ -39,7 +39,7 @@ public class StaffService {
   }
 
   public Staff createStaff(String username, String password, String firstname, String lastname,
-                           Long mobileNumber, RoleEnum roleEnum) {
+                           Long mobileNumber, StaffRoleEnum roleEnum) {
     Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, roleEnum);
     try {
       LeaveBalance balance = new LeaveBalance();
@@ -59,5 +59,10 @@ public class StaffService {
     Staff staff = staffRepository.findByUsername(username)
         .orElseThrow(() -> new StaffNotFoundException("Staff not found"));
     return jwtService.generateToken(staff);
+  }
+
+  public Staff getStaffByUsername(String username) {
+     Staff staff = staffRepository.findByUsername(username).orElseThrow(() -> new StaffNotFoundException("Username Does Not Exist."));
+     return staff;
   }
 }

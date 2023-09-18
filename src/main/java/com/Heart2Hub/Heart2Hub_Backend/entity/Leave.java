@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -51,6 +52,9 @@ public class Leave {
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     private Staff headStaff;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ImageDocument> listOfImageDocuments;
 
     public Leave() {
         this.approvalStatusEnum = ApprovalStatusEnum.PENDING;
