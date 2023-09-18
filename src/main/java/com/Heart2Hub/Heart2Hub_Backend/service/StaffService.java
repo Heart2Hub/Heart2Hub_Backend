@@ -7,6 +7,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.StaffDisabledException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffRoleNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToChangePasswordException;
@@ -118,6 +119,9 @@ public class StaffService {
     //at this point, user is authenticated
     Staff staff = staffRepository.findByUsername(username)
         .orElseThrow(() -> new StaffNotFoundException("Staff not found"));
+    if (staff.getDisabled()) {
+      throw new StaffDisabledException("Staff is disabled");
+    }
     return jwtService.generateToken(staff);
   }
 

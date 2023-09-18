@@ -53,4 +53,10 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
       UsernameNotFoundException ex) {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
   }
+
+  @ExceptionHandler(StaffDisabledException.class)
+  public ResponseEntity<Object> handleStaffDisabledException(
+      StaffDisabledException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+  }
 }
