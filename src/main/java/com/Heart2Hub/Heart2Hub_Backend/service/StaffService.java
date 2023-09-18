@@ -9,6 +9,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffRoleNotFoundException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToChangePasswordException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateStaffException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 
@@ -121,7 +122,9 @@ public class StaffService {
   }
 
   public Staff getStaffByUsername(String username) {
-    return staffRepository.findByUsername(username).get();
+    Staff staff = staffRepository.findByUsername(username)
+        .orElseThrow(() -> new StaffNotFoundException("Username Does Not Exist."));
+    return staff;
   }
 
   public List<Staff> getAllHeadStaff() {
@@ -151,6 +154,25 @@ public class StaffService {
       return staffRepository.findByStaffRoleEnum(staffRoleEnum);
     } catch (Exception ex) {
       throw new StaffRoleNotFoundException("Role " + role + " does not exist");
+    }
+  }
+
+  //reset password
+  public Boolean changePassword(String username, String oldPassword, String newPassword) throws UnableToChangePasswordException{
+    Staff staff = getStaffByUsername(username);
+    if (passwordEncoder.matches(oldPassword, staff.getPassword())) {
+      if (newPassword.length() > 6) {
+        try {
+          staff.setPassword(passwordEncoder.encode(newPassword));
+          return Boolean.TRUE;
+        } catch (Exception ex) {
+          throw new UnableToChangePasswordException("New Password already in use");
+        }
+      } else {
+        throw new UnableToChangePasswordException("New Password provided is too short");
+      }
+    } else {
+      throw new UnableToChangePasswordException("Old Password provided is Incorrect");
     }
   }
 }
