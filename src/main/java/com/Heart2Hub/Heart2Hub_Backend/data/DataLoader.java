@@ -58,10 +58,10 @@ public class DataLoader implements CommandLineRunner {
     Staff staff4 = staffService.createHeadStaff("staff4", "password4", "staff", "4", 90000002l, StaffRoleEnum.ADMIN);
 
     leaveService.createLeave(LocalDateTime.now().plusMonths(2),
-            LocalDateTime.now().plusMonths(2).plusDays(3), LeaveTypeEnum.ANNUAL, staff1, staff2, ""
+            LocalDateTime.now().plusMonths(2).plusDays(3), LeaveTypeEnum.ANNUAL, staff1, staff3, ""
             );
     leaveService.createLeave(LocalDateTime.now().plusMonths(3),
-            LocalDateTime.now().plusMonths(3).plusDays(3), LeaveTypeEnum.SICK, staff1, staff2, ""
+            LocalDateTime.now().plusMonths(3).plusDays(3), LeaveTypeEnum.SICK, staff1, staff3, ""
     );
   }
 

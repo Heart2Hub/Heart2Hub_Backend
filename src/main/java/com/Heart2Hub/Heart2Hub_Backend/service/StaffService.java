@@ -44,8 +44,8 @@ public class StaffService {
   public Optional<Staff> findById(Long id) { return staffRepository.findById(id); }
 
   public Staff createStaff(String username, String password, String firstname, String lastname,
-                           Long mobileNumber, StaffRoleEnum roleEnum) {
-    Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, roleEnum);
+                           Long mobileNumber, StaffRoleEnum staffRoleEnum) {
+    Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, staffRoleEnum);
     try {
       LeaveBalance balance = new LeaveBalance();
       newStaff.setLeaveBalance(balance);
@@ -57,8 +57,8 @@ public class StaffService {
   }
 
   public Staff createHeadStaff(String username, String password, String firstname, String lastname,
-                           Long mobileNumber, StaffRoleEnum roleEnum) {
-    Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, roleEnum);
+                           Long mobileNumber, StaffRoleEnum staffRoleEnum) {
+    Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, staffRoleEnum);
     try {
       newStaff.setIsHead(true);
       LeaveBalance balance = new LeaveBalance();

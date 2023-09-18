@@ -34,9 +34,9 @@ public class LeaveController {
     private final StaffService staffService;
 
     //As a staff, I can check my leave Balance
-    @GetMapping("/getLeaveBalance/{staffid}")
-    public ResponseEntity<LeaveBalance> getLeaveBalance(@PathVariable("staffid") long staffid) {
-        Optional<Staff> staff = staffService.findById(staffid);
+    @GetMapping("/getLeaveBalance")
+    public ResponseEntity<LeaveBalance> getLeaveBalance (@RequestParam("staffId") long staffId) {
+        Optional<Staff> staff = staffService.findById(staffId);
         return ResponseEntity.ok(staff.get().getLeaveBalance());
 
     }
@@ -50,9 +50,10 @@ public class LeaveController {
     }
 
     //As a Head Staff, I can view Leave applications of staff members under me
-    @GetMapping("/managedLeave/{staffid}")
-    public ResponseEntity<List<Leave>> getAllManagedLeaves(@PathVariable("staffid") long staffid) {
-        Optional<Staff> staff = staffService.findById(staffid);
+    @GetMapping("/getAllManagedLeaves")
+    public ResponseEntity<List<Leave>> getAllManagedLeaves(@RequestParam("staffId") long staffId) {
+        System.out.println("hello test");
+        Optional<Staff> staff = staffService.findById(staffId);
 
         return ResponseEntity.ok(leaveService.retrieveStaffManagedLeaves(staff.get()));
     }
@@ -83,9 +84,9 @@ public class LeaveController {
     }
 
     //As a Head Staff, I can approve a leave application of a staff member
-    @PutMapping("/leave/approveLeaveDate/{leaveid}")
-    public ResponseEntity<Leave> approveLeaveDate(@PathVariable long leaveid) {
-        Optional<Leave> leaveData = leaveService.findById(leaveid);
+    @PutMapping("/approveLeaveDate")
+    public ResponseEntity<Leave> approveLeaveDate(@RequestParam("leaveId") long leaveId) {
+        Optional<Leave> leaveData = leaveService.findById(leaveId);
 
         if (leaveData.isPresent()) {
             Leave l = leaveData.get();
@@ -98,9 +99,9 @@ public class LeaveController {
     }
 
     //As a Head Staff, I can approve a leave application of a staff member
-    @PutMapping("/leave/rejectLeaveDate/{leaveid}")
-    public ResponseEntity<Leave> rejectLeaveDate(@PathVariable long leaveid) {
-        Optional<Leave> leaveData = leaveService.findById(leaveid);
+    @PutMapping("/rejectLeaveDate")
+    public ResponseEntity<Leave> rejectLeaveDate(@RequestParam("leaveId") long leaveId) {
+        Optional<Leave> leaveData = leaveService.findById(leaveId);
         Optional<LeaveBalance> leaveBalance = leaveBalanceService.getLeaveBalanceById(leaveData.get().getStaff().getLeaveBalance().getLeaveBalanceId());
 
         if (leaveData.isPresent()) {
