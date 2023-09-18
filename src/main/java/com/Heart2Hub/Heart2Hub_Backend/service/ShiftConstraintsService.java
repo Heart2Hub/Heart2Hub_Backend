@@ -1,26 +1,14 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
-import com.Heart2Hub.Heart2Hub_Backend.entity.FacilityBooking;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Shift;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ShiftConstraints;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.*;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ShiftConstraintsRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.ShiftRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.management.relation.Role;
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -44,10 +32,10 @@ public class ShiftConstraintsService {
       ShiftConstraints shiftConstraints = new ShiftConstraints(newShiftConstraints.getStartTime(),
                                                                 newShiftConstraints.getEndTime(),
                                                                 newShiftConstraints.getMinPax(),
-                                                                newShiftConstraints.getRoleEnum());
-      List<ShiftConstraints> listOfShiftConstraints = shiftConstraintsRepository.findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndRoleEnumEquals(newShiftConstraints.getEndTime(), newShiftConstraints.getStartTime(), newShiftConstraints.getRoleEnum());
+                                                                newShiftConstraints.getStaffRoleEnum());
+      List<ShiftConstraints> listOfShiftConstraints = shiftConstraintsRepository.findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndStaffRoleEnumEquals(newShiftConstraints.getEndTime(), newShiftConstraints.getStartTime(), newShiftConstraints.getStaffRoleEnum());
       if (!listOfShiftConstraints.isEmpty()) {
-        throw new UnableToCreateShiftConstraintsException("There is an overlapping shift constraint with this time for role " + newShiftConstraints.getRoleEnum() + ".");
+        throw new UnableToCreateShiftConstraintsException("There is an overlapping shift constraint with this time for role " + newShiftConstraints.getStaffRoleEnum() + ".");
       }
       shiftConstraintsRepository.save(shiftConstraints);
       return shiftConstraints;
@@ -56,12 +44,11 @@ public class ShiftConstraintsService {
     }
   }
 
-  public List<ShiftConstraints> getAllShiftConstraintsByRole(String role) throws RoleNotFoundException {
+  public List<ShiftConstraints> getAllShiftConstraintsByRole(String role) throws StaffRoleNotFoundException {
     try {
-      RoleEnum roleEnum = RoleEnum.valueOf(role.toUpperCase());
-      return shiftConstraintsRepository.findByRoleEnum(roleEnum);
+      return shiftConstraintsRepository.findByStaffRoleEnum(StaffRoleEnum.valueOf(role.toUpperCase()));
     } catch (Exception ex) {
-      throw new RoleNotFoundException(ex.getMessage());
+      throw new StaffRoleNotFoundException(ex.getMessage());
     }
   }
 
@@ -84,7 +71,7 @@ public class ShiftConstraintsService {
       Optional<ShiftConstraints> shiftConstraintsOptional = shiftConstraintsRepository.findById(shiftConstraintsId);
       if (shiftConstraintsOptional.isPresent()) {
         ShiftConstraints sc = shiftConstraintsOptional.get();
-        List<ShiftConstraints> listOfShiftConstraints = shiftConstraintsRepository.findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndRoleEnumEquals(updatedShiftConstraints.getEndTime(), updatedShiftConstraints.getStartTime(), sc.getRoleEnum());
+        List<ShiftConstraints> listOfShiftConstraints = shiftConstraintsRepository.findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndStaffRoleEnumEquals(updatedShiftConstraints.getEndTime(), updatedShiftConstraints.getStartTime(), sc.getStaffRoleEnum());
         if (listOfShiftConstraints.isEmpty() || (listOfShiftConstraints.size() == 1 && listOfShiftConstraints.get(0).getShiftConstraintsId() == shiftConstraintsId)) {
           if (updatedShiftConstraints.getStartTime() != null) sc.setStartTime(updatedShiftConstraints.getStartTime());
           if (updatedShiftConstraints.getEndTime() != null) sc.setEndTime(updatedShiftConstraints.getEndTime());
@@ -92,7 +79,7 @@ public class ShiftConstraintsService {
           shiftConstraintsRepository.save(sc);
           return sc;
         } else {
-          throw new UnableToCreateShiftConstraintsException("There is an overlapping shift constraint with this time for role " + sc.getRoleEnum() + ".");
+          throw new UnableToCreateShiftConstraintsException("There is an overlapping shift constraint with this time for role " + sc.getStaffRoleEnum() + ".");
         }
       } else {
         throw new ShiftConstraintsNotFoundException("Shift with ID: " + shiftConstraintsId + " is not found");
@@ -102,7 +89,7 @@ public class ShiftConstraintsService {
     }
   }
 
-  public boolean isValidWorkDay(String role, String date) throws RoleNotFoundException {
+  public boolean isValidWorkDay(String role, String date) throws StaffRoleNotFoundException {
     try {
       List<Shift> listOfShifts = shiftService.viewDailyRoster(date, role);
       List<ShiftConstraints> listOfShiftConstraints = getAllShiftConstraintsByRole(role);
@@ -145,7 +132,7 @@ public class ShiftConstraintsService {
       }
       return true;
     } catch (Exception ex) {
-      throw new RoleNotFoundException(ex.getMessage());
+      throw new StaffRoleNotFoundException(ex.getMessage());
     }
   }
 }

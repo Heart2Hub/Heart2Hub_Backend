@@ -1,30 +1,20 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.FacilityBooking;
-import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Shift;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.*;
 import com.Heart2Hub.Heart2Hub_Backend.repository.FacilityBookingRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.FacilityRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ShiftRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
-import org.springframework.cglib.core.Local;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -146,13 +136,13 @@ public class ShiftService {
     return true;
   }
 
-  public List<Shift> getAllShiftsByRole(String role) throws RoleNotFoundException, UnableToCreateShiftException {
+  public List<Shift> getAllShiftsByRole(String role) throws StaffRoleNotFoundException, UnableToCreateShiftException {
     if (!isLoggedInUserHead()) {
       throw new UnableToCreateShiftException("Staff cannot view all shifts as he/she is not a head.");
     }
     try {
-      RoleEnum roleEnum = RoleEnum.valueOf(role.toUpperCase());
-      List<Staff> staffList = staffRepository.findByRoleEnum(roleEnum);
+      StaffRoleEnum staffRoleEnum = StaffRoleEnum.valueOf(role.toUpperCase());
+      List<Staff> staffList = staffRepository.findByStaffRoleEnum(staffRoleEnum);
       List<Shift> listOfShifts = new ArrayList<>();
       for (Staff staff : staffList) {
         List<Shift> shifts = shiftRepository.findShiftsByStaff(staff);
@@ -160,7 +150,7 @@ public class ShiftService {
       }
       return listOfShifts;
     } catch (Exception ex) {
-      throw new RoleNotFoundException(ex.getMessage());
+      throw new StaffRoleNotFoundException(ex.getMessage());
     }
   }
 
@@ -258,14 +248,14 @@ public class ShiftService {
     }
   }
 
-  public List<Shift> viewDailyRoster(String date, String role) throws RoleNotFoundException {
+  public List<Shift> viewDailyRoster(String date, String role) throws StaffRoleNotFoundException {
     try {
-      RoleEnum roleEnum = RoleEnum.valueOf(role.toUpperCase());
+      StaffRoleEnum staffRoleEnum = StaffRoleEnum.valueOf(role.toUpperCase());
       LocalDateTime start = LocalDateTime.parse(date + " 00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
       LocalDateTime end = LocalDateTime.parse(date + " 23:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-      return shiftRepository.findByStaffRoleEnumAndStartTimeBetween(roleEnum, start, end);
+      return shiftRepository.findByStaffRoleEnumAndStartTimeBetween(staffRoleEnum, start, end);
     } catch (Exception ex) {
-      throw new RoleNotFoundException(ex.getMessage());
+      throw new StaffRoleNotFoundException(ex.getMessage());
     }
   }
 }

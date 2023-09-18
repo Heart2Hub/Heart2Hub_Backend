@@ -31,14 +31,14 @@ public class ShiftConstraints {
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    private StaffRoleEnum roleEnum;
+    private StaffRoleEnum staffRoleEnum;
 
     public ShiftConstraints() {}
 
-    public ShiftConstraints(LocalTime startTime, LocalTime endTime, Integer minPax, StaffRoleEnum roleEnum) {
+    public ShiftConstraints(LocalTime startTime, LocalTime endTime, Integer minPax, StaffRoleEnum staffRoleEnum) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.minPax = minPax;
-        this.roleEnum = roleEnum;
+        this.staffRoleEnum = staffRoleEnum;
     }
 }

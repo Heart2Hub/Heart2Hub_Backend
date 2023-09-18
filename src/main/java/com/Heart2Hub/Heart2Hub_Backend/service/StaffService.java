@@ -7,10 +7,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
-import com.Heart2Hub.Heart2Hub_Backend.exception.DepartmentNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.SubDepartmentNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateStaffException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.*;
 import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 
@@ -59,8 +56,8 @@ public class StaffService {
   }
 
 //  public Staff createAdmin(String username, String password, String firstname, String lastname,
-//                           Long mobileNumber, StaffRoleEnum staffRoleEnum, Boolean isHead) {
-//    Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, roleEnum, isHead);
+//                           Long mobileNumber, StaffStaffRoleEnum staffStaffRoleEnum, Boolean isHead) {
+//    Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, StaffRoleEnum, isHead);
 //    try {
 //      LeaveBalance balance = new LeaveBalance();
 //      SubDepartment subDepartment = new SubDepartment("");
@@ -136,12 +133,12 @@ public class StaffService {
       return staffRolesString;
   }
 
-  public List<Staff> getStaffByRole(String role) throws RoleNotFoundException {
+  public List<Staff> getStaffByRole(String role) throws StaffRoleNotFoundException {
     try {
-      RoleEnum roleEnum = RoleEnum.valueOf(role.toUpperCase());
-      return staffRepository.findByRoleEnum(roleEnum);
+      StaffRoleEnum staffRoleEnum = StaffRoleEnum.valueOf(role.toUpperCase());
+      return staffRepository.findByStaffRoleEnum(staffRoleEnum);
     } catch (Exception ex) {
-      throw new RoleNotFoundException("Role " + role + " does not exist");
+      throw new StaffRoleNotFoundException("Role " + role + " does not exist");
     }
   }
 }

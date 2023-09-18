@@ -1,11 +1,8 @@
 package com.Heart2Hub.Heart2Hub_Backend.controller;
 
-import com.Heart2Hub.Heart2Hub_Backend.entity.Shift;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ShiftConstraints;
 import com.Heart2Hub.Heart2Hub_Backend.exception.*;
 import com.Heart2Hub.Heart2Hub_Backend.service.ShiftConstraintsService;
-import com.Heart2Hub.Heart2Hub_Backend.service.ShiftService;
-import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +28,7 @@ public class ShiftConstraintsController {
   public ResponseEntity getAllShiftConstraints(@PathVariable String role) {
     try {
       return ResponseEntity.ok(shiftConstraintsService.getAllShiftConstraintsByRole(role));
-    } catch (RoleNotFoundException ex) {
+    } catch (StaffRoleNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
   }
@@ -59,7 +56,7 @@ public class ShiftConstraintsController {
   public ResponseEntity checkIsValidWorkday(@RequestParam String role, @RequestParam String date) {
     try {
       return ResponseEntity.ok(shiftConstraintsService.isValidWorkDay(role, date));
-    } catch (RoleNotFoundException ex) {
+    } catch (StaffRoleNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
   }

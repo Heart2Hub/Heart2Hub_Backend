@@ -3,7 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ShiftConstraints;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ShiftPreference;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.*;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ShiftConstraintsRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ShiftPreferenceRepository;

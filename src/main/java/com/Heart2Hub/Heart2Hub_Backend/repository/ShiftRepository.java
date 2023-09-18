@@ -2,7 +2,7 @@ package com.Heart2Hub.Heart2Hub_Backend.repository;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.Shift;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,5 +15,5 @@ public interface ShiftRepository extends JpaRepository<Shift, Long> {
 
    List<Shift> findShiftsByStaff(Staff staff);
 
-   List<Shift> findByStaffRoleEnumAndStartTimeBetween(RoleEnum role, LocalDateTime start, LocalDateTime end);
+   List<Shift> findByStaffRoleEnumAndStartTimeBetween(StaffRoleEnum staffRoleEnum, LocalDateTime start, LocalDateTime end);
 }
