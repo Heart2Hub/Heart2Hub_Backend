@@ -1,5 +1,8 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
@@ -19,28 +22,22 @@ public class FacilityBooking {
     private Long facilityBookingId;
 
     @NotNull
-    @Future
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startDateTime;
 
     @NotNull
-    @Future
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endDateTime;
 
     @Size(max = 200)
     private String comments;
 
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonBackReference(value="shift-fb")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Shift shift;
 
-    @JsonManagedReference
     @ManyToOne(fetch = FetchType.EAGER)
-    @NotNull
     private Facility facility;
-
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Admission admission;
 
     public FacilityBooking() {
 

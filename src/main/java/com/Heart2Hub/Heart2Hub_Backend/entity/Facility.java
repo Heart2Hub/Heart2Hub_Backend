@@ -3,14 +3,17 @@ package com.Heart2Hub.Heart2Hub_Backend.entity;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.FacilityStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.FacilityTypeEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -34,7 +37,7 @@ public class Facility {
     @NotNull
     private String description;
 
-    @Size(max = 200)
+    @Max(200)
     @NotNull
     private Integer capacity;
 
@@ -46,16 +49,16 @@ public class Facility {
     @NotNull
     private FacilityTypeEnum facilityTypeEnum;
 
-    @JsonBackReference
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "facility")
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "facility")
     private List<FacilityBooking> listOfFacilityBookings;
 
-    @JsonManagedReference
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     private SubDepartment subDepartment;
 
     public Facility() {
-        this.listOfFacilityBookings = List.of();
+        this.listOfFacilityBookings = new ArrayList<>();
     }
 
     public Facility(String name, String location, String description, Integer capacity, FacilityStatusEnum facilityStatusEnum, FacilityTypeEnum facilityTypeEnum) {
