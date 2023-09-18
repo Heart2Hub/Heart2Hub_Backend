@@ -22,7 +22,6 @@ public class SubDepartment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long subDepartmentId;
 
-    @Size(max = 300)
     @NotNull
     private String name;
 

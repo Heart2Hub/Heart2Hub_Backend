@@ -1,5 +1,15 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
@@ -26,6 +36,7 @@ public class Staff implements UserDetails {
   private Long staffId;
   @NotNull
   @Size(min = 6)
+  @Column(unique = true)
   private String username;
   @NotNull
   @Column(unique = true)
@@ -44,59 +55,75 @@ public class Staff implements UserDetails {
 
   @NotNull
   @Enumerated(EnumType.STRING)
-  private RoleEnum roleEnum;
+  private StaffRoleEnum staffRoleEnum;
 
+  @JsonIgnore
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
   private List<Leave> listOfLeaves;
 
+  @JsonIgnore
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
   private List<Leave> listOfManagedLeaves;
 
   @JsonIgnore
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "staff")
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
   private List<Shift> listOfShifts;
 
+  @JsonIgnore
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "currentAssignedStaff")
   private List<Appointment> listOfAssignedAppointments;
 
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @NotNull
-  private LeaveBalance leaveBalance;
+  @JoinColumn(name = "leave_balance_id")
+  private LeaveBalance leaveBalance = new LeaveBalance();
 
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private ShiftPreference shiftPreference;
 
-  @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  @NotNull
+  @JsonIgnore
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private List<Invitation> listOfInvitations;
+
+  @JsonIgnore
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private List<Post> listOfPosts;
+
+  @JsonBackReference
+  @OneToOne(cascade = CascadeType.ALL, optional = true)
+  private ImageDocument profilePicture;
+
+  @ManyToOne
+  @JoinColumn(name = "sub_department_id")
   private SubDepartment subDepartment;
+
+  @NotNull
+  private Boolean disabled = false;
 
   public Staff() {
     this.listOfLeaves = new ArrayList<>();
     this.listOfManagedLeaves = new ArrayList<>();
     this.listOfShifts = new ArrayList<>();
     this.listOfAssignedAppointments = new ArrayList<>();
+    this.listOfInvitations = new ArrayList<>();
+    this.listOfPosts = new ArrayList<>();
   }
 
   public Staff(String username, String password, String firstname, String lastname,
-      Long mobileNumber, RoleEnum roleEnum) {
+      Long mobileNumber, StaffRoleEnum staffRoleEnum, Boolean isHead) {
     this();
     this.username = username;
     this.password = password;
     this.firstname = firstname;
     this.lastname = lastname;
     this.mobileNumber = mobileNumber;
-    this.roleEnum = roleEnum;
-  }
-
-  public Staff(String username, String password, String firstname, String lastname,
-               Long mobileNumber, RoleEnum roleEnum, Boolean isHead) {
-    this(username, password, firstname, lastname, mobileNumber, roleEnum);
-    this.isHead = isHead;
+      this.staffRoleEnum = staffRoleEnum;
+      this.isHead = isHead;
   }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of(new SimpleGrantedAuthority(roleEnum.toString()));
+    return List.of(new SimpleGrantedAuthority(staffRoleEnum.toString()));
   }
 
   @Override

@@ -1,9 +1,10 @@
 package com.Heart2Hub.Heart2Hub_Backend.repository;
 
-import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
 import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface SubDepartmentRepository extends JpaRepository<SubDepartment, Long> {
+import java.util.List;
 
+public interface SubDepartmentRepository extends JpaRepository<SubDepartment, Long> {
+    List<SubDepartment> findByNameContainingIgnoreCase(String name);
 }

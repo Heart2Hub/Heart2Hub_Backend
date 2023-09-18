@@ -1,7 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -31,11 +31,11 @@ public class ShiftConstraints {
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    private RoleEnum roleEnum;
+    private StaffRoleEnum roleEnum;
 
     public ShiftConstraints() {}
 
-    public ShiftConstraints(LocalTime startTime, LocalTime endTime, Integer minPax, RoleEnum roleEnum) {
+    public ShiftConstraints(LocalTime startTime, LocalTime endTime, Integer minPax, StaffRoleEnum roleEnum) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.minPax = minPax;

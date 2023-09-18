@@ -1,22 +1,25 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
-import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
-import com.Heart2Hub.Heart2Hub_Backend.entity.ShiftPreference;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
-import com.Heart2Hub.Heart2Hub_Backend.exception.ShiftPreferenceNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateShiftPreferenceException;
+import com.Heart2Hub.Heart2Hub_Backend.entity.*;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.*;
 import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.ShiftPreferenceRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.SubDepartmentRepository;
-import org.hibernate.Hibernate;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
+import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
+import com.Heart2Hub.Heart2Hub_Backend.exception.DepartmentNotFoundException;
+import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,32 +28,102 @@ import java.util.Optional;
 @Transactional
 public class DepartmentService {
 
+    private final DepartmentRepository departmentRepository;
 
-  private final DepartmentRepository departmentRepository;
-  private final SubDepartmentRepository subDepartmentRepository;
+    private final SubDepartmentService subDepartmentService;
 
-  public DepartmentService(DepartmentRepository departmentRepository, SubDepartmentRepository subDepartmentRepository) {
-    this.departmentRepository = departmentRepository;
-    this.subDepartmentRepository = subDepartmentRepository;
-  }
+    private final StaffRepository staffRepository;
 
-  public Department createDepartment(String name) {
-    Department department = new Department(name);
-    return departmentRepository.save(department);
-  }
-
-  public Long createSubDepartment(String name, String desc, Long departmentId) {
-    Optional<Department> optionalDepartment = departmentRepository.findById(departmentId);
-    if (optionalDepartment.isPresent()) {
-      Department d = optionalDepartment.get();
-      SubDepartment subDepartment = new SubDepartment(name, desc);
-      subDepartment.setDepartment(d);
-      List<SubDepartment> list = d.getListOfSubDepartments();
-      list.add(subDepartment);
-      return subDepartmentRepository.save(subDepartment).getSubDepartmentId();
-    } else {
-      return -1L;
+    public DepartmentService(DepartmentRepository departmentRepository, SubDepartmentService subDepartmentService, StaffRepository staffRepository) {
+        this.departmentRepository = departmentRepository;
+        this.subDepartmentService = subDepartmentService;
+        this.staffRepository = staffRepository;
     }
-  }
 
+    public boolean isLoggedInUserAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = false;
+        if (authentication != null) {
+            User user = (User) authentication.getPrincipal();
+            Optional<Staff> currStaff = staffRepository.findByUsername(user.getUsername());
+            if (currStaff.isPresent()) {
+                StaffRoleEnum role = currStaff.get().getStaffRoleEnum();
+                if (role == StaffRoleEnum.ADMIN) {
+                    isAdmin = true;
+                }
+            }
+        }
+        return isAdmin;
+    }
+
+    public Department createDepartment(Department newDepartment) throws UnableToCreateDepartmentException {
+        if (!isLoggedInUserAdmin()) {
+            throw new UnableToCreateDepartmentException("Staff cannot create departments as he/she is not an admin.");
+        }
+        try {
+            String name = newDepartment.getName();
+            if (name == null) {
+                throw new UnableToCreateDepartmentException("Name must be present.");
+            }
+            departmentRepository.save(newDepartment);
+            return newDepartment;
+        } catch (Exception ex) {
+            throw new UnableToCreateDepartmentException(ex.getMessage());
+        }
+    }
+
+    public String deleteDepartment(Long departmentId) throws DepartmentNotFoundException {
+        if (!isLoggedInUserAdmin()) {
+            throw new UnableToCreateDepartmentException("Staff cannot delete departments as he/she is not an admin.");
+        }
+        try {
+            Optional<Department> departmentOptional = departmentRepository.findById(departmentId);
+            if (departmentOptional.isPresent()) {
+                Department department = departmentOptional.get();
+                for (SubDepartment subDepartment : department.getListOfSubDepartments()) {
+                    subDepartmentService.deleteSubDepartment(subDepartment.getSubDepartmentId());
+                }
+                departmentRepository.delete(department);
+                return "Department with departmentId " + departmentId + " has been deleted successfully.";
+            } else {
+                throw new DepartmentNotFoundException("Department with ID: " + departmentId + " is not found");
+            }
+        } catch (Exception ex) {
+            throw new DepartmentNotFoundException(ex.getMessage());
+        }
+    }
+
+    public Department updateDepartment(Long departmentId, Department updatedDepartment) throws DepartmentNotFoundException {
+        if (!isLoggedInUserAdmin()) {
+            throw new UnableToCreateDepartmentException("Staff cannot update sub departments as he/she is not an Admin.");
+        }
+        try {
+            Optional<Department> departmentOptional = departmentRepository.findById(departmentId);
+            if (departmentOptional.isPresent()) {
+                Department department = departmentOptional.get();
+                if (updatedDepartment.getName() != null) department.setName(updatedDepartment.getName());
+                departmentRepository.save(department);
+                return department;
+            } else {
+                throw new DepartmentNotFoundException("Department with ID: " + departmentId + " is not found");
+            }
+        } catch (Exception ex) {
+            throw new DepartmentNotFoundException(ex.getMessage());
+        }
+    }
+
+    public List<Department> getAllDepartmentsByName(String name) throws DepartmentNotFoundException {
+        try {
+            List<Department> departmentList = departmentRepository.findByNameContainingIgnoreCase(name);
+            return departmentList;
+        } catch (Exception ex) {
+            throw new SubDepartmentNotFoundException(ex.getMessage());
+        }
+    }
+
+    //public Optional<Department> findByDepartmentName(String departmentName) { return departmentRepository.findByDepartmentName(departmentName); }
+
+    public List<Department> getAllDepartments() {
+        return departmentRepository.findAll();
+    }
 }

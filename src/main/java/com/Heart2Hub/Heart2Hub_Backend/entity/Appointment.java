@@ -56,6 +56,14 @@ public class Appointment {
     @ManyToOne(fetch = FetchType.EAGER)
     private Staff currentAssignedStaff;
 
+    @NotNull
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Patient patient;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ImageDocument> listOfImageDocuments;
+
     public Appointment() {
         this.listOfStaff = List.of();
     }

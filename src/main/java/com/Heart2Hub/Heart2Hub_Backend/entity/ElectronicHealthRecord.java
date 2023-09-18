@@ -1,6 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
@@ -11,6 +12,7 @@ import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import lombok.Data;
@@ -57,24 +59,65 @@ public class ElectronicHealthRecord {
     @NotNull
     private String contactNumber;
 
-    @JsonBackReference
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "EHR_Id")
     private List<Subsidy> listOfSubsidies;
 
-    @JsonBackReference
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "EHR_Id")
     private List<Admission> listOfPastAdmissions;
 
-    @JsonManagedReference
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "EHR_Id")
+    private List<Appointment> listOfPastAppointments;
+
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "EHR_Id")
+    private List<NextOfKinRecord> listOfNextOfKinRecords;
+
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "EHR_Id")
+    private List<PrescriptionRecord> listOfPrescriptionRecords;
+
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "EHR_Id")
+    private List<ProblemRecord> listOfProblemRecords;
+
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "EHR_Id")
+    private List<MedicalHistoryRecord> listOfMedicalHistoryRecords;
+
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "EHR_Id")
+    private List<TreatmentPlanRecord> listOfTreatmentPlanRecords;
+
+    @JsonIgnore
     @NotNull
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "electronicHealthRecord", fetch = FetchType.LAZY)
     private Patient patient;
 
+    public ElectronicHealthRecord(){
+        this.listOfPastAdmissions = new ArrayList<>();
+        this.listOfPastAppointments = new ArrayList<>();
+        this.listOfSubsidies = new ArrayList<>();
+        this.listOfNextOfKinRecords = new ArrayList<>();
+        this.listOfPrescriptionRecords = new ArrayList<>();
+        this.listOfProblemRecords = new ArrayList<>();
+        this.listOfMedicalHistoryRecords = new ArrayList<>();
+        this.listOfTreatmentPlanRecords = new ArrayList<>();
+    }
+
     public ElectronicHealthRecord(String nric, String firstName, String lastName, LocalDateTime dateOfBirth,
                                   String placeOfBirth, String sex, String race, String nationality, String address,
-                                  String contactNumber, Patient patient) {
+                                  String contactNumber) {
         this();
         this.nric = nric;
         this.firstName = firstName;
@@ -86,11 +129,5 @@ public class ElectronicHealthRecord {
         this.nationality = nationality;
         this.address = address;
         this.contactNumber = contactNumber;
-        this.patient = patient;
-    }
-
-    public ElectronicHealthRecord(){
-        this.listOfPastAdmissions = List.of();
-        this.listOfSubsidies = List.of();
     }
 }
