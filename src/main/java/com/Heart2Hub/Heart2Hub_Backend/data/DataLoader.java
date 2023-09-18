@@ -71,7 +71,9 @@ public class DataLoader implements CommandLineRunner {
     long startTime = System.currentTimeMillis();
 
     // Create staff data
-    createStaffData();
+    Staff admin = new Staff("staff1", "password1", "Elgin", "Chan", 97882145l, StaffRoleEnum.valueOf("ADMIN"), true);
+    Staff superAdmin = staffService.createSuperAdmin(admin);
+    System.out.println(superAdmin.getUsername());
 
     // Set auth context using staff1
     Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("staff1", "password1"));
@@ -79,9 +81,10 @@ public class DataLoader implements CommandLineRunner {
     sc.setAuthentication(auth);
 
     // Create other data
-    createPatientData();
     createDepartmentData();
     createSubDepartmentData();
+    createStaffData();
+    createPatientData();
     createFacilityData();
 
     long endTime = System.currentTimeMillis();
@@ -100,6 +103,7 @@ public class DataLoader implements CommandLineRunner {
     departmentService.createDepartment(new Department("Surgery"));
     departmentService.createDepartment(new Department("Ophthalmology"));
     departmentService.createDepartment(new Department("Psychiatry"));
+    departmentService.createDepartment(new Department("Admin"));
 //    TO-DO: WARD CREATION
 //    departmentService.createDepartment(new Department("Ward A-1"));
 //    departmentService.createDepartment(new Department("Ward A-2"));
@@ -176,8 +180,8 @@ public class DataLoader implements CommandLineRunner {
   }
 
   private void createStaffData() {
-    staffService.createStaff("staff1", "password1", "staff", "1", 90000001l, StaffRoleEnum.ADMIN);
-    staffService.createStaff("staff2", "password2", "staff", "2", 90000002l, StaffRoleEnum.DOCTOR);
+//    Staff superAdmin = new Staff("elginchan", "password", "Elgin", "Chan", 9000000l, StaffRoleEnum.valueOf("ADMIN"), true);
+//    staffService.createStaff(superAdmin, "Interventional Cardiology");
   }
 
   private void createPatientData() {

@@ -15,6 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
+import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
+import com.Heart2Hub.Heart2Hub_Backend.exception.DepartmentNotFoundException;
+import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -115,4 +121,9 @@ public class DepartmentService {
         }
     }
 
+    //public Optional<Department> findByDepartmentName(String departmentName) { return departmentRepository.findByDepartmentName(departmentName); }
+
+    public List<Department> getAllDepartments() {
+        return departmentRepository.findAll();
+    }
 }

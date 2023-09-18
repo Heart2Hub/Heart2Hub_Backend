@@ -24,15 +24,15 @@ public class Department {
     private String name;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "department")
+    @OneToMany(mappedBy = "department")
     private List<SubDepartment> listOfSubDepartments;
 
     public Department() {
         this.listOfSubDepartments = new ArrayList<>();
     }
 
-    public Department(String departmentName) {
+    public Department(String name) {
         this();
-        this.name = departmentName;
+        this.name = name;
     }
 }

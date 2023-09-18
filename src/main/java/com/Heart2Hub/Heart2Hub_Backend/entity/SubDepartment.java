@@ -33,8 +33,7 @@ public class SubDepartment {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "subDepartment")
     private List<Facility> listOfFacilities;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     private Department department;
 
     public SubDepartment() {

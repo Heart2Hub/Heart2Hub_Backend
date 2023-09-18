@@ -17,6 +17,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.Heart2Hub.Heart2Hub_Backend.exception.DepartmentNotFoundException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -123,6 +125,15 @@ public class SubDepartmentService {
             return subDepartmentsList;
         } catch (Exception ex) {
             throw new SubDepartmentNotFoundException(ex.getMessage());
+        }
+    }
+
+    public List<SubDepartment> getSubDepartmentsByDepartment(String departmentName)  {
+        try {
+            Department department = departmentRepository.findByNameContainingIgnoreCase(departmentName).get(0);
+            return department.getListOfSubDepartments();
+        } catch (Exception ex) {
+            throw new DepartmentNotFoundException(ex.getMessage());
         }
     }
 
