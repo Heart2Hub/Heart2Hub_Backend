@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -40,7 +41,7 @@ public class TreatmentPlanRecord {
     private List<ImageDocument> listOfImageDocuments;
 
     public TreatmentPlanRecord() {
-        this.listOfImageDocuments = List.of();
+        this.listOfImageDocuments = new ArrayList<>();
     }
 
     public TreatmentPlanRecord(String description, String primaryDoctor, List<String> secondaryDoctors, LocalDateTime startDate, LocalDateTime endDate, TreatmentPlanTypeEnum treatmentPlanTypeEnum) {
