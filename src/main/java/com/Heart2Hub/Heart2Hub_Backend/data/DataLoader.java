@@ -39,49 +39,33 @@ public class DataLoader implements CommandLineRunner {
   private final ShiftService shiftService;
   private final DepartmentService departmentService;
   private final FacilityBookingService facilityBookingService;
-
   private final AuthenticationManager authenticationManager;
-
-  private final DepartmentService departmentService;
-
   private final SubDepartmentService subDepartmentService;
-
   private final FacilityService facilityService;
-
   private final PatientService patientService;
-
   private final NextOfKinRecordService nextOfKinRecordService;
-
   private final PrescriptionRecordService prescriptionRecordService;
-
   private final ProblemRecordService problemRecordService;
-
   private final MedicalHistoryRecordService medicalHistoryRecordService;
-
   private final TreatmentPlanRecordService treatmentPlanRecordService;
-  private final AuthenticationManager authenticationManager;
 
-  public DataLoader(StaffService staffService, DepartmentService departmentService, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, AuthenticationManager authenticationManager) {
-  public DataLoader(StaffService staffService, DepartmentService departmentService, FacilityBookingService facilityBookingService, AuthenticationManager authenticationManager, ShiftService shiftService) {
+    public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, FacilityBookingService facilityBookingService, AuthenticationManager authenticationManager, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService) {
+        this.staffService = staffService;
+        this.shiftService = shiftService;
+        this.departmentService = departmentService;
+        this.facilityBookingService = facilityBookingService;
+        this.authenticationManager = authenticationManager;
+        this.subDepartmentService = subDepartmentService;
+        this.facilityService = facilityService;
+        this.patientService = patientService;
+        this.nextOfKinRecordService = nextOfKinRecordService;
+        this.prescriptionRecordService = prescriptionRecordService;
+        this.problemRecordService = problemRecordService;
+        this.medicalHistoryRecordService = medicalHistoryRecordService;
+        this.treatmentPlanRecordService = treatmentPlanRecordService;
+    }
 
-    this.staffService = staffService;
-    this.departmentService = departmentService;
-    this.subDepartmentService = subDepartmentService;
-    this.facilityService = facilityService;
-    this.patientService = patientService;
-    this.nextOfKinRecordService = nextOfKinRecordService;
-    this.prescriptionRecordService = prescriptionRecordService;
-    this.problemRecordService = problemRecordService;
-    this.medicalHistoryRecordService = medicalHistoryRecordService;
-    this.treatmentPlanRecordService = treatmentPlanRecordService;
-    this.authenticationManager = authenticationManager;
-    this.departmentService = departmentService;
-    this.facilityBookingService = facilityBookingService;
-    this.shiftService = shiftService;
-    this.authenticationManager = authenticationManager;
-  }
-
-  @Override
+    @Override
   public void run(String... args) {
     if (staffService.countStaff() == 0) {
       loadData();
