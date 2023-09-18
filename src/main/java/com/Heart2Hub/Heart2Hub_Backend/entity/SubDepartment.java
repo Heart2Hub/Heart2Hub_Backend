@@ -33,7 +33,9 @@ public class SubDepartment {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "subDepartment")
     private List<Facility> listOfFacilities;
 
+    @JsonIgnore
     @ManyToOne
+    @JoinColumn(name = "department_id")
     private Department department;
 
     public SubDepartment() {

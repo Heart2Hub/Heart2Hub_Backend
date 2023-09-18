@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.controller;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.SubDepartmentNotFoundException;
@@ -68,10 +69,7 @@ public class StaffController {
       @RequestParam("username") String username,
       @RequestParam("password") String password) {
 
-    System.out.println(username);
-    System.out.println(password);
     String jwtToken = staffService.authenticateStaff(username,password);
-    System.out.println("working fine");
     return ResponseEntity.ok(jwtToken);
   }
 
@@ -89,6 +87,12 @@ public class StaffController {
   @GetMapping("/getStaffRoles")
   public ResponseEntity<List<String>> getStaffRoles() {
     return ResponseEntity.ok(staffService.getStaffRoles());
+  }
+
+  @GetMapping("/getStaffByRole")
+  public ResponseEntity<List<Staff>> getStaffByRole(
+          @RequestParam("role") String role) {
+    return ResponseEntity.ok(staffService.getStaffByRole(role));
   }
 
 }

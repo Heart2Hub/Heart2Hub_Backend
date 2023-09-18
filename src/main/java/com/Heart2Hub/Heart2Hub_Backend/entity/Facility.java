@@ -49,7 +49,8 @@ public class Facility {
     @NotNull
     private FacilityTypeEnum facilityTypeEnum;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "facility")
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "facility")
     private List<FacilityBooking> listOfFacilityBookings;
 
     @JsonIgnore
