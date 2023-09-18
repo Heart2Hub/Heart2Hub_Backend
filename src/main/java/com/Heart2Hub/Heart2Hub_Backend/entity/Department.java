@@ -23,7 +23,6 @@ public class Department {
     @NotNull
     private String name;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "department")
     private List<SubDepartment> listOfSubDepartments;
 
