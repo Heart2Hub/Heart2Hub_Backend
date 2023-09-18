@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .requestMatchers("/staff/staffLogin").permitAll()
                 .requestMatchers("/staff/getStaffByUsername").permitAll()
                 .requestMatchers("/staff/changePassword").permitAll()
-                .requestMatchers("/staff/**").hasRole("ADMIN")
+                .requestMatchers("/staff/**").permitAll()
                 .anyRequest().authenticated() // 2
         )
         .sessionManagement((httpSecuritySessionManagementConfigurer -> //3
