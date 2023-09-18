@@ -101,6 +101,9 @@ public class DataLoader implements CommandLineRunner {
     createShiftData();
     createPatientData();
 
+    // Assign super admin a sub-department
+      staffService.updateStaff(superAdmin, "Interventional Cardiology");
+
     //code ends here
 
     long endTime = System.currentTimeMillis();
@@ -140,7 +143,6 @@ public class DataLoader implements CommandLineRunner {
     departmentService.createDepartment(new Department("Surgery"));
     departmentService.createDepartment(new Department("Ophthalmology"));
     departmentService.createDepartment(new Department("Psychiatry"));
-    departmentService.createDepartment(new Department("Admin"));
 //    TO-DO: WARD CREATION
 //    departmentService.createDepartment(new Department("Ward A-1"));
 //    departmentService.createDepartment(new Department("Ward A-2"));

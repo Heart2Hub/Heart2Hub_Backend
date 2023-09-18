@@ -57,21 +57,6 @@ public class StaffService {
     return staffRepository.findByUsername(username);
   }
 
-//  public Staff createAdmin(String username, String password, String firstname, String lastname,
-//                           Long mobileNumber, StaffStaffRoleEnum staffStaffRoleEnum, Boolean isHead) {
-//    Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, StaffRoleEnum, isHead);
-//    try {
-//      LeaveBalance balance = new LeaveBalance();
-//      SubDepartment subDepartment = new SubDepartment("");
-//      newStaff.setLeaveBalance(balance);
-//      newStaff.setSubDepartment(subDepartment);
-//      staffRepository.save(newStaff);
-//      return newStaff;
-//    } catch (DepartmentNotFoundException ex) {
-//      throw new UnableToCreateStaffException(ex.getMessage());
-//    }
-//  }
-
     public Staff createSuperAdmin(Staff superAdmin) {
         String password = superAdmin.getPassword();
         superAdmin.setPassword(passwordEncoder.encode(password));
@@ -97,6 +82,7 @@ public class StaffService {
       String username = updatedStaff.getUsername();
       Staff existingStaff = getStaffByUsername(username);
       existingStaff.setMobileNumber(updatedStaff.getMobileNumber());
+      existingStaff.setStaffRoleEnum(updatedStaff.getStaffRoleEnum());
       existingStaff.setIsHead(updatedStaff.getIsHead());
       SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
       existingStaff.setSubDepartment(subDepartment);
