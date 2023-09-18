@@ -73,7 +73,6 @@ public class DataLoader implements CommandLineRunner {
     // Create staff data
     Staff admin = new Staff("staff1", "password1", "Elgin", "Chan", 97882145l, StaffRoleEnum.valueOf("ADMIN"), true);
     Staff superAdmin = staffService.createSuperAdmin(admin);
-    System.out.println(superAdmin.getUsername());
 
     // Set auth context using staff1
     Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("staff1", "password1"));
@@ -86,6 +85,8 @@ public class DataLoader implements CommandLineRunner {
     createStaffData();
     createPatientData();
     createFacilityData();
+
+    staffService.updateStaff(superAdmin, "Interventional Cardiology");
 
     long endTime = System.currentTimeMillis();
     String message =
@@ -103,7 +104,6 @@ public class DataLoader implements CommandLineRunner {
     departmentService.createDepartment(new Department("Surgery"));
     departmentService.createDepartment(new Department("Ophthalmology"));
     departmentService.createDepartment(new Department("Psychiatry"));
-    departmentService.createDepartment(new Department("Admin"));
 //    TO-DO: WARD CREATION
 //    departmentService.createDepartment(new Department("Ward A-1"));
 //    departmentService.createDepartment(new Department("Ward A-2"));
