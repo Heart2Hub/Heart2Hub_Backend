@@ -8,6 +8,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -45,40 +47,52 @@ public class Staff implements UserDetails {
   private Long mobileNumber;
 
   @NotNull
-  private Boolean isHead = false;
+  private Boolean isHead;
 
   @NotNull
   @Enumerated(EnumType.STRING)
   private StaffRoleEnum staffRoleEnum;
 
-  @JsonBackReference
+  @JsonIgnore
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
   private List<Leave> listOfLeaves;
 
-  @JsonBackReference
+  @JsonIgnore
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
   private List<Leave> listOfManagedLeaves;
 
-  @JsonBackReference
+  @JsonIgnore
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
   private List<Shift> listOfShifts;
 
-  @JsonBackReference
+  @JsonIgnore
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "currentAssignedStaff")
   private List<Appointment> listOfAssignedAppointments;
 
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @NotNull
-  private LeaveBalance leaveBalance;
+  @JoinColumn(name = "leave_balance_id")
+  private LeaveBalance leaveBalance = new LeaveBalance();
 
+  @JsonIgnore
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private List<ShiftPreference> listOfShiftPreferences;
 
+  @JsonIgnore
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private List<Invitation> listOfInvitations;
 
+  @JsonIgnore
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private List<Post> listOfPosts;
+
+  @NotNull
+  @ManyToOne
+  @JoinColumn(name = "sub_department_id")
+  private SubDepartment subDepartment;
+
+  @NotNull
+  private Boolean disabled = false;
 
   public Staff() {
     this.listOfLeaves = List.of();
@@ -91,7 +105,7 @@ public class Staff implements UserDetails {
   }
 
   public Staff(String username, String password, String firstname, String lastname,
-      Long mobileNumber, StaffRoleEnum staffRoleEnum) {
+      Long mobileNumber, StaffRoleEnum staffRoleEnum, Boolean isHead) {
     this();
     this.username = username;
     this.password = password;
@@ -99,6 +113,7 @@ public class Staff implements UserDetails {
     this.lastname = lastname;
     this.mobileNumber = mobileNumber;
     this.staffRoleEnum = staffRoleEnum;
+    this.isHead = isHead;
   }
 
   @Override

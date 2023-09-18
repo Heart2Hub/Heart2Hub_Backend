@@ -1,8 +1,11 @@
 package com.Heart2Hub.Heart2Hub_Backend.data;
 
 import com.Heart2Hub.Heart2Hub_Backend.Heart2HubBackendApplication;
+import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.service.DepartmentService;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
+import com.Heart2Hub.Heart2Hub_Backend.service.SubDepartmentService;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.CommandLineRunner;
@@ -16,9 +19,13 @@ public class DataLoader implements CommandLineRunner {
   static Logger logger = Heart2HubBackendApplication.logger;
 
   private final StaffService staffService;
+  private final DepartmentService departmentService;
+  private final SubDepartmentService subDepartmentService;
 
-  public DataLoader(StaffService staffService) {
+  public DataLoader(StaffService staffService, DepartmentService departmentService, SubDepartmentService subDepartmentService) {
     this.staffService = staffService;
+    this.departmentService = departmentService;
+    this.subDepartmentService = subDepartmentService;
   }
 
   @Override
@@ -32,6 +39,8 @@ public class DataLoader implements CommandLineRunner {
     long startTime = System.currentTimeMillis();
 
     //code starts here
+    createDepartmentData();
+    createSubDepartmentData();
     createStaffData();
 
     //code ends here
@@ -42,9 +51,33 @@ public class DataLoader implements CommandLineRunner {
     logger.log(Level.INFO, message);
   }
 
+  private void createDepartmentData() {
+    departmentService.createDepartment("Cardiology");
+    departmentService.createDepartment("Dermatology");
+    departmentService.createDepartment("Emergency Medicine");
+    departmentService.createDepartment("Gastroenterology");
+    departmentService.createDepartment("General Surgery");
+    departmentService.createDepartment("Geriatric Medicine");
+    departmentService.createDepartment("Infectious Diseases");
+    departmentService.createDepartment("Neurology");
+    departmentService.createDepartment("Obstetrics and Gynaecology");
+    departmentService.createDepartment("Orthopaedics");
+    departmentService.createDepartment("Psychiatry");
+    departmentService.createDepartment("Radiation Oncology");
+    departmentService.createDepartment("Renal Medicine");
+    departmentService.createDepartment("Urology");
+  }
+
+  private void createSubDepartmentData() {
+    subDepartmentService.createSubDepartment("Cardio Clinic A", "Cardiology");
+    subDepartmentService.createSubDepartment("Derma Clinic A", "Dermatology");
+  }
+
   private void createStaffData() {
-    staffService.createStaff("staff1", "password1", "staff", "1", 90000001l, StaffRoleEnum.ADMIN);
-    staffService.createStaff("staff2", "password2", "staff", "2", 90000002l, StaffRoleEnum.DOCTOR);
+    Staff superAdmin = new Staff("elginchan", "password", "Elgin", "Chan", 90000000l, StaffRoleEnum.valueOf("ADMIN"), true);
+    Staff doctor = new Staff("doctortest", "password", "Elgin", "Chan", 90000001l, StaffRoleEnum.valueOf("DOCTOR"), false);
+    staffService.createStaff(superAdmin, "Cardio Clinic A");
+    staffService.createStaff(doctor, "Cardio Clinic A");
   }
 
 }
