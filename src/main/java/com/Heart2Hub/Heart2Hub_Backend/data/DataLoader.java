@@ -100,11 +100,17 @@ public class DataLoader implements CommandLineRunner {
   }
 
       private void createStaffData() {
-          staffService.createStaff(new Staff("staff1", "password1", "staff", "1", 90000001l, StaffRoleEnum.ADMIN, true), "Interventional Cardiology");
-          staffService.createStaff(new Staff("staff2", "password2", "staff", "2", 90000002l, StaffRoleEnum.ADMIN, true), "Heart Failure Clinic");
-          staffService.createStaff(new Staff("staff3", "password3", "Beow", "Tan", 90000002l, StaffRoleEnum.ADMIN, false), "Physical Therapy");
-          staffService.createStaff(new Staff("staff4", "password4", "Erling", "Haaland", 90000002l, StaffRoleEnum.ADMIN, false), "Physical Therapy");
-          staffService.createStaff(new Staff("staff5", "password5", "Uncle", "Raymond", 90000002l, StaffRoleEnum.ADMIN, false), "Physical Therapy");
+          staffService.createStaff(new Staff("staff2", "password2", "Tharman", "Shanmugaratnamtan", 90000002l, StaffRoleEnum.DOCTOR, true), "Heart Failure Clinic");
+          staffService.createStaff(new Staff("staff3", "password3", "Beow", "Tan", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy");
+          staffService.createStaff(new Staff("staff4", "password4", "Erling", "Haaland", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy");
+          staffService.createStaff(new Staff("staff5", "password5", "Uncle", "Raymond", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy");
+          staffService.createStaff(new Staff("staff6", "password6", "Kurt", "Tay", 90000001l, StaffRoleEnum.NURSE, true), "Interventional Cardiology");
+          staffService.createStaff(new Staff("staff7", "password7", "Steven", "Lim", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
+          staffService.createStaff(new Staff("staff8", "password8", "Simon", "Cowell", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
+          staffService.createStaff(new Staff("staff9", "password9", "James", "Charles", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
+          staffService.createStaff(new Staff("staff10", "password10", "Adolf", "-", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
+
+
       }
 
   private void createDepartmentData() {

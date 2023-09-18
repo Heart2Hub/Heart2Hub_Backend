@@ -253,7 +253,7 @@ public class ShiftService {
       StaffRoleEnum staffRoleEnum = StaffRoleEnum.valueOf(role.toUpperCase());
       LocalDateTime start = LocalDateTime.parse(date + " 00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
       LocalDateTime end = LocalDateTime.parse(date + " 23:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-      return shiftRepository.findByStaffRoleEnumAndStartTimeBetween(staffRoleEnum, start, end);
+      return shiftRepository.findByStaffStaffRoleEnumAndStartTimeBetween(staffRoleEnum, start, end);
     } catch (Exception ex) {
       throw new StaffRoleNotFoundException(ex.getMessage());
     }
