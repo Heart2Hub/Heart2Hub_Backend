@@ -46,7 +46,6 @@ public class DataLoader implements CommandLineRunner {
   private final StaffService staffService;
   private final ShiftService shiftService;
   private final DepartmentService departmentService;
-  private final FacilityBookingService facilityBookingService;
   private final AuthenticationManager authenticationManager;
   private final SubDepartmentService subDepartmentService;
   private final FacilityService facilityService;
@@ -58,11 +57,10 @@ public class DataLoader implements CommandLineRunner {
   private final TreatmentPlanRecordService treatmentPlanRecordService;
   private final LeaveService leaveService;
 
-    public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, FacilityBookingService facilityBookingService, AuthenticationManager authenticationManager, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService) {
+    public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, FacilityBookingService facilityBookingService, AuthenticationManager authenticationManager, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService) {
         this.staffService = staffService;
         this.shiftService = shiftService;
         this.departmentService = departmentService;
-        this.facilityBookingService = facilityBookingService;
         this.authenticationManager = authenticationManager;
         this.subDepartmentService = subDepartmentService;
         this.facilityService = facilityService;
@@ -72,9 +70,10 @@ public class DataLoader implements CommandLineRunner {
         this.problemRecordService = problemRecordService;
         this.medicalHistoryRecordService = medicalHistoryRecordService;
         this.treatmentPlanRecordService = treatmentPlanRecordService;
+        this.leaveService = leaveService;
     }
 
-  @Override
+    @Override
   public void run(String... args) {
     if (staffService.countStaff() == 0) {
       loadData();
@@ -97,7 +96,10 @@ public class DataLoader implements CommandLineRunner {
     // Create other data
     createDepartmentData();
     createSubDepartmentData();
+    createFacilityData();
     createStaffData();
+    createShiftData();
+    createPatientData();
 
     //code ends here
 
@@ -126,7 +128,7 @@ public class DataLoader implements CommandLineRunner {
           );
       }
 
-      }
+
 
   private void createDepartmentData() {
     System.out.println();
