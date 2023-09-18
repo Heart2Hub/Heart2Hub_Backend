@@ -8,6 +8,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.StaffRoleNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateStaffException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 
@@ -88,34 +89,8 @@ public class StaffService {
       } catch (Exception ex) {
           throw new UnableToCreateStaffException("Username already exists");
       }
+  }
   public Optional<Staff> findById(Long id) { return staffRepository.findById(id); }
-
-  public Staff createStaff(String username, String password, String firstname, String lastname,
-                           Long mobileNumber, StaffRoleEnum staffRoleEnum) {
-    Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, staffRoleEnum);
-    try {
-      LeaveBalance balance = new LeaveBalance();
-      newStaff.setLeaveBalance(balance);
-      staffRepository.save(newStaff);
-      return newStaff;
-    } catch (Exception ex) {
-      throw new UnableToCreateStaffException(ex.getMessage());
-    }
-  }
-
-  public Staff createHeadStaff(String username, String password, String firstname, String lastname,
-                           Long mobileNumber, StaffRoleEnum staffRoleEnum) {
-    Staff newStaff = new Staff(username, passwordEncoder.encode(password), firstname, lastname, mobileNumber, staffRoleEnum);
-    try {
-      newStaff.setIsHead(true);
-      LeaveBalance balance = new LeaveBalance();
-      newStaff.setLeaveBalance(balance);
-      staffRepository.save(newStaff);
-      return newStaff;
-    } catch (Exception ex) {
-      throw new UnableToCreateStaffException(ex.getMessage());
-    }
-  }
 
   public Staff updateStaff(Staff updatedStaff, String subDepartmentName) {
       String username = updatedStaff.getUsername();
@@ -145,11 +120,11 @@ public class StaffService {
     return jwtService.generateToken(staff);
   }
 
-  public Optional<Staff> getStaffByUsername(String username) {
-    return staffRepository.findByUsername(username);
+  public Staff getStaffByUsername(String username) {
+    return staffRepository.findByUsername(username).get();
   }
 
-  public Optional<List<Staff>> getAllHeadStaff() {
+  public List<Staff> getAllHeadStaff() {
     List<Staff> newList = new ArrayList<>();
     List <Staff> allStaff = staffRepository.findAll();
       for (Staff staff : allStaff) {
@@ -157,7 +132,7 @@ public class StaffService {
               newList.add(staff);
           }
       }
-    return Optional.of(newList);
+    return Optional.of(newList).get();
   }
 
   public List<String> getStaffRoles() {

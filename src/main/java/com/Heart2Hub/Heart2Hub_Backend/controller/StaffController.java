@@ -91,7 +91,7 @@ public class StaffController {
 
   @GetMapping("/getAllHeadStaff")
   public ResponseEntity<List<Staff>> getAllHeadStaff() {
-    return ResponseEntity.ok(staffService.getAllHeadStaff().get());
+    return ResponseEntity.ok(staffService.getAllHeadStaff());
   }
   @GetMapping("/getStaffRoles")
   public ResponseEntity<List<String>> getStaffRoles() {
