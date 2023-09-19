@@ -83,6 +83,17 @@ public class StaffController {
     return ResponseEntity.ok(staffService.updateStaff(staff, subDepartmentName));
   }
 
+  @PutMapping(value = "/updateStaffWithImage/{subDepartmentName}", consumes = {"application/json"}, produces = {"application/json"})
+  public ResponseEntity<Staff> updateStaffWithImage(@PathVariable String subDepartmentName, @RequestBody Map<String, Object> requestBody) {
+    ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new ParameterNamesModule())
+            .registerModule(new Jdk8Module())
+            .registerModule(new JavaTimeModule());
+    Staff staff = objectMapper.convertValue(requestBody.get("staff"), Staff.class);
+    ImageDocument imageDocument = objectMapper.convertValue(requestBody.get("imageDocument"), ImageDocument.class);
+    return ResponseEntity.ok(staffService.updateStaff(staff, subDepartmentName, imageDocument));
+  }
+
   @PutMapping("/disableStaff/{username}")
   public ResponseEntity<Staff> disableStaff(@PathVariable String username) {
     return ResponseEntity.ok(staffService.disableStaff(username));
