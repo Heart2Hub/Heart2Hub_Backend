@@ -16,4 +16,6 @@ public interface ShiftRepository extends JpaRepository<Shift, Long> {
    List<Shift> findShiftsByStaff(Staff staff);
 
    List<Shift> findByStaffStaffRoleEnumAndStartTimeBetween(StaffRoleEnum staffRoleEnum, LocalDateTime start, LocalDateTime end);
+
+   List<Shift> findByStaffUsernameAndStartTimeBetween(String username, LocalDateTime start, LocalDateTime end);
 }

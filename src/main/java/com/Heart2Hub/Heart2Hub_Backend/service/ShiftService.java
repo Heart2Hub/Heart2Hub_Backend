@@ -84,9 +84,7 @@ public class ShiftService {
     if (startTime == null || endTime == null) {
       throw new UnableToCreateShiftException("Start time and end time must be present.");
     }
-    System.out.println("check1");
     List<Shift> shifts = shiftRepository.findShiftsByStaff(assignedStaff);
-    System.out.println("check2");
 
     if (startTime.isAfter(endTime)) {
       throw new UnableToCreateShiftException("Start time cannot be later than end time.");
@@ -254,6 +252,30 @@ public class ShiftService {
       LocalDateTime start = LocalDateTime.parse(date + " 00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
       LocalDateTime end = LocalDateTime.parse(date + " 23:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
       return shiftRepository.findByStaffStaffRoleEnumAndStartTimeBetween(staffRoleEnum, start, end);
+    } catch (Exception ex) {
+      throw new StaffRoleNotFoundException(ex.getMessage());
+    }
+  }
+
+  public List<Shift> viewOverallRoster(String username) throws StaffRoleNotFoundException {
+    try {
+      Optional<Staff> optionalStaff = staffRepository.findByUsername(username);
+      if (optionalStaff.isPresent()) {
+        Staff staff = optionalStaff.get();
+        return shiftRepository.findShiftsByStaff(staff);
+      } else {
+        throw new StaffNotFoundException("Staff with username " + username + " is not found.");
+      }
+    } catch (Exception ex) {
+      throw new StaffNotFoundException(ex.getMessage());
+    }
+  }
+
+  public List<Shift> getAllShiftsForStaffFromDates(String username, String start, String end) throws StaffRoleNotFoundException {
+    try {
+      LocalDateTime startDate = LocalDateTime.parse(start + " 00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+      LocalDateTime endDate = LocalDateTime.parse(end + " 23:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        return shiftRepository.findByStaffUsernameAndStartTimeBetween(username, startDate, endDate);
     } catch (Exception ex) {
       throw new StaffRoleNotFoundException(ex.getMessage());
     }
