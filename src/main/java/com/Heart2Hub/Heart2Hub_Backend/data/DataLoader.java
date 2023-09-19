@@ -209,9 +209,9 @@ public class DataLoader implements CommandLineRunner {
   private void createFacilityData() {
     // For Sub Department Facility Creation
     for (long L = 1L; L <= 40L; L++) {
-      facilityService.createFacility(L, new Facility("Consultation Room 1 " + subDepartmentRepository.findById(L).get().getName(), "","",2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.CONSULTATION_ROOM));
-      facilityService.createFacility(L, new Facility("Triage Room 1 " + subDepartmentRepository.findById(L).get().getName(), "","",2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
-      facilityService.createFacility(L, new Facility("Triage Room 2 " + subDepartmentRepository.findById(L).get().getName(), "","",2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
+      facilityService.createFacility(L, new Facility("Consultation Room 1 " + subDepartmentRepository.findById(L).get().getName(), "Level 1","",2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.CONSULTATION_ROOM));
+      facilityService.createFacility(L, new Facility("Triage Room 1 " + subDepartmentRepository.findById(L).get().getName(), "Level 2","",2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
+      facilityService.createFacility(L, new Facility("Triage Room 2 " + subDepartmentRepository.findById(L).get().getName(), "Level 3","",2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
     }
 //    TO-DO: WARD BED CREATION
 //    for (long L = 1L; L <= 40L; L++) {
@@ -317,7 +317,7 @@ public class DataLoader implements CommandLineRunner {
   }
 
   private void createPatientData() {
-      Patient newPatient1 = patientService.createPatient(new Patient("patient1","password1"), new ElectronicHealthRecord("S9983422D","Adam","Lai", LocalDateTime.of(1978, 9, 16, 15, 30, 0), "Singapore", "Male", "Chinese", "Singaporean", "Pasir Ris St 42", "81348699"));
+      Patient newPatient1 = patientService.createPatient(new Patient("patient1","password1"), new ElectronicHealthRecord("S9983422D","Adam","Lai", LocalDateTime.of(1978, 9, 16, 0, 0, 0), "Singapore", "Male", "Chinese", "Singaporean", "Pasir Ris St 42", "81348699"));
       nextOfKinRecordService.createNextOfKinRecord(newPatient1.getPatientId(),new NextOfKinRecord("Father", "S5882617D"));
       nextOfKinRecordService.createNextOfKinRecord(newPatient1.getPatientId(),new NextOfKinRecord("Mother", "S6882617D"));
       nextOfKinRecordService.createNextOfKinRecord(newPatient1.getPatientId(),new NextOfKinRecord("Brother", "S7882617D"));
@@ -328,24 +328,24 @@ public class DataLoader implements CommandLineRunner {
       medicalHistoryRecordService.createMedicalHistoryRecord(newPatient1.getPatientId(), new MedicalHistoryRecord("Smoking", "Doctor Wen Jie", LocalDateTime.of(1998, 9, 16, 15, 30, 0), LocalDateTime.of(1999, 9, 16, 15, 30, 0), PriorityEnum.LOW, ProblemTypeEnum.OTHERS));
       medicalHistoryRecordService.createMedicalHistoryRecord(newPatient1.getPatientId(), new MedicalHistoryRecord("Allergies to Pollen", "Doctor Sarah Smith", LocalDateTime.of(2000, 8, 5, 11, 30, 0), LocalDateTime.of(2001, 3, 15, 13, 45, 0), PriorityEnum.HIGH, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
       treatmentPlanRecordService.createTreatmentPlanRecord(newPatient1.getPatientId(), new TreatmentPlanRecord("Dialysis", "Doctor Wen Jie", new ArrayList<>(), LocalDateTime.of(1998, 9, 16, 15, 30, 0), LocalDateTime.of(1999, 9, 16, 15, 30, 0), TreatmentPlanTypeEnum.PREVENTIVE_CARE_PLAN));
-      Patient newPatient2 = patientService.createPatient(new Patient("patient2","password2"), new ElectronicHealthRecord("S9983423D","Eva","Tan", LocalDateTime.of(1985, 5, 12, 10, 15, 0), "Singapore", "Female", "Chinese", "Singaporean", "Orchard Road", "82236471"));
+      Patient newPatient2 = patientService.createPatient(new Patient("patient2","password2"), new ElectronicHealthRecord("S9983423D","Eva","Tan", LocalDateTime.of(1985, 5, 12, 0, 0, 0), "Singapore", "Female", "Chinese", "Singaporean", "Orchard Road", "82236471"));
       nextOfKinRecordService.createNextOfKinRecord(newPatient2.getPatientId(),new NextOfKinRecord("Husband", "S5882618D"));
       nextOfKinRecordService.createNextOfKinRecord(newPatient2.getPatientId(),new NextOfKinRecord("Sister", "S6882618D"));
       prescriptionRecordService.createPrescriptionRecord(newPatient2.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2005, 7, 25, 16, 30, 0), "Antibiotics", 4, 2, "Infection Treatment", "Complete the course", "Doctor Emily Wong", PrescriptionStatusEnum.COLLECTED));
       problemRecordService.createProblemRecord(newPatient2.getPatientId(), new ProblemRecord("Hypertension", "Doctor Emily Wong", LocalDateTime.of(2006, 2, 14, 8, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.CARDIOVASCULAR));
       medicalHistoryRecordService.createMedicalHistoryRecord(newPatient2.getPatientId(), new MedicalHistoryRecord("High Cholesterol", "Doctor Emily Wong", LocalDateTime.of(2004, 6, 10, 9, 30, 0), LocalDateTime.of(2005, 8, 20, 12, 15, 0), PriorityEnum.HIGH, ProblemTypeEnum.CARDIOVASCULAR));
-      Patient newPatient3 = patientService.createPatient(new Patient("patient3","password3"), new ElectronicHealthRecord("S9983424D","John","Smith", LocalDateTime.of(1990, 2, 28, 8, 0, 0), "Singapore", "Male", "Caucasian", "Singaporean", "Marina Bay Sands", "83571234"));
+      Patient newPatient3 = patientService.createPatient(new Patient("patient3","password3"), new ElectronicHealthRecord("S9983424D","John","Smith", LocalDateTime.of(1990, 2, 28, 0, 0, 0), "Singapore", "Male", "Caucasian", "Singaporean", "Marina Bay Sands", "83571234"));
       nextOfKinRecordService.createNextOfKinRecord(newPatient3.getPatientId(),new NextOfKinRecord("Wife", "S5882619D"));
       prescriptionRecordService.createPrescriptionRecord(newPatient3.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2010, 10, 5, 13, 15, 0), "Insulin", 1, 1, "Diabetes Management", "Take before meals", "Doctor Maria Garcia", PrescriptionStatusEnum.COLLECTED));
       problemRecordService.createProblemRecord(newPatient3.getPatientId(), new ProblemRecord("Type 2 Diabetes", "Doctor Maria Garcia", LocalDateTime.of(2009, 8, 12, 11, 20, 0), PriorityEnum.HIGH, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
       medicalHistoryRecordService.createMedicalHistoryRecord(newPatient3.getPatientId(), new MedicalHistoryRecord("High Blood Pressure", "Doctor Maria Garcia", LocalDateTime.of(2008, 4, 18, 14, 30, 0), LocalDateTime.of(2009, 9, 2, 9, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.CARDIOVASCULAR));
-      Patient newPatient4 = patientService.createPatient(new Patient("patient4","password4"), new ElectronicHealthRecord("S9983425D","Linda","Wong", LocalDateTime.of(1973, 11, 8, 17, 45, 0), "Singapore", "Female", "Chinese", "Singaporean", "Jurong West St 71", "81126543"));
+      Patient newPatient4 = patientService.createPatient(new Patient("patient4","password4"), new ElectronicHealthRecord("S9983425D","Linda","Wong", LocalDateTime.of(1973, 11, 8, 0, 0, 0), "Singapore", "Female", "Chinese", "Singaporean", "Jurong West St 71", "81126543"));
       nextOfKinRecordService.createNextOfKinRecord(newPatient4.getPatientId(),new NextOfKinRecord("Son", "S5882620D"));
       nextOfKinRecordService.createNextOfKinRecord(newPatient4.getPatientId(),new NextOfKinRecord("Daughter", "S6882620D"));
       prescriptionRecordService.createPrescriptionRecord(newPatient4.getPatientId(), new PrescriptionRecord(LocalDateTime.of(1995, 3, 2, 10, 30, 0), "Painkillers", 2, 1, "Pain Relief for Arthritis", "Take as needed", "Doctor Kevin Tan", PrescriptionStatusEnum.COLLECTED));
       problemRecordService.createProblemRecord(newPatient4.getPatientId(), new ProblemRecord("Arthritis", "Doctor Kevin Tan", LocalDateTime.of(1994, 12, 15, 16, 0, 0), PriorityEnum.LOW, ProblemTypeEnum.OBSTETRIC));
       medicalHistoryRecordService.createMedicalHistoryRecord(newPatient4.getPatientId(), new MedicalHistoryRecord("Asthma", "Doctor Kevin Tan", LocalDateTime.of(1990, 7, 8, 9, 0, 0), LocalDateTime.of(1991, 5, 20, 14, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.RESPIRATORY));
-      Patient newPatient5 = patientService.createPatient(new Patient("patient5","password5"), new ElectronicHealthRecord("S9983426D","Megan","Chua", LocalDateTime.of(2000, 6, 15, 12, 0, 0), "Singapore", "Female", "Chinese", "Singaporean", "Bukit Timah Rd", "87751234"));
+      Patient newPatient5 = patientService.createPatient(new Patient("patient5","password5"), new ElectronicHealthRecord("S9983426D","Megan","Chua", LocalDateTime.of(2000, 6, 15, 0, 0, 0), "Singapore", "Female", "Chinese", "Singaporean", "Bukit Timah Rd", "87751234"));
       nextOfKinRecordService.createNextOfKinRecord(newPatient5.getPatientId(),new NextOfKinRecord("Father", "S5882621D"));
       nextOfKinRecordService.createNextOfKinRecord(newPatient5.getPatientId(),new NextOfKinRecord("Mother", "S6882621D"));
       prescriptionRecordService.createPrescriptionRecord(newPatient5.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Vitamin D", 1, 1, "Vitamin Supplement", "Take daily", "Doctor Sarah Tan", PrescriptionStatusEnum.COLLECTED));

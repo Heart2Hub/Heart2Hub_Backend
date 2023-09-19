@@ -2,6 +2,7 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.FacilityStatusEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.FacilityTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.FacilityNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateFacilityException;
@@ -53,8 +54,24 @@ public class FacilityService {
         }
         try {
             String name = newFacility.getName();
-            if (name == null) {
+            if (name.trim().equals("")) {
                 throw new UnableToCreateFacilityException("Name must be present.");
+            }
+            Integer capacity = newFacility.getCapacity();
+            if (capacity < 1) {
+                throw new UnableToCreateFacilityException("Capacity must be above 1");
+            }
+            String location = newFacility.getLocation();
+            if (location.trim().equals("")) {
+                throw new UnableToCreateFacilityException("Location must be present");
+            }
+            FacilityStatusEnum facilityStatusEnum = newFacility.getFacilityStatusEnum();
+            if (facilityStatusEnum == null) {
+                throw new UnableToCreateFacilityException("Facility status must be present");
+            }
+            FacilityTypeEnum facilityTypeEnum = newFacility.getFacilityTypeEnum();
+            if (facilityTypeEnum == null) {
+                throw new UnableToCreateFacilityException("Facility type must be present");
             }
             SubDepartment assignedSubDepartment = subDepartmentRepository.findById(subDepartmentId).get();
             assignedSubDepartment.getListOfFacilities().add(newFacility);
@@ -97,6 +114,26 @@ public class FacilityService {
             Optional<Facility> facilityOptional = facilityRepository.findById(facilityId);
             if (facilityOptional.isPresent()) {
                 Facility facility = facilityOptional.get();
+                String name = facility.getName();
+                if (name.trim().equals("")) {
+                    throw new UnableToCreateFacilityException("Name must be present.");
+                }
+                Integer capacity = facility.getCapacity();
+                if (capacity < 1) {
+                    throw new UnableToCreateFacilityException("Capacity must be above 1");
+                }
+                String location = facility.getLocation();
+                if (location.trim().equals("")) {
+                    throw new UnableToCreateFacilityException("Location must be present");
+                }
+                FacilityStatusEnum facilityStatusEnum = facility.getFacilityStatusEnum();
+                if (facilityStatusEnum == null) {
+                    throw new UnableToCreateFacilityException("Facility status must be present");
+                }
+                FacilityTypeEnum facilityTypeEnum = facility.getFacilityTypeEnum();
+                if (facilityTypeEnum == null) {
+                    throw new UnableToCreateFacilityException("Facility type must be present");
+                }
                 if (updatedFacility.getName() != null) facility.setName(updatedFacility.getName());
                 if (updatedFacility.getLocation() != null) facility.setLocation(updatedFacility.getLocation());
                 if (updatedFacility.getDescription() != null) facility.setDescription(updatedFacility.getDescription());
