@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Leave;
 import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
@@ -35,11 +36,14 @@ public class LeaveService {
     @Autowired
     private final LeaveBalanceRepository leaveBalanceRepository;
 
+    @Autowired
+    private final ImageDocumentService imageDocumentService;
 
-    public LeaveService(LeaveRepository leaveRepository, StaffRepository staffRepository, LeaveBalanceRepository leaveBalanceRepository) {
+    public LeaveService(LeaveRepository leaveRepository, StaffRepository staffRepository, LeaveBalanceRepository leaveBalanceRepository, ImageDocumentService imageDocumentService) {
         this.leaveRepository = leaveRepository;
         this.staffRepository = staffRepository;
         this.leaveBalanceRepository = leaveBalanceRepository;
+        this.imageDocumentService = imageDocumentService;
     }
 
     //Need to edit to make sure Managed and List of Leaves
@@ -70,6 +74,10 @@ public class LeaveService {
     }
 
     public Leave createLeave(LocalDateTime startDate, LocalDateTime endDate, LeaveTypeEnum leaveTypeEnum, Staff staff, Staff headStaff, String comments) {
+        return createLeave(startDate, endDate, leaveTypeEnum, staff, headStaff, comments, null);
+    }
+
+    public Leave createLeave(LocalDateTime startDate, LocalDateTime endDate, LeaveTypeEnum leaveTypeEnum, Staff staff, Staff headStaff, String comments, ImageDocument imageDocument) {
         LocalDateTime currentDate = LocalDateTime.now();
         LocalDateTime maxDate = currentDate.plusMonths(6);
         LocalDateTime minDate = currentDate.plusMonths(1);
@@ -130,6 +138,11 @@ public class LeaveService {
 
                     assignedStaff.getListOfLeaves().add(newLeave);
                     assignedHeadStaff.getListOfManagedLeaves().add(newLeave);
+
+                    if (imageDocument != null) {
+                        ImageDocument createdImageDocument = imageDocumentService.createImageDocument(imageDocument);
+                        newLeave.getListOfImageDocuments().add(createdImageDocument); // Set the image document if provided
+                    }
 
                     staffRepository.save(assignedStaff);
                     staffRepository.save(assignedHeadStaff);

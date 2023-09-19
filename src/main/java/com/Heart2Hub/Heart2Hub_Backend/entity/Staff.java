@@ -88,7 +88,6 @@ public class Staff implements UserDetails {
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private List<Post> listOfPosts;
 
-  @JsonBackReference
   @OneToOne(cascade = CascadeType.ALL, optional = true)
   private ImageDocument profilePicture;
 

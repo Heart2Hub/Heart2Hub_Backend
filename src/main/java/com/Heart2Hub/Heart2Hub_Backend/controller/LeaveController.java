@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.controller;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Leave;
 import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
@@ -10,6 +11,10 @@ import com.Heart2Hub.Heart2Hub_Backend.repository.LeaveRepository;
 import com.Heart2Hub.Heart2Hub_Backend.service.LeaveBalanceService;
 import com.Heart2Hub.Heart2Hub_Backend.service.LeaveService;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -136,6 +141,11 @@ public class LeaveController {
     public ResponseEntity<Leave> createLeave(
             @RequestBody Map<String, Object> requestBody) {
 
+        ObjectMapper objectMapper = new ObjectMapper()
+                .registerModule(new ParameterNamesModule())
+                .registerModule(new Jdk8Module())
+                .registerModule(new JavaTimeModule());
+
         LocalDateTime startDate = LocalDateTime.of(LocalDate.parse(requestBody.get("startDate").toString()), LocalTime.MIDNIGHT);
         LocalDateTime endDate = LocalDateTime.of(LocalDate.parse(requestBody.get("endDate").toString()), LocalTime.MIDNIGHT);
 
@@ -156,17 +166,30 @@ public class LeaveController {
             Integer days = (int) duration.toDays();
 
             if (leaveTypeEnum == LeaveTypeEnum.ANNUAL) {
-                l = leaveService.createLeave(startDate, endDate, leaveTypeEnum, staff, headStaff, comments);
+                if (requestBody.get("imageDocument") != null) {
+                    ImageDocument imageDocument = objectMapper.convertValue(requestBody.get("imageDocument"), ImageDocument.class);
+                    l = leaveService.createLeave(startDate, endDate, leaveTypeEnum, staff, headStaff, comments, imageDocument);
+                } else {
+                    l = leaveService.createLeave(startDate, endDate, leaveTypeEnum, staff, headStaff, comments);
+                }
                 lb.setAnnualLeave(lb.getAnnualLeave() - days);
 
-
             } else if (leaveTypeEnum == LeaveTypeEnum.SICK) {
-                l = leaveService.createLeave(startDate, endDate, leaveTypeEnum, staff, headStaff, comments);
+                if (requestBody.get("imageDocument") != null) {
+                    ImageDocument imageDocument = objectMapper.convertValue(requestBody.get("imageDocument"), ImageDocument.class);
+                    l = leaveService.createLeave(startDate, endDate, leaveTypeEnum, staff, headStaff, comments, imageDocument);
+                } else {
+                    l = leaveService.createLeave(startDate, endDate, leaveTypeEnum, staff, headStaff, comments);
+                }
                 lb.setSickLeave(lb.getSickLeave() - days);
-
             } else {
+                if (requestBody.get("imageDocument") != null) {
+                    ImageDocument imageDocument = objectMapper.convertValue(requestBody.get("imageDocument"), ImageDocument.class);
+                    l = leaveService.createLeave(startDate, endDate, leaveTypeEnum, staff, headStaff, comments, imageDocument);
+                } else {
+                    l = leaveService.createLeave(startDate, endDate, leaveTypeEnum, staff, headStaff, comments);
+                }
 //                if (days <= lb.getParentalLeave()) {
-                l = leaveService.createLeave(startDate, endDate, leaveTypeEnum, staff, headStaff, comments);
                 lb.setParentalLeave(lb.getParentalLeave() - days);
 //                } else {
 //                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
