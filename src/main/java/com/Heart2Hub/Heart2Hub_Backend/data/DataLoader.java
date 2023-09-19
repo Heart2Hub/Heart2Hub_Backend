@@ -115,21 +115,22 @@ public class DataLoader implements CommandLineRunner {
 
   private void createStaffData() {
       LocalDateTime lt = LocalDateTime.now();
-      Staff staff2 = staffService.createStaff(new Staff("staff2", "password2", "Tharman", "Shanmugaratnamtan", 90000002l, StaffRoleEnum.DOCTOR, true), "Heart Failure Clinic", new ImageDocument("id1.png",lt));
-      Staff staff3 = staffService.createStaff(new Staff("staff3", "password3", "Beow", "Tan", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy", new ImageDocument("id2.png",lt));
-      staffService.createStaff(new Staff("staff4", "password4", "Erling", "Haaland", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy", new ImageDocument("id3.png",lt));
-      staffService.createStaff(new Staff("staff5", "password5", "Uncle", "Raymond", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy", new ImageDocument("id4.png",lt));
-      staffService.createStaff(new Staff("staff6", "password6", "Kurt", "Tay", 90000001l, StaffRoleEnum.NURSE, true), "Interventional Cardiology", new ImageDocument("id5.png",lt));
-      staffService.createStaff(new Staff("staff7", "password7", "Steven", "Lim", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology", new ImageDocument("id6.png",lt));
-      staffService.createStaff(new Staff("staff8", "password8", "Simon", "Cowell", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology", new ImageDocument("id7.png",lt));
-      staffService.createStaff(new Staff("staff9", "password9", "James", "Charles", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology", new ImageDocument("id8.png",lt));
-      staffService.createStaff(new Staff("staff10", "password10", "Adolf", "-", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology", new ImageDocument("id9.png",lt));
+      Staff staff2 = staffService.createStaff(new Staff("staff2", "password2", "Tharman", "Shanmugaratnam", 93860982l, StaffRoleEnum.DOCTOR, true), "Heart Failure Clinic", new ImageDocument("id1.png",lt));
+      Staff staff3 = staffService.createStaff(new Staff("staff3", "password3", "Beow", "Tan", 89645629l, StaffRoleEnum.DOCTOR, false), "Heart Failure Clinic", new ImageDocument("id2.png",lt));
+      Staff staff4 = staffService.createStaff(new Staff("staff4", "password4", "Erling", "Haaland", 93490928l, StaffRoleEnum.DOCTOR, false), "Stroke Center", new ImageDocument("id3.png",lt));
+      staffService.createStaff(new Staff("staff5", "password5", "John", "Wick", 87609870l, StaffRoleEnum.DOCTOR, false), "Physical Therapy", new ImageDocument("id4.png",lt));
+      staffService.createStaff(new Staff("staff6", "password6", "Donald", "Raymond", 96997125l, StaffRoleEnum.DOCTOR, false), "Trauma Center", new ImageDocument("id5.png",lt));
+      staffService.createStaff(new Staff("staff7", "password7", "Steven", "Lim", 98762093l, StaffRoleEnum.DOCTOR, false), "General Surgery", new ImageDocument("id6.png",lt));
+      staffService.createStaff(new Staff("staff8", "password8", "Kurt", "Tay", 80182931l, StaffRoleEnum.NURSE, true), "General Surgery", new ImageDocument("id7.png",lt));
+      staffService.createStaff(new Staff("staff9", "password9", "Simon", "Cowell", 81927493l, StaffRoleEnum.NURSE, false), "Pediatric Neurology", new ImageDocument("id8.png",lt));
+      staffService.createStaff(new Staff("staff10", "password10", "James", "Charles", 93420093l, StaffRoleEnum.NURSE, false), "Sports Medicine", new ImageDocument("id9.png",lt));
+      staffService.createStaff(new Staff("staff11", "password11", "Ronald", "Weasley", 90897321l, StaffRoleEnum.NURSE, false), "Emergency Room (ER)", new ImageDocument("id10.png",lt));
 
       leaveService.createLeave(LocalDateTime.now().plusMonths(2),
-              LocalDateTime.now().plusMonths(2).plusDays(3), LeaveTypeEnum.ANNUAL, staff3, staff2, ""
+              LocalDateTime.now().plusMonths(2).plusDays(3), LeaveTypeEnum.ANNUAL, staff3, staff2, "Thailand family trip."
       );
       leaveService.createLeave(LocalDateTime.now().plusMonths(3),
-              LocalDateTime.now().plusMonths(3).plusDays(3), LeaveTypeEnum.SICK, staff3, staff2, ""
+              LocalDateTime.now().plusMonths(3).plusDays(2), LeaveTypeEnum.ANNUAL, staff4, staff2, "Exam for my Master's degree."
       );
   }
 
@@ -225,21 +226,94 @@ public class DataLoader implements CommandLineRunner {
 
       // Calculate the date of the Monday of the current week
       LocalDateTime monday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-      for (int i=0; i<6; i++) {
-          LocalDateTime currentDateTime = monday.plusDays(i);
-          int day = currentDateTime.getDayOfMonth();
-          int month = currentDateTime.getMonthValue();
-          int year = currentDateTime.getYear();
-          String[] staffList = {"staff2", "staff3", "staff4", "staff5"};
-          for (int j=0; j<staffList.length; j++) {
-              String username = staffList[j];
-              if (j % 2 == 0){
-                  shiftService.createShift(username, 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-              } else {
-                  shiftService.createShift(username, 1L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
-              }
-          }
-      }
+
+      // Allocate Monday shifts
+      LocalDateTime currentDateTime = monday.plusDays(0);
+      int day = currentDateTime.getDayOfMonth();
+      int month = currentDateTime.getMonthValue();
+      int year = currentDateTime.getYear();
+      shiftService.createShift("staff2", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+      shiftService.createShift("staff3", 3L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+      shiftService.createShift("staff4", 4L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+      shiftService.createShift("staff5", 10L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working 24hr shift"));
+      shiftService.createShift("staff6", 8L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+      shiftService.createShift("staff7", 7L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+
+      // Tuesday
+      currentDateTime = monday.plusDays(1);
+      day = currentDateTime.getDayOfMonth();
+      month = currentDateTime.getMonthValue();
+      year = currentDateTime.getYear();
+      shiftService.createShift("staff2", 1L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+      shiftService.createShift("staff3", 3L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+      shiftService.createShift("staff4", 4L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+      shiftService.createShift("staff6", 8L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+      shiftService.createShift("staff7", 7L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+
+      // Wednesday
+      currentDateTime = monday.plusDays(2);
+      day = currentDateTime.getDayOfMonth();
+      month = currentDateTime.getMonthValue();
+      year = currentDateTime.getYear();
+      shiftService.createShift("staff2", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+      shiftService.createShift("staff3", 3L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+      shiftService.createShift("staff4", 4L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+      shiftService.createShift("staff5", 8L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+      shiftService.createShift("staff7", 7L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working 24hr shift"));
+
+      // Thursday
+      currentDateTime = monday.plusDays(3);
+      day = currentDateTime.getDayOfMonth();
+      month = currentDateTime.getMonthValue();
+      year = currentDateTime.getYear();
+      shiftService.createShift("staff2", 1L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+      shiftService.createShift("staff3", 3L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+      shiftService.createShift("staff4", 4L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working 24hr shift"));
+      shiftService.createShift("staff5", 8L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+      shiftService.createShift("staff6", 7L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working 24hr shift"));
+
+      // Friday
+      currentDateTime = monday.plusDays(4);
+      day = currentDateTime.getDayOfMonth();
+      month = currentDateTime.getMonthValue();
+      year = currentDateTime.getYear();
+      shiftService.createShift("staff2", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+      shiftService.createShift("staff3", 3L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+      shiftService.createShift("staff7", 7L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+
+      // Saturday
+      currentDateTime = monday.plusDays(5);
+      day = currentDateTime.getDayOfMonth();
+      month = currentDateTime.getMonthValue();
+      year = currentDateTime.getYear();
+      shiftService.createShift("staff2", 1L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+      shiftService.createShift("staff3", 3L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+      shiftService.createShift("staff4", 4L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+      shiftService.createShift("staff5", 8L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+      shiftService.createShift("staff6", 7L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+
+      // Sunday
+      currentDateTime = monday.plusDays(6);
+      day = currentDateTime.getDayOfMonth();
+      month = currentDateTime.getMonthValue();
+      year = currentDateTime.getYear();
+      shiftService.createShift("staff6", 7L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+      shiftService.createShift("staff7", 11L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+      //      for (int i=0; i<6; i++) {
+//          LocalDateTime currentDateTime = monday.plusDays(i);
+//          int day = currentDateTime.getDayOfMonth();
+//          int month = currentDateTime.getMonthValue();
+//          int year = currentDateTime.getYear();
+//          String[] staffList = {"staff2", "staff3", "staff4", "staff5"};
+//          for (int j=0; j<staffList.length; j++) {
+//              String username = staffList[j];
+//              if (j % 2 == 0){
+//                  shiftService.createShift(username, 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+//              } else {
+//                  shiftService.createShift(username, 1L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+//              }
+//          }
+
   }
 
   private void createPatientData() {
