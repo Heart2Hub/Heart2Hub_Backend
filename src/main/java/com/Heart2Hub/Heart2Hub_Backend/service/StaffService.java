@@ -106,6 +106,7 @@ public class StaffService {
       Staff existingStaff = getStaffByUsername(username);
       existingStaff.setMobileNumber(updatedStaff.getMobileNumber());
       existingStaff.setIsHead(updatedStaff.getIsHead());
+      existingStaff.setStaffRoleEnum(updatedStaff.getStaffRoleEnum());
       SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
       existingStaff.setSubDepartment(subDepartment);
       staffRepository.save(existingStaff);
