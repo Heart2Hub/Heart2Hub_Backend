@@ -5,6 +5,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.LeaveTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.repository.SubDepartmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.service.LeaveService;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
@@ -57,7 +58,9 @@ public class DataLoader implements CommandLineRunner {
   private final TreatmentPlanRecordService treatmentPlanRecordService;
   private final LeaveService leaveService;
 
-    public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, FacilityBookingService facilityBookingService, AuthenticationManager authenticationManager, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService) {
+  private final SubDepartmentRepository subDepartmentRepository;
+
+    public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService, SubDepartmentRepository subDepartmentRepository) {
         this.staffService = staffService;
         this.shiftService = shiftService;
         this.departmentService = departmentService;
@@ -71,6 +74,7 @@ public class DataLoader implements CommandLineRunner {
         this.medicalHistoryRecordService = medicalHistoryRecordService;
         this.treatmentPlanRecordService = treatmentPlanRecordService;
         this.leaveService = leaveService;
+        this.subDepartmentRepository = subDepartmentRepository;
     }
 
     @Override
@@ -109,26 +113,24 @@ public class DataLoader implements CommandLineRunner {
     logger.log(Level.INFO, message);
   }
 
-      private void createStaffData() {
-          Staff staff2 = staffService.createStaff(new Staff("staff2", "password2", "Tharman", "Shanmugaratnamtan", 90000002l, StaffRoleEnum.DOCTOR, true), "Heart Failure Clinic");
-          Staff staff3 = staffService.createStaff(new Staff("staff3", "password3", "Beow", "Tan", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy");
-          staffService.createStaff(new Staff("staff4", "password4", "Erling", "Haaland", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy");
-          staffService.createStaff(new Staff("staff5", "password5", "Uncle", "Raymond", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy");
-          staffService.createStaff(new Staff("staff6", "password6", "Kurt", "Tay", 90000001l, StaffRoleEnum.NURSE, true), "Interventional Cardiology");
-          staffService.createStaff(new Staff("staff7", "password7", "Steven", "Lim", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
-          staffService.createStaff(new Staff("staff8", "password8", "Simon", "Cowell", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
-          staffService.createStaff(new Staff("staff9", "password9", "James", "Charles", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
-          staffService.createStaff(new Staff("staff10", "password10", "Adolf", "-", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
+  private void createStaffData() {
+      Staff staff2 = staffService.createStaff(new Staff("staff2", "password2", "Tharman", "Shanmugaratnamtan", 90000002l, StaffRoleEnum.DOCTOR, true), "Heart Failure Clinic");
+      Staff staff3 = staffService.createStaff(new Staff("staff3", "password3", "Beow", "Tan", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy");
+      staffService.createStaff(new Staff("staff4", "password4", "Erling", "Haaland", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy");
+      staffService.createStaff(new Staff("staff5", "password5", "Uncle", "Raymond", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy");
+      staffService.createStaff(new Staff("staff6", "password6", "Kurt", "Tay", 90000001l, StaffRoleEnum.NURSE, true), "Interventional Cardiology");
+      staffService.createStaff(new Staff("staff7", "password7", "Steven", "Lim", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
+      staffService.createStaff(new Staff("staff8", "password8", "Simon", "Cowell", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
+      staffService.createStaff(new Staff("staff9", "password9", "James", "Charles", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
+      staffService.createStaff(new Staff("staff10", "password10", "Adolf", "-", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
 
-          leaveService.createLeave(LocalDateTime.now().plusMonths(2),
-                  LocalDateTime.now().plusMonths(2).plusDays(3), LeaveTypeEnum.ANNUAL, staff3, staff2, ""
-          );
-          leaveService.createLeave(LocalDateTime.now().plusMonths(3),
-                  LocalDateTime.now().plusMonths(3).plusDays(3), LeaveTypeEnum.SICK, staff3, staff2, ""
-          );
-      }
-
-
+      leaveService.createLeave(LocalDateTime.now().plusMonths(2),
+              LocalDateTime.now().plusMonths(2).plusDays(3), LeaveTypeEnum.ANNUAL, staff3, staff2, ""
+      );
+      leaveService.createLeave(LocalDateTime.now().plusMonths(3),
+              LocalDateTime.now().plusMonths(3).plusDays(3), LeaveTypeEnum.SICK, staff3, staff2, ""
+      );
+  }
 
   private void createDepartmentData() {
     System.out.println();
@@ -205,9 +207,9 @@ public class DataLoader implements CommandLineRunner {
   private void createFacilityData() {
     // For Sub Department Facility Creation
     for (long L = 1L; L <= 40L; L++) {
-      facilityService.createFacility(L, new Facility("Consultation Room 1", "","",2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.CONSULTATION_ROOM));
-      facilityService.createFacility(L, new Facility("Triage Room 1", "","",2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
-      facilityService.createFacility(L, new Facility("Triage Room 2", "","",2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
+      facilityService.createFacility(L, new Facility("Consultation Room 1 " + subDepartmentRepository.findById(L).get().getName(), "","",2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.CONSULTATION_ROOM));
+      facilityService.createFacility(L, new Facility("Triage Room 1 " + subDepartmentRepository.findById(L).get().getName(), "","",2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
+      facilityService.createFacility(L, new Facility("Triage Room 2 " + subDepartmentRepository.findById(L).get().getName(), "","",2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
     }
 //    TO-DO: WARD BED CREATION
 //    for (long L = 1L; L <= 40L; L++) {
@@ -216,42 +218,42 @@ public class DataLoader implements CommandLineRunner {
 //    }
   }
 
-      private void createShiftData() {
-          // Get the current date and time
-          LocalDateTime currentDate = LocalDateTime.now();
+  private void createShiftData() {
+      // Get the current date and time
+      LocalDateTime currentDate = LocalDateTime.now();
 
-          // Calculate the date of the Monday of the current week
-          LocalDateTime monday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-          for (int i=0; i<6; i++) {
-              LocalDateTime currentDateTime = monday.plusDays(i);
-              int day = currentDateTime.getDayOfMonth();
-              int month = currentDateTime.getMonthValue();
-              int year = currentDateTime.getYear();
-              String[] staffList = {"staff2", "staff3", "staff4", "staff5"};
-              for (int j=0; j<staffList.length; j++) {
-                  String username = staffList[j];
-                  if (j % 2 == 0){
-                      shiftService.createShift(username, 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-                  } else {
-                      shiftService.createShift(username, 1L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
-                  }
+      // Calculate the date of the Monday of the current week
+      LocalDateTime monday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+      for (int i=0; i<6; i++) {
+          LocalDateTime currentDateTime = monday.plusDays(i);
+          int day = currentDateTime.getDayOfMonth();
+          int month = currentDateTime.getMonthValue();
+          int year = currentDateTime.getYear();
+          String[] staffList = {"staff2", "staff3", "staff4", "staff5"};
+          for (int j=0; j<staffList.length; j++) {
+              String username = staffList[j];
+              if (j % 2 == 0){
+                  shiftService.createShift(username, 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+              } else {
+                  shiftService.createShift(username, 1L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
               }
           }
       }
+  }
 
-      private void createPatientData() {
-          Patient newPatient = patientService.createPatient(new Patient("patient1","password1"), new ElectronicHealthRecord("S9983422D","Adam","Lai", LocalDateTime.of(1978, 9, 16, 15, 30, 0), "Singapore", "Male", "Chinese", "Singaporean", "Pasir Ris St 42", "81348699"));
-          nextOfKinRecordService.createNextOfKinRecord(newPatient.getPatientId(),new NextOfKinRecord("Father", "S5882617D"));
-          nextOfKinRecordService.createNextOfKinRecord(newPatient.getPatientId(),new NextOfKinRecord("Mother", "S6882617D"));
-          nextOfKinRecordService.createNextOfKinRecord(newPatient.getPatientId(),new NextOfKinRecord("Brother", "S7882617D"));
-          prescriptionRecordService.createPrescriptionRecord(newPatient.getPatientId(),new PrescriptionRecord(LocalDateTime.of(1999, 9, 16, 15, 30, 0),"Panadol", 3, 1, "Pain Relief for Headache", "Stop when symptoms are gone", "Doctor Wen Jie", PrescriptionStatusEnum.UNCOLLECTED));
-          prescriptionRecordService.createPrescriptionRecord(newPatient.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2000, 3, 10, 14, 45, 0), "Aspirin", 2, 1, "Pain Relief for Backache", "Take with food", "Doctor Sarah Smith", PrescriptionStatusEnum.COLLECTED));
-          problemRecordService.createProblemRecord(newPatient.getPatientId(), new ProblemRecord("AIDs", "Doctor Wen Jie", LocalDateTime.of(1999, 9, 16, 15, 30, 0), PriorityEnum.HIGH, ProblemTypeEnum.INFECTIOUS_DISEASES));
-          problemRecordService.createProblemRecord(newPatient.getPatientId(), new ProblemRecord("Diabetes", "Doctor Sarah Smith", LocalDateTime.of(2001, 5, 20, 9, 15, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
-          medicalHistoryRecordService.createMedicalHistoryRecord(newPatient.getPatientId(), new MedicalHistoryRecord("Smoking", "Doctor Wen Jie", LocalDateTime.of(1998, 9, 16, 15, 30, 0), LocalDateTime.of(1999, 9, 16, 15, 30, 0), PriorityEnum.LOW, ProblemTypeEnum.OTHERS));
-          medicalHistoryRecordService.createMedicalHistoryRecord(newPatient.getPatientId(), new MedicalHistoryRecord("Allergies to Pollen", "Doctor Sarah Smith", LocalDateTime.of(2000, 8, 5, 11, 30, 0), LocalDateTime.of(2001, 3, 15, 13, 45, 0), PriorityEnum.HIGH, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
-          treatmentPlanRecordService.createTreatmentPlanRecord(newPatient.getPatientId(), new TreatmentPlanRecord("Dialysis", "Doctor Wen Jie", new ArrayList<>(), LocalDateTime.of(1998, 9, 16, 15, 30, 0), LocalDateTime.of(1999, 9, 16, 15, 30, 0), TreatmentPlanTypeEnum.PREVENTIVE_CARE_PLAN));
-      }
+  private void createPatientData() {
+      Patient newPatient = patientService.createPatient(new Patient("patient1","password1"), new ElectronicHealthRecord("S9983422D","Adam","Lai", LocalDateTime.of(1978, 9, 16, 15, 30, 0), "Singapore", "Male", "Chinese", "Singaporean", "Pasir Ris St 42", "81348699"));
+      nextOfKinRecordService.createNextOfKinRecord(newPatient.getPatientId(),new NextOfKinRecord("Father", "S5882617D"));
+      nextOfKinRecordService.createNextOfKinRecord(newPatient.getPatientId(),new NextOfKinRecord("Mother", "S6882617D"));
+      nextOfKinRecordService.createNextOfKinRecord(newPatient.getPatientId(),new NextOfKinRecord("Brother", "S7882617D"));
+      prescriptionRecordService.createPrescriptionRecord(newPatient.getPatientId(),new PrescriptionRecord(LocalDateTime.of(1999, 9, 16, 15, 30, 0),"Panadol", 3, 1, "Pain Relief for Headache", "Stop when symptoms are gone", "Doctor Wen Jie", PrescriptionStatusEnum.UNCOLLECTED));
+      prescriptionRecordService.createPrescriptionRecord(newPatient.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2000, 3, 10, 14, 45, 0), "Aspirin", 2, 1, "Pain Relief for Backache", "Take with food", "Doctor Sarah Smith", PrescriptionStatusEnum.COLLECTED));
+      problemRecordService.createProblemRecord(newPatient.getPatientId(), new ProblemRecord("AIDs", "Doctor Wen Jie", LocalDateTime.of(1999, 9, 16, 15, 30, 0), PriorityEnum.HIGH, ProblemTypeEnum.INFECTIOUS_DISEASES));
+      problemRecordService.createProblemRecord(newPatient.getPatientId(), new ProblemRecord("Diabetes", "Doctor Sarah Smith", LocalDateTime.of(2001, 5, 20, 9, 15, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
+      medicalHistoryRecordService.createMedicalHistoryRecord(newPatient.getPatientId(), new MedicalHistoryRecord("Smoking", "Doctor Wen Jie", LocalDateTime.of(1998, 9, 16, 15, 30, 0), LocalDateTime.of(1999, 9, 16, 15, 30, 0), PriorityEnum.LOW, ProblemTypeEnum.OTHERS));
+      medicalHistoryRecordService.createMedicalHistoryRecord(newPatient.getPatientId(), new MedicalHistoryRecord("Allergies to Pollen", "Doctor Sarah Smith", LocalDateTime.of(2000, 8, 5, 11, 30, 0), LocalDateTime.of(2001, 3, 15, 13, 45, 0), PriorityEnum.HIGH, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
+      treatmentPlanRecordService.createTreatmentPlanRecord(newPatient.getPatientId(), new TreatmentPlanRecord("Dialysis", "Doctor Wen Jie", new ArrayList<>(), LocalDateTime.of(1998, 9, 16, 15, 30, 0), LocalDateTime.of(1999, 9, 16, 15, 30, 0), TreatmentPlanTypeEnum.PREVENTIVE_CARE_PLAN));
+  }
 
 }
 

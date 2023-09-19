@@ -1,10 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
-import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
-import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-
-import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
+import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffDisabledException;
@@ -12,6 +8,7 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffRoleNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToChangePasswordException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateStaffException;
+import com.Heart2Hub.Heart2Hub_Backend.repository.ImageDocumentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 
 import java.util.ArrayList;
@@ -36,17 +33,18 @@ public class StaffService {
   private final AuthenticationManager authenticationManager;
   private final StaffRepository staffRepository;
   private final SubDepartmentRepository subDepartmentRepository;
+  private final ImageDocumentService imageDocumentService;
 
-  public StaffService(JwtService jwtService, PasswordEncoder passwordEncoder,
-      AuthenticationManager authenticationManager, StaffRepository staffRepository, SubDepartmentRepository subDepartmentRepository) {
-    this.jwtService = jwtService;
-    this.passwordEncoder = passwordEncoder;
-    this.authenticationManager = authenticationManager;
-    this.staffRepository = staffRepository;
-    this.subDepartmentRepository = subDepartmentRepository;
-  }
+    public StaffService(JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, StaffRepository staffRepository, SubDepartmentRepository subDepartmentRepository, ImageDocumentService imageDocumentService) {
+        this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.staffRepository = staffRepository;
+        this.subDepartmentRepository = subDepartmentRepository;
+        this.imageDocumentService = imageDocumentService;
+    }
 
-  public Long countStaff() {
+    public Long countStaff() {
     return staffRepository.count();
   }
 
@@ -80,11 +78,19 @@ public class StaffService {
       return superAdmin;
     }
 
-  public Staff createStaff(Staff newStaff, String subDepartmentName) {
+    public Staff createStaff(Staff newStaff, String subDepartmentName) {
+        return createStaff(newStaff, subDepartmentName, null);
+    }
+
+  public Staff createStaff(Staff newStaff, String subDepartmentName, ImageDocument imageDocument) {
       String password = newStaff.getPassword();
       newStaff.setPassword(passwordEncoder.encode(password));
       SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
       newStaff.setSubDepartment(subDepartment);
+      if (imageDocument != null) {
+          ImageDocument createdImageDocument = imageDocumentService.createImageDocument(imageDocument);
+          newStaff.setProfilePicture(createdImageDocument); // Set the image document if provided
+      }
       try {
           staffRepository.save(newStaff);
           return newStaff;
@@ -92,6 +98,7 @@ public class StaffService {
           throw new UnableToCreateStaffException("Username already exists");
       }
   }
+
   public Optional<Staff> findById(Long id) { return staffRepository.findById(id); }
 
   public Staff updateStaff(Staff updatedStaff, String subDepartmentName) {

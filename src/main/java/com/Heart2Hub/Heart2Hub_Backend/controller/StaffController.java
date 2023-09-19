@@ -1,10 +1,15 @@
 package com.Heart2Hub.Heart2Hub_Backend.controller;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
 import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.SubDepartmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -59,6 +65,17 @@ public class StaffController {
   @PostMapping(value="/createStaff/{subDepartmentName}", consumes={"application/json"}, produces={"application/json"})
   public ResponseEntity<Staff> createStaff(@PathVariable String subDepartmentName,@RequestBody Staff staff) {
       return ResponseEntity.ok(staffService.createStaff(staff, subDepartmentName));
+  }
+
+  @PostMapping(value = "/createStaffWithImage/{subDepartmentName}", consumes = {"application/json"}, produces = {"application/json"})
+  public ResponseEntity<Staff> createStaffWithImage(@PathVariable String subDepartmentName, @RequestBody Map<String, Object> requestBody) {
+    ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new ParameterNamesModule())
+            .registerModule(new Jdk8Module())
+            .registerModule(new JavaTimeModule());
+    Staff staff = objectMapper.convertValue(requestBody.get("staff"), Staff.class);
+    ImageDocument imageDocument = objectMapper.convertValue(requestBody.get("imageDocument"), ImageDocument.class);
+    return ResponseEntity.ok(staffService.createStaff(staff, subDepartmentName, imageDocument));
   }
 
   @PutMapping(value="/updateStaff/{subDepartmentName}", consumes={"application/json"}, produces={"application/json"})
