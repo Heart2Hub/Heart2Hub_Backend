@@ -35,7 +35,12 @@ public class ShiftConstraintsService {
                                                                 newShiftConstraints.getStaffRoleEnum());
       List<ShiftConstraints> listOfShiftConstraints = shiftConstraintsRepository.findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndStaffRoleEnumEquals(newShiftConstraints.getEndTime(), newShiftConstraints.getStartTime(), newShiftConstraints.getStaffRoleEnum());
       if (!listOfShiftConstraints.isEmpty()) {
-        throw new UnableToCreateShiftConstraintsException("There is an overlapping shift constraint with this time for role " + newShiftConstraints.getStaffRoleEnum() + ".");
+        ShiftConstraints sc = listOfShiftConstraints.get(0);
+        LocalTime shiftStart = LocalTime.of(0,0,0);
+        LocalTime shiftEnd = LocalTime.of(23,59,0);
+        if (!(sc.getStartTime().equals(shiftStart) && sc.getEndTime().equals(shiftEnd))) {
+          throw new UnableToCreateShiftConstraintsException("There is an overlapping shift constraint with this time for role " + newShiftConstraints.getStaffRoleEnum() + ".");
+        }
       }
       shiftConstraintsRepository.save(shiftConstraints);
       return shiftConstraints;
@@ -68,6 +73,9 @@ public class ShiftConstraintsService {
 
   public ShiftConstraints updateShiftConstraints(Long shiftConstraintsId, ShiftConstraints updatedShiftConstraints) throws ShiftConstraintsNotFoundException, UnableToCreateShiftConstraintsException {
     try {
+      if (updatedShiftConstraints.getMinPax() < 1) {
+        throw new UnableToCreateShiftConstraintsException("Min pax must be greater than or equal to 1");
+      }
       Optional<ShiftConstraints> shiftConstraintsOptional = shiftConstraintsRepository.findById(shiftConstraintsId);
       if (shiftConstraintsOptional.isPresent()) {
         ShiftConstraints sc = shiftConstraintsOptional.get();
