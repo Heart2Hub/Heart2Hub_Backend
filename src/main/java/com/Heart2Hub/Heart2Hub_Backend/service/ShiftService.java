@@ -1,11 +1,13 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.FacilityBooking;
+import com.Heart2Hub.Heart2Hub_Backend.entity.Leave;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Shift;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.*;
 import com.Heart2Hub.Heart2Hub_Backend.repository.FacilityBookingRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.LeaveRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ShiftRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import org.springframework.security.core.Authentication;
@@ -28,13 +30,16 @@ public class ShiftService {
   private final ShiftRepository shiftRepository;
   private final StaffRepository staffRepository;
   private final FacilityBookingRepository facilityBookingRepository;
+
+  private final LeaveRepository leaveRepository;
   private final FacilityBookingService facilityBookingService;
 
-  public ShiftService(ShiftRepository shiftRepository, StaffRepository staffRepository, FacilityBookingService facilityBookingService, FacilityBookingRepository facilityBookingRepository) {
+  public ShiftService(ShiftRepository shiftRepository, StaffRepository staffRepository, FacilityBookingService facilityBookingService, FacilityBookingRepository facilityBookingRepository, LeaveRepository leaveRepository) {
     this.shiftRepository = shiftRepository;
     this.staffRepository = staffRepository;
     this.facilityBookingService = facilityBookingService;
     this.facilityBookingRepository = facilityBookingRepository;
+    this.leaveRepository = leaveRepository;
   }
 
   public boolean isLoggedInUserHead() {
@@ -130,6 +135,13 @@ public class ShiftService {
     }
 
     // TODO: CHECK FOR LEAVES
+    List<Leave> listOfLeaves = leaveRepository.findByStaff(assignedStaff);
+    for (Leave leave : listOfLeaves) {
+      if (startTime.isEqual(leave.getStartDate()) || startTime.isEqual(leave.getEndDate()) ||
+              startTime.isAfter(leave.getStartDate()) && startTime.isBefore(leave.getEndDate())) {
+        throw new UnableToCreateShiftException("Staff is on leave on this date.");
+      }
+    }
 
     return true;
   }
