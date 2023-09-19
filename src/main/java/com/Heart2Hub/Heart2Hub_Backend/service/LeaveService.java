@@ -80,13 +80,12 @@ public class LeaveService {
     public Leave createLeave(LocalDateTime startDate, LocalDateTime endDate, LeaveTypeEnum leaveTypeEnum, Staff staff, Staff headStaff, String comments, ImageDocument imageDocument) {
         LocalDateTime currentDate = LocalDateTime.now();
         LocalDateTime maxDate = currentDate.plusMonths(6);
-        LocalDateTime minDate = currentDate.plusMonths(1);
+        LocalDateTime minDate = currentDate.plusMonths(1).minusDays(1);
 
-        LocalDateTime prevDate = currentDate.minusDays(1);
 
         // Check if the startDate and endDate are within the allowed date ranges
         if(leaveTypeEnum == LeaveTypeEnum.ANNUAL) {
-            if (startDate.isAfter(minDate) && startDate.isAfter(prevDate) && endDate.isBefore(maxDate)) {
+            if (startDate.isAfter(minDate) && endDate.isBefore(maxDate)) {
             } else {
                 throw new InvalidDateRangeException("Start date and end date must be within allowed date ranges.");
             }

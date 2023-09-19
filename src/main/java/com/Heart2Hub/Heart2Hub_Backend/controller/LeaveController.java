@@ -242,18 +242,13 @@ public class LeaveController {
             @RequestBody Map<String, Object> requestBody) {
 
 
-        try {
             LocalDateTime newStartDate = LocalDateTime.of(LocalDate.parse(requestBody.get("startDate").toString()), LocalTime.MIDNIGHT);
             LocalDateTime newEndDate = LocalDateTime.of(LocalDate.parse(requestBody.get("endDate").toString()), LocalTime.MIDNIGHT);
             String newComments = requestBody.get("comments").toString();
 
             Leave updatedLeave = leaveService.updateLeave(leaveId, newStartDate, newEndDate, newComments, staffId);
             return ResponseEntity.ok(updatedLeave);
-        } catch (Exception ex) {
 
-            throw new InvalidDateRangeException("End date must be later than start date.");
-
-        }
 
     }
 }
