@@ -16,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,10 +74,17 @@ public class LeaveService {
         LocalDateTime maxDate = currentDate.plusMonths(6);
         LocalDateTime minDate = currentDate.plusMonths(1);
 
+        LocalDateTime prevDate = currentDate.minusDays(1);
+
         // Check if the startDate and endDate are within the allowed date ranges
-        if (startDate.isAfter(minDate) && endDate.isBefore(maxDate)) {
+        if(leaveTypeEnum == LeaveTypeEnum.ANNUAL) {
+            if (startDate.isAfter(minDate) && startDate.isAfter(prevDate) && endDate.isBefore(maxDate)) {
+            } else {
+                throw new InvalidDateRangeException("Start date and end date must be within allowed date ranges.");
+            }
+        }
             // Check if the startDate is before the endDate
-            if (startDate.isBefore(endDate)) {
+        if (startDate.isBefore(endDate) && endDate.isBefore(maxDate)) {
                 // Check for overlapping leaves
                 List<Leave> staffLeaves = leaveRepository.findByStaff(staff);
 
@@ -129,9 +138,7 @@ public class LeaveService {
                 } else {
                     throw new LeaveOverlapException("Leave overlaps with existing leaves.");
                 }
-            } else {
-                throw new InvalidDateRangeException("End date must be later than start date.");
-            }
+
         } else {
             throw new InvalidDateRangeException("Start date and end date must be within allowed date ranges.");
         }
@@ -216,8 +223,16 @@ public class LeaveService {
             LocalDateTime maxDate = currentDate.plusMonths(6);
             LocalDateTime minDate = currentDate.plusMonths(1);
 
-            if (newStartDate.isAfter(minDate) && newEndDate.isBefore(maxDate)) {
-                if (newStartDate.isBefore(newEndDate)) {
+            LocalDateTime prevDate = currentDate.minusDays(1);
+
+            if(leaveToUpdate.getLeaveTypeEnum() == LeaveTypeEnum.ANNUAL) {
+                if (newStartDate.isAfter(minDate) && newEndDate.isBefore(maxDate)) {
+                } else {
+                    throw new InvalidDateRangeException("Start date and end date must be within allowed date ranges.");
+                }
+            }
+
+            if (newStartDate.isBefore(newEndDate) && newStartDate.isAfter(prevDate) && newEndDate.isBefore(maxDate)) {
                     List<Leave> staffLeaves = staffRepository.findById(staffId).get().getListOfLeaves();
 
                     // Check for overlaps in the fetched leaves, excluding the leave being updated
@@ -258,9 +273,7 @@ public class LeaveService {
                 } else {
                     throw new InvalidDateRangeException("End date must be later than start date.");
                 }
-            } else {
-                throw new InvalidDateRangeException("Start date and end date must be within allowed date ranges.");
-            }
+
         } else {
             throw new LeaveNotFoundException("Leave with ID " + leaveId + " not found.");
         }

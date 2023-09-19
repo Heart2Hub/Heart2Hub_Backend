@@ -23,11 +23,9 @@ public class Leave {
     private Long leaveId;
 
     @NotNull
-    @FutureOrPresent
     private LocalDateTime startDate;
 
     @NotNull
-    @Future
     private LocalDateTime endDate;
 
     @Size(max = 200)
