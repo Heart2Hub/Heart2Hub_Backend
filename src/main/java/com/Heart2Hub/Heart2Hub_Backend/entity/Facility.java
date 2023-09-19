@@ -6,10 +6,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -26,18 +23,18 @@ public class Facility {
     private Long facilityId;
 
     @Size(max = 100)
-    @NotNull
+    @NotBlank
     private String name;
 
     @Size(max = 100)
-    @NotNull
+    @NotBlank
     private String location;
 
     @Size(max = 300)
-    @NotNull
     private String description;
 
     @Max(200)
+    @Min(1)
     @NotNull
     private Integer capacity;
 
