@@ -83,53 +83,54 @@ public class StaffService {
     }
 
   public Staff createStaff(Staff newStaff, String subDepartmentName, ImageDocument imageDocument) {
-      String password = newStaff.getPassword();
-      newStaff.setPassword(passwordEncoder.encode(password));
-      SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
-      newStaff.setSubDepartment(subDepartment);
-      if (imageDocument != null) {
-          ImageDocument createdImageDocument = imageDocumentService.createImageDocument(imageDocument);
-          newStaff.setProfilePicture(createdImageDocument); // Set the image document if provided
+      if (newStaff.getIsHead() && newStaff.getStaffRoleEnum().toString().equals("ADMIN")) {
+          throw new UnableToCreateStaffException("Cannot create another super admin");
+      } else {
+          String password = newStaff.getPassword();
+          newStaff.setPassword(passwordEncoder.encode(password));
+          SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
+          newStaff.setSubDepartment(subDepartment);
+          if (imageDocument != null) {
+              ImageDocument createdImageDocument = imageDocumentService.createImageDocument(imageDocument);
+              newStaff.setProfilePicture(createdImageDocument); // Set the image document if provided
+          }
+
+          try {
+              staffRepository.save(newStaff);
+              return newStaff;
+          } catch (Exception ex) {
+              throw new UnableToCreateStaffException("Username already exists");
+          }
       }
-      try {
-          staffRepository.save(newStaff);
-          return newStaff;
-      } catch (Exception ex) {
-          throw new UnableToCreateStaffException("Username already exists");
-      }
+
   }
 
   public Optional<Staff> findById(Long id) { return staffRepository.findById(id); }
 
   public Staff updateStaff(Staff updatedStaff, String subDepartmentName) {
-//      String username = updatedStaff.getUsername();
-//      Staff existingStaff = getStaffByUsername(username);
-//      existingStaff.setMobileNumber(updatedStaff.getMobileNumber());
-//      existingStaff.setIsHead(updatedStaff.getIsHead());
-//      existingStaff.setStaffRoleEnum(updatedStaff.getStaffRoleEnum());
-//      SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
-//      existingStaff.setSubDepartment(subDepartment);
-//      staffRepository.save(existingStaff);
-//      return existingStaff;
       return updateStaff(updatedStaff, subDepartmentName, null);
   }
 
     public Staff updateStaff(Staff updatedStaff, String subDepartmentName, ImageDocument imageDocument) {
-        String username = updatedStaff.getUsername();
-        Staff existingStaff = getStaffByUsername(username);
-        existingStaff.setMobileNumber(updatedStaff.getMobileNumber());
-        existingStaff.setIsHead(updatedStaff.getIsHead());
-        existingStaff.setStaffRoleEnum(updatedStaff.getStaffRoleEnum());
-        SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
-        existingStaff.setSubDepartment(subDepartment);
+        if (updatedStaff.getIsHead() && updatedStaff.getStaffRoleEnum().toString().equals("ADMIN")) {
+            throw new UnableToCreateStaffException("Cannot create another super admin");
+        } else {
+            String username = updatedStaff.getUsername();
+            Staff existingStaff = getStaffByUsername(username);
+            existingStaff.setMobileNumber(updatedStaff.getMobileNumber());
+            existingStaff.setIsHead(updatedStaff.getIsHead());
+            existingStaff.setStaffRoleEnum(updatedStaff.getStaffRoleEnum());
+            SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
+            existingStaff.setSubDepartment(subDepartment);
 
-        if (imageDocument != null) {
-            ImageDocument createdImageDocument = imageDocumentService.createImageDocument(imageDocument);
-            existingStaff.setProfilePicture(createdImageDocument); // Set the image document if provided
+            if (imageDocument != null) {
+                ImageDocument createdImageDocument = imageDocumentService.createImageDocument(imageDocument);
+                existingStaff.setProfilePicture(createdImageDocument); // Set the image document if provided
+            }
+
+            staffRepository.save(existingStaff);
+            return existingStaff;
         }
-
-        staffRepository.save(existingStaff);
-        return existingStaff;
     }
 
   public Staff disableStaff(String username) {
