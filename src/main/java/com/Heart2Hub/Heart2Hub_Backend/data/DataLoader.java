@@ -114,15 +114,16 @@ public class DataLoader implements CommandLineRunner {
   }
 
   private void createStaffData() {
-      Staff staff2 = staffService.createStaff(new Staff("staff2", "password2", "Tharman", "Shanmugaratnamtan", 90000002l, StaffRoleEnum.DOCTOR, true), "Heart Failure Clinic");
-      Staff staff3 = staffService.createStaff(new Staff("staff3", "password3", "Beow", "Tan", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy");
-      staffService.createStaff(new Staff("staff4", "password4", "Erling", "Haaland", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy");
-      staffService.createStaff(new Staff("staff5", "password5", "Uncle", "Raymond", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy");
-      staffService.createStaff(new Staff("staff6", "password6", "Kurt", "Tay", 90000001l, StaffRoleEnum.NURSE, true), "Interventional Cardiology");
-      staffService.createStaff(new Staff("staff7", "password7", "Steven", "Lim", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
-      staffService.createStaff(new Staff("staff8", "password8", "Simon", "Cowell", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
-      staffService.createStaff(new Staff("staff9", "password9", "James", "Charles", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
-      staffService.createStaff(new Staff("staff10", "password10", "Adolf", "-", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology");
+      LocalDateTime lt = LocalDateTime.now();
+      Staff staff2 = staffService.createStaff(new Staff("staff2", "password2", "Tharman", "Shanmugaratnamtan", 90000002l, StaffRoleEnum.DOCTOR, true), "Heart Failure Clinic", new ImageDocument("id1.png",lt));
+      Staff staff3 = staffService.createStaff(new Staff("staff3", "password3", "Beow", "Tan", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy", new ImageDocument("id2.png",lt));
+      staffService.createStaff(new Staff("staff4", "password4", "Erling", "Haaland", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy", new ImageDocument("id3.png",lt));
+      staffService.createStaff(new Staff("staff5", "password5", "Uncle", "Raymond", 90000002l, StaffRoleEnum.DOCTOR, false), "Physical Therapy", new ImageDocument("id4.png",lt));
+      staffService.createStaff(new Staff("staff6", "password6", "Kurt", "Tay", 90000001l, StaffRoleEnum.NURSE, true), "Interventional Cardiology", new ImageDocument("id5.png",lt));
+      staffService.createStaff(new Staff("staff7", "password7", "Steven", "Lim", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology", new ImageDocument("id6.png",lt));
+      staffService.createStaff(new Staff("staff8", "password8", "Simon", "Cowell", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology", new ImageDocument("id7.png",lt));
+      staffService.createStaff(new Staff("staff9", "password9", "James", "Charles", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology", new ImageDocument("id8.png",lt));
+      staffService.createStaff(new Staff("staff10", "password10", "Adolf", "-", 90000001l, StaffRoleEnum.NURSE, false), "Interventional Cardiology", new ImageDocument("id9.png",lt));
 
       leaveService.createLeave(LocalDateTime.now().plusMonths(2),
               LocalDateTime.now().plusMonths(2).plusDays(3), LeaveTypeEnum.ANNUAL, staff3, staff2, ""
