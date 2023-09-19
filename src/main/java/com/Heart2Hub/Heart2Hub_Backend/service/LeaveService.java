@@ -91,8 +91,7 @@ public class LeaveService {
                 throw new InvalidDateRangeException("Start date and end date must be within allowed date ranges.");
             }
         }
-            // Check if the startDate is before the endDate
-        if (startDate.isBefore(endDate) && endDate.isBefore(maxDate)) {
+        if (endDate.isBefore(maxDate)) {
                 // Check for overlapping leaves
                 List<Leave> staffLeaves = leaveRepository.findByStaff(staff);
 
@@ -111,7 +110,7 @@ public class LeaveService {
                     LeaveBalance lb = leaveBalanceRepository.findById(assignedStaff.getLeaveBalance().getLeaveBalanceId()).get();
 
                     Duration duration = Duration.between(startDate, endDate);
-                    int days = (int) duration.toDays();
+                    int days = (int) duration.toDays() + 1;
 
                     if (leaveTypeEnum == LeaveTypeEnum.ANNUAL) {
                         if (days <= lb.getAnnualLeave()) {
@@ -141,7 +140,7 @@ public class LeaveService {
 
                     if (imageDocument != null) {
                         ImageDocument createdImageDocument = imageDocumentService.createImageDocument(imageDocument);
-                        newLeave.getListOfImageDocuments().add(createdImageDocument); // Set the image document if provided
+                        newLeave.setImageDocuments(createdImageDocument); // Set the image document if provided
                     }
 
                     staffRepository.save(assignedStaff);
@@ -201,7 +200,7 @@ public class LeaveService {
         LeaveBalance lb = leaveBalanceRepository.findById(staff.getLeaveBalance().getLeaveBalanceId()).get();
 
         Duration duration = Duration.between(l.getStartDate(), l.getEndDate());
-        Integer days = (int) duration.toDays();
+        Integer days = (int) duration.toDays() +1;
         if (l.getLeaveTypeEnum() == LeaveTypeEnum.ANNUAL) {
             lb.setAnnualLeave(lb.getAnnualLeave() + days);
         } else if (l.getLeaveTypeEnum() == LeaveTypeEnum.SICK) {
@@ -245,7 +244,7 @@ public class LeaveService {
                 }
             }
 
-            if (newStartDate.isBefore(newEndDate) && newStartDate.isAfter(prevDate) && newEndDate.isBefore(maxDate)) {
+            if (newStartDate.isAfter(prevDate) && newEndDate.isBefore(maxDate)) {
                     List<Leave> staffLeaves = staffRepository.findById(staffId).get().getListOfLeaves();
 
                     // Check for overlaps in the fetched leaves, excluding the leave being updated
@@ -257,22 +256,32 @@ public class LeaveService {
                     if (!hasOverlap) {
 
                         Duration duration1 = Duration.between(leaveToUpdate.getStartDate(), leaveToUpdate.getEndDate());
-                        Integer plusDays = (int) duration1.toDays();
+                        Integer plusDays = (int) duration1.toDays() + 1;
 
                         Duration duration2 = Duration.between(newStartDate, newEndDate);
-                        Integer minusDays = (int) duration2.toDays();
+                        Integer minusDays = (int) duration2.toDays() + 1;
 
                         LeaveBalance lb = staffRepository.findById(staffId).get().getLeaveBalance();
 
                         if (leaveToUpdate.getLeaveTypeEnum() == LeaveTypeEnum.ANNUAL) {
+                            if (lb.getAnnualLeave() - minusDays + plusDays < 0) {
+                                throw new InsufficientLeaveBalanceException("Insufficient annual leave balance.");
+                            }
                             lb.setAnnualLeave(lb.getAnnualLeave() - minusDays + plusDays);
                         } else if (leaveToUpdate.getLeaveTypeEnum() == LeaveTypeEnum.SICK) {
+                            if (lb.getSickLeave() - minusDays + plusDays < 0) {
+                                throw new InsufficientLeaveBalanceException("Insufficient sick leave balance.");
+                            }
                             lb.setSickLeave(lb.getSickLeave() - minusDays + plusDays);
                         } else {
+                            if (lb.getParentalLeave() - minusDays + plusDays < 0) {
+                                throw new InsufficientLeaveBalanceException("Insufficient parental leave balance.");
+                            }
                             lb.setParentalLeave(lb.getParentalLeave() - minusDays + plusDays);
                         }
 
-                        leaveToUpdate.setStartDate(newStartDate);
+
+                leaveToUpdate.setStartDate(newStartDate);
                         leaveToUpdate.setEndDate(newEndDate);
                         leaveToUpdate.setComments(newComments);
 
@@ -284,7 +293,7 @@ public class LeaveService {
                         throw new LeaveOverlapException("Leave overlaps with existing leaves.");
                     }
                 } else {
-                    throw new InvalidDateRangeException("End date must be later than start date.");
+                    throw new InvalidDateRangeException("Insufficient leave balance.");
                 }
 
         } else {
