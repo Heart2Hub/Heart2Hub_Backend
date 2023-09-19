@@ -102,7 +102,7 @@ public class DataLoader implements CommandLineRunner {
     createPatientData();
 
     // Assign super admin a sub-department
-      staffService.updateStaff(superAdmin, "Interventional Cardiology");
+      // staffService.updateStaff(superAdmin, "Interventional Cardiology");
 
     //code ends here
 
