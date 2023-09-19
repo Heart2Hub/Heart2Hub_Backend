@@ -36,6 +36,7 @@ public class Staff implements UserDetails {
   private Long staffId;
   @NotNull
   @Size(min = 6)
+  @Column(unique = true)
   private String username;
   @NotNull
   @Column(unique = true)
@@ -88,7 +89,6 @@ public class Staff implements UserDetails {
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private List<Post> listOfPosts;
 
-  @JsonBackReference
   @OneToOne(cascade = CascadeType.ALL, optional = true)
   private ImageDocument profilePicture;
 

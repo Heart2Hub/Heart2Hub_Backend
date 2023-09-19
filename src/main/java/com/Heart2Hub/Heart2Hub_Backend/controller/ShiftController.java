@@ -77,4 +77,22 @@ public class ShiftController {
     }
   }
 
+  @GetMapping(value="/viewOverallRoster/{username}", produces={"application/json"})
+  public ResponseEntity viewMonthlyRoster(@PathVariable String username) {
+    try {
+      return ResponseEntity.ok(shiftService.viewOverallRoster(username));
+    } catch (StaffNotFoundException ex) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+  }
+
+  @GetMapping(value="/getAllShiftsFromDate/{username}", produces={"application/json"})
+  public ResponseEntity getAllShifts(@PathVariable String username, @RequestParam String startDate, @RequestParam String endDate) {
+    try {
+      return ResponseEntity.ok(shiftService.getAllShiftsForStaffFromDates(username, startDate, endDate));
+    } catch (StaffRoleNotFoundException ex) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+  }
+
 }

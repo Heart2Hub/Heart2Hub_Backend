@@ -1,16 +1,14 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
-import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
-import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-
-import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
+import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.StaffDisabledException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffRoleNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToChangePasswordException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateStaffException;
+import com.Heart2Hub.Heart2Hub_Backend.repository.ImageDocumentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 
 import java.util.ArrayList;
@@ -35,17 +33,18 @@ public class StaffService {
   private final AuthenticationManager authenticationManager;
   private final StaffRepository staffRepository;
   private final SubDepartmentRepository subDepartmentRepository;
+  private final ImageDocumentService imageDocumentService;
 
-  public StaffService(JwtService jwtService, PasswordEncoder passwordEncoder,
-      AuthenticationManager authenticationManager, StaffRepository staffRepository, SubDepartmentRepository subDepartmentRepository) {
-    this.jwtService = jwtService;
-    this.passwordEncoder = passwordEncoder;
-    this.authenticationManager = authenticationManager;
-    this.staffRepository = staffRepository;
-    this.subDepartmentRepository = subDepartmentRepository;
-  }
+    public StaffService(JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, StaffRepository staffRepository, SubDepartmentRepository subDepartmentRepository, ImageDocumentService imageDocumentService) {
+        this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.staffRepository = staffRepository;
+        this.subDepartmentRepository = subDepartmentRepository;
+        this.imageDocumentService = imageDocumentService;
+    }
 
-  public Long countStaff() {
+    public Long countStaff() {
     return staffRepository.count();
   }
 
@@ -79,30 +78,60 @@ public class StaffService {
       return superAdmin;
     }
 
-  public Staff createStaff(Staff newStaff, String subDepartmentName) {
-      String password = newStaff.getPassword();
-      newStaff.setPassword(passwordEncoder.encode(password));
-      SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
-      newStaff.setSubDepartment(subDepartment);
-      try {
-          staffRepository.save(newStaff);
-          return newStaff;
-      } catch (Exception ex) {
-          throw new UnableToCreateStaffException("Username already exists");
+    public Staff createStaff(Staff newStaff, String subDepartmentName) {
+        return createStaff(newStaff, subDepartmentName, null);
+    }
+
+  public Staff createStaff(Staff newStaff, String subDepartmentName, ImageDocument imageDocument) {
+      if (newStaff.getIsHead() && newStaff.getStaffRoleEnum().toString().equals("ADMIN")) {
+          throw new UnableToCreateStaffException("Cannot create another super admin");
+      } else {
+          String password = newStaff.getPassword();
+          newStaff.setPassword(passwordEncoder.encode(password));
+          SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
+          newStaff.setSubDepartment(subDepartment);
+          if (imageDocument != null) {
+              ImageDocument createdImageDocument = imageDocumentService.createImageDocument(imageDocument);
+              newStaff.setProfilePicture(createdImageDocument); // Set the image document if provided
+          }
+
+          try {
+              staffRepository.save(newStaff);
+              return newStaff;
+          } catch (Exception ex) {
+              throw new UnableToCreateStaffException("Username already exists");
+          }
       }
+
   }
+
   public Optional<Staff> findById(Long id) { return staffRepository.findById(id); }
 
   public Staff updateStaff(Staff updatedStaff, String subDepartmentName) {
-      String username = updatedStaff.getUsername();
-      Staff existingStaff = getStaffByUsername(username);
-      existingStaff.setMobileNumber(updatedStaff.getMobileNumber());
-      existingStaff.setIsHead(updatedStaff.getIsHead());
-      SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
-      existingStaff.setSubDepartment(subDepartment);
-      staffRepository.save(existingStaff);
-      return existingStaff;
+      return updateStaff(updatedStaff, subDepartmentName, null);
   }
+
+    public Staff updateStaff(Staff updatedStaff, String subDepartmentName, ImageDocument imageDocument) {
+        if (updatedStaff.getIsHead() && updatedStaff.getStaffRoleEnum().toString().equals("ADMIN")) {
+            throw new UnableToCreateStaffException("Cannot create another super admin");
+        } else {
+            String username = updatedStaff.getUsername();
+            Staff existingStaff = getStaffByUsername(username);
+            existingStaff.setMobileNumber(updatedStaff.getMobileNumber());
+            existingStaff.setIsHead(updatedStaff.getIsHead());
+            existingStaff.setStaffRoleEnum(updatedStaff.getStaffRoleEnum());
+            SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
+            existingStaff.setSubDepartment(subDepartment);
+
+            if (imageDocument != null) {
+                ImageDocument createdImageDocument = imageDocumentService.createImageDocument(imageDocument);
+                existingStaff.setProfilePicture(createdImageDocument); // Set the image document if provided
+            }
+
+            staffRepository.save(existingStaff);
+            return existingStaff;
+        }
+    }
 
   public Staff disableStaff(String username) {
       Staff existingStaff = getStaffByUsername(username);
@@ -118,6 +147,9 @@ public class StaffService {
     //at this point, user is authenticated
     Staff staff = staffRepository.findByUsername(username)
         .orElseThrow(() -> new StaffNotFoundException("Staff not found"));
+    if (staff.getDisabled()) {
+      throw new StaffDisabledException("Staff is disabled");
+    }
     return jwtService.generateToken(staff);
   }
 
