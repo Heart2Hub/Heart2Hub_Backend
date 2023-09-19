@@ -36,6 +36,7 @@ public class Staff implements UserDetails {
   private Long staffId;
   @NotNull
   @Size(min = 6)
+  @Column(unique = true)
   private String username;
   @NotNull
   @Column(unique = true)
