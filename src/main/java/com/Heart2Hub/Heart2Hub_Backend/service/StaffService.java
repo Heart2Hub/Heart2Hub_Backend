@@ -102,16 +102,35 @@ public class StaffService {
   public Optional<Staff> findById(Long id) { return staffRepository.findById(id); }
 
   public Staff updateStaff(Staff updatedStaff, String subDepartmentName) {
-      String username = updatedStaff.getUsername();
-      Staff existingStaff = getStaffByUsername(username);
-      existingStaff.setMobileNumber(updatedStaff.getMobileNumber());
-      existingStaff.setIsHead(updatedStaff.getIsHead());
-      existingStaff.setStaffRoleEnum(updatedStaff.getStaffRoleEnum());
-      SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
-      existingStaff.setSubDepartment(subDepartment);
-      staffRepository.save(existingStaff);
-      return existingStaff;
+//      String username = updatedStaff.getUsername();
+//      Staff existingStaff = getStaffByUsername(username);
+//      existingStaff.setMobileNumber(updatedStaff.getMobileNumber());
+//      existingStaff.setIsHead(updatedStaff.getIsHead());
+//      existingStaff.setStaffRoleEnum(updatedStaff.getStaffRoleEnum());
+//      SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
+//      existingStaff.setSubDepartment(subDepartment);
+//      staffRepository.save(existingStaff);
+//      return existingStaff;
+      return updateStaff(updatedStaff, subDepartmentName, null);
   }
+
+    public Staff updateStaff(Staff updatedStaff, String subDepartmentName, ImageDocument imageDocument) {
+        String username = updatedStaff.getUsername();
+        Staff existingStaff = getStaffByUsername(username);
+        existingStaff.setMobileNumber(updatedStaff.getMobileNumber());
+        existingStaff.setIsHead(updatedStaff.getIsHead());
+        existingStaff.setStaffRoleEnum(updatedStaff.getStaffRoleEnum());
+        SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
+        existingStaff.setSubDepartment(subDepartment);
+
+        if (imageDocument != null) {
+            ImageDocument createdImageDocument = imageDocumentService.createImageDocument(imageDocument);
+            existingStaff.setProfilePicture(createdImageDocument); // Set the image document if provided
+        }
+
+        staffRepository.save(existingStaff);
+        return existingStaff;
+    }
 
   public Staff disableStaff(String username) {
       Staff existingStaff = getStaffByUsername(username);
