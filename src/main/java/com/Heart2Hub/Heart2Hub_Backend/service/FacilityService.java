@@ -69,7 +69,7 @@ public class FacilityService {
 
     public String deleteFacility(Long facilityId) throws FacilityNotFoundException {
         if (!isLoggedInUserAdmin()) {
-            throw new UnableToCreateFacilityException("Staff cannot delete shifts as he/she is not an admin.");
+            throw new UnableToCreateFacilityException("Staff cannot delete facilities as he/she is not an admin.");
         }
         try {
             Optional<Facility> facilityOptional = facilityRepository.findById(facilityId);
@@ -91,11 +91,9 @@ public class FacilityService {
 
     public Facility updateFacility(Long facilityId, Facility updatedFacility) throws FacilityNotFoundException {
         if (!isLoggedInUserAdmin()) {
-            throw new UnableToCreateFacilityException("Staff cannot update shifts as he/she is not an Admin.");
+            throw new UnableToCreateFacilityException("Staff cannot update facilities as he/she is not an Admin.");
         }
         try {
-            System.out.println("HERHERH" + facilityId);
-            System.out.println("HERHERH" + updatedFacility);
             Optional<Facility> facilityOptional = facilityRepository.findById(facilityId);
             if (facilityOptional.isPresent()) {
                 Facility facility = facilityOptional.get();
