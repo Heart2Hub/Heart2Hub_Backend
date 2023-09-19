@@ -44,6 +44,8 @@ public class ShiftConstraintsService {
       }
       shiftConstraintsRepository.save(shiftConstraints);
       return shiftConstraints;
+    } catch (NullPointerException ex) {
+      throw new UnableToCreateShiftConstraintsException("Min pax field is compulsory!");
     } catch (Exception ex) {
       throw new UnableToCreateShiftConstraintsException(ex.getMessage());
     }
@@ -92,6 +94,8 @@ public class ShiftConstraintsService {
       } else {
         throw new ShiftConstraintsNotFoundException("Shift with ID: " + shiftConstraintsId + " is not found");
       }
+    } catch (NullPointerException ex) {
+      throw new UnableToCreateShiftConstraintsException("Min pax field is compulsory!");
     } catch (Exception ex) {
       throw new ShiftConstraintsNotFoundException(ex.getMessage());
     }
