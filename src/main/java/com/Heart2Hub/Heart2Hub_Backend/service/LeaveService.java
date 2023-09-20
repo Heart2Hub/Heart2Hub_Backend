@@ -82,6 +82,10 @@ public class LeaveService {
         LocalDateTime maxDate = currentDate.plusMonths(6);
         LocalDateTime minDate = currentDate.plusMonths(1).minusDays(1);
 
+        if (endDate.isBefore(startDate)) {
+            throw new InvalidDateRangeException("End date cannot be before start date");
+        }
+
 
         // Check if the startDate and endDate are within the allowed date ranges
         if(leaveTypeEnum == LeaveTypeEnum.ANNUAL) {
@@ -123,7 +127,7 @@ public class LeaveService {
                         } else {
                             throw new InsufficientLeaveBalanceException("Insufficient sick leave balance.");
                         }
-                    } else {
+                    } else if (leaveTypeEnum == LeaveTypeEnum.PARENTAL){
                         if (days <= lb.getParentalLeave()) {
                         } else {
                             throw new InsufficientLeaveBalanceException("Insufficient parental leave balance.");
