@@ -1,7 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.data;
 
 import com.Heart2Hub.Heart2Hub_Backend.Heart2HubBackendApplication;
-import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.LeaveTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
@@ -14,7 +13,6 @@ import com.Heart2Hub.Heart2Hub_Backend.service.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringBootVersion;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,17 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-
-import java.time.LocalDateTime;
 
 @Component("loader")
 @Transactional
@@ -57,10 +46,11 @@ public class DataLoader implements CommandLineRunner {
   private final MedicalHistoryRecordService medicalHistoryRecordService;
   private final TreatmentPlanRecordService treatmentPlanRecordService;
   private final LeaveService leaveService;
+    private final ShiftConstraintsService shiftConstraintsService;
 
   private final SubDepartmentRepository subDepartmentRepository;
 
-    public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService, SubDepartmentRepository subDepartmentRepository) {
+    public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, SubDepartmentRepository subDepartmentRepository) {
         this.staffService = staffService;
         this.shiftService = shiftService;
         this.departmentService = departmentService;
@@ -74,6 +64,7 @@ public class DataLoader implements CommandLineRunner {
         this.medicalHistoryRecordService = medicalHistoryRecordService;
         this.treatmentPlanRecordService = treatmentPlanRecordService;
         this.leaveService = leaveService;
+        this.shiftConstraintsService = shiftConstraintsService;
         this.subDepartmentRepository = subDepartmentRepository;
     }
 
@@ -118,7 +109,7 @@ public class DataLoader implements CommandLineRunner {
       Staff staff2 = staffService.createStaff(new Staff("staff2", "password2", "Tharman", "Shanmugaratnam", 93860982l, StaffRoleEnum.DOCTOR, true), "Heart Failure Clinic", new ImageDocument("id1.png",lt));
       Staff staff3 = staffService.createStaff(new Staff("staff3", "password3", "Beow", "Tan", 89645629l, StaffRoleEnum.DOCTOR, false), "Heart Failure Clinic", new ImageDocument("id2.png",lt));
       Staff staff4 = staffService.createStaff(new Staff("staff4", "password4", "Erling", "Haaland", 93490928l, StaffRoleEnum.DOCTOR, false), "Stroke Center", new ImageDocument("id3.png",lt));
-      staffService.createStaff(new Staff("staff5", "password5", "John", "Wick", 87609870l, StaffRoleEnum.DOCTOR, false), "Physical Therapy", new ImageDocument("id4.png",lt));
+      Staff staff5 = staffService.createStaff(new Staff("staff5", "password5", "John", "Wick", 87609870l, StaffRoleEnum.DOCTOR, false), "Physical Therapy", new ImageDocument("id4.png",lt));
       staffService.createStaff(new Staff("staff6", "password6", "Donald", "Raymond", 96997125l, StaffRoleEnum.DOCTOR, false), "Trauma Center", new ImageDocument("id5.png",lt));
       staffService.createStaff(new Staff("staff7", "password7", "Steven", "Lim", 98762093l, StaffRoleEnum.DOCTOR, false), "General Surgery", new ImageDocument("id6.png",lt));
       staffService.createStaff(new Staff("staff8", "password8", "Kurt", "Tay", 80182931l, StaffRoleEnum.NURSE, true), "General Surgery", new ImageDocument("id7.png",lt));
@@ -126,11 +117,14 @@ public class DataLoader implements CommandLineRunner {
       staffService.createStaff(new Staff("staff10", "password10", "James", "Charles", 93420093l, StaffRoleEnum.NURSE, false), "Sports Medicine", new ImageDocument("id9.png",lt));
       staffService.createStaff(new Staff("staff11", "password11", "Ronald", "Weasley", 90897321l, StaffRoleEnum.NURSE, false), "Emergency Room (ER)", new ImageDocument("id10.png",lt));
 
+      leaveService.createLeave(LocalDateTime.now().plusMonths(3),
+              LocalDateTime.now().plusMonths(3).plusDays(2), LeaveTypeEnum.ANNUAL, staff3, staff2, "Going to see F1 race"
+      );
       leaveService.createLeave(LocalDateTime.now().plusMonths(2),
-              LocalDateTime.now().plusMonths(2).plusDays(3), LeaveTypeEnum.ANNUAL, staff3, staff2, "Thailand family trip."
+              LocalDateTime.now().plusMonths(2).plusDays(3), LeaveTypeEnum.ANNUAL, staff4, staff2, "Thailand family trip"
       );
       leaveService.createLeave(LocalDateTime.now().plusMonths(3),
-              LocalDateTime.now().plusMonths(3).plusDays(2), LeaveTypeEnum.ANNUAL, staff4, staff2, "Exam for my Master's degree."
+              LocalDateTime.now().plusMonths(3).plusDays(2), LeaveTypeEnum.ANNUAL, staff5, staff2, "Exam for my Master's degree"
       );
   }
 
@@ -299,20 +293,8 @@ public class DataLoader implements CommandLineRunner {
       year = currentDateTime.getYear();
       shiftService.createShift("staff6", 7L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
       shiftService.createShift("staff7", 11L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-      //      for (int i=0; i<6; i++) {
-//          LocalDateTime currentDateTime = monday.plusDays(i);
-//          int day = currentDateTime.getDayOfMonth();
-//          int month = currentDateTime.getMonthValue();
-//          int year = currentDateTime.getYear();
-//          String[] staffList = {"staff2", "staff3", "staff4", "staff5"};
-//          for (int j=0; j<staffList.length; j++) {
-//              String username = staffList[j];
-//              if (j % 2 == 0){
-//                  shiftService.createShift(username, 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-//              } else {
-//                  shiftService.createShift(username, 1L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
-//              }
-//          }
+
+      shiftConstraintsService.createShiftConstraints(new ShiftConstraints(LocalTime.of(16,0,0), LocalTime.of(23,59,0), 1, StaffRoleEnum.DOCTOR));
 
   }
 

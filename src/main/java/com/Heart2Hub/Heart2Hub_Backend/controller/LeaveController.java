@@ -162,11 +162,11 @@ public class LeaveController {
         Optional<LeaveBalance> leaveBalance = leaveBalanceService.getLeaveBalanceById(staff.getLeaveBalance().getLeaveBalanceId());
         Leave l = new Leave();
 
-
-        if (leaveBalance.isPresent()) {
-            LeaveBalance lb = leaveBalance.get();
-            Duration duration = Duration.between(startDate, endDate);
-            Integer days = (int) duration.toDays() +1;
+        if (leaveTypeEnum != LeaveTypeEnum.UNPAID) {
+            if (leaveBalance.isPresent()) {
+                LeaveBalance lb = leaveBalance.get();
+                Duration duration = Duration.between(startDate, endDate);
+                Integer days = (int) duration.toDays() + 1;
 
                 if (leaveTypeEnum == LeaveTypeEnum.ANNUAL) {
                     if (requestBody.get("imageLink") != null && requestBody.get("createdDate") != null) {
@@ -217,8 +217,21 @@ public class LeaveController {
 //                }
                 }
                 leaveBalanceService.updateLeaveBalance(lb);
+            }
 
+        } else {
+            if (requestBody.get("imageLink") != null && requestBody.get("createdDate") != null) {
+                String imageLink = requestBody.get("imageLink").toString();
+                String createdDateStr = requestBody.get("createdDate").toString();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+                LocalDateTime createdDate = LocalDateTime.parse(createdDateStr, formatter);
 
+                ImageDocument imageDocument = new ImageDocument(imageLink, createdDate);
+
+                l = leaveService.createLeave(startDate, endDate, leaveTypeEnum, staff, headStaff, comments, imageDocument);
+            } else {
+                l = leaveService.createLeave(startDate, endDate, leaveTypeEnum, staff, headStaff, comments);
+            }
         }
 
         return ResponseEntity.ok(l);
