@@ -54,6 +54,10 @@ public class Facility {
     @ManyToOne(fetch = FetchType.EAGER)
     private SubDepartment subDepartment;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Department department;
+
     public Facility() {
         this.listOfFacilityBookings = new ArrayList<>();
     }

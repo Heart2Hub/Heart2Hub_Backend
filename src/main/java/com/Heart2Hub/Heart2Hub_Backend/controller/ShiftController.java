@@ -32,9 +32,9 @@ public class ShiftController {
   }
 
   @GetMapping(value="/getAllShifts/{role}", produces={"application/json"})
-  public ResponseEntity getAllShifts(@PathVariable String role) {
+  public ResponseEntity getAllShifts(@PathVariable String role, @RequestParam("unit") String unit) {
     try {
-      return ResponseEntity.ok(shiftService.getAllShiftsByRole(role));
+      return ResponseEntity.ok(shiftService.getAllShiftsByRole(role, unit));
     } catch (UnableToCreateShiftException | StaffRoleNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }

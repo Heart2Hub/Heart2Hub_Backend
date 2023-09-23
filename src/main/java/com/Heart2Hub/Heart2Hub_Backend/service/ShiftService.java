@@ -146,13 +146,13 @@ public class ShiftService {
     return true;
   }
 
-  public List<Shift> getAllShiftsByRole(String role) throws StaffRoleNotFoundException, UnableToCreateShiftException {
+  public List<Shift> getAllShiftsByRole(String role, String unit) throws StaffRoleNotFoundException, UnableToCreateShiftException {
     if (!isLoggedInUserHead()) {
       throw new UnableToCreateShiftException("Staff cannot view all shifts as he/she is not a head.");
     }
     try {
       StaffRoleEnum staffRoleEnum = StaffRoleEnum.valueOf(role.toUpperCase());
-      List<Staff> staffList = staffRepository.findByStaffRoleEnum(staffRoleEnum);
+      List<Staff> staffList = staffRepository.findByStaffRoleEnumAndUnitNameEqualsIgnoreCase(staffRoleEnum, unit);
       List<Shift> listOfShifts = new ArrayList<>();
       for (Staff staff : staffList) {
         List<Shift> shifts = shiftRepository.findShiftsByStaff(staff);
@@ -258,12 +258,12 @@ public class ShiftService {
     }
   }
 
-  public List<Shift> viewDailyRoster(String date, String role) throws StaffRoleNotFoundException {
+  public List<Shift> viewDailyRoster(String date, String role, String unitName) throws StaffRoleNotFoundException {
     try {
       StaffRoleEnum staffRoleEnum = StaffRoleEnum.valueOf(role.toUpperCase());
       LocalDateTime start = LocalDateTime.parse(date + " 00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
       LocalDateTime end = LocalDateTime.parse(date + " 23:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-      return shiftRepository.findByStaffStaffRoleEnumAndStartTimeBetween(staffRoleEnum, start, end);
+      return shiftRepository.findByStaffStaffRoleEnumAndStaffUnitNameAndStartTimeBetween(staffRoleEnum, unitName, start, end);
     } catch (Exception ex) {
       throw new StaffRoleNotFoundException(ex.getMessage());
     }

@@ -16,18 +16,18 @@ public class ShiftConstraintsController {
   private final ShiftConstraintsService shiftConstraintsService;
 
   @PostMapping(value="/createShiftConstraints", consumes={"application/json"}, produces={"application/json"})
-  public ResponseEntity createShiftConstraints(@RequestBody ShiftConstraints shiftConstraints) {
+  public ResponseEntity createShiftConstraints(@RequestBody ShiftConstraints shiftConstraints, @RequestParam String facilityName) {
     try {
-      return ResponseEntity.ok(shiftConstraintsService.createShiftConstraints(shiftConstraints));
+      return ResponseEntity.ok(shiftConstraintsService.createShiftConstraints(shiftConstraints, facilityName));
     } catch (UnableToCreateShiftConstraintsException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
   }
 
   @GetMapping(value="/getAllShiftConstraints/{role}", produces={"application/json"})
-  public ResponseEntity getAllShiftConstraints(@PathVariable String role) {
+  public ResponseEntity getAllShiftConstraints(@PathVariable String role, @RequestParam String department) {
     try {
-      return ResponseEntity.ok(shiftConstraintsService.getAllShiftConstraintsByRole(role));
+      return ResponseEntity.ok(shiftConstraintsService.getAllShiftConstraintsByRole(role, department));
     } catch (StaffRoleNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
@@ -44,18 +44,18 @@ public class ShiftConstraintsController {
   }
 
   @PutMapping(value="/updateShiftConstraints/{shiftConstraintsId}", consumes={"application/json"}, produces={"application/json"})
-  public ResponseEntity updateShiftConstraints(@PathVariable Long shiftConstraintsId, @RequestBody ShiftConstraints shiftConstraints) {
+  public ResponseEntity updateShiftConstraints(@PathVariable Long shiftConstraintsId, @RequestBody ShiftConstraints shiftConstraints, @RequestParam String facilityName) {
     try {
-      return ResponseEntity.ok(shiftConstraintsService.updateShiftConstraints(shiftConstraintsId, shiftConstraints));
+      return ResponseEntity.ok(shiftConstraintsService.updateShiftConstraints(shiftConstraintsId, shiftConstraints, facilityName));
     } catch (UnableToCreateShiftConstraintsException | ShiftConstraintsNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
   }
 
   @GetMapping(value="/checkIsValidWorkday", produces={"application/json"})
-  public ResponseEntity checkIsValidWorkday(@RequestParam String role, @RequestParam String date) {
+  public ResponseEntity checkIsValidWorkday(@RequestParam String role, @RequestParam String date, @RequestParam String department) {
     try {
-      return ResponseEntity.ok(shiftConstraintsService.isValidWorkDay(role, date));
+      return ResponseEntity.ok(shiftConstraintsService.isValidWorkDay(role, date, department));
     } catch (StaffRoleNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }

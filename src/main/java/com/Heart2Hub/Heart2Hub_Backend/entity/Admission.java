@@ -1,6 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -10,6 +11,7 @@ import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import lombok.Data;
@@ -57,9 +59,13 @@ public class Admission {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PatientRequest> listOfPatientRequests;
 
+    @JsonIgnore
+    @ManyToOne
+    private Ward ward;
+
     public Admission(){
-        this.listOfMedicationOrders = List.of();
-        this.listOfPatientRequests = List.of();
+        this.listOfMedicationOrders = new ArrayList<>();
+        this.listOfPatientRequests = new ArrayList<>();
     }
 
     public Admission(Integer duration, LocalDateTime admissionDateTime, LocalDateTime dischargeDateTime, String comments, Patient patient) {

@@ -92,9 +92,13 @@ public class Staff implements UserDetails {
   @OneToOne(cascade = CascadeType.ALL, optional = true)
   private ImageDocument profilePicture;
 
+//  @ManyToOne
+//  @JoinColumn(name = "sub_department_id")
+//  private SubDepartment subDepartment;
+
   @ManyToOne
-  @JoinColumn(name = "sub_department_id")
-  private SubDepartment subDepartment;
+  @JoinColumn(name = "unit_id")
+  private Unit unit;
 
   @NotNull
   private Boolean disabled = false;
