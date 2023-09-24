@@ -100,8 +100,8 @@ public class LeaveService {
 
                 // Check for overlaps in the fetched leaves
                 boolean hasOverlap = staffLeaves.stream()
-                        .anyMatch(leave -> (startDate.isBefore(leave.getEndDate()) || startDate.isEqual(leave.getEndDate())) &&
-                                (endDate.isAfter(leave.getStartDate()) || endDate.isEqual(leave.getStartDate())));
+                        .anyMatch(leave -> (leave.getApprovalStatusEnum() != ApprovalStatusEnum.REJECTED && (startDate.isBefore(leave.getEndDate()) || startDate.isEqual(leave.getEndDate()))) &&
+                                (leave.getApprovalStatusEnum() != ApprovalStatusEnum.REJECTED && (endDate.isAfter(leave.getStartDate()) || endDate.isEqual(leave.getStartDate()))));
 
                 if (!hasOverlap) {
 
@@ -253,8 +253,8 @@ public class LeaveService {
                     // Check for overlaps in the fetched leaves, excluding the leave being updated
                     boolean hasOverlap = staffLeaves.stream()
                             .filter(leave -> !leave.equals(leaveToUpdate))
-                            .anyMatch(leave -> (newStartDate.isBefore(leave.getEndDate()) || newStartDate.isEqual(leave.getEndDate())) &&
-                                    (newEndDate.isAfter(leave.getStartDate()) || newEndDate.isEqual(leave.getStartDate())));
+                            .anyMatch(leave -> (leave.getApprovalStatusEnum() != ApprovalStatusEnum.REJECTED && (newStartDate.isBefore(leave.getEndDate()) || newStartDate.isEqual(leave.getEndDate()))) &&
+                                    (leave.getApprovalStatusEnum() != ApprovalStatusEnum.REJECTED && (newEndDate.isAfter(leave.getStartDate()) || newEndDate.isEqual(leave.getStartDate()))));
 
                     if (!hasOverlap) {
 

@@ -177,7 +177,7 @@ public class ShiftConstraintsService {
     }
   }
 
-  public boolean isValidWorkDay(String role, String date, String department) throws StaffRoleNotFoundException {
+  public List<String> isValidWorkDay(String role, String date, String department) throws StaffRoleNotFoundException {
     try {
       List<Shift> listOfShifts = shiftService.viewDailyRoster(date, role, department);
       List<ShiftConstraints> listOfShiftConstraints = getAllShiftConstraintsByRole(role, department);
@@ -244,13 +244,18 @@ public class ShiftConstraintsService {
           }
         }
       }
+      List<String> list = new ArrayList<>();
       for (Map.Entry<String,Integer> entry : mapOfMinPax.entrySet()) {
         if (entry.getValue() > 0) {
-          System.out.println(entry.getKey() + " " + entry.getValue());
-          return false;
+          String num = entry.getKey().substring(0,1);
+          if (num.equals("4")) {
+            num = "24 Hours";
+          }
+          String key = entry.getKey().substring(2);
+          list.add("Requirement not met: Shift " + num + ", " + key);
         }
       }
-      return true;
+      return list;
     } catch (Exception ex) {
       throw new StaffRoleNotFoundException(ex.getMessage());
     }
