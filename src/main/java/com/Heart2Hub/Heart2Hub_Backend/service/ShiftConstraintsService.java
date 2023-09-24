@@ -147,7 +147,7 @@ public class ShiftConstraintsService {
             shiftConstraintsRepository.save(sc);
             return sc;
           } else {
-            throw new UnableToCreateShiftConstraintsException("There is an overlapping shift constraint with this time for role " + sc.getStaffRoleEnum() + ".");
+            throw new UnableToCreateShiftConstraintsException("There is an overlapping shift constraint with this time for role " + sc.getStaffRoleEnum() + " and facility " + facilityName);
           }
         } else {
           List<ShiftConstraints> listOfShiftConstraints = shiftConstraintsRepository.findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndWardNameAndStaffRoleEnumEquals(updatedShiftConstraints.getEndTime(), updatedShiftConstraints.getStartTime(), facilityName, sc.getStaffRoleEnum());
@@ -164,7 +164,7 @@ public class ShiftConstraintsService {
             shiftConstraintsRepository.save(sc);
             return sc;
           } else {
-            throw new UnableToCreateShiftConstraintsException("There is an overlapping shift constraint with this time for role " + sc.getStaffRoleEnum() + ".");
+            throw new UnableToCreateShiftConstraintsException("There is an overlapping shift constraint with this time for role " + sc.getStaffRoleEnum() + " and facility " + facilityName);
           }
         }
       } else {
