@@ -56,7 +56,6 @@ public class DepartmentService {
             throw new UnableToCreateDepartmentException("Staff cannot create departments as he/she is not an admin.");
         }
         try {
-            System.out.println(newDepartment);
             String name = newDepartment.getName();
             if (name == null) {
                 throw new UnableToCreateDepartmentException("Name must be present.");

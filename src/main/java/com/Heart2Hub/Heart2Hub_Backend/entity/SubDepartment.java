@@ -29,16 +29,16 @@ public class SubDepartment {
     @NotNull
     private String description;
 
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "subDepartment")
-    private List<Facility> listOfFacilities;
+//    @JsonIgnore
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "subDepartment")
+//    private List<Facility> listOfFacilities;
 
     @ManyToOne
     @JoinColumn(name = "department_id")
     private Department department;
 
     public SubDepartment() {
-        this.listOfFacilities = new ArrayList<>();
+//        this.listOfFacilities = new ArrayList<>();
     }
 
     public SubDepartment(String name, String description) {

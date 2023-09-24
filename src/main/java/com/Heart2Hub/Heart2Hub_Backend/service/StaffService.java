@@ -85,8 +85,6 @@ public class StaffService {
       if (newStaff.getIsHead() && newStaff.getStaffRoleEnum().toString().equals("ADMIN")) {
           throw new UnableToCreateStaffException("Cannot create another super admin");
       } else {
-          System.out.println(departmentName + " hey233");
-          System.out.println(newStaff);
           String password = newStaff.getPassword();
           newStaff.setPassword(passwordEncoder.encode(password));
           Unit unit = unitRepository.findByNameContainingIgnoreCase(departmentName).get(0);
@@ -97,8 +95,6 @@ public class StaffService {
           }
 
           try {
-              System.out.println("Hey2");
-              System.out.println(newStaff);
               staffRepository.save(newStaff);
               return newStaff;
           } catch (Exception ex) {

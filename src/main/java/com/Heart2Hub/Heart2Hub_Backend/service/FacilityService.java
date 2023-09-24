@@ -74,14 +74,17 @@ public class FacilityService {
             if (facilityTypeEnum == null) {
                 throw new UnableToCreateFacilityException("Facility type must be present");
             }
-            System.out.println(departmentId);
-            Department assignedDepartment = departmentRepository.findById(departmentId).get();
-            System.out.println(assignedDepartment);
-            assignedDepartment.getListOfFacilities().add(newFacility);
-            newFacility.setDepartment(assignedDepartment);
-            departmentRepository.save(assignedDepartment);
-            facilityRepository.save(newFacility);
-            return newFacility;
+            Optional<Department> optionalDepartment = departmentRepository.findById(departmentId);
+            if (optionalDepartment.isPresent()) {
+                Department assignedDepartment = optionalDepartment.get();
+                assignedDepartment.getListOfFacilities().add(newFacility);
+                newFacility.setDepartment(assignedDepartment);
+                departmentRepository.save(assignedDepartment);
+                facilityRepository.save(newFacility);
+                return newFacility;
+            } else {
+                throw new UnableToCreateFacilityException("Dept not found");
+            }
         } catch (Exception ex) {
             throw new UnableToCreateFacilityException(ex.getMessage());
         }

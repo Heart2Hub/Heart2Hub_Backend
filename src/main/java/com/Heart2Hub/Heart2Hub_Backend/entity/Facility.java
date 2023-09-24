@@ -8,11 +8,13 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(exclude="department")
 @Entity
 @Data
 @Table(name = "facility")
@@ -50,12 +52,12 @@ public class Facility {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "facility")
     private List<FacilityBooking> listOfFacilityBookings;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
-    private SubDepartment subDepartment;
+//    @JsonIgnore
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    private SubDepartment subDepartment;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Department department;
 
     public Facility() {

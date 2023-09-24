@@ -1,9 +1,12 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Ward;
 import com.Heart2Hub.Heart2Hub_Backend.entity.WardClass;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.DepartmentNotFoundException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.SubDepartmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateDepartmentException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateWardException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
@@ -77,6 +80,15 @@ public class WardService {
             }
         } catch (Exception ex) {
             throw new UnableToCreateWardException(ex.getMessage());
+        }
+    }
+
+    public List<Ward> getAllWardsByName(String name) throws DepartmentNotFoundException {
+        try {
+            List<Ward> wardList = wardRepository.findByNameContainingIgnoreCase(name);
+            return wardList;
+        } catch (Exception ex) {
+            throw new SubDepartmentNotFoundException(ex.getMessage());
         }
     }
 
