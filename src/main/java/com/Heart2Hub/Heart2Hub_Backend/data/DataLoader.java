@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -51,8 +52,10 @@ public class DataLoader implements CommandLineRunner {
 
   private final SubDepartmentRepository subDepartmentRepository;
     private final DepartmentRepository departmentRepository;
+    private final WardService wardService;
+    private final WardClassService wardClassService;
 
-    public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository) {
+    public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService) {
         this.staffService = staffService;
         this.shiftService = shiftService;
         this.departmentService = departmentService;
@@ -69,6 +72,8 @@ public class DataLoader implements CommandLineRunner {
         this.shiftConstraintsService = shiftConstraintsService;
         this.subDepartmentRepository = subDepartmentRepository;
         this.departmentRepository = departmentRepository;
+        this.wardService = wardService;
+        this.wardClassService = wardClassService;
     }
 
     @Override
@@ -115,10 +120,10 @@ public class DataLoader implements CommandLineRunner {
       Staff staff5 = staffService.createStaff(new Staff("staff5", "password5", "John", "Wick", 87609870l, StaffRoleEnum.DOCTOR, false), "Cardiology", new ImageDocument("id4.png",lt));
       staffService.createStaff(new Staff("staff6", "password6", "Donald", "Raymond", 96997125l, StaffRoleEnum.DOCTOR, true), "Orthopedics", new ImageDocument("id5.png",lt));
       staffService.createStaff(new Staff("staff7", "password7", "Steven", "Lim", 98762093l, StaffRoleEnum.DOCTOR, false), "Orthopedics", new ImageDocument("id6.png",lt));
-      staffService.createStaff(new Staff("staff8", "password8", "Kurt", "Tay", 80182931l, StaffRoleEnum.NURSE, true), "Cardiology", new ImageDocument("id7.png",lt));
-      staffService.createStaff(new Staff("staff9", "password9", "Simon", "Cowell", 81927493l, StaffRoleEnum.NURSE, false), "Cardiology", new ImageDocument("id8.png",lt));
-      staffService.createStaff(new Staff("staff10", "password10", "James", "Charles", 93420093l, StaffRoleEnum.NURSE, false), "Cardiology", new ImageDocument("id9.png",lt));
-      staffService.createStaff(new Staff("staff11", "password11", "Ronald", "Weasley", 90897321l, StaffRoleEnum.NURSE, false), "Cardiology", new ImageDocument("id10.png",lt));
+      staffService.createStaff(new Staff("staff8", "password8", "Kurt", "Tay", 80182931l, StaffRoleEnum.NURSE, true), "B10", new ImageDocument("id7.png",lt));
+      staffService.createStaff(new Staff("staff9", "password9", "Simon", "Cowell", 81927493l, StaffRoleEnum.NURSE, false), "B10", new ImageDocument("id8.png",lt));
+      staffService.createStaff(new Staff("staff10", "password10", "James", "Charles", 93420093l, StaffRoleEnum.NURSE, true), "B20", new ImageDocument("id9.png",lt));
+      staffService.createStaff(new Staff("staff11", "password11", "Ronald", "Weasley", 90897321l, StaffRoleEnum.NURSE, false), "B20", new ImageDocument("id10.png",lt));
 
       leaveService.createLeave(LocalDateTime.now().plusMonths(3),
               LocalDateTime.now().plusMonths(3).plusDays(2), LeaveTypeEnum.ANNUAL, staff3, staff2, "Going to see F1 race"
@@ -143,10 +148,16 @@ public class DataLoader implements CommandLineRunner {
     departmentService.createDepartment(new Department("Psychiatry"));
     departmentService.createDepartment(new Department("Postanal Recovery"));
     departmentService.createDepartment(new Department("Admin"));
+
 //    TO-DO: WARD CREATION
-//    departmentService.createDepartment(new Department("Ward A-1"));
-//    departmentService.createDepartment(new Department("Ward A-2"));
-//    departmentService.createDepartment(new Department("Ward A-3"));
+    wardClassService.createWardClass(new WardClass("A", new BigDecimal("621"), 1));
+    wardClassService.createWardClass(new WardClass("B1", new BigDecimal("309.31"), 4));
+    wardClassService.createWardClass(new WardClass("B2", new BigDecimal("57"), 6));
+    wardClassService.createWardClass(new WardClass("C", new BigDecimal("40.70"), 8));
+
+    wardService.createWard(new Ward("A10", "Block A", 1), "A");
+    wardService.createWard(new Ward("B10", "Block B", 4), "B");
+    wardService.createWard(new Ward("B20", "Block B", 6), "B");
 //    departmentService.createDepartment(new Department("Ward B-1"));
 //    departmentService.createDepartment(new Department("Ward B-2"));
 //    departmentService.createDepartment(new Department("Ward B-3"));

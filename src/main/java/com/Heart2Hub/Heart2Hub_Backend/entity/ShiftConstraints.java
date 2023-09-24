@@ -36,6 +36,10 @@ public class ShiftConstraints {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "facility_id")
     private Facility facility;
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "ward_id")
+    private Ward ward;
     public ShiftConstraints() {}
 
     public ShiftConstraints(LocalTime startTime, LocalTime endTime, Integer minPax, StaffRoleEnum staffRoleEnum) {

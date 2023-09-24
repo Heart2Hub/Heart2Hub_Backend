@@ -67,10 +67,12 @@ public class ShiftService {
           if (checkShiftConditions(newShift, assignedStaff)) {
             assignedStaff.getListOfShifts().add(newShift);
             newShift.setStaff(assignedStaff);
-            FacilityBooking fb = new FacilityBooking(newShift.getStartTime(), newShift.getEndTime(), "Shift for staff " + assignedStaff.getUsername());
-            FacilityBooking newFacilityBooking = facilityBookingService.createBooking(fb, facilityId);
-            newShift.setFacilityBooking(newFacilityBooking);
-            newFacilityBooking.setShift(newShift);
+            if (assignedStaff.getStaffRoleEnum() != StaffRoleEnum.NURSE) {
+              FacilityBooking fb = new FacilityBooking(newShift.getStartTime(), newShift.getEndTime(), "Shift for staff " + assignedStaff.getUsername());
+              FacilityBooking newFacilityBooking = facilityBookingService.createBooking(fb, facilityId);
+              newShift.setFacilityBooking(newFacilityBooking);
+              newFacilityBooking.setShift(newShift);
+            }
             return shiftRepository.save(newShift);
           } else {
             throw new UnableToCreateShiftException("Shift does not meet predefined shift constraints");
@@ -174,7 +176,9 @@ public class ShiftService {
         Shift shift = shiftOptional.get();
         Staff staff = shift.getStaff();
         staff.getListOfShifts().remove(shift);
-        facilityBookingRepository.delete(shift.getFacilityBooking());
+        if (shift.getFacilityBooking() != null) {
+          facilityBookingRepository.delete(shift.getFacilityBooking());
+        }
         shiftRepository.delete(shift);
       } else {
         throw new ShiftNotFoundException("Shift with ID: " + shiftId + " is not found");
@@ -195,8 +199,10 @@ public class ShiftService {
         if (updatedShift.getStartTime() != null) shift.setStartTime(updatedShift.getStartTime());
         if (updatedShift.getEndTime() != null) shift.setEndTime(updatedShift.getEndTime());
         if (updatedShift.getComments() != null) shift.setComments(updatedShift.getComments());
-        if (shift.getFacilityBooking().getFacility().getFacilityId() != facilityId) {
-          facilityBookingService.updateBooking(shift.getFacilityBooking().getFacilityBookingId(), facilityId);
+        if (shift.getStaff().getStaffRoleEnum() != StaffRoleEnum.NURSE) {
+          if (shift.getFacilityBooking().getFacility().getFacilityId() != facilityId) {
+            facilityBookingService.updateBooking(shift.getFacilityBooking().getFacilityBookingId(), facilityId);
+          }
         }
         if (checkShiftConditions(shift, shift.getStaff())) {
           shiftRepository.save(shift);

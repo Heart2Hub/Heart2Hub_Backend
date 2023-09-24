@@ -27,7 +27,7 @@ public class Ward extends Unit {
     @NotNull
     private Integer capacity;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private WardClass wardClass;
 
     @JsonIgnore

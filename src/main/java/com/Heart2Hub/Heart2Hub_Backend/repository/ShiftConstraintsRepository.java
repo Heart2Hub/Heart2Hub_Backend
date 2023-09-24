@@ -13,5 +13,9 @@ public interface ShiftConstraintsRepository extends JpaRepository<ShiftConstrain
 
     List<ShiftConstraints> findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndFacilityNameAndStaffRoleEnumEquals(LocalTime startTime, LocalTime endTime, String name, StaffRoleEnum staffRoleEnum);
 
+    List<ShiftConstraints> findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndWardNameAndStaffRoleEnumEquals(LocalTime startTime, LocalTime endTime, String name, StaffRoleEnum staffRoleEnum);
+
     List<ShiftConstraints> findByStaffRoleEnumAndFacilityName(StaffRoleEnum staffRoleEnum, String name);
+
+    List<ShiftConstraints> findByStaffRoleEnumAndWardName(StaffRoleEnum staffRoleEnum, String name);
 }
