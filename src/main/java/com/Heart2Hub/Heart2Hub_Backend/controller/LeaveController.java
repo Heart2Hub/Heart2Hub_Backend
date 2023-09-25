@@ -119,11 +119,11 @@ public class LeaveController {
 
             //Reimburse staff accordingly to their Leave Type
             if (leave.getLeaveTypeEnum() == LeaveTypeEnum.ANNUAL) {
-                lb.setAnnualLeave(lb.getAnnualLeave() + days);
+                lb.setAnnualLeave(lb.getAnnualLeave() + days + 1);
             } else if (leave.getLeaveTypeEnum() == LeaveTypeEnum.SICK) {
-                lb.setSickLeave(lb.getSickLeave() + days);
+                lb.setSickLeave(lb.getSickLeave() + days + 1);
             } else {
-                lb.setParentalLeave(lb.getParentalLeave() + days);
+                lb.setParentalLeave(lb.getParentalLeave() + days + 1);
             }
 
             //Change Leave status to "PENDING", Update Leave Balance

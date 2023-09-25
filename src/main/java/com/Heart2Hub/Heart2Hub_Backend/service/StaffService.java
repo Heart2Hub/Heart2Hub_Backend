@@ -8,7 +8,7 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffRoleNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToChangePasswordException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateStaffException;
-import com.Heart2Hub.Heart2Hub_Backend.repository.ImageDocumentRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 
 import java.util.ArrayList;
@@ -16,10 +16,9 @@ import java.util.List;
 import java.util.Optional;
 
 import com.Heart2Hub.Heart2Hub_Backend.repository.SubDepartmentRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.UnitRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,15 +31,15 @@ public class StaffService {
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
   private final StaffRepository staffRepository;
-  private final SubDepartmentRepository subDepartmentRepository;
+    private final UnitRepository unitRepository;
   private final ImageDocumentService imageDocumentService;
 
-    public StaffService(JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, StaffRepository staffRepository, SubDepartmentRepository subDepartmentRepository, ImageDocumentService imageDocumentService) {
+    public StaffService(JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, StaffRepository staffRepository, UnitRepository unitRepository, ImageDocumentService imageDocumentService) {
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.staffRepository = staffRepository;
-        this.subDepartmentRepository = subDepartmentRepository;
+        this.unitRepository = unitRepository;
         this.imageDocumentService = imageDocumentService;
     }
 
@@ -78,18 +77,18 @@ public class StaffService {
       return superAdmin;
     }
 
-    public Staff createStaff(Staff newStaff, String subDepartmentName) {
-        return createStaff(newStaff, subDepartmentName, null);
+    public Staff createStaff(Staff newStaff, String departmentName) {
+        return createStaff(newStaff, departmentName, null);
     }
 
-  public Staff createStaff(Staff newStaff, String subDepartmentName, ImageDocument imageDocument) {
+  public Staff createStaff(Staff newStaff, String departmentName, ImageDocument imageDocument) {
       if (newStaff.getIsHead() && newStaff.getStaffRoleEnum().toString().equals("ADMIN")) {
           throw new UnableToCreateStaffException("Cannot create another super admin");
       } else {
           String password = newStaff.getPassword();
           newStaff.setPassword(passwordEncoder.encode(password));
-          SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
-          newStaff.setSubDepartment(subDepartment);
+          Unit unit = unitRepository.findByNameContainingIgnoreCase(departmentName).get(0);
+          newStaff.setUnit(unit);
           if (imageDocument != null) {
               ImageDocument createdImageDocument = imageDocumentService.createImageDocument(imageDocument);
               newStaff.setProfilePicture(createdImageDocument); // Set the image document if provided
@@ -107,11 +106,11 @@ public class StaffService {
 
   public Optional<Staff> findById(Long id) { return staffRepository.findById(id); }
 
-  public Staff updateStaff(Staff updatedStaff, String subDepartmentName) {
-      return updateStaff(updatedStaff, subDepartmentName, null);
+  public Staff updateStaff(Staff updatedStaff, String departmentName) {
+      return updateStaff(updatedStaff, departmentName, null);
   }
 
-    public Staff updateStaff(Staff updatedStaff, String subDepartmentName, ImageDocument imageDocument) {
+    public Staff updateStaff(Staff updatedStaff, String departmentName, ImageDocument imageDocument) {
         if (updatedStaff.getIsHead() && updatedStaff.getStaffRoleEnum().toString().equals("ADMIN")) {
             throw new UnableToCreateStaffException("Cannot create another super admin");
         } else {
@@ -120,8 +119,8 @@ public class StaffService {
             existingStaff.setMobileNumber(updatedStaff.getMobileNumber());
             existingStaff.setIsHead(updatedStaff.getIsHead());
             existingStaff.setStaffRoleEnum(updatedStaff.getStaffRoleEnum());
-            SubDepartment subDepartment = subDepartmentRepository.findByNameContainingIgnoreCase(subDepartmentName).get(0);
-            existingStaff.setSubDepartment(subDepartment);
+            Unit unit = unitRepository.findByNameContainingIgnoreCase(departmentName).get(0);
+            existingStaff.setUnit(unit);
 
             if (imageDocument != null) {
                 ImageDocument createdImageDocument = imageDocumentService.createImageDocument(imageDocument);
@@ -180,10 +179,10 @@ public class StaffService {
       return staffRolesString;
   }
 
-  public List<Staff> getStaffByRole(String role) throws StaffRoleNotFoundException {
+  public List<Staff> getStaffByRole(String role, String unit) throws StaffRoleNotFoundException {
     try {
       StaffRoleEnum staffRoleEnum = StaffRoleEnum.valueOf(role.toUpperCase());
-      return staffRepository.findByStaffRoleEnum(staffRoleEnum);
+      return staffRepository.findByStaffRoleEnumAndUnitNameEqualsIgnoreCase(staffRoleEnum, unit);
     } catch (Exception ex) {
       throw new StaffRoleNotFoundException("Role " + role + " does not exist");
     }

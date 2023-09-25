@@ -43,6 +43,14 @@ public class FacilityController {
         );
     }
 
+    @GetMapping("/getAllFacilitiesByDepartmentName")
+    public ResponseEntity<List<Facility>> getAllFacilitiesByDepartmentName(
+            @RequestParam("name") String name) {
+        return ResponseEntity.ok(
+                facilityService.getAllFacilitiesByDepartmentName(name)
+        );
+    }
+
     @DeleteMapping("/deleteFacility")
     public ResponseEntity<String> deleteFacility(
             @RequestParam("facilityId") Long facilityId) {

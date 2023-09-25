@@ -6,6 +6,7 @@ import com.Heart2Hub.Heart2Hub_Backend.enumeration.FacilityTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.FacilityNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateFacilityException;
+import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.FacilityRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.SubDepartmentRepository;
@@ -24,12 +25,12 @@ public class FacilityService {
 
     private final FacilityRepository facilityRepository;
     private final StaffRepository staffRepository;
-    private final SubDepartmentRepository subDepartmentRepository;
+    private final DepartmentRepository departmentRepository;
 
-    public FacilityService(FacilityRepository facilityRepository, StaffRepository staffRepository, SubDepartmentRepository subDepartmentRepository) {
+    public FacilityService(FacilityRepository facilityRepository, StaffRepository staffRepository, DepartmentRepository departmentRepository) {
         this.facilityRepository = facilityRepository;
         this.staffRepository = staffRepository;
-        this.subDepartmentRepository = subDepartmentRepository;
+        this.departmentRepository = departmentRepository;
     }
 
     public boolean isLoggedInUserAdmin() {
@@ -48,7 +49,7 @@ public class FacilityService {
         return isAdmin;
     }
 
-    public Facility createFacility(Long subDepartmentId, Facility newFacility) throws UnableToCreateFacilityException {
+    public Facility createFacility(Long departmentId, Facility newFacility) throws UnableToCreateFacilityException {
         if (!isLoggedInUserAdmin()) {
             throw new UnableToCreateFacilityException("Staff cannot create facilities as he/she is not an admin.");
         }
@@ -73,12 +74,17 @@ public class FacilityService {
             if (facilityTypeEnum == null) {
                 throw new UnableToCreateFacilityException("Facility type must be present");
             }
-            SubDepartment assignedSubDepartment = subDepartmentRepository.findById(subDepartmentId).get();
-            assignedSubDepartment.getListOfFacilities().add(newFacility);
-            newFacility.setSubDepartment(assignedSubDepartment);
-            subDepartmentRepository.save(assignedSubDepartment);
-            facilityRepository.save(newFacility);
-            return newFacility;
+            Optional<Department> optionalDepartment = departmentRepository.findById(departmentId);
+            if (optionalDepartment.isPresent()) {
+                Department assignedDepartment = optionalDepartment.get();
+                assignedDepartment.getListOfFacilities().add(newFacility);
+                newFacility.setDepartment(assignedDepartment);
+                departmentRepository.save(assignedDepartment);
+                facilityRepository.save(newFacility);
+                return newFacility;
+            } else {
+                throw new UnableToCreateFacilityException("Dept not found");
+            }
         } catch (Exception ex) {
             throw new UnableToCreateFacilityException(ex.getMessage());
         }
@@ -92,8 +98,8 @@ public class FacilityService {
             Optional<Facility> facilityOptional = facilityRepository.findById(facilityId);
             if (facilityOptional.isPresent()) {
                 Facility facility = facilityOptional.get();
-                SubDepartment subDepartment = facility.getSubDepartment();
-                subDepartment.getListOfFacilities().remove(facility);
+                Department department = facility.getDepartment();
+                department.getListOfFacilities().remove(facility);
                 // TO-DO: CHECK AND REMOVE FACILITY BOOKINGS
                 // TO-DO: CHECK AND REMOVE ALLOCATED INVENTORY
                 facilityRepository.delete(facility);
@@ -163,6 +169,15 @@ public class FacilityService {
     public List<Facility> getAllFacilitiesByName(String name) throws FacilityNotFoundException {
         try {
             List<Facility> facilitiesList = facilityRepository.findByNameContainingIgnoreCase(name);
+            return facilitiesList;
+        } catch (Exception ex) {
+            throw new FacilityNotFoundException(ex.getMessage());
+        }
+    }
+
+    public List<Facility> getAllFacilitiesByDepartmentName(String departmentName) throws FacilityNotFoundException {
+        try {
+            List<Facility> facilitiesList = facilityRepository.findByDepartmentNameContainingIgnoreCase(departmentName);
             return facilitiesList;
         } catch (Exception ex) {
             throw new FacilityNotFoundException(ex.getMessage());

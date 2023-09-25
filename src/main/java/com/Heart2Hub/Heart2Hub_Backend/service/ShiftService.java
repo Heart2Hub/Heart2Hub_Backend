@@ -1,15 +1,9 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
-import com.Heart2Hub.Heart2Hub_Backend.entity.FacilityBooking;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Leave;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Shift;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.*;
-import com.Heart2Hub.Heart2Hub_Backend.repository.FacilityBookingRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.LeaveRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.ShiftRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -32,14 +26,16 @@ public class ShiftService {
   private final FacilityBookingRepository facilityBookingRepository;
 
   private final LeaveRepository leaveRepository;
+  private final FacilityRepository facilityRepository;
   private final FacilityBookingService facilityBookingService;
 
-  public ShiftService(ShiftRepository shiftRepository, StaffRepository staffRepository, FacilityBookingService facilityBookingService, FacilityBookingRepository facilityBookingRepository, LeaveRepository leaveRepository) {
+  public ShiftService(ShiftRepository shiftRepository, StaffRepository staffRepository, FacilityBookingService facilityBookingService, FacilityBookingRepository facilityBookingRepository, LeaveRepository leaveRepository, FacilityRepository facilityRepository) {
     this.shiftRepository = shiftRepository;
     this.staffRepository = staffRepository;
     this.facilityBookingService = facilityBookingService;
     this.facilityBookingRepository = facilityBookingRepository;
     this.leaveRepository = leaveRepository;
+    this.facilityRepository = facilityRepository;
   }
 
   public boolean isLoggedInUserHead() {
@@ -59,7 +55,6 @@ public class ShiftService {
     if (!isLoggedInUserHead()) {
       throw new UnableToCreateShiftException("Staff cannot allocate shifts as he/she is not a head.");
     }
-    System.out.println("hey");
     try {
         Optional<Staff> optionalStaff = staffRepository.findByUsername(staffUsername);
         if (optionalStaff.isPresent()) {
@@ -67,10 +62,13 @@ public class ShiftService {
           if (checkShiftConditions(newShift, assignedStaff)) {
             assignedStaff.getListOfShifts().add(newShift);
             newShift.setStaff(assignedStaff);
-            FacilityBooking fb = new FacilityBooking(newShift.getStartTime(), newShift.getEndTime(), "Shift for staff " + assignedStaff.getUsername());
-            FacilityBooking newFacilityBooking = facilityBookingService.createBooking(fb, facilityId);
-            newShift.setFacilityBooking(newFacilityBooking);
-            newFacilityBooking.setShift(newShift);
+            Optional<Facility> f = facilityRepository.findById(facilityId);
+            if (f.isPresent()) {
+              FacilityBooking fb = new FacilityBooking(newShift.getStartTime(), newShift.getEndTime(), "Shift for staff " + assignedStaff.getUsername());
+              FacilityBooking newFacilityBooking = facilityBookingService.createBooking(fb, facilityId);
+              newShift.setFacilityBooking(newFacilityBooking);
+              newFacilityBooking.setShift(newShift);
+            }
             return shiftRepository.save(newShift);
           } else {
             throw new UnableToCreateShiftException("Shift does not meet predefined shift constraints");
@@ -146,13 +144,13 @@ public class ShiftService {
     return true;
   }
 
-  public List<Shift> getAllShiftsByRole(String role) throws StaffRoleNotFoundException, UnableToCreateShiftException {
+  public List<Shift> getAllShiftsByRole(String role, String unit) throws StaffRoleNotFoundException, UnableToCreateShiftException {
     if (!isLoggedInUserHead()) {
       throw new UnableToCreateShiftException("Staff cannot view all shifts as he/she is not a head.");
     }
     try {
       StaffRoleEnum staffRoleEnum = StaffRoleEnum.valueOf(role.toUpperCase());
-      List<Staff> staffList = staffRepository.findByStaffRoleEnum(staffRoleEnum);
+      List<Staff> staffList = staffRepository.findByStaffRoleEnumAndUnitNameEqualsIgnoreCase(staffRoleEnum, unit);
       List<Shift> listOfShifts = new ArrayList<>();
       for (Staff staff : staffList) {
         List<Shift> shifts = shiftRepository.findShiftsByStaff(staff);
@@ -174,7 +172,9 @@ public class ShiftService {
         Shift shift = shiftOptional.get();
         Staff staff = shift.getStaff();
         staff.getListOfShifts().remove(shift);
-        facilityBookingRepository.delete(shift.getFacilityBooking());
+        if (shift.getFacilityBooking() != null) {
+          facilityBookingRepository.delete(shift.getFacilityBooking());
+        }
         shiftRepository.delete(shift);
       } else {
         throw new ShiftNotFoundException("Shift with ID: " + shiftId + " is not found");
@@ -195,8 +195,10 @@ public class ShiftService {
         if (updatedShift.getStartTime() != null) shift.setStartTime(updatedShift.getStartTime());
         if (updatedShift.getEndTime() != null) shift.setEndTime(updatedShift.getEndTime());
         if (updatedShift.getComments() != null) shift.setComments(updatedShift.getComments());
-        if (shift.getFacilityBooking().getFacility().getFacilityId() != facilityId) {
-          facilityBookingService.updateBooking(shift.getFacilityBooking().getFacilityBookingId(), facilityId);
+        if (shift.getStaff().getStaffRoleEnum() != StaffRoleEnum.NURSE || shift.getFacilityBooking() != null) {
+          if (shift.getFacilityBooking().getFacility().getFacilityId() != facilityId) {
+            facilityBookingService.updateBooking(shift.getFacilityBooking().getFacilityBookingId(), facilityId);
+          }
         }
         if (checkShiftConditions(shift, shift.getStaff())) {
           shiftRepository.save(shift);
@@ -258,12 +260,12 @@ public class ShiftService {
     }
   }
 
-  public List<Shift> viewDailyRoster(String date, String role) throws StaffRoleNotFoundException {
+  public List<Shift> viewDailyRoster(String date, String role, String unitName) throws StaffRoleNotFoundException {
     try {
       StaffRoleEnum staffRoleEnum = StaffRoleEnum.valueOf(role.toUpperCase());
       LocalDateTime start = LocalDateTime.parse(date + " 00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
       LocalDateTime end = LocalDateTime.parse(date + " 23:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-      return shiftRepository.findByStaffStaffRoleEnumAndStartTimeBetween(staffRoleEnum, start, end);
+      return shiftRepository.findByStaffStaffRoleEnumAndStaffUnitNameAndStartTimeBetween(staffRoleEnum, unitName, start, end);
     } catch (Exception ex) {
       throw new StaffRoleNotFoundException(ex.getMessage());
     }

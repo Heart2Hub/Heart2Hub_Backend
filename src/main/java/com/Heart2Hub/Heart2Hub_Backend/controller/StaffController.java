@@ -130,8 +130,8 @@ public class StaffController {
 
   @GetMapping("/getStaffByRole")
   public ResponseEntity<List<Staff>> getStaffByRole(
-          @RequestParam("role") String role) {
-    return ResponseEntity.ok(staffService.getStaffByRole(role));
+          @RequestParam("role") String role, @RequestParam("unit") String unit) {
+    return ResponseEntity.ok(staffService.getStaffByRole(role, unit));
   }
 
   @PutMapping ("/changePassword")

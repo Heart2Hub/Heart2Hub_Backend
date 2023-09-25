@@ -30,12 +30,6 @@ public class FacilityBookingService {
   }
 
   // tbc - temporary functions to get my rostering to work
-  public Long createFacility(Facility facility, Long subDepartmentId) {
-    SubDepartment sd = subDepartmentRepository.findById(subDepartmentId).get();
-    sd.getListOfFacilities().add(facility);
-    facility.setSubDepartment(sd);
-    return facilityRepository.save(facility).getFacilityId();
-  }
 
   public FacilityBooking createBooking(FacilityBooking booking, Long facilityId) {
     Facility facility = facilityRepository.findById(facilityId).get();
