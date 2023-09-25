@@ -73,20 +73,19 @@ public class Staff implements UserDetails {
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "currentAssignedStaff")
   private List<Appointment> listOfAssignedAppointments;
 
-  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  @NotNull
-  @JoinColumn(name = "leave_balance_id")
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = false)
+  @JoinColumn(name = "leave_balance_id", nullable = false)
   private LeaveBalance leaveBalance = new LeaveBalance();
 
-  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = true)
   private ShiftPreference shiftPreference;
 
   @JsonIgnore
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "staff")
   private List<Invitation> listOfInvitations;
 
   @JsonIgnore
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL,mappedBy = "staff")
   private List<Post> listOfPosts;
 
   @OneToOne(cascade = CascadeType.ALL, optional = true)
@@ -96,8 +95,8 @@ public class Staff implements UserDetails {
 //  @JoinColumn(name = "sub_department_id")
 //  private SubDepartment subDepartment;
 
-  @ManyToOne
-  @JoinColumn(name = "unit_id")
+  @ManyToOne(fetch = FetchType.EAGER,optional = true)
+  @JoinColumn(name = "unit_id", nullable = true)
   private Unit unit;
 
   @NotNull

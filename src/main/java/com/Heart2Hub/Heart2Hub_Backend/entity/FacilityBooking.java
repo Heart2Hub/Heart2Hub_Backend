@@ -33,10 +33,11 @@ public class FacilityBooking {
     private String comments;
 
     @JsonBackReference(value="shift-fb")
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
     private Shift shift;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "facility_id", nullable = false)
     private Facility facility;
 
     public FacilityBooking() {

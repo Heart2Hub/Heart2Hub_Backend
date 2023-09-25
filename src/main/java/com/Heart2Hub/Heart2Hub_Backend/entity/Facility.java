@@ -52,16 +52,22 @@ public class Facility {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "facility")
     private List<FacilityBooking> listOfFacilityBookings;
 
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "facility")
+    private List<AllocatedInventory> listOfAllocatedInventories;
+
 //    @JsonIgnore
 //    @ManyToOne(fetch = FetchType.EAGER)
 //    private SubDepartment subDepartment;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
     public Facility() {
         this.listOfFacilityBookings = new ArrayList<>();
+        this.listOfAllocatedInventories = new ArrayList<>();
     }
 
     public Facility(String name, String location, String description, Integer capacity, FacilityStatusEnum facilityStatusEnum, FacilityTypeEnum facilityTypeEnum) {

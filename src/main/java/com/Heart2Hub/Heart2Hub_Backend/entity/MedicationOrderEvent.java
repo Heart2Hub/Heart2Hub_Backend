@@ -31,10 +31,9 @@ public class MedicationOrderEvent {
     @NotNull
     private Boolean isCompleted;
 
-    @NotNull
     @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "medication_order_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "medication_order_id", nullable = false)
     private MedicationOrder medicationOrder;
 
     public MedicationOrderEvent() {

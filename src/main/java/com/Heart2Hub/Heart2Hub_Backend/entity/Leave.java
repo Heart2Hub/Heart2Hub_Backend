@@ -42,14 +42,12 @@ public class Leave {
     @NotNull
     private LeaveTypeEnum leaveTypeEnum;
 
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.EAGER)
-    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "staff_id", nullable = false)
     private Staff staff;
 
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.EAGER)
-    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "headstaff_id", nullable = false)
     private Staff headStaff;
 
     @OneToOne(cascade = CascadeType.ALL, optional = true)

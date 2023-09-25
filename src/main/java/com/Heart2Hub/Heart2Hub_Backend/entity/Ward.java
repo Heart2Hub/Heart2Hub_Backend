@@ -27,15 +27,15 @@ public class Ward extends Unit {
     @NotNull
     private Integer capacity;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL,optional = false)
+    @JoinColumn(name = "wardClass_id", nullable = false)
     private WardClass wardClass;
 
-    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<WardAvailability> listOfWardAvailabilities;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "ward")
+    @OneToMany(mappedBy = "ward", fetch = FetchType.LAZY)
     private List<Admission> listOfAdmissions;
 
     public Ward() {

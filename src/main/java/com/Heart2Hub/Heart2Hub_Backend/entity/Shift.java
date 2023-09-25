@@ -40,8 +40,8 @@ public class Shift {
     private String comments;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER,optional = false)
+    @JoinColumn(nullable = false, name = "staff_id")
     private Staff staff;
 
     @JsonManagedReference(value="shift-fb")
