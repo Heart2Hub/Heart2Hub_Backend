@@ -23,7 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Data
-@Table(name = "electronicHeatlhRecord")
+@Table(name = "electronicHealthRecord")
 public class ElectronicHealthRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

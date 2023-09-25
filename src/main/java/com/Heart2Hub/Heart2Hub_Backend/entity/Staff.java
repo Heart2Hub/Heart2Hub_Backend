@@ -57,11 +57,11 @@ public class Staff implements UserDetails {
   @Enumerated(EnumType.STRING)
   private StaffRoleEnum staffRoleEnum;
 
-  @JsonBackReference
+  @JsonIgnore
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
   private List<Leave> listOfLeaves;
 
-  @JsonBackReference
+  @JsonIgnore
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
   private List<Leave> listOfManagedLeaves;
 
@@ -95,8 +95,8 @@ public class Staff implements UserDetails {
 //  @JoinColumn(name = "sub_department_id")
 //  private SubDepartment subDepartment;
 
-  @ManyToOne
-  @JoinColumn(name = "unit_id")
+  @ManyToOne(fetch = FetchType.EAGER,optional = true)
+  @JoinColumn(name = "unit_id", nullable = true)
   private Unit unit;
 
   @NotNull

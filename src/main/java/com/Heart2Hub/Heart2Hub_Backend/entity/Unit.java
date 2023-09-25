@@ -8,6 +8,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "unit")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Unit {
 
     @Id
