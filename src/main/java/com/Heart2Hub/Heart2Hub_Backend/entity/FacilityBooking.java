@@ -36,7 +36,6 @@ public class FacilityBooking {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
     private Shift shift;
 
-    @JsonManagedReference
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "facility_id", nullable = false)
     private Facility facility;

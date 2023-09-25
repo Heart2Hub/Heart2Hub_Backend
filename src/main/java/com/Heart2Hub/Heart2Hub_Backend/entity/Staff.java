@@ -57,11 +57,11 @@ public class Staff implements UserDetails {
   @Enumerated(EnumType.STRING)
   private StaffRoleEnum staffRoleEnum;
 
-  @JsonIgnore
+  @JsonBackReference
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
   private List<Leave> listOfLeaves;
 
-  @JsonIgnore
+  @JsonBackReference
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
   private List<Leave> listOfManagedLeaves;
 
@@ -73,20 +73,19 @@ public class Staff implements UserDetails {
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "currentAssignedStaff")
   private List<Appointment> listOfAssignedAppointments;
 
-  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  @NotNull
-  @JoinColumn(name = "leave_balance_id")
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = false)
+  @JoinColumn(name = "leave_balance_id", nullable = false)
   private LeaveBalance leaveBalance = new LeaveBalance();
 
-  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = true)
   private ShiftPreference shiftPreference;
 
   @JsonIgnore
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "staff")
   private List<Invitation> listOfInvitations;
 
   @JsonIgnore
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL,mappedBy = "staff")
   private List<Post> listOfPosts;
 
   @OneToOne(cascade = CascadeType.ALL, optional = true)

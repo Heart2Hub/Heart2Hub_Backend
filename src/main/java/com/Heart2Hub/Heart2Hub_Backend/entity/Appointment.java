@@ -2,6 +2,7 @@ package com.Heart2Hub.Heart2Hub_Backend.entity;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PriorityEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
@@ -52,16 +53,18 @@ public class Appointment {
     @OneToMany(fetch = FetchType.LAZY)
     private List<Staff> listOfStaff;
 
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "staff_id", nullable = true)
     private Staff currentAssignedStaff;
 
-    @NotNull
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "appointment_id",nullable = true)
     private List<ImageDocument> listOfImageDocuments;
 
     public Appointment() {

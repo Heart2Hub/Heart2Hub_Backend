@@ -53,7 +53,6 @@ public class Patient {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "patient", fetch = FetchType.LAZY, optional = true)
     private Admission admission;
 
-    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, optional = true)
     private ImageDocument profilePicture;
 
