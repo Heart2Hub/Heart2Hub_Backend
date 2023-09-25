@@ -1,15 +1,9 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
-import com.Heart2Hub.Heart2Hub_Backend.entity.FacilityBooking;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Leave;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Shift;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.*;
-import com.Heart2Hub.Heart2Hub_Backend.repository.FacilityBookingRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.LeaveRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.ShiftRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -32,14 +26,16 @@ public class ShiftService {
   private final FacilityBookingRepository facilityBookingRepository;
 
   private final LeaveRepository leaveRepository;
+  private final FacilityRepository facilityRepository;
   private final FacilityBookingService facilityBookingService;
 
-  public ShiftService(ShiftRepository shiftRepository, StaffRepository staffRepository, FacilityBookingService facilityBookingService, FacilityBookingRepository facilityBookingRepository, LeaveRepository leaveRepository) {
+  public ShiftService(ShiftRepository shiftRepository, StaffRepository staffRepository, FacilityBookingService facilityBookingService, FacilityBookingRepository facilityBookingRepository, LeaveRepository leaveRepository, FacilityRepository facilityRepository) {
     this.shiftRepository = shiftRepository;
     this.staffRepository = staffRepository;
     this.facilityBookingService = facilityBookingService;
     this.facilityBookingRepository = facilityBookingRepository;
     this.leaveRepository = leaveRepository;
+    this.facilityRepository = facilityRepository;
   }
 
   public boolean isLoggedInUserHead() {
@@ -59,7 +55,6 @@ public class ShiftService {
     if (!isLoggedInUserHead()) {
       throw new UnableToCreateShiftException("Staff cannot allocate shifts as he/she is not a head.");
     }
-    System.out.println("hey");
     try {
         Optional<Staff> optionalStaff = staffRepository.findByUsername(staffUsername);
         if (optionalStaff.isPresent()) {
@@ -67,7 +62,8 @@ public class ShiftService {
           if (checkShiftConditions(newShift, assignedStaff)) {
             assignedStaff.getListOfShifts().add(newShift);
             newShift.setStaff(assignedStaff);
-            if (assignedStaff.getStaffRoleEnum() != StaffRoleEnum.NURSE) {
+            Optional<Facility> f = facilityRepository.findById(facilityId);
+            if (f.isPresent()) {
               FacilityBooking fb = new FacilityBooking(newShift.getStartTime(), newShift.getEndTime(), "Shift for staff " + assignedStaff.getUsername());
               FacilityBooking newFacilityBooking = facilityBookingService.createBooking(fb, facilityId);
               newShift.setFacilityBooking(newFacilityBooking);
@@ -199,7 +195,7 @@ public class ShiftService {
         if (updatedShift.getStartTime() != null) shift.setStartTime(updatedShift.getStartTime());
         if (updatedShift.getEndTime() != null) shift.setEndTime(updatedShift.getEndTime());
         if (updatedShift.getComments() != null) shift.setComments(updatedShift.getComments());
-        if (shift.getStaff().getStaffRoleEnum() != StaffRoleEnum.NURSE) {
+        if (shift.getStaff().getStaffRoleEnum() != StaffRoleEnum.NURSE || shift.getFacilityBooking() != null) {
           if (shift.getFacilityBooking().getFacility().getFacilityId() != facilityId) {
             facilityBookingService.updateBooking(shift.getFacilityBooking().getFacilityBookingId(), facilityId);
           }

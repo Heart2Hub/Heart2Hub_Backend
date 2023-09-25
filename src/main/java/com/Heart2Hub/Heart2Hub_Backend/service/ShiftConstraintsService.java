@@ -41,7 +41,12 @@ public class ShiftConstraintsService {
                                                                 newShiftConstraints.getEndTime(),
                                                                 newShiftConstraints.getMinPax(),
                                                                 newShiftConstraints.getStaffRoleEnum());
-      if (newShiftConstraints.getStaffRoleEnum() != StaffRoleEnum.NURSE) {
+      List<Facility> facilityList = facilityRepository.findByNameContainingIgnoreCase(facilityName);
+      if (newShiftConstraints.getStaffRoleEnum() != StaffRoleEnum.NURSE && facilityList.size() == 0) {
+        throw new UnableToCreateShiftConstraintsException("Facility cannot be empty!");
+      }
+      // not a nurse, or outpatient nurse for departments
+      if (newShiftConstraints.getStaffRoleEnum() != StaffRoleEnum.NURSE || facilityList.size() > 0) {
         List<ShiftConstraints> listOfShiftConstraints = shiftConstraintsRepository.findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndFacilityNameAndStaffRoleEnumEquals(newShiftConstraints.getEndTime(), newShiftConstraints.getStartTime(), facilityName, newShiftConstraints.getStaffRoleEnum());
         if (!listOfShiftConstraints.isEmpty()) {
           ShiftConstraints sc = listOfShiftConstraints.get(0);
@@ -51,16 +56,11 @@ public class ShiftConstraintsService {
             throw new UnableToCreateShiftConstraintsException("There is an overlapping shift constraint with this time for role " + newShiftConstraints.getStaffRoleEnum() + " and facility " + facilityName);
           }
         }
-
-        List<Facility> facilityList = facilityRepository.findByNameContainingIgnoreCase(facilityName);
-        if (facilityList.size() == 0) {
-          throw new UnableToCreateShiftConstraintsException("Facility cannot be empty!");
-        }
         Facility facility = facilityRepository.findByNameContainingIgnoreCase(facilityName).get(0);
         shiftConstraints.setFacility(facility);
         shiftConstraintsRepository.save(shiftConstraints);
         return shiftConstraints;
-      } else {
+      } else { // inpatient nurse for wards
         List<ShiftConstraints> listOfShiftConstraints = shiftConstraintsRepository.findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndWardNameAndStaffRoleEnumEquals(newShiftConstraints.getEndTime(), newShiftConstraints.getStartTime(), facilityName, newShiftConstraints.getStaffRoleEnum());
         if (!listOfShiftConstraints.isEmpty()) {
           ShiftConstraints sc = listOfShiftConstraints.get(0);
@@ -89,14 +89,14 @@ public class ShiftConstraintsService {
   public List<ShiftConstraints> getAllShiftConstraintsByRole(String role, String departmentName) throws StaffRoleNotFoundException {
     try {
       List<ShiftConstraints> scList = new ArrayList<>();
-      if (role.equalsIgnoreCase("NURSE")) {
+      List<Facility> fList = facilityRepository.findByDepartmentNameContainingIgnoreCase(departmentName);
+      if (role.equalsIgnoreCase("NURSE") && fList.size() == 0) {
         List<Ward> wList = wardRepository.findByNameContainingIgnoreCase(departmentName);
         for (Ward ward : wList) {
           List<ShiftConstraints> temp = shiftConstraintsRepository.findByStaffRoleEnumAndWardName(StaffRoleEnum.valueOf(role.toUpperCase()), ward.getName());
           scList.addAll(temp);
         }
       } else {
-        List<Facility> fList = facilityRepository.findByDepartmentNameContainingIgnoreCase(departmentName);
         for (Facility facility : fList) {
           List<ShiftConstraints> temp = shiftConstraintsRepository.findByStaffRoleEnumAndFacilityName(StaffRoleEnum.valueOf(role.toUpperCase()), facility.getName());
           scList.addAll(temp);
@@ -132,16 +132,16 @@ public class ShiftConstraintsService {
       Optional<ShiftConstraints> shiftConstraintsOptional = shiftConstraintsRepository.findById(shiftConstraintsId);
       if (shiftConstraintsOptional.isPresent()) {
         ShiftConstraints sc = shiftConstraintsOptional.get();
-        if (sc.getStaffRoleEnum() != StaffRoleEnum.NURSE) {
+        List<Facility> facilityList = facilityRepository.findByNameContainingIgnoreCase(facilityName);
+        if (sc.getStaffRoleEnum() != StaffRoleEnum.NURSE && facilityList.size() == 0) {
+          throw new UnableToCreateShiftConstraintsException("Facility cannot be empty!");
+        }
+        if (sc.getStaffRoleEnum() != StaffRoleEnum.NURSE || facilityList.size() > 0) {
           List<ShiftConstraints> listOfShiftConstraints = shiftConstraintsRepository.findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndFacilityNameAndStaffRoleEnumEquals(updatedShiftConstraints.getEndTime(), updatedShiftConstraints.getStartTime(), facilityName, sc.getStaffRoleEnum());
           if (listOfShiftConstraints.isEmpty() || (listOfShiftConstraints.size() == 1 && listOfShiftConstraints.get(0).getShiftConstraintsId() == shiftConstraintsId)) {
             if (updatedShiftConstraints.getStartTime() != null) sc.setStartTime(updatedShiftConstraints.getStartTime());
             if (updatedShiftConstraints.getEndTime() != null) sc.setEndTime(updatedShiftConstraints.getEndTime());
             if (updatedShiftConstraints.getMinPax() != null) sc.setMinPax(updatedShiftConstraints.getMinPax());
-            List<Facility> facilityList = facilityRepository.findByNameContainingIgnoreCase(facilityName);
-            if (facilityList.size() == 0) {
-              throw new UnableToCreateShiftConstraintsException("Facility cannot be empty!");
-            }
             Facility facility = facilityRepository.findByNameContainingIgnoreCase(facilityName).get(0);
             sc.setFacility(facility);
             shiftConstraintsRepository.save(sc);
@@ -190,25 +190,25 @@ public class ShiftConstraintsService {
         LocalTime start = sc.getStartTime();
         LocalTime end = sc.getEndTime();
         if (start.equals(shift1Start) && end.equals(shift2Start)) {
-          if (role.equalsIgnoreCase("NURSE")) {
+          if (role.equalsIgnoreCase("NURSE") && sc.getFacility() == null) {
             mapOfMinPax.put(("1+"+sc.getWard().getName()), mapOfMinPax.getOrDefault(("1+"+sc.getWard().getName()), 0)+sc.getMinPax());
           } else {
             mapOfMinPax.put(("1+"+sc.getFacility().getName()), mapOfMinPax.getOrDefault(("1+"+sc.getFacility().getName()), 0)+sc.getMinPax());
           }
         } else if (start.equals(shift2Start) && end.equals(shift3Start)) {
-          if (role.equalsIgnoreCase("NURSE")) {
+          if (role.equalsIgnoreCase("NURSE") && sc.getFacility() == null) {
             mapOfMinPax.put(("2+"+sc.getWard().getName()), mapOfMinPax.getOrDefault(("2+"+sc.getWard().getName()), 0)+sc.getMinPax());
           } else {
             mapOfMinPax.put(("2+"+sc.getFacility().getName()), mapOfMinPax.getOrDefault(("2+"+sc.getFacility().getName()), 0)+sc.getMinPax());
           }
         } else if (start.equals(shift3Start) && end.equals(shift3End)) {
-          if (role.equalsIgnoreCase("NURSE")) {
+          if (role.equalsIgnoreCase("NURSE") && sc.getFacility() == null) {
             mapOfMinPax.put(("3+"+sc.getWard().getName()), mapOfMinPax.getOrDefault(("3+"+sc.getWard().getName()), 0)+sc.getMinPax());
           } else {
             mapOfMinPax.put(("3+"+sc.getFacility().getName()), mapOfMinPax.getOrDefault(("3+"+sc.getFacility().getName()), 0)+sc.getMinPax());
           }
         } else {
-          if (role.equalsIgnoreCase("NURSE")) {
+          if (role.equalsIgnoreCase("NURSE") && sc.getFacility() == null) {
             mapOfMinPax.put(("4+"+sc.getWard().getName()), mapOfMinPax.getOrDefault(("4+"+sc.getWard().getName()), 0)+sc.getMinPax());
           } else {
             mapOfMinPax.put(("4+"+sc.getFacility().getName()), mapOfMinPax.getOrDefault(("4+"+sc.getFacility().getName()), 0)+sc.getMinPax());
@@ -219,25 +219,25 @@ public class ShiftConstraintsService {
         LocalTime start = shift.getStartTime().toLocalTime();
         LocalTime end = shift.getEndTime().toLocalTime();
         if (start.equals(shift1Start) && end.equals(shift2Start)) {
-          if (role.equalsIgnoreCase("NURSE")) {
+          if (role.equalsIgnoreCase("NURSE") && shift.getFacilityBooking() == null) {
             mapOfMinPax.put(("1+"+shift.getStaff().getUnit().getName()), mapOfMinPax.getOrDefault(("1+"+shift.getStaff().getUnit().getName()), 0)-1);
           } else {
             mapOfMinPax.put(("1+"+shift.getFacilityBooking().getFacility().getName()), mapOfMinPax.getOrDefault(("1+"+shift.getFacilityBooking().getFacility().getName()), 0)-1);
           }
         } else if (start.equals(shift2Start) && end.equals(shift3Start)) {
-          if (role.equalsIgnoreCase("NURSE")) {
+          if (role.equalsIgnoreCase("NURSE") && shift.getFacilityBooking() == null) {
             mapOfMinPax.put(("2+"+shift.getStaff().getUnit().getName()), mapOfMinPax.getOrDefault(("2+"+shift.getStaff().getUnit().getName()), 0)-1);
           } else {
             mapOfMinPax.put(("2+"+shift.getFacilityBooking().getFacility().getName()), mapOfMinPax.getOrDefault(("2+"+shift.getFacilityBooking().getFacility().getName()), 0)-1);
           }
         } else if (start.equals(shift3Start) && end.equals(shift3End)) {
-          if (role.equalsIgnoreCase("NURSE")) {
+          if (role.equalsIgnoreCase("NURSE") && shift.getFacilityBooking() == null) {
             mapOfMinPax.put(("3+"+shift.getStaff().getUnit().getName()), mapOfMinPax.getOrDefault(("3+"+shift.getStaff().getUnit().getName()), 0)-1);
           } else {
             mapOfMinPax.put(("3+"+shift.getFacilityBooking().getFacility().getName()), mapOfMinPax.getOrDefault(("3+"+shift.getFacilityBooking().getFacility().getName()), 0)-1);
           }
         } else {
-          if (role.equalsIgnoreCase("NURSE")) {
+          if (role.equalsIgnoreCase("NURSE") && shift.getFacilityBooking() == null) {
             mapOfMinPax.put(("4+"+shift.getStaff().getUnit().getName()), mapOfMinPax.getOrDefault(("4+"+shift.getStaff().getUnit().getName()), 0)-1);
           } else {
             mapOfMinPax.put(("4+"+shift.getFacilityBooking().getFacility().getName()), mapOfMinPax.getOrDefault(("4+"+shift.getFacilityBooking().getFacility().getName()), 0)-1);

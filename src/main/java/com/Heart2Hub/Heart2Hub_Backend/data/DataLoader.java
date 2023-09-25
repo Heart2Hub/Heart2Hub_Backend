@@ -120,8 +120,8 @@ public class DataLoader implements CommandLineRunner {
       Staff staff5 = staffService.createStaff(new Staff("staff5", "password5", "John", "Wick", 87609870l, StaffRoleEnum.DOCTOR, false), "Cardiology", new ImageDocument("id4.png",lt));
       staffService.createStaff(new Staff("staff6", "password6", "Donald", "Raymond", 96997125l, StaffRoleEnum.DOCTOR, true), "Orthopedics", new ImageDocument("id5.png",lt));
       staffService.createStaff(new Staff("staff7", "password7", "Steven", "Lim", 98762093l, StaffRoleEnum.DOCTOR, false), "Orthopedics", new ImageDocument("id6.png",lt));
-      staffService.createStaff(new Staff("staff8", "password8", "Kurt", "Tay", 80182931l, StaffRoleEnum.NURSE, true), "B10", new ImageDocument("id7.png",lt));
-      staffService.createStaff(new Staff("staff9", "password9", "Simon", "Cowell", 81927493l, StaffRoleEnum.NURSE, false), "B10", new ImageDocument("id8.png",lt));
+      staffService.createStaff(new Staff("staff8", "password8", "Kurt", "Tay", 80182931l, StaffRoleEnum.NURSE, true), "Orthopedics", new ImageDocument("id7.png",lt));
+      staffService.createStaff(new Staff("staff9", "password9", "Simon", "Cowell", 81927493l, StaffRoleEnum.NURSE, false), "Orthopedics", new ImageDocument("id8.png",lt));
       staffService.createStaff(new Staff("staff10", "password10", "James", "Charles", 93420093l, StaffRoleEnum.NURSE, true), "B20", new ImageDocument("id9.png",lt));
       staffService.createStaff(new Staff("staff11", "password11", "Ronald", "Weasley", 90897321l, StaffRoleEnum.NURSE, false), "B20", new ImageDocument("id10.png",lt));
 
