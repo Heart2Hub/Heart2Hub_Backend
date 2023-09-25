@@ -2,6 +2,7 @@ package com.Heart2Hub.Heart2Hub_Backend.entity;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -40,9 +41,8 @@ public class Admission {
     @NotNull
     private String comments;
 
-    @NotNull
-    @JsonBackReference
-    @OneToOne(cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "admission_id", referencedColumnName = "id")
     private Patient patient;
 
@@ -51,16 +51,16 @@ public class Admission {
     @JoinColumn(name = "admission_id", referencedColumnName = "id")
     private FacilityBooking facilityBooking;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "admission")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "admission",fetch = FetchType.LAZY)
     private List<MedicationOrder> listOfMedicationOrders;
 
-    @JsonBackReference
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PatientRequest> listOfPatientRequests;
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY,optional = false)
+    @JoinColumn(name = "ward_id", nullable = false)
     private Ward ward;
 
     public Admission(){

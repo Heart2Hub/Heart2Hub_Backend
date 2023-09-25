@@ -35,7 +35,7 @@ public class Ward extends Unit {
     private List<WardAvailability> listOfWardAvailabilities;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "ward")
+    @OneToMany(mappedBy = "ward", fetch = FetchType.LAZY)
     private List<Admission> listOfAdmissions;
 
     public Ward() {

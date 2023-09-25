@@ -26,13 +26,12 @@ public class Patient {
     @Column(unique = true)
     private String password;
 
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "patient")
+    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "patient")
     private List<Invoice> listOfInvoices;
 
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name = "patient_id")
+    @JoinColumn(name = "patient_id", nullable = true)
     private List<PaymentMethod> listOfPaymentMethods;
 
     @JsonIgnore
@@ -45,10 +44,9 @@ public class Patient {
     @JoinColumn(name = "patient_id")
     private List<Appointment> listOfCurrentAppointments;
 
-    @NotNull
-    @JsonIgnore
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "EHR_id")
+    @JsonManagedReference
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "EHR_id", nullable = false)
     private ElectronicHealthRecord electronicHealthRecord;
 
     @JsonIgnore

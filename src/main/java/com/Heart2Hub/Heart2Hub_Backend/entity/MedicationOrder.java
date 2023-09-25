@@ -1,6 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
@@ -22,12 +23,6 @@ public class MedicationOrder {
     private String title;
 
     @NotNull
-    @JsonBackReference
-    @OneToOne
-    @JoinColumn(name = "medication_id")
-    private Medication medication;
-
-    @NotNull
     private Integer dosage;
 
     @NotNull
@@ -39,21 +34,21 @@ public class MedicationOrder {
     @NotNull
     private Boolean isActive;
 
-    @NotNull
+    @OneToOne(fetch = FetchType.LAZY,optional = false)
+    @JoinColumn(name = "medication_id", nullable = false)
+    private Medication medication;
+
     @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admission_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "admission_id",nullable = true)
     private Admission admission;
 
-    @NotNull
-    @JsonBackReference
-    @OneToOne
-    @JoinColumn(name = "prescription_record_id")
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "prescription_record_id", nullable = false)
     private PrescriptionRecord prescriptionRecord;
 
-    @NotNull
-    @JsonBackReference
-    @OneToMany(mappedBy = "medicationOrder")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "medicationOrder", fetch = FetchType.LAZY)
     private List<MedicationOrderEvent> listOfMedicationOrderEvents;
 
 

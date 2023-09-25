@@ -48,9 +48,13 @@ public class Facility {
     @NotNull
     private FacilityTypeEnum facilityTypeEnum;
 
-    @JsonIgnore
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "facility")
     private List<FacilityBooking> listOfFacilityBookings;
+
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "facility")
+    private List<AllocatedInventory> listOfAllocatedInventories;
 
 //    @JsonIgnore
 //    @ManyToOne(fetch = FetchType.EAGER)
@@ -62,6 +66,7 @@ public class Facility {
 
     public Facility() {
         this.listOfFacilityBookings = new ArrayList<>();
+        this.listOfAllocatedInventories = new ArrayList<>();
     }
 
     public Facility(String name, String location, String description, Integer capacity, FacilityStatusEnum facilityStatusEnum, FacilityTypeEnum facilityTypeEnum) {
