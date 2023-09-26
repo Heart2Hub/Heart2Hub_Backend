@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 public class ConsumableEquipment extends InventoryItem{
 
     @NotNull
-    private Long consumableEquipment;
+    private Long consumableEquipmentId;
 
     @NotNull
     private Integer quantityInStock;
@@ -21,15 +21,15 @@ public class ConsumableEquipment extends InventoryItem{
     @NotNull
     private BigDecimal restockPricePerQuantity;
 
-    public ConsumableEquipment(String inventoryItemName, String inventoryItemDescription, ItemTypeEnum itemTypeEnum, Long consumableEquipment, Integer quantityInStock, BigDecimal restockPricePerQuantity) {
+    public ConsumableEquipment(String inventoryItemName, String inventoryItemDescription, ItemTypeEnum itemTypeEnum, Long consumableEquipmentId, Integer quantityInStock, BigDecimal restockPricePerQuantity) {
         super(inventoryItemName, inventoryItemDescription, itemTypeEnum);
-        this.consumableEquipment = consumableEquipment;
+        this.consumableEquipmentId = consumableEquipmentId;
         this.quantityInStock = quantityInStock;
         this.restockPricePerQuantity = restockPricePerQuantity;
     }
 
     public ConsumableEquipment(Long consumableEquipment, Integer quantityInStock, BigDecimal restockPricePerQuantity) {
-        this.consumableEquipment = consumableEquipment;
+        this.consumableEquipmentId = consumableEquipment;
         this.quantityInStock = quantityInStock;
         this.restockPricePerQuantity = restockPricePerQuantity;
     }
