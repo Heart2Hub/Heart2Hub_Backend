@@ -29,8 +29,8 @@ public class Post {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ImageDocument> listOfImageDocuments;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "staff_id",nullable = false)
     private Staff staff;
 
     public Post() {

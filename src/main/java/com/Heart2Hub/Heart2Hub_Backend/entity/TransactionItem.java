@@ -27,10 +27,8 @@ public class TransactionItem {
     @NotNull
     private BigDecimal transactionItemPrice;
 
-    @NotNull
-    @JsonManagedReference
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "iventory_Item_Id")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "iventory_Item_Id", nullable = false)
     private InventoryItem inventoryItem;
 
 

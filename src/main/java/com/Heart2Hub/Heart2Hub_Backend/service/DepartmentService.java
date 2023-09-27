@@ -3,23 +3,16 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.*;
-import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
+import com.Heart2Hub.Heart2Hub_Backend.repository.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
-import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
 import com.Heart2Hub.Heart2Hub_Backend.exception.DepartmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,11 +26,13 @@ public class DepartmentService {
     private final SubDepartmentService subDepartmentService;
 
     private final StaffRepository staffRepository;
+    private final FacilityService facilityService;
 
-    public DepartmentService(DepartmentRepository departmentRepository, SubDepartmentService subDepartmentService, StaffRepository staffRepository) {
+    public DepartmentService(DepartmentRepository departmentRepository, SubDepartmentService subDepartmentService, StaffRepository staffRepository, FacilityService facilityService) {
         this.departmentRepository = departmentRepository;
         this.subDepartmentService = subDepartmentService;
         this.staffRepository = staffRepository;
+        this.facilityService = facilityService;
     }
 
     public boolean isLoggedInUserAdmin() {
@@ -80,8 +75,8 @@ public class DepartmentService {
             Optional<Department> departmentOptional = departmentRepository.findById(departmentId);
             if (departmentOptional.isPresent()) {
                 Department department = departmentOptional.get();
-                for (SubDepartment subDepartment : department.getListOfSubDepartments()) {
-                    subDepartmentService.deleteSubDepartment(subDepartment.getSubDepartmentId());
+                for (Facility facility : department.getListOfFacilities()) {
+                    facilityService.deleteFacility(facility.getFacilityId());
                 }
                 departmentRepository.delete(department);
                 return "Department with departmentId " + departmentId + " has been deleted successfully.";

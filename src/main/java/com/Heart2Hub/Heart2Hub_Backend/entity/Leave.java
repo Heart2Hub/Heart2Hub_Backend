@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,11 +24,9 @@ public class Leave {
     private Long leaveId;
 
     @NotNull
-    @FutureOrPresent
     private LocalDateTime startDate;
 
     @NotNull
-    @Future
     private LocalDateTime endDate;
 
     @Size(max = 200)
@@ -43,18 +42,16 @@ public class Leave {
     @NotNull
     private LeaveTypeEnum leaveTypeEnum;
 
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "staff_id", nullable = false)
     private Staff staff;
 
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "headstaff_id", nullable = false)
     private Staff headStaff;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<ImageDocument> listOfImageDocuments;
+    @OneToOne(cascade = CascadeType.ALL, optional = true)
+    private ImageDocument imageDocuments;
 
     public Leave() {
         this.approvalStatusEnum = ApprovalStatusEnum.PENDING;

@@ -1,11 +1,13 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.sql.Time;
+import java.time.LocalTime;
 
 @Entity
 @Data
@@ -17,24 +19,33 @@ public class ShiftConstraints {
     private Long shiftConstraintsId;
 
     @NotNull
-    private Time startTime;
+    @JsonFormat(pattern="HH:mm:ss")
+    private LocalTime startTime;
 
     @NotNull
-    private Time endTime;
+    @JsonFormat(pattern="HH:mm:ss")
+    private LocalTime endTime;
 
     @NotNull
     private Integer minPax;
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    private StaffRoleEnum roleEnum;
+    private StaffRoleEnum staffRoleEnum;
 
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = true)
+    @JoinColumn(name = "facility_id", nullable = true)
+    private Facility facility;
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = true)
+    @JoinColumn(name = "ward_id", nullable = true)
+    private Ward ward;
     public ShiftConstraints() {}
 
-    public ShiftConstraints(Time startTime, Time endTime, Integer minPax, StaffRoleEnum roleEnum) {
+    public ShiftConstraints(LocalTime startTime, LocalTime endTime, Integer minPax, StaffRoleEnum staffRoleEnum) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.minPax = minPax;
-        this.roleEnum = roleEnum;
+        this.staffRoleEnum = staffRoleEnum;
     }
 }

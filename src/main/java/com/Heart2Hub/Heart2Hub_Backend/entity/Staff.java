@@ -10,11 +10,15 @@ import jakarta.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import lombok.Data;
@@ -69,42 +73,42 @@ public class Staff implements UserDetails {
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "currentAssignedStaff")
   private List<Appointment> listOfAssignedAppointments;
 
-  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  @NotNull
-  @JoinColumn(name = "leave_balance_id")
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = false)
+  @JoinColumn(name = "leave_balance_id", nullable = false)
   private LeaveBalance leaveBalance = new LeaveBalance();
 
-  @JsonIgnore
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  private List<ShiftPreference> listOfShiftPreferences;
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = true)
+  private ShiftPreference shiftPreference;
 
   @JsonIgnore
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "staff")
   private List<Invitation> listOfInvitations;
 
   @JsonIgnore
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL,mappedBy = "staff")
   private List<Post> listOfPosts;
 
-  @JsonBackReference
   @OneToOne(cascade = CascadeType.ALL, optional = true)
   private ImageDocument profilePicture;
 
-  @ManyToOne
-  @JoinColumn(name = "sub_department_id")
-  private SubDepartment subDepartment;
+//  @ManyToOne
+//  @JoinColumn(name = "sub_department_id")
+//  private SubDepartment subDepartment;
+
+  @ManyToOne(fetch = FetchType.EAGER,optional = true)
+  @JoinColumn(name = "unit_id", nullable = true)
+  private Unit unit;
 
   @NotNull
   private Boolean disabled = false;
 
   public Staff() {
-    this.listOfLeaves = List.of();
-    this.listOfManagedLeaves = List.of();
-    this.listOfShifts = List.of();
-    this.listOfAssignedAppointments = List.of();
-    this.listOfShiftPreferences = List.of();
-    this.listOfInvitations = List.of();
-    this.listOfPosts = List.of();
+    this.listOfLeaves = new ArrayList<>();
+    this.listOfManagedLeaves = new ArrayList<>();
+    this.listOfShifts = new ArrayList<>();
+    this.listOfAssignedAppointments = new ArrayList<>();
+    this.listOfInvitations = new ArrayList<>();
+    this.listOfPosts = new ArrayList<>();
   }
 
   public Staff(String username, String password, String firstname, String lastname,
@@ -115,8 +119,9 @@ public class Staff implements UserDetails {
     this.firstname = firstname;
     this.lastname = lastname;
     this.mobileNumber = mobileNumber;
-    this.staffRoleEnum = staffRoleEnum;
-    this.isHead = isHead;
+      this.staffRoleEnum = staffRoleEnum;
+      this.isHead = isHead;
+      this.leaveBalance = new LeaveBalance();
   }
 
   @Override
