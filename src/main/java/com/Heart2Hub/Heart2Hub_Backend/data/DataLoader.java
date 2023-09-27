@@ -48,14 +48,16 @@ public class DataLoader implements CommandLineRunner {
   private final MedicalHistoryRecordService medicalHistoryRecordService;
   private final TreatmentPlanRecordService treatmentPlanRecordService;
   private final LeaveService leaveService;
-    private final ShiftConstraintsService shiftConstraintsService;
+  private final ShiftConstraintsService shiftConstraintsService;
+
+  private final ConsumableEquipmentService consumableEquipmentService;
 
   private final SubDepartmentRepository subDepartmentRepository;
     private final DepartmentRepository departmentRepository;
     private final WardService wardService;
     private final WardClassService wardClassService;
 
-    public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService) {
+    public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, ConsumableEquipmentService consumableEquipmentService) {
         this.staffService = staffService;
         this.shiftService = shiftService;
         this.departmentService = departmentService;
@@ -74,6 +76,7 @@ public class DataLoader implements CommandLineRunner {
         this.departmentRepository = departmentRepository;
         this.wardService = wardService;
         this.wardClassService = wardClassService;
+        this.consumableEquipmentService = consumableEquipmentService;
     }
 
     @Override
@@ -103,6 +106,7 @@ public class DataLoader implements CommandLineRunner {
     createStaffData();
     createShiftData();
     createPatientData();
+    createConsumableEquipmentData();
 
     //code ends here
 
@@ -349,5 +353,13 @@ public class DataLoader implements CommandLineRunner {
       problemRecordService.createProblemRecord(newPatient5.getPatientId(), new ProblemRecord("Seasonal Allergies", "Doctor Sarah Tan", LocalDateTime.of(2021, 5, 3, 11, 15, 0), PriorityEnum.LOW, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
   }
 
+  private void createConsumableEquipmentData() {
+        ConsumableEquipment newConsumableEquipment1 = consumableEquipmentService.createConsumableEquipment(new ConsumableEquipment("Latex Powder-Free Gloves", "1 Box 100pcs", ItemTypeEnum.CONSUMABLE,100,BigDecimal.TEN));
+      ConsumableEquipment newConsumableEquipment2 = consumableEquipmentService.createConsumableEquipment(new ConsumableEquipment("Surgical Masks", "1 Box 100pcs", ItemTypeEnum.CONSUMABLE,100,BigDecimal.valueOf(5)));
+      ConsumableEquipment newConsumableEquipment3 = consumableEquipmentService.createConsumableEquipment(new ConsumableEquipment("Cotton Wool Pads", "1 Box 200pcs", ItemTypeEnum.CONSUMABLE,50,BigDecimal.valueOf(4)));
+      ConsumableEquipment newConsumableEquipment4 = consumableEquipmentService.createConsumableEquipment(new ConsumableEquipment("Tissue Paper", "1 Box 20pcs", ItemTypeEnum.CONSUMABLE,1000,BigDecimal.valueOf(2)));
+      ConsumableEquipment newConsumableEquipment5 = consumableEquipmentService.createConsumableEquipment(new ConsumableEquipment("Disposable Needles", "1 Box 5pcs", ItemTypeEnum.CONSUMABLE,100,BigDecimal.valueOf(3)));
+
+  }
 }
 
