@@ -147,6 +147,7 @@ public class ConsumableEquipmentService {
     public List<ConsumableEquipment> getAllConsumableEquipmentByName(String name) throws ConsumableEquipmentNotFoundException {
         try {
             List<ConsumableEquipment> consumableEquipmentList = consumableEquipmentRepository.findByInventoryItemNameContainingIgnoreCase(name);
+            System.out.print("get equipment");
             return consumableEquipmentList;
         } catch (Exception ex) {
             throw new ConsumableEquipmentNotFoundException(ex.getMessage());

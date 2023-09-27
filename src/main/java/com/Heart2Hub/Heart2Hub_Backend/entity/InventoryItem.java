@@ -8,6 +8,7 @@ import lombok.Getter;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class InventoryItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     private Long inventoryItemId;
