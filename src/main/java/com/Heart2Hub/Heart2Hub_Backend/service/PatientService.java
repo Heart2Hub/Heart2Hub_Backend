@@ -23,18 +23,37 @@ import java.util.Optional;
 public class PatientService {
 
     private final PatientRepository patientRepository;
-
     private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
+    private final ElectronicHealthRecordService electronicHealthRecordService;
 
-    public PatientService(PatientRepository patientRepository, ElectronicHealthRecordRepository electronicHealthRecordRepository) {
+    public PatientService(PatientRepository patientRepository, ElectronicHealthRecordRepository electronicHealthRecordRepository, ElectronicHealthRecordService electronicHealthRecordService) {
         this.patientRepository = patientRepository;
         this.electronicHealthRecordRepository = electronicHealthRecordRepository;
+        this.electronicHealthRecordService = electronicHealthRecordService;
     }
 
-    // TO-DO: CREATE PATIENT OVERLOADED METHOD WHICH JUST TAKES IN NEW PATIENT PULLS FROM NEHR FRONT END HANDLE ERROR CATCHING
+    public Patient createPatient(Patient newPatient, String nric) throws UnableToCreatePatientException {
+        try {
+            ElectronicHealthRecord nehrRecord = electronicHealthRecordService.getNehrRecordByNric(nric);
+            if (nehrRecord == null) {
+                throw new UnableToCreatePatientException("NEHR Record is not found. Please provide NEHR details.");
+            }
+            nehrRecord.setPatient(newPatient);
+            newPatient.setElectronicHealthRecord(nehrRecord);
+            electronicHealthRecordRepository.save(nehrRecord);
+            patientRepository.save(newPatient);
+            return newPatient;
+        } catch (Exception ex) {
+            throw new UnableToCreatePatientException(ex.getMessage());
+        }
+    }
 
     public Patient createPatient(Patient newPatient, ElectronicHealthRecord newElectronicHealthRecord) throws UnableToCreatePatientException {
         try {
+            ElectronicHealthRecord nehrRecord = electronicHealthRecordService.getNehrRecordByNric(newElectronicHealthRecord.getNric());
+            if (nehrRecord != null) {
+                throw new UnableToCreatePatientException("NEHR Record is found. Please do not create a new record.");
+            }
             newElectronicHealthRecord.setPatient(newPatient);
             newPatient.setElectronicHealthRecord(newElectronicHealthRecord);
             electronicHealthRecordRepository.save(newElectronicHealthRecord);
