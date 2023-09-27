@@ -8,11 +8,16 @@ import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordReposito
 import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +63,20 @@ public class PatientService {
             newPatient.setElectronicHealthRecord(newElectronicHealthRecord);
             electronicHealthRecordRepository.save(newElectronicHealthRecord);
             patientRepository.save(newPatient);
-            return newPatient;
+            RestTemplate restTemplate = new RestTemplate();
+            String endpointUrl = "http://localhost:3002/records";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<ElectronicHealthRecord> requestEntity = new HttpEntity<>(newElectronicHealthRecord, headers);
+            ResponseEntity<ElectronicHealthRecord> responseEntity = restTemplate.postForEntity(endpointUrl, requestEntity, ElectronicHealthRecord.class);
+            if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                ElectronicHealthRecord ehrResponse = responseEntity.getBody();
+                electronicHealthRecordRepository.save(newElectronicHealthRecord);
+                patientRepository.save(newPatient);
+                return newPatient;
+            } else {
+                throw new UnableToCreatePatientException("Failed to create patient. Server returned status code: " + responseEntity.getStatusCodeValue());
+            }
         } catch (Exception ex) {
             throw new UnableToCreatePatientException(ex.getMessage());
         }
