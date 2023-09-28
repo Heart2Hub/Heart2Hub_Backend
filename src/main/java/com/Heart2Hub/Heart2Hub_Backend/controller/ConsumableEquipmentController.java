@@ -28,7 +28,7 @@ public class ConsumableEquipmentController {
     }
 
     @PostMapping("/createConsumableEquipment")
-    public ResponseEntity<ConsumableEquipment> createConsumableEquipment(@RequestParam ConsumableEquipment consumableEquipment) {
+    public ResponseEntity<ConsumableEquipment> createConsumableEquipment(@RequestBody ConsumableEquipment consumableEquipment) {
         return ResponseEntity.ok(
                 consumableEquipmentService.createConsumableEquipment(consumableEquipment)
         );
@@ -36,16 +36,16 @@ public class ConsumableEquipmentController {
 
     @DeleteMapping("/deleteConsumableEquipment")
     public ResponseEntity<String> deleteConsumableEquipment(
-            @RequestParam("consumableEquipmentId") Long consumableEquipmentId) {
-        return ResponseEntity.ok(consumableEquipmentService.deleteConsumableEquipment(consumableEquipmentId)
+            @RequestParam("inventoryItemId") Long inventoryItemId) {
+        return ResponseEntity.ok(consumableEquipmentService.deleteConsumableEquipment(inventoryItemId)
         );
     }
 
     @PutMapping("/updateConsumableEquipment")
     public ResponseEntity<ConsumableEquipment> updateConsumableEquipment(
-            @RequestParam("consumableEquipmentId") Long consumableEquipmentId,
+            @RequestParam("inventoryItemId") Long inventoryItemId,
             @RequestBody ConsumableEquipment updatedConsumableEquipment) {
-        return ResponseEntity.ok(consumableEquipmentService.updateConsumableEquipment(consumableEquipmentId,updatedConsumableEquipment)
+        return ResponseEntity.ok(consumableEquipmentService.updateConsumableEquipment(inventoryItemId,updatedConsumableEquipment)
         );
     }
 

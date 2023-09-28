@@ -39,6 +39,14 @@ public abstract class InventoryItem {
         this.inventoryItemDescription = inventoryItemDescription;
     }
 
+    public Long getInventoryItemId() {
+        return inventoryItemId;
+    }
+
+    public void setInventoryItemId(Long inventoryItemId) {
+        this.inventoryItemId = inventoryItemId;
+    }
+
     public void setItemTypeEnum(ItemTypeEnum itemTypeEnum) {
         this.itemTypeEnum = itemTypeEnum;
     }

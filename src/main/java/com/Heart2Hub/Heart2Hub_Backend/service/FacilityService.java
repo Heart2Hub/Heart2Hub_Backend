@@ -114,7 +114,7 @@ public class FacilityService {
 
     public Facility updateFacility(Long facilityId, Facility updatedFacility) throws FacilityNotFoundException {
         if (!isLoggedInUserAdmin()) {
-            throw new UnableToCreateFacilityException("Staff cannot update facilities as he/she is not an Admin.");
+            throw new UnableToCreateFacilityException("Staff cannot update facilities as he/she is not an Admin. " + updatedFacility.getName());
         }
         try {
             Optional<Facility> facilityOptional = facilityRepository.findById(facilityId);

@@ -83,30 +83,30 @@ public class ConsumableEquipmentService {
         }
     }
 
-    public String deleteConsumableEquipment(Long consumableEquipmentId) throws ConsumableEquipmentNotFoundException {
+    public String deleteConsumableEquipment(Long inventoryItemId) throws ConsumableEquipmentNotFoundException {
         if (!isLoggedInUserAdmin()) {
             throw new UnableToCreateConsumableEquipmentException("Staff cannot delete inventory as he/she is not an admin.");
         }
         try {
-            Optional<ConsumableEquipment> consumableEquipmentOptional = consumableEquipmentRepository.findById(consumableEquipmentId);
+            Optional<ConsumableEquipment> consumableEquipmentOptional = consumableEquipmentRepository.findById(inventoryItemId);
             if (consumableEquipmentOptional.isPresent()) {
                 ConsumableEquipment consumableEquipment = consumableEquipmentOptional.get();
                 consumableEquipmentRepository.delete(consumableEquipment);
-                return "Consumable Equipment with consumableEquipmentId " + consumableEquipmentId + " has been deleted successfully.";
+                return "Consumable Equipment with consumableEquipmentId " + inventoryItemId + " has been deleted successfully.";
             } else {
-                throw new ConsumableEquipmentNotFoundException("Consumable Equipment with ID: " + consumableEquipmentId + " is not found");
+                throw new ConsumableEquipmentNotFoundException("Consumable Equipment with ID: " + inventoryItemId + " is not found");
             }
         } catch (Exception ex) {
             throw new ConsumableEquipmentNotFoundException(ex.getMessage());
         }
     }
 
-    public ConsumableEquipment updateConsumableEquipment(Long consumableEquipmentId, ConsumableEquipment updatedConsumableEquipment) throws ConsumableEquipmentNotFoundException {
+    public ConsumableEquipment updateConsumableEquipment(Long inventoryItemId, ConsumableEquipment updatedConsumableEquipment) throws ConsumableEquipmentNotFoundException {
         if (!isLoggedInUserAdmin()) {
-            throw new UnableToCreateConsumableEquipmentException("Staff cannot update consumable equipment as he/she is not an Admin.");
+            throw new UnableToCreateConsumableEquipmentException("Staff cannot update consumable equipment as he/she is not an Admin. RequestBody: " + updatedConsumableEquipment);
         }
         try {
-            Optional<ConsumableEquipment> consumableEquipmentOptional = consumableEquipmentRepository.findById(consumableEquipmentId);
+            Optional<ConsumableEquipment> consumableEquipmentOptional = consumableEquipmentRepository.findById(inventoryItemId);
             if (consumableEquipmentOptional.isPresent()) {
                 ConsumableEquipment consumableEquipment = consumableEquipmentOptional.get();
                 String name = consumableEquipment.getInventoryItemName();
@@ -137,7 +137,7 @@ public class ConsumableEquipmentService {
               consumableEquipmentRepository.save(consumableEquipment);
                 return consumableEquipment;
             } else {
-                throw new ConsumableEquipmentNotFoundException("Consumable Equipment with ID: " + consumableEquipmentId + " is not found");
+                throw new ConsumableEquipmentNotFoundException("Consumable Equipment with ID: " + inventoryItemId + " is not found");
             }
         } catch (Exception ex) {
             throw new ConsumableEquipmentNotFoundException(ex.getMessage());
