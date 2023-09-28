@@ -33,6 +33,15 @@ public class PatientController {
         return ResponseEntity.ok(patientService.createPatient(patient, ehr));
     }
 
+    @PostMapping("/patientLogin")
+    public ResponseEntity<String> patientLogin(
+            @RequestParam("username") String username,
+            @RequestParam("password") String password) {
+
+        String jwtToken = patientService.authenticatePatient(username,password);
+        return ResponseEntity.ok(jwtToken);
+    }
+
     @GetMapping("/getAllPatientsWithElectronicHealthRecordSummaryByName")
     public ResponseEntity<List<Map<String, Object>>> getAllPatientsWithElectronicHealthRecordSummaryByName(
             @RequestParam("name") String name) throws JSONException {

@@ -1,34 +1,37 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.*;
-import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
 public class PatientService {
 
     private final PatientRepository patientRepository;
+    private final PasswordEncoder passwordEncoder;
 
     private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
 
-    public PatientService(PatientRepository patientRepository, ElectronicHealthRecordRepository electronicHealthRecordRepository) {
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+
+    public PatientService(PatientRepository patientRepository, PasswordEncoder passwordEncoder, ElectronicHealthRecordRepository electronicHealthRecordRepository, AuthenticationManager authenticationManager, JwtService jwtService) {
         this.patientRepository = patientRepository;
+        this.passwordEncoder = passwordEncoder;
         this.electronicHealthRecordRepository = electronicHealthRecordRepository;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     // TO-DO: CREATE PATIENT OVERLOADED METHOD WHICH JUST TAKES IN NEW PATIENT PULLS FROM NEHR FRONT END HANDLE ERROR CATCHING
@@ -37,12 +40,24 @@ public class PatientService {
         try {
             newElectronicHealthRecord.setPatient(newPatient);
             newPatient.setElectronicHealthRecord(newElectronicHealthRecord);
+            newPatient.setPassword(passwordEncoder.encode(newPatient.getPassword()));
             electronicHealthRecordRepository.save(newElectronicHealthRecord);
             patientRepository.save(newPatient);
             return newPatient;
         } catch (Exception ex) {
             throw new UnableToCreatePatientException(ex.getMessage());
         }
+    }
+
+    public String authenticatePatient(String username, String password) {
+        //authenticate username and password, otherwise fails
+        System.out.println("step 1");
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        //at this point, user is authenticated
+        Patient patient = patientRepository.findByUsername(username)
+                .orElseThrow(() -> new PatientNotFoundException("Patient not found"));
+
+        return jwtService.generateToken(patient);
     }
 
     public List<JSONObject> getAllPatientsWithElectronicHealthRecordSummaryByName(String name) throws PatientNotFoundException {
