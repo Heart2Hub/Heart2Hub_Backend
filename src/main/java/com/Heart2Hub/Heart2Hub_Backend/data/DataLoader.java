@@ -52,12 +52,14 @@ public class DataLoader implements CommandLineRunner {
 
   private final ConsumableEquipmentService consumableEquipmentService;
 
+  private final AllocatedInventoryService allocatedInventoryService;
+
   private final SubDepartmentRepository subDepartmentRepository;
     private final DepartmentRepository departmentRepository;
     private final WardService wardService;
     private final WardClassService wardClassService;
 
-    public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, ConsumableEquipmentService consumableEquipmentService) {
+    public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService) {
         this.staffService = staffService;
         this.shiftService = shiftService;
         this.departmentService = departmentService;
@@ -77,6 +79,7 @@ public class DataLoader implements CommandLineRunner {
         this.wardService = wardService;
         this.wardClassService = wardClassService;
         this.consumableEquipmentService = consumableEquipmentService;
+        this.allocatedInventoryService = allocatedInventoryService;
     }
 
     @Override
@@ -360,6 +363,16 @@ public class DataLoader implements CommandLineRunner {
       ConsumableEquipment newConsumableEquipment4 = consumableEquipmentService.createConsumableEquipment(new ConsumableEquipment("Tissue Paper", "1 Box 20pcs", ItemTypeEnum.CONSUMABLE,1000,BigDecimal.valueOf(2)));
       ConsumableEquipment newConsumableEquipment5 = consumableEquipmentService.createConsumableEquipment(new ConsumableEquipment("Disposable Needles", "1 Box 5pcs", ItemTypeEnum.CONSUMABLE,100,BigDecimal.valueOf(3)));
 
+      Facility f = facilityService.findFacilityById(Long.parseLong("1"));
+
+      AllocatedInventory item1 = allocatedInventoryService.createAllocatedInventory(f.getFacilityId(), newConsumableEquipment1.getInventoryItemId(), 10, 1);
+      AllocatedInventory item2 = allocatedInventoryService.createAllocatedInventory(f.getFacilityId(), newConsumableEquipment2.getInventoryItemId(), 10, 1);
+      AllocatedInventory item3 = allocatedInventoryService.createAllocatedInventory(f.getFacilityId(), newConsumableEquipment3.getInventoryItemId(), 10, 1);
+      AllocatedInventory item4 = allocatedInventoryService.createAllocatedInventory(f.getFacilityId(), newConsumableEquipment4.getInventoryItemId(), 10, 1);
+      AllocatedInventory item5 = allocatedInventoryService.createAllocatedInventory(f.getFacilityId(), newConsumableEquipment5.getInventoryItemId(), 10, 1);
+
   }
+
+
 }
 

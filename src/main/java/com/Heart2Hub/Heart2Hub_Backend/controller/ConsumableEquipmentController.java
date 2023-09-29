@@ -23,8 +23,8 @@ public class ConsumableEquipmentController {
 
     // As an admin, I can view all consumable equipments
     @GetMapping("/getAllConsumableEquipment")
-    public ResponseEntity<List<ConsumableEquipment>> getAllConsumableEquipment(@RequestParam("name") String name) {
-        return ResponseEntity.ok(consumableEquipmentService.getAllConsumableEquipmentByName(name));
+    public ResponseEntity<List<ConsumableEquipment>> getAllConsumableEquipment() {
+        return ResponseEntity.ok(consumableEquipmentService.getAllConsumableEquipmentByName());
     }
 
     @PostMapping("/createConsumableEquipment")
