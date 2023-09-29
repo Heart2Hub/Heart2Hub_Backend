@@ -1,6 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
+import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Patient;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PriorityEnum;
@@ -25,13 +26,16 @@ public class AppointmentService {
 
   private final PatientService patientService;
 
+  private final DepartmentService departmentService;
+
   private final StaffService staffService;
 
 
   public AppointmentService(AppointmentRepository appointmentRepository,
-      PatientService patientService, StaffService staffService) {
+      PatientService patientService,DepartmentService departmentService, StaffService staffService) {
     this.appointmentRepository = appointmentRepository;
     this.patientService = patientService;
+    this.departmentService = departmentService;
     this.staffService = staffService;
   }
 
@@ -40,12 +44,15 @@ public class AppointmentService {
   }
 
   public Appointment createNewAppointment(String description,
-      String actualDateTimeString, String bookedDateTimeString,String priority, String patientUsername) {
+      String actualDateTimeString, String bookedDateTimeString,String priority, String patientUsername, String departmentName) {
     LocalDateTime actualDateTime = LocalDateTime.parse(actualDateTimeString);
     LocalDateTime bookedDateTime = LocalDateTime.parse(bookedDateTimeString);
     //perform checks
     Patient patient = patientService.getPatientByUsername(patientUsername);
     // patient has no disabled field?
+
+    //Get department
+    Department department = departmentService.getDepartmentByName(departmentName);
 
     //check if patient has overlapping appointments
     List<Appointment> listOfAppointments = patient.getListOfCurrentAppointments().stream()
@@ -56,7 +63,7 @@ public class AppointmentService {
 
     //create appt entity
     Appointment newAppointment = new Appointment(description, actualDateTime,
-        bookedDateTime, PriorityEnum.valueOf(priority), patient);
+        bookedDateTime, PriorityEnum.valueOf(priority), patient, department);
     patient.getListOfCurrentAppointments().add(newAppointment);
 
     appointmentRepository.save(newAppointment);
@@ -70,13 +77,22 @@ public class AppointmentService {
   }
 
   //View All Appointments by day
-  public List<Appointment> viewAllAppointmentsByMonth(Integer month, Integer year) {
+  public List<Appointment> viewAllAppointmentsByRange(Integer startDay,Integer startMonth,Integer startYear,Integer endDay,Integer endMonth,Integer endYear, String departmentName) {
 
-    LocalDateTime startDate = LocalDateTime.of(year,month,1,0,0,0);
-    LocalDateTime endDate = YearMonth.of(year, month).atEndOfMonth().atTime(23, 59, 59);
+    LocalDateTime startDate = LocalDateTime.of(startYear,startMonth,startDay,0,0,0);
+    LocalDateTime endDate = LocalDateTime.of(endYear,endMonth,endDay,23,59,59);
 
-    return appointmentRepository.findAllByActualDateTimeBetween(startDate,endDate);
+    return appointmentRepository.findAllByActualDateTimeBetweenAndDepartmentName(startDate,endDate, departmentName);
   }
+
+  //View All Appointments by day OLD
+//  public List<Appointment> viewAllAppointmentsByRange(Integer startDay,Integer startMonth,Integer startYear,Integer endDay,Integer endMonth,Integer endYear) {
+//
+//    LocalDateTime startDate = LocalDateTime.of(startYear,startMonth,startDay,0,0,0);
+//    LocalDateTime endDate = LocalDateTime.of(endYear,endMonth,endDay,23,59,59);
+//
+//    return appointmentRepository.findAllByActualDateTimeBetween(startDate,endDate);
+//  }
 
 
   public Appointment assignAppointmentToStaff(Long appointmentId, Long staffId){

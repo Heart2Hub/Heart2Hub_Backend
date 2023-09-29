@@ -51,6 +51,11 @@ public class Appointment {
     private PriorityEnum priorityEnum;
 
     @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "department_id", nullable = false)
+    private Department department;
+
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "staff_id", nullable = true)
     private Staff currentAssignedStaff = null;
@@ -77,11 +82,12 @@ public class Appointment {
 
     public Appointment(String description, LocalDateTime actualDateTime,
         LocalDateTime bookedDateTime,
-        PriorityEnum priorityEnum, Patient patient) {
+        PriorityEnum priorityEnum, Patient patient, Department department) {
         this.description = description;
         this.actualDateTime = actualDateTime;
         this.bookedDateTime = bookedDateTime;
         this.priorityEnum = priorityEnum;
         this.patient = patient;
+        this.department = department;
     }
 }

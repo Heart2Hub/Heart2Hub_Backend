@@ -43,9 +43,10 @@ public class AppointmentController {
       @RequestParam("actualDateTime") String actualDateTime,
       @RequestParam("bookedDateTime") String bookedDateTime,
       @RequestParam("priority") String priority,
-      @RequestParam("patientUsername") String patientUsername) {
+      @RequestParam("patientUsername") String patientUsername,
+      @RequestParam("departmentName") String departmentName) {
     return ResponseEntity.ok(appointmentService.createNewAppointment(description,
-        actualDateTime, bookedDateTime, priority, patientUsername));
+        actualDateTime, bookedDateTime, priority, patientUsername, departmentName));
   }
 
   @PostMapping("/assignAppointmentToStaff")
@@ -55,39 +56,32 @@ public class AppointmentController {
     return ResponseEntity.ok(appointmentService.assignAppointmentToStaff(appointmentId, staffId));
   }
 
-  @GetMapping("/viewAllAppointmentsByMonth")
+  @GetMapping("/viewAllAppointmentsByRange")
   public ResponseEntity<List<AppointmentDTO>> viewAllAppointmentsByMonth(
-      @RequestParam("month") Integer month,
-      @RequestParam("year") Integer year) {
+      @RequestParam("startDay") Integer startDay, @RequestParam("startMonth") Integer startMonth,
+      @RequestParam("startYear") Integer startYear, @RequestParam("endDay") Integer endDay,
+      @RequestParam("endMonth") Integer endMonth,
+      @RequestParam("endYear") Integer endYear,
+      @RequestParam("departmentName") String departmentName) {
 
-    try {
-      List<Appointment> listOfAppts = appointmentService.viewAllAppointmentsByMonth(month, year);
-      List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
-          .map(appointment -> {
-            appointment.getPatient().getElectronicHealthRecord().getElectronicHealthRecordId();
-                appointment.getPatient().getElectronicHealthRecord().getListOfPastAppointments().size();
-                appointment.getPatient().getElectronicHealthRecord().getListOfNextOfKinRecords().size();
-                appointment.getPatient().getElectronicHealthRecord().getListOfSubsidies().size();
-                appointment.getPatient().getElectronicHealthRecord().getListOfPrescriptionRecords().size();
-                appointment.getPatient().getElectronicHealthRecord().getListOfTreatmentPlanRecords().size();
-                appointment.getPatient().getElectronicHealthRecord().getListOfMedicalHistoryRecords().size();
-                appointment.getPatient().getElectronicHealthRecord().getListOfPastAdmissions().size();
-                appointment.getPatient().getElectronicHealthRecord().getListOfProblemRecords().size();
-                return appointmentMapper.convertToDto(appointment);
-              }
-
-          ).collect(
-              Collectors.toList());
-      System.out.println("Successfully mapped appts!!!!");
-      System.out.println(listOfApptsDTO);
-
-      System.out.println("number of appts to send: " + listOfApptsDTO.size());
-      return ResponseEntity.ok(listOfApptsDTO);
-    } catch (Exception e) {
-      e.printStackTrace();
-      // Or log the exception if you have a logger
-      // logger.error("Error during mapping", e);
-      throw e;
-    }
+    List<Appointment> listOfAppts = appointmentService.viewAllAppointmentsByRange(startDay,
+        startMonth, startYear, endDay, endMonth, endYear, departmentName);
+    List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
+        .map(appointmentMapper::convertToDto).collect(Collectors.toList());
+    return ResponseEntity.ok(listOfApptsDTO);
   }
+
+//  @GetMapping("/viewAllAppointmentsByRange")
+//  public ResponseEntity<List<AppointmentDTO>> viewAllAppointmentsByMonth(
+//      @RequestParam("startDay") Integer startDay, @RequestParam("startMonth") Integer startMonth,
+//      @RequestParam("startYear") Integer startYear, @RequestParam("endDay") Integer endDay,
+//      @RequestParam("endMonth") Integer endMonth,
+//      @RequestParam("endYear") Integer endYear) {
+//
+//    List<Appointment> listOfAppts = appointmentService.viewAllAppointmentsByRange(startDay,
+//        startMonth, startYear, endDay, endMonth, endYear);
+//    List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
+//        .map(appointmentMapper::convertToDto).collect(Collectors.toList());
+//    return ResponseEntity.ok(listOfApptsDTO);
+//  }
 }

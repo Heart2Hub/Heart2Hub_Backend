@@ -21,7 +21,14 @@ public class AppointmentDTO {
   private PriorityEnum priorityEnum;
   private Long currentAssignedStaffId ;
   private Long patientId;
-  private ElectronicHealthRecordDTO electronicHealthRecord;
   private List<Long> listOfStaffsId;
   private List<Long> listOfImageDocumentsId;
+  private Long electronicHealthRecordId;
+  private String firstName;
+  private String lastName;
+  private String nric;
+  private String placeOfBirth;
+  private String sex;
+  private String contactNumber;
+  private String nationality;
 }

@@ -15,24 +15,22 @@ import org.springframework.stereotype.Component;
 public class AppointmentMapper {
 
   private final ModelMapper modelMapper;
-  private final ElectronicHealthRecordMapper electronicHealthRecordMapper;
 
   public AppointmentMapper(ElectronicHealthRecordMapper electronicHealthRecordMapper) {
     this.modelMapper = new ModelMapper();
-    this.electronicHealthRecordMapper = electronicHealthRecordMapper;
-    System.out.println("electronicHealthRecordMapper: ");
-    System.out.println(electronicHealthRecordMapper);
 
     modelMapper.createTypeMap(Appointment.class, AppointmentDTO.class)
         .addMapping(src -> src.getCurrentAssignedStaff().getStaffId(),
             AppointmentDTO::setCurrentAssignedStaffId)
         .addMapping(src -> src.getPatient().getPatientId(), AppointmentDTO::setPatientId)
-        //TODO its this one lil shit thats not working, unsure if its lazy fetching thats causing the mapping to not work
-        // across relationships during mapping or @JSONIgnore thats blocking the mapper from proceding
-        .addMapping(src -> {
-//          System.out.println(src.getPatient().getElectronicHealthRecord());
-          return electronicHealthRecordMapper.convertToDto(src.getPatient().getElectronicHealthRecord());
-        }, AppointmentDTO::setElectronicHealthRecord)
+        .addMapping(src -> src.getPatient().getElectronicHealthRecord().getElectronicHealthRecordId(), AppointmentDTO::setElectronicHealthRecordId)
+        .addMapping(src -> src.getPatient().getElectronicHealthRecord().getFirstName(), AppointmentDTO::setFirstName)
+        .addMapping(src -> src.getPatient().getElectronicHealthRecord().getLastName(), AppointmentDTO::setLastName)
+        .addMapping(src -> src.getPatient().getElectronicHealthRecord().getNric(), AppointmentDTO::setNric)
+        .addMapping(src -> src.getPatient().getElectronicHealthRecord().getPlaceOfBirth(), AppointmentDTO::setPlaceOfBirth)
+        .addMapping(src -> src.getPatient().getElectronicHealthRecord().getSex(), AppointmentDTO::setSex)
+        .addMapping(src -> src.getPatient().getElectronicHealthRecord().getContactNumber(), AppointmentDTO::setContactNumber)
+        .addMapping(src -> src.getPatient().getElectronicHealthRecord().getNationality(), AppointmentDTO::setNationality)
         .addMapping(
         src -> (src.getListOfStaff() != null) ? src.getListOfStaff().stream().map(Staff::getStaffId)
             .collect(Collectors.toList()) : null,

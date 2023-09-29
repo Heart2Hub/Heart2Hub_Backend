@@ -496,26 +496,62 @@ public class DataLoader implements CommandLineRunner {
     System.out.println(LocalDateTime.now().plusDays(7L).toString());
 
     Patient patient1 = patientService.getPatientByUsername("patient1");
+
     appointmentService.createNewAppointment("test description",
+        LocalDateTime.now().plusDays(7L).toString(),
         LocalDateTime.now().toString(),
+        "LOW",
+        patient1.getUsername(),
+        "Orthopedics");
+    appointmentService.createNewAppointment("test description",
+        LocalDateTime.now().plusDays(7L).toString(),
         LocalDateTime.now().toString(),
         "LOW",
-        patient1.getUsername());
+        patient1.getUsername(),
+        "Cardiology");
     appointmentService.createNewAppointment("test description",
         LocalDateTime.now().plusDays(7L).toString(),
-        LocalDateTime.now().plusDays(7L).toString(),
+        LocalDateTime.now().toString(),
         "LOW",
-        patient1.getUsername());
+        patient1.getUsername(),
+        "Cardiology");
     appointmentService.createNewAppointment("test description",
         LocalDateTime.now().plusDays(7L).toString(),
-        LocalDateTime.now().plusDays(7L).toString(),
+        LocalDateTime.now().toString(),
         "LOW",
-        patient1.getUsername());
+        patient1.getUsername(),
+        "Cardiology");
+    appointmentService.createNewAppointment("test description",
+        LocalDateTime.now().plusDays(7L).toString(),
+        LocalDateTime.now().toString(),
+        "LOW",
+        patient1.getUsername(),
+        "Cardiology");
+    appointmentService.createNewAppointment("test description",
+        LocalDateTime.now().plusDays(7L).toString(),
+        LocalDateTime.now().toString(),
+        "LOW",
+        patient1.getUsername(),
+        "Cardiology");
+    appointmentService.createNewAppointment("test description",
+        LocalDateTime.now().plusDays(7L).toString(),
+        LocalDateTime.now().toString(),
+        "LOW",
+        patient1.getUsername(),
+        "Cardiology");
+
+    appointmentService.createNewAppointment("test description",
+        LocalDateTime.now().plusDays(9L).toString(),
+        LocalDateTime.now().plusDays(3L).toString(),
+        "LOW",
+        patient1.getUsername(),
+        "Cardiology");
     appointmentService.createNewAppointment("test description",
         LocalDateTime.now().plusDays(14L).toString(),
-        LocalDateTime.now().plusDays(14L).toString(),
+        LocalDateTime.now().plusDays(5L).toString(),
         "LOW",
-        patient1.getUsername());
+        patient1.getUsername(),
+        "Cardiology");
   }
 }
 
