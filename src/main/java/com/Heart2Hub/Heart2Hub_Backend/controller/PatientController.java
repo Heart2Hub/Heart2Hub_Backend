@@ -60,4 +60,12 @@ public class PatientController {
         return ResponseEntity.ok(result);
     }
 
+    @PutMapping ("/changePassword")
+    public ResponseEntity<Boolean> changePassword(
+            @RequestParam("username") String username,
+            @RequestParam("oldPassword") String oldPassword,
+            @RequestParam("newPassword") String newPassword) {
+        return ResponseEntity.ok(patientService.changePassword(username,oldPassword,newPassword));
+    }
+
 }

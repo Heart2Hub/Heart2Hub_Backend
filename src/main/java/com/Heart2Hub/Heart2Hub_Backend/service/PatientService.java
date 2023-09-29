@@ -94,4 +94,28 @@ public class PatientService {
             throw new PatientNotFoundException(ex.getMessage());
         }
     }
+
+    public Patient getPatientByUsername(String username) {
+        Patient patient = patientRepository.findByUsername(username)
+                .orElseThrow(() -> new PatientNotFoundException("Username Does Not Exist."));
+        return patient;
+    }
+
+    public Boolean changePassword(String username, String oldPassword, String newPassword) throws UnableToChangePasswordException{
+        Patient patient = getPatientByUsername(username);
+        if (passwordEncoder.matches(oldPassword, patient.getPassword())) {
+            if (newPassword.length() > 6) {
+                try {
+                    patient.setPassword(passwordEncoder.encode(newPassword));
+                    return Boolean.TRUE;
+                } catch (Exception ex) {
+                    throw new UnableToChangePasswordException("New Password already in use");
+                }
+            } else {
+                throw new UnableToChangePasswordException("New Password provided is too short");
+            }
+        } else {
+            throw new UnableToChangePasswordException("Old Password provided is Incorrect");
+        }
+    }
 }
