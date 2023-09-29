@@ -103,7 +103,7 @@ public class ConsumableEquipmentService {
 
     public ConsumableEquipment updateConsumableEquipment(Long inventoryItemId, ConsumableEquipment updatedConsumableEquipment) throws ConsumableEquipmentNotFoundException {
         if (!isLoggedInUserAdmin()) {
-            throw new UnableToCreateConsumableEquipmentException("Staff cannot update consumable equipment as he/she is not an Admin. RequestBody: " + updatedConsumableEquipment);
+            throw new UnableToCreateConsumableEquipmentException("Staff cannot update consumable equipment as he/she is not an Admin.");
         }
         try {
             Optional<ConsumableEquipment> consumableEquipmentOptional = consumableEquipmentRepository.findById(inventoryItemId);
@@ -123,7 +123,7 @@ public class ConsumableEquipmentService {
                 }
                 Integer quantity = consumableEquipment.getQuantityInStock();
                 if (quantity < 1) {
-                    throw new UnableToCreateConsumableEquipmentException("Quantity in stock must be more than 0");
+                    throw new UnableToCreateConsumableEquipmentException("Quantity in stock must be more than 0 " + quantity);
                 }
                 BigDecimal price = consumableEquipment.getRestockPricePerQuantity();
                 if (price.equals(BigDecimal.ZERO)) {

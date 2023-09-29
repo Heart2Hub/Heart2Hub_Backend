@@ -1,6 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,9 +14,11 @@ import java.math.BigDecimal;
 @Table(name = "consumableEquipment")
 public class ConsumableEquipment extends InventoryItem{
 
+    @Min(value = 1, message = "Quantity cannot be less than 1")
     @NotNull
     private Integer quantityInStock;
 
+    @Min(value = 0, message = "Price cannot be less than 0")
     @NotNull
     private BigDecimal restockPricePerQuantity;
 
