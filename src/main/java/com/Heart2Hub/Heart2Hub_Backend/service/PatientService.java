@@ -96,9 +96,7 @@ public class PatientService {
     }
 
     public Patient getPatientByUsername(String username) {
-        Patient patient = patientRepository.findByUsername(username)
-                .orElseThrow(() -> new PatientNotFoundException("Username Does Not Exist."));
-        return patient;
+        return patientRepository.findByUsername(username).orElseThrow(() -> new PatientNotFoundException("Patient does not exist"));
     }
 
     public Boolean changePassword(String username, String oldPassword, String newPassword) throws UnableToChangePasswordException{

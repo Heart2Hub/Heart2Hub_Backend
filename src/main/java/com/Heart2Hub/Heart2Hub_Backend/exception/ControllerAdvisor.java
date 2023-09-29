@@ -59,4 +59,22 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
       StaffDisabledException ex) {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
   }
+
+  @ExceptionHandler(AppointmentAssignmentException.class)
+  public ResponseEntity<Object> handleAppointmentAssignmentException(
+      AppointmentAssignmentException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(AppointmentNotFoundException.class)
+  public ResponseEntity<Object> handleAppointmentNotFoundException(
+      AppointmentNotFoundException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(UnableToCreateAppointmentException.class)
+  public ResponseEntity<Object> handleUnableToCreateAppointmentException(
+      UnableToCreateAppointmentException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
 }
