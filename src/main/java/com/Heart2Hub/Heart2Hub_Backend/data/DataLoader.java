@@ -56,8 +56,13 @@ public class DataLoader implements CommandLineRunner {
     private final DepartmentRepository departmentRepository;
     private final WardService wardService;
     private final WardClassService wardClassService;
+    private final MedicationService medicationService;
+    private final ServiceItemService serviceItemService;
 
-    public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, ConsumableEquipmentService consumableEquipmentService) {
+
+
+    public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, SubDepartmentService subDepartmentService, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, ConsumableEquipmentService consumableEquipmentService, MedicationService medicationService,
+                      ServiceItemService serviceItemService) {
         this.staffService = staffService;
         this.shiftService = shiftService;
         this.departmentService = departmentService;
@@ -77,6 +82,8 @@ public class DataLoader implements CommandLineRunner {
         this.wardService = wardService;
         this.wardClassService = wardClassService;
         this.consumableEquipmentService = consumableEquipmentService;
+        this.medicationService = medicationService;
+        this.serviceItemService = serviceItemService;
     }
 
     @Override
@@ -107,6 +114,8 @@ public class DataLoader implements CommandLineRunner {
     createShiftData();
     createPatientData();
     createConsumableEquipmentData();
+    createMedicationData();
+    createServiceItemData();
 
     //code ends here
 
@@ -361,5 +370,20 @@ public class DataLoader implements CommandLineRunner {
       ConsumableEquipment newConsumableEquipment5 = consumableEquipmentService.createConsumableEquipment(new ConsumableEquipment("Disposable Needles", "1 Box 5pcs", ItemTypeEnum.CONSUMABLE,100,BigDecimal.valueOf(3)));
 
   }
+
+    private void createMedicationData() {
+        Medication newMedication1 = medicationService.createMedication(new Medication("Paracetamol 500 mg Tablets", "500mg per piece", ItemTypeEnum.MEDICINE,100,BigDecimal.TEN,BigDecimal.TEN));
+        Medication newMedication2 = medicationService.createMedication(new Medication("Cetirizine 10mg Tablets", "10mg per piece", ItemTypeEnum.MEDICINE,100,BigDecimal.valueOf(5),BigDecimal.TEN));
+        Medication newMedication3 = medicationService.createMedication(new Medication("Augmentin 625mg Tablets ", "625mg per piece", ItemTypeEnum.MEDICINE,50,BigDecimal.valueOf(4), BigDecimal.TEN));
+        Medication newMedication4 = medicationService.createMedication(new Medication("Metformin 500mg Tablets", "500mg per piece", ItemTypeEnum.MEDICINE,1000,BigDecimal.valueOf(2), BigDecimal.TEN));
+        Medication newMedication5 = medicationService.createMedication(new Medication("Augmentin 228mg Suspension", "5ml per bottle", ItemTypeEnum.MEDICINE,100,BigDecimal.valueOf(3), BigDecimal.TEN));
+    }
+
+    private void createServiceItemData() {
+        ServiceItem newServiceItem1 = serviceItemService.createServiceItem(new ServiceItem("General A&E Consultation", "Consultation", ItemTypeEnum.OUTPATIENT,BigDecimal.valueOf(400)));
+        ServiceItem newServiceItem2 = serviceItemService.createServiceItem(new ServiceItem("Class A Ward", "per Day", ItemTypeEnum.INPATIENT,BigDecimal.valueOf(300)));
+        ServiceItem newServiceItem3 = serviceItemService.createServiceItem(new ServiceItem("Class B Ward", "per Day", ItemTypeEnum.INPATIENT,BigDecimal.valueOf(200)));
+
+    }
 }
 

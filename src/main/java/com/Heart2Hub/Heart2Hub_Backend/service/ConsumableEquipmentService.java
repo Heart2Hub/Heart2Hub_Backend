@@ -1,17 +1,11 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.ConsumableEquipment;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Facility;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.FacilityStatusEnum;
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.FacilityTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.ConsumableEquipmentNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.FacilityNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateConsumableEquipmentException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateFacilityException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ConsumableEquipmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import org.springframework.security.core.Authentication;

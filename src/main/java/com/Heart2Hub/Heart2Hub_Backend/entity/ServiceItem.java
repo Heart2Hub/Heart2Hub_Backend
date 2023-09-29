@@ -5,27 +5,25 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @Table(name = "serviceItem")
 public class ServiceItem extends InventoryItem{
-    @NotNull
-    private Long serviceItemId;
 
     @NotNull
     private BigDecimal retailPricePerQuantity;
 
-    public ServiceItem(String inventoryItemName, String inventoryItemDescription, ItemTypeEnum itemTypeEnum, Long serviceItemId, BigDecimal retailPricePerQuantity) {
+    public ServiceItem(String inventoryItemName, String inventoryItemDescription, ItemTypeEnum itemTypeEnum, BigDecimal retailPricePerQuantity) {
         super(inventoryItemName, inventoryItemDescription, itemTypeEnum);
-        this.serviceItemId = serviceItemId;
         this.retailPricePerQuantity = retailPricePerQuantity;
     }
 
-    public ServiceItem(Long serviceItemId, BigDecimal retailPricePerQuantity) {
-        this.serviceItemId = serviceItemId;
+    public ServiceItem(BigDecimal retailPricePerQuantity) {
         this.retailPricePerQuantity = retailPricePerQuantity;
     }
 
