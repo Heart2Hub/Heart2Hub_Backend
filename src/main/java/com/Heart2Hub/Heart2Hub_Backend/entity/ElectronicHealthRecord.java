@@ -30,6 +30,7 @@ public class ElectronicHealthRecord {
     private Long electronicHealthRecordId;
 
     @NotNull
+    @Column(unique = true)
     private String nric;
 
     @NotNull

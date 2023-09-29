@@ -33,6 +33,11 @@ public class PatientController {
 
     private final PatientService patientService;
 
+    @GetMapping("/validateNric")
+    public ResponseEntity<String> validateNric(@RequestParam("nric") String nric) {
+        return ResponseEntity.ok(patientService.validateNric(nric));
+    }
+
     @PostMapping(value = "/createPatient", consumes = {"application/json"}, produces = {"application/json"})
     public ResponseEntity<Patient> createPatient(@RequestBody Map<String, Object> requestBody) {
         ObjectMapper objectMapper = new ObjectMapper()
