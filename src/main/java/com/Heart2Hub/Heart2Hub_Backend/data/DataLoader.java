@@ -497,6 +497,40 @@ public class DataLoader implements CommandLineRunner {
 
     Patient patient1 = patientService.getPatientByUsername("patient1");
 
+    //for today
+    appointmentService.createNewAppointment("test description",
+        LocalDateTime.now().toString(),
+        LocalDateTime.now().toString(),
+        "LOW",
+        patient1.getUsername(),
+        "Cardiology");
+    appointmentService.createNewAppointment("test description",
+        LocalDateTime.now().toString(),
+        LocalDateTime.now().toString(),
+        "LOW",
+        patient1.getUsername(),
+        "Cardiology");
+    appointmentService.createNewAppointment("test description",
+        LocalDateTime.now().toString(),
+        LocalDateTime.now().toString(),
+        "LOW",
+        patient1.getUsername(),
+        "Cardiology");
+    appointmentService.createNewAppointment("test description",
+        LocalDateTime.now().toString(),
+        LocalDateTime.now().toString(),
+        "LOW",
+        patient1.getUsername(),
+        "Cardiology");
+    appointmentService.createNewAppointment("test description",
+        LocalDateTime.now().toString(),
+        LocalDateTime.now().toString(),
+        "LOW",
+        patient1.getUsername(),
+        "Cardiology");
+
+
+
     appointmentService.createNewAppointment("test description",
         LocalDateTime.now().plusDays(7L).toString(),
         LocalDateTime.now().toString(),

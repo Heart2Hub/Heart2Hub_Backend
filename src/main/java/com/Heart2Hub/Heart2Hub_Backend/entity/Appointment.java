@@ -1,6 +1,8 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PriorityEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -31,24 +33,30 @@ public class Appointment {
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime actualDateTime;
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime bookedDateTime;
 
     @NotNull
-    private Time estimatedDuration = Time.valueOf("00:15:00");
+    private Time estimatedDuration = Time.valueOf("00:45:00");
 
     @NotNull
     private Boolean arrived = false;
 
     @NotNull
-    private Time elapsedTime = Time.valueOf("00:15:00");
+    private Time elapsedTime = Time.valueOf("00:45:00");
 
     @NotNull
     @Enumerated(EnumType.STRING)
     private PriorityEnum priorityEnum;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private SwimlaneStatusEnum swimlaneStatusEnum = SwimlaneStatusEnum.REGISTRATION;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -76,7 +84,6 @@ public class Appointment {
     public Appointment() {
         this.listOfStaff = new ArrayList<>();
         this.listOfImageDocuments = new ArrayList<>();
-
     }
 
 
