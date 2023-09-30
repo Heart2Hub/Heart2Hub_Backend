@@ -65,6 +65,7 @@ public class ShiftService {
             Optional<Facility> f = facilityRepository.findById(facilityId);
             if (f.isPresent()) {
               FacilityBooking fb = new FacilityBooking(newShift.getStartTime(), newShift.getEndTime(), "Shift for staff " + assignedStaff.getUsername());
+              fb.setStaffUsername(staffUsername);
               FacilityBooking newFacilityBooking = facilityBookingService.createBooking(fb, facilityId);
               newShift.setFacilityBooking(newFacilityBooking);
               newFacilityBooking.setShift(newShift);

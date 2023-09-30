@@ -138,9 +138,9 @@ public class ConsumableEquipmentService {
         }
     }
 
-    public List<ConsumableEquipment> getAllConsumableEquipmentByName(String name) throws ConsumableEquipmentNotFoundException {
+    public List<ConsumableEquipment> getAllConsumableEquipmentByName() throws ConsumableEquipmentNotFoundException {
         try {
-            List<ConsumableEquipment> consumableEquipmentList = consumableEquipmentRepository.findByInventoryItemNameContainingIgnoreCase(name);
+            List<ConsumableEquipment> consumableEquipmentList = consumableEquipmentRepository.findAll();
             System.out.print("get equipment");
             return consumableEquipmentList;
         } catch (Exception ex) {

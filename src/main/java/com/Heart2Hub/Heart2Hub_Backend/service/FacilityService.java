@@ -184,4 +184,12 @@ public class FacilityService {
         }
     }
 
+    public Facility findFacilityById(Long id){
+        return facilityRepository.findById(id).get();
+    }
+
+    public List<Facility> findAllFacilities() {
+        return facilityRepository.findAll();
+    }
+
 }

@@ -36,4 +36,6 @@ public class ConsumableEquipment extends InventoryItem{
     }
 
     public ConsumableEquipment() {}
+
+
 }

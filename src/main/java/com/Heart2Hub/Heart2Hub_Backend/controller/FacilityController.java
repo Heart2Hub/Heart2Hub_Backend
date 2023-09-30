@@ -66,4 +66,15 @@ public class FacilityController {
         );
     }
 
+    @GetMapping("/findFacility/{facilityId}")
+    public ResponseEntity<Facility> findFacility (@PathVariable Long facilityId) {
+        return ResponseEntity.ok(facilityService.findFacilityById(facilityId));
+    }
+
+    @GetMapping("/findAllFacility")
+    public ResponseEntity <List<Facility>> findAllFacility () {
+        return ResponseEntity.ok(facilityService.findAllFacilities());
+    }
+
+
 }

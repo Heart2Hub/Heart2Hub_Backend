@@ -52,4 +52,8 @@ public abstract class InventoryItem {
     }
 
     public InventoryItem(){}
+
+    public Long getInventoryItemId() {
+        return inventoryItemId;
+    }
 }
