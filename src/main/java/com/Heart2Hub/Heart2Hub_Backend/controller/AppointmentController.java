@@ -71,6 +71,22 @@ public class AppointmentController {
     return ResponseEntity.ok(listOfApptsDTO);
   }
 
+  @PostMapping("/updateAppointmentArrival")
+  public ResponseEntity<AppointmentDTO> updateAppointmentArrival(
+      @RequestParam("appointmentId") Long appointmentId,
+      @RequestParam("arrivalStatus") Boolean arrivalStatus) {
+    return ResponseEntity.ok(appointmentMapper.convertToDto(
+        appointmentService.updateAppointmentArrival(appointmentId, arrivalStatus)));
+  }
+
+  @PostMapping("/updateAppointmentComments")
+  public ResponseEntity<AppointmentDTO> updateAppointmentComments(
+      @RequestParam("appointmentId") Long appointmentId,
+      @RequestParam("comments") String comments) {
+    return ResponseEntity.ok(appointmentMapper.convertToDto(
+        appointmentService.updateAppointmentComments(appointmentId, comments)));
+  }
+
 //  @GetMapping("/viewAllAppointmentsByRange")
 //  public ResponseEntity<List<AppointmentDTO>> viewAllAppointmentsByMonth(
 //      @RequestParam("startDay") Integer startDay, @RequestParam("startMonth") Integer startMonth,

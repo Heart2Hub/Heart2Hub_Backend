@@ -116,7 +116,17 @@ public class AppointmentService {
     return appointment;
   }
 
+  public Appointment updateAppointmentArrival(Long appointmentId, Boolean arrivalStatus) {
+    Appointment appointment = findAppointmentByAppointmentId(appointmentId);
+    appointment.setArrived(arrivalStatus);
+    return appointment;
+  }
 
+  public Appointment updateAppointmentComments(Long appointmentId, String comments) {
+    Appointment appointment = findAppointmentByAppointmentId(appointmentId);
+    appointment.setComments(comments);
+    return appointment;
+  }
 
 
 
