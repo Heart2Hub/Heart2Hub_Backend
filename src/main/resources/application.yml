@@ -22,4 +22,7 @@ heart2hub:
     access_token_expiry: 604800000 #7 days
     refresh_token_expiry: 1814000000000 #3 weeks
     secret_key: "67676b613166584b3161706a794f4b6369414c4733773d3d" #secret key
-
+logging:
+  level:
+    org:
+      modelmapper=DEBUG:

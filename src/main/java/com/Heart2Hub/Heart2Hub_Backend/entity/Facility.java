@@ -25,7 +25,7 @@ public class Facility {
     private Long facilityId;
 
     @Size(max = 100)
-    @NotBlank
+    @NotBlank(message = "Name cannot be blank")
     private String name;
 
     @Size(max = 100)
