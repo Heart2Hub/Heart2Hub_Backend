@@ -6,16 +6,14 @@ import com.Heart2Hub.Heart2Hub_Backend.enumeration.FacilityTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.FacilityNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateFacilityException;
-import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.FacilityRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.SubDepartmentRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,11 +24,17 @@ public class FacilityService {
     private final FacilityRepository facilityRepository;
     private final StaffRepository staffRepository;
     private final DepartmentRepository departmentRepository;
+    private final AllocatedInventoryService allocatedInventoryService;
+    private final ShiftConstraintsRepository shiftConstraintsRepository;
+    private final FacilityBookingService facilityBookingService;
 
-    public FacilityService(FacilityRepository facilityRepository, StaffRepository staffRepository, DepartmentRepository departmentRepository) {
+    public FacilityService(FacilityRepository facilityRepository, StaffRepository staffRepository, DepartmentRepository departmentRepository, AllocatedInventoryService allocatedInventoryService, ShiftConstraintsRepository shiftConstraintsRepository, FacilityBookingService facilityBookingService) {
         this.facilityRepository = facilityRepository;
         this.staffRepository = staffRepository;
         this.departmentRepository = departmentRepository;
+        this.allocatedInventoryService = allocatedInventoryService;
+        this.shiftConstraintsRepository = shiftConstraintsRepository;
+        this.facilityBookingService = facilityBookingService;
     }
 
     public boolean isLoggedInUserAdmin() {
@@ -100,6 +104,62 @@ public class FacilityService {
                 Facility facility = facilityOptional.get();
                 Department department = facility.getDepartment();
                 department.getListOfFacilities().remove(facility);
+
+                List<AllocatedInventory> allocatedInventories = new ArrayList<>(facility.getListOfAllocatedInventories());
+
+                System.out.println("Hello is empty??");
+                for (int i = allocatedInventories.size() - 1; i >= 0; i--) {
+                    AllocatedInventory allocatedInventory = allocatedInventories.get(i);
+                    System.out.println(allocatedInventory.getAllocatedInventoryId());
+                    allocatedInventories.remove(i);
+                    allocatedInventoryService.deleteAllocatedInventory(allocatedInventory.getAllocatedInventoryId());
+                }
+
+                System.out.println(allocatedInventories.size());
+                System.out.println("allocatedInventory.getAllocatedInventoryId()");
+                facility.getListOfAllocatedInventories().clear();
+
+//                List<FacilityBooking> facilityBookings = new ArrayList<>(facility.getListOfFacilityBookings());
+//
+//                System.out.println("help??");
+//                for (int i = facilityBookings.size() - 1; i >= 0; i--) {
+//                    FacilityBooking facilityBooking = facilityBookings.get(i);
+//                    System.out.println(facilityBooking.getFacilityBookingId());
+//                    facilityBookings.remove(i);
+//                    facilityBooking.setFacility(null);
+//                }
+//
+//                System.out.println(facilityBookings.size());
+//                System.out.println("facility Booking done()");
+//                facility.getListOfFacilityBookings().clear();
+
+List<ShiftConstraints> shiftConstraintsList = shiftConstraintsRepository.findByFacility(facility);
+                System.out.println("Hello??");
+                for (int i = shiftConstraintsList.size() - 1; i >= 0; i--) {
+                    ShiftConstraints shiftConstraint = shiftConstraintsList.get(i);
+                    System.out.println(shiftConstraint.getFacility().getFacilityId());
+                    shiftConstraint.setFacility(null);
+                    shiftConstraintsRepository.save(shiftConstraint);
+                    shiftConstraintsList.remove(i);
+                }
+                System.out.println("shiftConstraint");
+
+//                facility.getListOfAllocatedInventories().clear();
+//
+//                 List<AllocatedInventory> allocatedInventories = new ArrayList<>(facility.getListOfAllocatedInventories());
+//
+//                System.out.println("Hello is empty??");
+//                for (int i = allocatedInventories.size() - 1; i >= 0; i--) {
+//                    AllocatedInventory allocatedInventory = allocatedInventories.get(i);
+//                    System.out.println(allocatedInventory.getAllocatedInventoryId());
+//                    allocatedInventories.remove(i);
+//                    allocatedInventoryService.deleteAllocatedInventory(allocatedInventory.getAllocatedInventoryId());
+//                }
+//
+//                System.out.println(allocatedInventories.size());
+//                System.out.println("allocatedInventory.getAllocatedInventoryId()");
+//                facility.getListOfAllocatedInventories().clear();
+
                 // TO-DO: CHECK AND REMOVE FACILITY BOOKINGS
                 // TO-DO: CHECK AND REMOVE ALLOCATED INVENTORY
                 facilityRepository.delete(facility);

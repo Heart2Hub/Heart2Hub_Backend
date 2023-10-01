@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.repository;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.Facility;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Shift;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ShiftConstraints;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
@@ -18,4 +19,7 @@ public interface ShiftConstraintsRepository extends JpaRepository<ShiftConstrain
     List<ShiftConstraints> findByStaffRoleEnumAndFacilityName(StaffRoleEnum staffRoleEnum, String name);
 
     List<ShiftConstraints> findByStaffRoleEnumAndWardName(StaffRoleEnum staffRoleEnum, String name);
+
+    List<ShiftConstraints> findByFacility(Facility facility);
+
 }

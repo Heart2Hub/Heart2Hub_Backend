@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
+@Getter
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class InventoryItem {
@@ -13,15 +14,12 @@ public abstract class InventoryItem {
     @GeneratedValue(strategy = GenerationType.TABLE)
     private Long inventoryItemId;
 
-    @Getter
     @NotNull
     private String inventoryItemName;
 
-    @Getter
     @NotNull
     private String inventoryItemDescription;
 
-    @Getter
     @NotNull
     private ItemTypeEnum itemTypeEnum;
 
@@ -39,10 +37,6 @@ public abstract class InventoryItem {
         this.inventoryItemDescription = inventoryItemDescription;
     }
 
-    public Long getInventoryItemId() {
-        return inventoryItemId;
-    }
-
     public void setInventoryItemId(Long inventoryItemId) {
         this.inventoryItemId = inventoryItemId;
     }
@@ -53,7 +47,4 @@ public abstract class InventoryItem {
 
     public InventoryItem(){}
 
-    public Long getInventoryItemId() {
-        return inventoryItemId;
-    }
 }
