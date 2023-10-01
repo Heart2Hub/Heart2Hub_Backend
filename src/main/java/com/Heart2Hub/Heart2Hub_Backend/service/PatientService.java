@@ -37,6 +37,23 @@ public class PatientService {
         this.electronicHealthRecordService = electronicHealthRecordService;
     }
 
+    public String validateNric(String nric) throws UnableToCreatePatientException {
+        try {
+            Optional<ElectronicHealthRecord> electronicHealthRecordOptional = electronicHealthRecordRepository.findByNric(nric);
+            if (electronicHealthRecordOptional.isPresent()) {
+                throw new UnableToCreatePatientException("Patient account already exists for " + nric + ". Please login with existing account.");
+            } else {
+                ElectronicHealthRecord nehrRecord = electronicHealthRecordService.getNehrRecordByNric(nric);
+                if (nehrRecord == null) {
+                    throw new UnableToCreatePatientException("NEHR Record is not found. Please provide NEHR details.");
+                }
+                return "NRIC is valid";
+            }
+        } catch (Exception ex) {
+            throw new UnableToCreatePatientException(ex.getMessage());
+        }
+    }
+
     public Patient createPatient(Patient newPatient, String nric) throws UnableToCreatePatientException {
         try {
             ElectronicHealthRecord nehrRecord = electronicHealthRecordService.getNehrRecordByNric(nric);
@@ -49,7 +66,7 @@ public class PatientService {
             patientRepository.save(newPatient);
             return newPatient;
         } catch (Exception ex) {
-            throw new UnableToCreatePatientException(ex.getMessage());
+            throw new UnableToCreatePatientException("Username already exists");
         }
     }
 
@@ -78,7 +95,7 @@ public class PatientService {
                 throw new UnableToCreatePatientException("Failed to create patient. Server returned status code: " + responseEntity.getStatusCodeValue());
             }
         } catch (Exception ex) {
-            throw new UnableToCreatePatientException(ex.getMessage());
+            throw new UnableToCreatePatientException("Username already exists");
         }
     }
 

@@ -53,6 +53,10 @@ public class ElectronicHealthRecordService {
         }
     }
 
+    public List<ElectronicHealthRecord> getAllElectronicHealthRecords() {
+        return electronicHealthRecordRepository.findAll();
+    }
+
     public ElectronicHealthRecord getNehrRecordByNric(String nric){
         try {
             final String uri = "http://localhost:3002/records/" + nric;
