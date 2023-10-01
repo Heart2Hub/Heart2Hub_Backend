@@ -24,7 +24,7 @@ public class AllocatedInventory {
     @NotNull
     private Integer minimumQuantityBeforeRestock;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @OneToOne(optional = false)
     @JoinColumn(name = "consumble_Equipment_Id", nullable = false)
     private ConsumableEquipment consumableEquipment;
 

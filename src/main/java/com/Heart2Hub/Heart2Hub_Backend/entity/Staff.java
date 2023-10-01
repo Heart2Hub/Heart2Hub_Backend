@@ -88,6 +88,10 @@ public class Staff implements UserDetails {
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL,mappedBy = "staff")
   private List<Post> listOfPosts;
 
+  @JsonIgnore
+  @OneToMany(fetch = FetchType.LAZY)
+  private List<FacilityBooking> listOfFacilityBookings;
+
   @OneToOne(cascade = CascadeType.ALL, optional = true)
   private ImageDocument profilePicture;
 
@@ -109,6 +113,7 @@ public class Staff implements UserDetails {
     this.listOfAssignedAppointments = new ArrayList<>();
     this.listOfInvitations = new ArrayList<>();
     this.listOfPosts = new ArrayList<>();
+    this.listOfFacilityBookings = new ArrayList<>();
   }
 
   public Staff(String username, String password, String firstname, String lastname,
