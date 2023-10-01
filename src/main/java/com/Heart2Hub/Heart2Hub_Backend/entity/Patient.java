@@ -11,10 +11,12 @@ import java.util.Collection;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+@EqualsAndHashCode(exclude="electronicHealthRecord")
 @Entity
 @Data
 @Table(name = "patient")

@@ -31,4 +31,5 @@ public class AppointmentDTO {
   private String sex;
   private String contactNumber;
   private String nationality;
+  public String departmentName;
 }

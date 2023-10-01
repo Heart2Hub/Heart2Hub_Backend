@@ -140,4 +140,10 @@ public class StaffController {
     return ResponseEntity.ok(staffService.changePassword(username,oldPassword,newPassword));
   }
 
+  @GetMapping("/getStaffById")
+  public ResponseEntity<Staff> getStaffById(
+          @RequestParam("id") Long id) {
+    return ResponseEntity.ok(staffService.getStaffById(id));
+  }
+
 }

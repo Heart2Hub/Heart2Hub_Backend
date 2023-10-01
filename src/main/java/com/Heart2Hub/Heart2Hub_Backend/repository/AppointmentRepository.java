@@ -9,4 +9,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
   List<Appointment> findAllByActualDateTimeBetween(LocalDateTime start, LocalDateTime end);
   List<Appointment> findAllByActualDateTimeBetweenAndDepartmentName(LocalDateTime start, LocalDateTime end, String departmentName);
+
+  List<Appointment> findAllByPatientUsername(String username);
+  List<Appointment> findAllByActualDateTimeBetweenAndCurrentAssignedStaffUsername(LocalDateTime start, LocalDateTime end, String username);
 }

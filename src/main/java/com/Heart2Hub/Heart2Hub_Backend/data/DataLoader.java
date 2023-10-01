@@ -130,28 +130,28 @@ public class DataLoader implements CommandLineRunner {
     LocalDateTime lt = LocalDateTime.now();
     Staff staff2 = staffService.createStaff(
         new Staff("staff2", "password2", "Tharman", "Shanmugaratnam", 93860982l,
-            StaffRoleEnum.DOCTOR, true), "Cardiology", new ImageDocument("id1.png", lt));
+            StaffRoleEnum.DOCTOR, true), "Emergency Medicine", new ImageDocument("id1.png", lt));
     Staff staff3 = staffService.createStaff(
         new Staff("staff3", "password3", "Beow", "Tan", 89645629l, StaffRoleEnum.DOCTOR, false),
-        "Cardiology", new ImageDocument("id2.png", lt));
+        "Emergency Medicine", new ImageDocument("id2.png", lt));
     Staff staff4 = staffService.createStaff(
         new Staff("staff4", "password4", "Erling", "Haaland", 93490928l, StaffRoleEnum.DOCTOR,
-            false), "Cardiology", new ImageDocument("id3.png", lt));
+            false), "Emergency Medicine", new ImageDocument("id3.png", lt));
     Staff staff5 = staffService.createStaff(
-        new Staff("staff5", "password5", "John", "Wick", 87609870l, StaffRoleEnum.DOCTOR, false),
+        new Staff("staff5", "password5", "John", "Wick", 87609870l, StaffRoleEnum.DOCTOR, true),
         "Cardiology", new ImageDocument("id4.png", lt));
     staffService.createStaff(
         new Staff("staff6", "password6", "Donald", "Raymond", 96997125l, StaffRoleEnum.DOCTOR,
-            true), "Orthopedics", new ImageDocument("id5.png", lt));
+            false), "Cardiology", new ImageDocument("id5.png", lt));
     staffService.createStaff(
         new Staff("staff7", "password7", "Steven", "Lim", 98762093l, StaffRoleEnum.DOCTOR, false),
-        "Orthopedics", new ImageDocument("id6.png", lt));
+        "Cardiology", new ImageDocument("id6.png", lt));
     staffService.createStaff(
         new Staff("staff8", "password8", "Kurt", "Tay", 80182931l, StaffRoleEnum.NURSE, true),
-        "Orthopedics", new ImageDocument("id7.png", lt));
+        "Cardiology", new ImageDocument("id7.png", lt));
     staffService.createStaff(
         new Staff("staff9", "password9", "Simon", "Cowell", 81927493l, StaffRoleEnum.NURSE, false),
-        "Orthopedics", new ImageDocument("id8.png", lt));
+        "Cardiology", new ImageDocument("id8.png", lt));
     staffService.createStaff(
         new Staff("staff10", "password10", "James", "Charles", 93420093l, StaffRoleEnum.NURSE,
             true), "B20", new ImageDocument("id9.png", lt));
@@ -203,55 +203,6 @@ public class DataLoader implements CommandLineRunner {
 //    departmentService.createDepartment(new Department("Ward C-3"));
   }
 
-  private void createSubDepartmentData() {
-//    subDepartmentService.createSubDepartment(1L, new SubDepartment("Interventional Cardiology", "Specializes in minimally invasive procedures to treat heart conditions"));
-//    subDepartmentService.createSubDepartment(1L, new SubDepartment("Electrophysiology (EP) Lab", "Focuses on the diagnosis and treatment of heart rhythm disorders, including procedures like cardiac ablation"));
-//    subDepartmentService.createSubDepartment(1L, new SubDepartment("Cardiac Catheterization Lab", "Performs diagnostic procedures like cardiac catheterization and coronary angiography"));
-//    subDepartmentService.createSubDepartment(1L, new SubDepartment("Heart Failure Clinic", "Provides comprehensive care for patients with congestive heart failure, including medication management and lifestyle counseling"));
-//    subDepartmentService.createSubDepartment(1L, new SubDepartment("Cardiac Rehabilitation", "Offers programs to help patients recover from heart-related surgeries or events through exercise and lifestyle modifications"));
-//    subDepartmentService.createSubDepartment(1L, new SubDepartment("Echocardiography Unit", "Specializes in using echocardiograms (ultrasound of the heart) for diagnostic purposes"));
-//    subDepartmentService.createSubDepartment(1L, new SubDepartment("Nuclear Cardiology Unit", "Utilizes nuclear imaging techniques to assess blood flow to the heart and cardiac function"));
-//    subDepartmentService.createSubDepartment(1L, new SubDepartment("Cardiac Imaging Center", "Provides various imaging services, including MRI and CT scans, for detailed cardiac assessments"));
-//    subDepartmentService.createSubDepartment(1L, new SubDepartment("Cardiac Telemetry Unit", "Monitors patients' heart rhythms continuously, often used in critical care settings"));
-//    subDepartmentService.createSubDepartment(1L, new SubDepartment("Adult Congenital Heart Disease Clinic", "Focuses on the care of adults born with congenital heart defects"));
-//    subDepartmentService.createSubDepartment(1L, new SubDepartment("Preventive Cardiology Clinic", "Emphasizes heart disease prevention through risk assessment, lifestyle changes, and medication when necessary"));
-//    subDepartmentService.createSubDepartment(1L, new SubDepartment("Heart Transplantation Unit", "Manages patients in need of heart transplants and provides post-transplant care"));
-//    subDepartmentService.createSubDepartment(2L, new SubDepartment("Orthopedic Surgery", "Specializes in surgical treatments for musculoskeletal conditions"));
-//    subDepartmentService.createSubDepartment(2L, new SubDepartment("Physical Therapy", "Provides rehabilitation and physical therapy services for orthopedic patients"));
-//    subDepartmentService.createSubDepartment(2L, new SubDepartment("Sports Medicine", "Focuses on injuries related to sports and physical activity"));
-//    subDepartmentService.createSubDepartment(2L, new SubDepartment("Orthopedic Trauma Center", "Manages fractures and severe musculoskeletal injuries"));
-//    subDepartmentService.createSubDepartment(3L, new SubDepartment("Pediatric Cardiology", "Specializes in heart conditions in children"));
-//    subDepartmentService.createSubDepartment(3L, new SubDepartment("Pediatric Neurology", "Focuses on neurological conditions in children"));
-//    subDepartmentService.createSubDepartment(3L, new SubDepartment("Pediatric Oncology", "Treats cancer and blood disorders in children"));
-//    subDepartmentService.createSubDepartment(3L, new SubDepartment("Pediatric Emergency Care", "Provides emergency medical care for children"));
-//    subDepartmentService.createSubDepartment(4L, new SubDepartment("Neurophysiology Lab", "Performs diagnostic tests to assess nervous system function"));
-//    subDepartmentService.createSubDepartment(4L, new SubDepartment("Neurocritical Care Unit", "Specializes in the intensive care of neurological patients"));
-//    subDepartmentService.createSubDepartment(4L, new SubDepartment("Stroke Center", "Provides advanced care for stroke patients"));
-//    subDepartmentService.createSubDepartment(4L, new SubDepartment("Neuropsychology Clinic", "Evaluates cognitive and behavioral aspects of neurological disorders"));
-//    subDepartmentService.createSubDepartment(5L, new SubDepartment("Emergency Room (ER)", "Offers immediate medical care for various emergencies"));
-//    subDepartmentService.createSubDepartment(5L, new SubDepartment("Trauma Center", "Handles severe injuries and trauma cases"));
-//    subDepartmentService.createSubDepartment(5L, new SubDepartment("Toxicology Unit", "Manages poisoning and overdose cases"));
-//    subDepartmentService.createSubDepartment(5L, new SubDepartment("Emergency Psychiatry", "Addresses psychiatric emergencies in the ER"));
-//    subDepartmentService.createSubDepartment(6L, new SubDepartment("General Surgery", "Performs a wide range of surgical procedures"));
-//    subDepartmentService.createSubDepartment(6L, new SubDepartment("Cardiothoracic Surgery", "Specializes in heart and lung surgeries"));
-//    subDepartmentService.createSubDepartment(6L, new SubDepartment("Plastic and Reconstructive Surgery", "Focuses on cosmetic and reconstructive procedures"));
-//    subDepartmentService.createSubDepartment(6L, new SubDepartment("Minimally Invasive Surgery", "Utilizes minimally invasive techniques for surgery"));
-//    subDepartmentService.createSubDepartment(7L, new SubDepartment("Ophthalmic Surgery", "Performs surgeries related to the eyes"));
-//    subDepartmentService.createSubDepartment(7L, new SubDepartment("Retina Clinic", "Specializes in diseases of the retina and vitreous"));
-//    subDepartmentService.createSubDepartment(7L, new SubDepartment("Cornea and External Disease Unit", "Focuses on corneal and external eye conditions"));
-//    subDepartmentService.createSubDepartment(7L, new SubDepartment("Pediatric Ophthalmology", "Provides eye care for children"));
-//    subDepartmentService.createSubDepartment(8L, new SubDepartment("Adult Psychiatry", "Treats mental health conditions in adults"));
-//    subDepartmentService.createSubDepartment(8L, new SubDepartment("Child and Adolescent Psychiatry", "Focuses on mental health care for children and teens"));
-//    subDepartmentService.createSubDepartment(8L, new SubDepartment("Addiction Psychiatry", "Addresses substance abuse and addiction disorders"));
-//    subDepartmentService.createSubDepartment(8L, new SubDepartment("Forensic Psychiatry", "Deals with mental health in the legal context"));
-//    TO-DO: WARD ROOM CREATION
-//    for (long L = 9L; L <= 17L; L++) {
-//      subDepartmentService.createSubDepartment(L, new SubDepartment("Room 1", ""));
-//      subDepartmentService.createSubDepartment(L, new SubDepartment("Room 2", ""));
-//      subDepartmentService.createSubDepartment(L, new SubDepartment("Room 3", ""));
-//    }
-  }
-
   private void createFacilityData() {
     // For Sub Department Facility Creation
     for (long L = 1L; L <= 9L; L++) {
@@ -279,102 +230,168 @@ public class DataLoader implements CommandLineRunner {
     // Calculate the date of the Monday of the current week
     LocalDateTime monday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 
+    // EM Head doctor -> staff2 (staff3, staff4)
+    // Cardiology Head doctor -> staff5 (staff6, staff 7)
+    // Cardiology Head nurse -> staff8 (staff9)
+    // Ward B20 Head nurse -> staff10 (staff11)
+
     // Allocate Monday shifts
     LocalDateTime currentDateTime = monday.plusDays(0);
     int day = currentDateTime.getDayOfMonth();
     int month = currentDateTime.getMonthValue();
     int year = currentDateTime.getYear();
+
+    // EM doctor shifts - 4 shifts available
     shiftService.createShift("staff2", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
         LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
     shiftService.createShift("staff3", 2L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
         LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
     shiftService.createShift("staff4", 3L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
         LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
-    shiftService.createShift("staff5", 1L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
-        LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working 24hr shift"));
-//      shiftService.createShift("staff6", 8L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-//      shiftService.createShift("staff7", 7L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+
+    // Cardiology doctor shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff5", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff6", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff7", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Tuesday
     currentDateTime = monday.plusDays(1);
     day = currentDateTime.getDayOfMonth();
     month = currentDateTime.getMonthValue();
     year = currentDateTime.getYear();
+    // EM doctor shifts - 4 shifts available
     shiftService.createShift("staff2", 1L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
         LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
     shiftService.createShift("staff3", 2L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
         LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
     shiftService.createShift("staff4", 3L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
         LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-//      shiftService.createShift("staff6", 8L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
-//      shiftService.createShift("staff7", 7L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+
+    // Cardiology doctor shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff5", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff6", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff7", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Wednesday
     currentDateTime = monday.plusDays(2);
     day = currentDateTime.getDayOfMonth();
     month = currentDateTime.getMonthValue();
     year = currentDateTime.getYear();
+    // EM doctor shifts - 4 shifts available
     shiftService.createShift("staff2", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
         LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
     shiftService.createShift("staff3", 2L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
         LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
     shiftService.createShift("staff4", 3L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
         LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+
+    // Cardiology doctor shifts - Working hours (8am - 4pm)
     shiftService.createShift("staff5", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
-        LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-//      shiftService.createShift("staff7", 7L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working 24hr shift"));
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff6", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff7", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Thursday
     currentDateTime = monday.plusDays(3);
     day = currentDateTime.getDayOfMonth();
     month = currentDateTime.getMonthValue();
     year = currentDateTime.getYear();
+    // EM doctor shifts - 4 shifts available
     shiftService.createShift("staff2", 1L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
         LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
     shiftService.createShift("staff3", 2L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
         LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
     shiftService.createShift("staff4", 3L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
         LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working 24hr shift"));
+
+    // Cardiology doctor shifts - Working hours (8am - 4pm)
     shiftService.createShift("staff5", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
-        LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-//      shiftService.createShift("staff6", 7L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0), LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working 24hr shift"));
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff6", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff7", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
 
     // Friday
     currentDateTime = monday.plusDays(4);
     day = currentDateTime.getDayOfMonth();
     month = currentDateTime.getMonthValue();
     year = currentDateTime.getYear();
+    // EM doctor shifts - 4 shifts available
     shiftService.createShift("staff2", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
         LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
     shiftService.createShift("staff3", 2L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
         LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
-//      shiftService.createShift("staff7", 7L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+
+    // Cardiology doctor shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff5", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff6", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Saturday
     currentDateTime = monday.plusDays(5);
     day = currentDateTime.getDayOfMonth();
     month = currentDateTime.getMonthValue();
     year = currentDateTime.getYear();
+    // EM doctor shifts - 4 shifts available
     shiftService.createShift("staff2", 1L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
         LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
     shiftService.createShift("staff3", 2L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
         LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
     shiftService.createShift("staff4", 3L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
         LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-    shiftService.createShift("staff5", 1L, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
-        LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
-//      shiftService.createShift("staff6", 7L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+
+    // Cardiology doctor shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff5", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff7", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Sunday
-//      currentDateTime = monday.plusDays(6);
-//      day = currentDateTime.getDayOfMonth();
-//      month = currentDateTime.getMonthValue();
-//      year = currentDateTime.getYear();
-//      shiftService.createShift("staff6", 7L, new Shift(LocalDateTime.of(year, month, day, 0, 0, 0), LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
-//      shiftService.createShift("staff7", 11L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0), LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    currentDateTime = monday.plusDays(6);
+    day = currentDateTime.getDayOfMonth();
+    month = currentDateTime.getMonthValue();
+    year = currentDateTime.getYear();
+    // Cardiology doctor shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff6", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff7", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Generate cardiology doctor shifts for the next 2 weeks
+    for (int i=7; i<=13; i++) {
+      currentDateTime = monday.plusDays(i);
+      day = currentDateTime.getDayOfMonth();
+      month = currentDateTime.getMonthValue();
+      year = currentDateTime.getYear();
+      System.out.println(currentDateTime);
+      // Cardiology doctor shifts - Working hours (8am - 4pm)
+      if (i != 11) {
+        shiftService.createShift("staff5", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+      }
+      if (i != 12) {
+        shiftService.createShift("staff6", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+      }
+      if (i != 13) {
+        shiftService.createShift("staff7", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+      }
+    }
 
     shiftConstraintsService.createShiftConstraints(
-        new ShiftConstraints(LocalTime.of(16, 0, 0), LocalTime.of(23, 59, 0), 1,
+        new ShiftConstraints(LocalTime.of(8, 0, 0), LocalTime.of(16, 0, 0), 2,
             StaffRoleEnum.DOCTOR), "Consultation Room 1 Cardiology");
 
   }
