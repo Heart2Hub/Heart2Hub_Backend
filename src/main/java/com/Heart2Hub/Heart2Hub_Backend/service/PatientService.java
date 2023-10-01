@@ -79,4 +79,8 @@ public class PatientService {
             throw new PatientNotFoundException(ex.getMessage());
         }
     }
+
+    public Patient getPatientByUsername(String username) {
+        return patientRepository.findByUsername(username).orElseThrow(() -> new PatientNotFoundException("Patient does not exist"));
+    }
 }

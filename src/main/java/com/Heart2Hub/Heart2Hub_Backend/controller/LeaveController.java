@@ -42,26 +42,26 @@ public class LeaveController {
     //As a staff, I can check my leave Balance
     @GetMapping("/getLeaveBalance")
     public ResponseEntity<LeaveBalance> getLeaveBalance (@RequestParam("staffId") long staffId) {
-        Optional<Staff> staff = staffService.findById(staffId);
-        return ResponseEntity.ok(staff.get().getLeaveBalance());
+        Staff staff = staffService.findById(staffId);
+        return ResponseEntity.ok(staff.getLeaveBalance());
 
     }
 
     //As a staff, I can view my upcoming leaves
     @GetMapping("/getAllStaffLeaves/{staffid}")
     public ResponseEntity<List<Leave>> getAllStaffLeaves(@PathVariable("staffid") long staffid) {
-        Optional<Staff> staff = staffService.findById(staffid);
+        Staff staff = staffService.findById(staffid);
 
-        return ResponseEntity.ok(staff.get().getListOfLeaves());
+        return ResponseEntity.ok(staff.getListOfLeaves());
     }
 
     //As a Head Staff, I can view Leave applications of staff members under me
     @GetMapping("/getAllManagedLeaves")
     public ResponseEntity<List<Leave>> getAllManagedLeaves(@RequestParam("staffId") long staffId) {
         System.out.println("hello test");
-        Optional<Staff> staff = staffService.findById(staffId);
+        Staff staff = staffService.findById(staffId);
 
-        return ResponseEntity.ok(leaveService.retrieveStaffManagedLeaves(staff.get()));
+        return ResponseEntity.ok(leaveService.retrieveStaffManagedLeaves(staff));
     }
 
 //    @GetMapping("/getApprovalStatusEnumList")
@@ -154,8 +154,8 @@ public class LeaveController {
 
         LeaveTypeEnum leaveTypeEnum = LeaveTypeEnum.valueOf(requestBody.get("selectedLeaveTypeEnum").toString());
 
-        Staff staff = staffService.findById(Long.parseLong(requestBody.get("staffId").toString())).get();
-        Staff headStaff = staffService.findById(Long.parseLong(requestBody.get("selectedStaff").toString())).get();
+        Staff staff = staffService.findById(Long.parseLong(requestBody.get("staffId").toString()));
+        Staff headStaff = staffService.findById(Long.parseLong(requestBody.get("selectedStaff").toString()));
 
         String comments = (String) requestBody.get("comments").toString();
 

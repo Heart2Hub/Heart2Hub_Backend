@@ -119,6 +119,12 @@ public class StaffController {
     return ResponseEntity.ok(staffService.getStaffByUsername(username));
   }
 
+  @GetMapping("/getStaffByStaffId")
+  public ResponseEntity<Staff> getStaffByStaffId(
+      @RequestParam("staffId") Long staffId) {
+    return ResponseEntity.ok(staffService.findById(staffId));
+  }
+
   @GetMapping("/getAllHeadStaff")
   public ResponseEntity<List<Staff>> getAllHeadStaff() {
     return ResponseEntity.ok(staffService.getAllHeadStaff());
