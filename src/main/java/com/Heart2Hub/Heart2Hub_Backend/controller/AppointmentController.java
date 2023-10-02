@@ -96,18 +96,4 @@ public class AppointmentController {
     return ResponseEntity.ok(appointmentMapper.convertToDto(
         appointmentService.updateAppointmentSwimlaneStatus(appointmentId, SwimlaneStatusEnum.valueOf(swimlaneStatus.toUpperCase()))));
   }
-
-//  @GetMapping("/viewAllAppointmentsByRange")
-//  public ResponseEntity<List<AppointmentDTO>> viewAllAppointmentsByMonth(
-//      @RequestParam("startDay") Integer startDay, @RequestParam("startMonth") Integer startMonth,
-//      @RequestParam("startYear") Integer startYear, @RequestParam("endDay") Integer endDay,
-//      @RequestParam("endMonth") Integer endMonth,
-//      @RequestParam("endYear") Integer endYear) {
-//
-//    List<Appointment> listOfAppts = appointmentService.viewAllAppointmentsByRange(startDay,
-//        startMonth, startYear, endDay, endMonth, endYear);
-//    List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
-//        .map(appointmentMapper::convertToDto).collect(Collectors.toList());
-//    return ResponseEntity.ok(listOfApptsDTO);
-//  }
 }

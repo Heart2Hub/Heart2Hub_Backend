@@ -437,7 +437,7 @@ public class DataLoader implements CommandLineRunner {
         "Cardiology");
 
     //testing filtering view
-    appointmentService.assignAppointmentToStaff(5L,4L);
+//    appointmentService.assignAppointmentToStaff(5L,4L);
 
     appointmentService.createNewAppointment("test description",
         LocalDateTime.now().plusDays(7L).toString(),

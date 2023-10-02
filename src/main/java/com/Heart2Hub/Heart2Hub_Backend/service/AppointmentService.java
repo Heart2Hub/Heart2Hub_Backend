@@ -109,16 +109,6 @@ public class AppointmentService {
     return listOfAppointments;
   }
 
-  //View All Appointments by day OLD
-//  public List<Appointment> viewAllAppointmentsByRange(Integer startDay,Integer startMonth,Integer startYear,Integer endDay,Integer endMonth,Integer endYear) {
-//
-//    LocalDateTime startDate = LocalDateTime.of(startYear,startMonth,startDay,0,0,0);
-//    LocalDateTime endDate = LocalDateTime.of(endYear,endMonth,endDay,23,59,59);
-//
-//    return appointmentRepository.findAllByActualDateTimeBetween(startDate,endDate);
-//  }
-
-
   public Appointment assignAppointmentToStaff(Long appointmentId, Long staffId) {
 
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
@@ -129,10 +119,10 @@ public class AppointmentService {
       throw new StaffDisabledException("Unable to assign appointment to Disabled Staff");
     }
 
-    if (appointment.getCurrentAssignedStaff() != null && appointment.getCurrentAssignedStaff()
-        .getStaffId().equals(staffId)) {
-      throw new AppointmentAssignmentException("Staff is already allocated the appointment");
-    }
+//    if (appointment.getCurrentAssignedStaff() != null && appointment.getCurrentAssignedStaff()
+//        .getStaffId().equals(staffId)) {
+//      throw new AppointmentAssignmentException("Staff is already allocated the appointment");
+//    }
 
     //assign new staff to appointment
     appointment.setCurrentAssignedStaff(staff);
@@ -157,6 +147,7 @@ public class AppointmentService {
   public Appointment updateAppointmentSwimlaneStatus(Long appointmentId, SwimlaneStatusEnum swimlaneStatusEnum) {
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     appointment.setSwimlaneStatusEnum(swimlaneStatusEnum);
+    appointment.setArrived(false);
     return appointment;
   }
 
