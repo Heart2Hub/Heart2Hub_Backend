@@ -2,8 +2,10 @@ package com.Heart2Hub.Heart2Hub_Backend.entity;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PriorityEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -63,7 +65,7 @@ public class Appointment {
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
-    @JsonIgnore
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "staff_id", nullable = true)
     private Staff currentAssignedStaff = null;
@@ -73,10 +75,12 @@ public class Appointment {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_id")
     private List<Staff> listOfStaff;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "appointment_id")
     private List<ImageDocument> listOfImageDocuments;
@@ -90,6 +94,7 @@ public class Appointment {
     public Appointment(String description, LocalDateTime actualDateTime,
         LocalDateTime bookedDateTime,
         PriorityEnum priorityEnum, Patient patient, Department department) {
+        this();
         this.description = description;
         this.actualDateTime = actualDateTime;
         this.bookedDateTime = bookedDateTime;

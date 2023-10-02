@@ -62,12 +62,21 @@ public class AppointmentController {
       @RequestParam("startYear") Integer startYear, @RequestParam("endDay") Integer endDay,
       @RequestParam("endMonth") Integer endMonth,
       @RequestParam("endYear") Integer endYear,
-      @RequestParam("departmentName") String departmentName) {
+      @RequestParam("departmentName") String departmentName,
+      @RequestParam("selectStaffId") Long selectStaffId) {
 
     List<Appointment> listOfAppts = appointmentService.viewAllAppointmentsByRange(startDay,
-        startMonth, startYear, endDay, endMonth, endYear, departmentName);
+        startMonth, startYear, endDay, endMonth, endYear, departmentName, selectStaffId);
     List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
         .map(appointmentMapper::convertToDto).collect(Collectors.toList());
+//        .map(appt -> {
+//              if (appt.getCurrentAssignedStaff() != null) {
+//                System.out.println("STAFF ASSIGNED FOR " + appt.getAppointmentId());
+//              }
+//              System.out.println("APPT NUMBER: " + appt.getAppointmentId());
+//              return appointmentMapper.convertToDto(appt);
+//            }
+//        ).collect(Collectors.toList());
     return ResponseEntity.ok(listOfApptsDTO);
   }
 

@@ -69,7 +69,7 @@ public class Staff implements UserDetails {
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
   private List<Shift> listOfShifts;
 
-  @JsonIgnore
+  @JsonManagedReference
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "currentAssignedStaff")
   private List<Appointment> listOfAssignedAppointments;
 

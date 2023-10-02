@@ -438,6 +438,9 @@ public class DataLoader implements CommandLineRunner {
         patient1.getUsername(),
         "Cardiology");
 
+    //testing filtering view
+    appointmentService.assignAppointmentToStaff(5L,4L);
+
 
 
     appointmentService.createNewAppointment("test description",

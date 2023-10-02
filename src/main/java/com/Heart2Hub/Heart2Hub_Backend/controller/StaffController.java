@@ -1,15 +1,19 @@
 package com.Heart2Hub.Heart2Hub_Backend.controller;
 
+import com.Heart2Hub.Heart2Hub_Backend.dto.OutpatientStaffDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
 import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.SubDepartmentNotFoundException;
+import com.Heart2Hub.Heart2Hub_Backend.mapper.AppointmentMapper;
+import com.Heart2Hub.Heart2Hub_Backend.mapper.OutpatientStaffMapper;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +35,9 @@ import java.util.Map;
 public class StaffController {
 
   private final StaffService staffService;
+
+  private final OutpatientStaffMapper outpatientStaffMapper;
+
 
 //  @PostMapping("/createStaff")
 //  public ResponseEntity<Staff> createStaff(
@@ -144,6 +151,15 @@ public class StaffController {
   public ResponseEntity<Boolean> changePassword(
       @RequestParam("username") String username,@RequestParam("oldPassword") String oldPassword,@RequestParam("newPassword") String newPassword) {
     return ResponseEntity.ok(staffService.changePassword(username,oldPassword,newPassword));
+  }
+
+  @GetMapping("/getStaffsWorkingInCurrentShiftAndDepartment")
+  public ResponseEntity<List<OutpatientStaffDTO>> getStaffByRole(
+      @RequestParam("departmentName") String departmentName) {
+
+    List<OutpatientStaffDTO> listOfOutpatientStaff = staffService.getStaffsWorkingInCurrentShiftAndDepartment(
+        departmentName).stream().map(outpatientStaffMapper::convertToDto).toList();
+    return ResponseEntity.ok(listOfOutpatientStaff);
   }
 
 }

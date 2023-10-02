@@ -15,6 +15,8 @@ import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +34,8 @@ public class AppointmentService {
 
 
   public AppointmentService(AppointmentRepository appointmentRepository,
-      PatientService patientService,DepartmentService departmentService, StaffService staffService) {
+      PatientService patientService, DepartmentService departmentService,
+      StaffService staffService) {
     this.appointmentRepository = appointmentRepository;
     this.patientService = patientService;
     this.departmentService = departmentService;
@@ -40,11 +43,13 @@ public class AppointmentService {
   }
 
   public Appointment findAppointmentByAppointmentId(Long appointmentId) {
-    return appointmentRepository.findById(appointmentId).orElseThrow(() -> new AppointmentNotFoundException("Appointment Does not Exist"));
+    return appointmentRepository.findById(appointmentId)
+        .orElseThrow(() -> new AppointmentNotFoundException("Appointment Does not Exist"));
   }
 
   public Appointment createNewAppointment(String description,
-      String actualDateTimeString, String bookedDateTimeString,String priority, String patientUsername, String departmentName) {
+      String actualDateTimeString, String bookedDateTimeString, String priority,
+      String patientUsername, String departmentName) {
     LocalDateTime actualDateTime = LocalDateTime.parse(actualDateTimeString);
     LocalDateTime bookedDateTime = LocalDateTime.parse(bookedDateTimeString);
     //perform checks
@@ -58,7 +63,8 @@ public class AppointmentService {
     List<Appointment> listOfAppointments = patient.getListOfCurrentAppointments().stream()
         .filter(appt -> actualDateTime.isEqual(appt.getActualDateTime())).toList();
     if (listOfAppointments.size() != 0) {
-      throw new UnableToCreateAppointmentException("Unable to create appointment, overlapping appointment exists.");
+      throw new UnableToCreateAppointmentException(
+          "Unable to create appointment, overlapping appointment exists.");
     }
 
     //create appt entity
@@ -73,16 +79,36 @@ public class AppointmentService {
   //View All Appointments by day
   public List<Appointment> viewAllAppointmentsByDay(String localDateTimeString) {
     LocalDateTime localDateTime = LocalDateTime.parse(localDateTimeString);
-    return appointmentRepository.findAllByActualDateTimeBetween(localDateTime.toLocalDate().atStartOfDay(), localDateTime.plusDays(1).toLocalDate().atStartOfDay());
+    return appointmentRepository.findAllByActualDateTimeBetween(
+        localDateTime.toLocalDate().atStartOfDay(),
+        localDateTime.plusDays(1).toLocalDate().atStartOfDay());
   }
 
   //View All Appointments by day
-  public List<Appointment> viewAllAppointmentsByRange(Integer startDay,Integer startMonth,Integer startYear,Integer endDay,Integer endMonth,Integer endYear, String departmentName) {
+  public List<Appointment> viewAllAppointmentsByRange(Integer startDay, Integer startMonth,
+      Integer startYear, Integer endDay, Integer endMonth, Integer endYear, String departmentName,
+      Long selectStaffId) {
 
-    LocalDateTime startDate = LocalDateTime.of(startYear,startMonth,startDay,0,0,0);
-    LocalDateTime endDate = LocalDateTime.of(endYear,endMonth,endDay,23,59,59);
+    LocalDateTime startDate = LocalDateTime.of(startYear, startMonth, startDay, 0, 0, 0);
+    LocalDateTime endDate = LocalDateTime.of(endYear, endMonth, endDay, 23, 59, 59);
 
-    return appointmentRepository.findAllByActualDateTimeBetweenAndDepartmentName(startDate,endDate, departmentName);
+    List<Appointment> listOfAppointments = appointmentRepository.findAllByActualDateTimeBetweenAndDepartmentName(
+        startDate, endDate, departmentName);
+    System.out.println("====== WORKING HERE ======");
+
+//    filtering the appointments based on staffId
+    if (selectStaffId > 0L) {
+      System.out.println("====== NOT ZERO ======");
+      listOfAppointments = listOfAppointments.stream().filter(
+          appointment -> appointment.getCurrentAssignedStaff() != null
+              && Objects.equals(appointment.getCurrentAssignedStaff().getStaffId(), selectStaffId)).collect(
+          Collectors.toList());
+      System.out.println(listOfAppointments.size());
+    }
+    return listOfAppointments;
+
+//    return appointmentRepository.findAllByActualDateTimeBetweenAndDepartmentName(
+//        startDate, endDate, departmentName);
   }
 
   //View All Appointments by day OLD
@@ -95,7 +121,7 @@ public class AppointmentService {
 //  }
 
 
-  public Appointment assignAppointmentToStaff(Long appointmentId, Long staffId){
+  public Appointment assignAppointmentToStaff(Long appointmentId, Long staffId) {
 
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     Staff staff = staffService.findById(staffId);
@@ -105,13 +131,15 @@ public class AppointmentService {
       throw new StaffDisabledException("Unable to assign appointment to Disabled Staff");
     }
 
-    if (appointment.getCurrentAssignedStaff() != null && appointment.getCurrentAssignedStaff().getStaffId().equals(staffId)) {
+    if (appointment.getCurrentAssignedStaff() != null && appointment.getCurrentAssignedStaff()
+        .getStaffId().equals(staffId)) {
       throw new AppointmentAssignmentException("Staff is already allocated the appointment");
     }
 
     //assign new staff to appointment
     appointment.setCurrentAssignedStaff(staff);
-    appointment.getListOfStaff().add(staff);
+    // BIG PROBLEM HERE
+//    appointment.getListOfStaff().add(staff);
     staff.getListOfAssignedAppointments().add(appointment);
     return appointment;
   }
@@ -127,7 +155,6 @@ public class AppointmentService {
     appointment.setComments(comments);
     return appointment;
   }
-
 
 
 }
