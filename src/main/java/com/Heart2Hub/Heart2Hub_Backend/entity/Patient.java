@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 
@@ -20,6 +21,7 @@ public class Patient {
 
     @NotNull
     @Size(min = 6)
+    @Column(unique = true)
     private String username;
 
     @NotNull
@@ -57,9 +59,10 @@ public class Patient {
     private ImageDocument profilePicture;
 
     public Patient() {
-        this.listOfInvoices = List.of();
-        this.listOfPaymentMethods = List.of();
-        this.listOfTransactionItem = List.of();
+        this.listOfInvoices = new ArrayList<>();
+        this.listOfPaymentMethods = new ArrayList<>();
+        this.listOfTransactionItem = new ArrayList<>();
+        this.listOfCurrentAppointments = new ArrayList<>();
     }
 
     public Patient(String username, String password) {

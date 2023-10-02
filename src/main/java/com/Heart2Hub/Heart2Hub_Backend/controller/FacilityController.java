@@ -4,6 +4,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Facility;
 import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateFacilityException;
 import com.Heart2Hub.Heart2Hub_Backend.service.FacilityService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,10 @@ public class FacilityController {
 
     @PostMapping("/createFacility")
     public ResponseEntity<Facility> createFacility(
-            @RequestParam Long subDepartmentId,
-            @RequestBody Facility facility) {
+            @RequestParam Long departmentId,
+            @Valid @RequestBody Facility facility) {
         return ResponseEntity.ok(
-                facilityService.createFacility(subDepartmentId,facility)
+                facilityService.createFacility(departmentId,facility)
         );
     }
 

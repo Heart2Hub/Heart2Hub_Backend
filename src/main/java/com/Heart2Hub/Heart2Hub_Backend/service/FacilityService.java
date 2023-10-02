@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,15 +54,11 @@ public class FacilityService {
         return isAdmin;
     }
 
-    public Facility createFacility(Long departmentId, Facility newFacility) throws UnableToCreateFacilityException {
+    public Facility createFacility(Long departmentId, Facility newFacility) {
         if (!isLoggedInUserAdmin()) {
             throw new UnableToCreateFacilityException("Staff cannot create facilities as he/she is not an admin.");
         }
-        try {
             String name = newFacility.getName();
-            if (name.trim().equals("")) {
-                throw new UnableToCreateFacilityException("Name must be present.");
-            }
             Integer capacity = newFacility.getCapacity();
             if (capacity < 1) {
                 throw new UnableToCreateFacilityException("Capacity must be above 1");
@@ -89,9 +86,6 @@ public class FacilityService {
             } else {
                 throw new UnableToCreateFacilityException("Dept not found");
             }
-        } catch (Exception ex) {
-            throw new UnableToCreateFacilityException(ex.getMessage());
-        }
     }
 
     public String deleteFacility(Long facilityId) throws FacilityNotFoundException {

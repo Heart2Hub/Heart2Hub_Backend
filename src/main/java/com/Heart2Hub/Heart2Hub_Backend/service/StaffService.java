@@ -31,19 +31,21 @@ public class StaffService {
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
   private final StaffRepository staffRepository;
-    private final UnitRepository unitRepository;
+  private final UnitRepository unitRepository;
   private final ImageDocumentService imageDocumentService;
 
-    public StaffService(JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, StaffRepository staffRepository, UnitRepository unitRepository, ImageDocumentService imageDocumentService) {
-        this.jwtService = jwtService;
-        this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
-        this.staffRepository = staffRepository;
-        this.unitRepository = unitRepository;
-        this.imageDocumentService = imageDocumentService;
-    }
+  public StaffService(JwtService jwtService, PasswordEncoder passwordEncoder,
+      AuthenticationManager authenticationManager, StaffRepository staffRepository,
+      UnitRepository unitRepository, ImageDocumentService imageDocumentService) {
+    this.jwtService = jwtService;
+    this.passwordEncoder = passwordEncoder;
+    this.authenticationManager = authenticationManager;
+    this.staffRepository = staffRepository;
+    this.unitRepository = unitRepository;
+    this.imageDocumentService = imageDocumentService;
+  }
 
-    public Long countStaff() {
+  public Long countStaff() {
     return staffRepository.count();
   }
 
@@ -70,73 +72,78 @@ public class StaffService {
 //    }
 //  }
 
-    public Staff createSuperAdmin(Staff superAdmin) {
-        String password = superAdmin.getPassword();
-        superAdmin.setPassword(passwordEncoder.encode(password));
-      staffRepository.save(superAdmin);
-      return superAdmin;
-    }
+  public Staff createSuperAdmin(Staff superAdmin) {
+    String password = superAdmin.getPassword();
+    superAdmin.setPassword(passwordEncoder.encode(password));
+    staffRepository.save(superAdmin);
+    return superAdmin;
+  }
 
-    public Staff createStaff(Staff newStaff, String departmentName) {
-        return createStaff(newStaff, departmentName, null);
-    }
+  public Staff createStaff(Staff newStaff, String departmentName) {
+    return createStaff(newStaff, departmentName, null);
+  }
 
   public Staff createStaff(Staff newStaff, String departmentName, ImageDocument imageDocument) {
-      if (newStaff.getIsHead() && newStaff.getStaffRoleEnum().toString().equals("ADMIN")) {
-          throw new UnableToCreateStaffException("Cannot create another super admin");
-      } else {
-          String password = newStaff.getPassword();
-          newStaff.setPassword(passwordEncoder.encode(password));
-          Unit unit = unitRepository.findByNameContainingIgnoreCase(departmentName).get(0);
-          newStaff.setUnit(unit);
-          if (imageDocument != null) {
-              ImageDocument createdImageDocument = imageDocumentService.createImageDocument(imageDocument);
-              newStaff.setProfilePicture(createdImageDocument); // Set the image document if provided
-          }
-
-          try {
-              staffRepository.save(newStaff);
-              return newStaff;
-          } catch (Exception ex) {
-              throw new UnableToCreateStaffException("Username already exists");
-          }
+    if (newStaff.getIsHead() && newStaff.getStaffRoleEnum().toString().equals("ADMIN")) {
+      throw new UnableToCreateStaffException("Cannot create another super admin");
+    } else {
+      String password = newStaff.getPassword();
+      newStaff.setPassword(passwordEncoder.encode(password));
+      Unit unit = unitRepository.findByNameContainingIgnoreCase(departmentName).get(0);
+      newStaff.setUnit(unit);
+      if (imageDocument != null) {
+        ImageDocument createdImageDocument = imageDocumentService.createImageDocument(
+            imageDocument);
+        newStaff.setProfilePicture(createdImageDocument); // Set the image document if provided
       }
 
-  }
-
-  public Optional<Staff> findById(Long id) { return staffRepository.findById(id); }
-
-  public Staff updateStaff(Staff updatedStaff, String departmentName) {
-      return updateStaff(updatedStaff, departmentName, null);
-  }
-
-    public Staff updateStaff(Staff updatedStaff, String departmentName, ImageDocument imageDocument) {
-        if (updatedStaff.getIsHead() && updatedStaff.getStaffRoleEnum().toString().equals("ADMIN")) {
-            throw new UnableToCreateStaffException("Cannot create another super admin");
-        } else {
-            String username = updatedStaff.getUsername();
-            Staff existingStaff = getStaffByUsername(username);
-            existingStaff.setMobileNumber(updatedStaff.getMobileNumber());
-            existingStaff.setIsHead(updatedStaff.getIsHead());
-            existingStaff.setStaffRoleEnum(updatedStaff.getStaffRoleEnum());
-            Unit unit = unitRepository.findByNameContainingIgnoreCase(departmentName).get(0);
-            existingStaff.setUnit(unit);
-
-            if (imageDocument != null) {
-                ImageDocument createdImageDocument = imageDocumentService.createImageDocument(imageDocument);
-                existingStaff.setProfilePicture(createdImageDocument); // Set the image document if provided
-            }
-
-            staffRepository.save(existingStaff);
-            return existingStaff;
-        }
+      try {
+        staffRepository.save(newStaff);
+        return newStaff;
+      } catch (Exception ex) {
+        throw new UnableToCreateStaffException("Username already exists");
+      }
     }
 
-  public Staff disableStaff(String username) {
+  }
+
+  public Staff findById(Long id) {
+    return staffRepository.findById(id)
+        .orElseThrow(() -> new StaffNotFoundException("Staff not found"));
+  }
+
+  public Staff updateStaff(Staff updatedStaff, String departmentName) {
+    return updateStaff(updatedStaff, departmentName, null);
+  }
+
+  public Staff updateStaff(Staff updatedStaff, String departmentName, ImageDocument imageDocument) {
+    if (updatedStaff.getIsHead() && updatedStaff.getStaffRoleEnum().toString().equals("ADMIN")) {
+      throw new UnableToCreateStaffException("Cannot create another super admin");
+    } else {
+      String username = updatedStaff.getUsername();
       Staff existingStaff = getStaffByUsername(username);
-      existingStaff.setDisabled(true);
+      existingStaff.setMobileNumber(updatedStaff.getMobileNumber());
+      existingStaff.setIsHead(updatedStaff.getIsHead());
+      existingStaff.setStaffRoleEnum(updatedStaff.getStaffRoleEnum());
+      Unit unit = unitRepository.findByNameContainingIgnoreCase(departmentName).get(0);
+      existingStaff.setUnit(unit);
+
+      if (imageDocument != null) {
+        ImageDocument createdImageDocument = imageDocumentService.createImageDocument(
+            imageDocument);
+        existingStaff.setProfilePicture(createdImageDocument); // Set the image document if provided
+      }
+
       staffRepository.save(existingStaff);
       return existingStaff;
+    }
+  }
+
+  public Staff disableStaff(String username) {
+    Staff existingStaff = getStaffByUsername(username);
+    existingStaff.setDisabled(true);
+    staffRepository.save(existingStaff);
+    return existingStaff;
   }
 
   //for authentication
@@ -160,23 +167,23 @@ public class StaffService {
 
   public List<Staff> getAllHeadStaff() {
     List<Staff> newList = new ArrayList<>();
-    List <Staff> allStaff = staffRepository.findAll();
-      for (Staff staff : allStaff) {
-          if (staff.getIsHead()) {
-              newList.add(staff);
-          }
+    List<Staff> allStaff = staffRepository.findAll();
+    for (Staff staff : allStaff) {
+      if (staff.getIsHead()) {
+        newList.add(staff);
       }
+    }
     return Optional.of(newList).get();
   }
 
   public List<String> getStaffRoles() {
-      List<String> staffRolesString = new ArrayList<>();
-      StaffRoleEnum[] staffRoles = StaffRoleEnum.values();
-      for (StaffRoleEnum staffRole : staffRoles) {
-          staffRolesString.add(staffRole.name());
-      }
+    List<String> staffRolesString = new ArrayList<>();
+    StaffRoleEnum[] staffRoles = StaffRoleEnum.values();
+    for (StaffRoleEnum staffRole : staffRoles) {
+      staffRolesString.add(staffRole.name());
+    }
 
-      return staffRolesString;
+    return staffRolesString;
   }
 
   public List<Staff> getStaffByRole(String role, String unit) throws StaffRoleNotFoundException {
@@ -189,7 +196,8 @@ public class StaffService {
   }
 
   //reset password
-  public Boolean changePassword(String username, String oldPassword, String newPassword) throws UnableToChangePasswordException{
+  public Boolean changePassword(String username, String oldPassword, String newPassword)
+      throws UnableToChangePasswordException {
     Staff staff = getStaffByUsername(username);
     if (passwordEncoder.matches(oldPassword, staff.getPassword())) {
       if (newPassword.length() > 6) {

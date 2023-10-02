@@ -13,6 +13,7 @@ import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,12 +46,26 @@ public class ElectronicHealthRecordService {
                     return electronicHealthRecord;
                 }
             } else {
-                throw new ElectronicHealthRecordNotFoundException("Electronic Health Record with NRIC: " + electronicHealthRecordId + " is not found");
+                throw new ElectronicHealthRecordNotFoundException("Electronic Health Record with Id: " + electronicHealthRecordId + " is not found");
             }
         } catch (Exception ex) {
             throw new ElectronicHealthRecordNotFoundException(ex.getMessage());
         }
     }
 
+    public List<ElectronicHealthRecord> getAllElectronicHealthRecords() {
+        return electronicHealthRecordRepository.findAll();
+    }
+
+    public ElectronicHealthRecord getNehrRecordByNric(String nric){
+        try {
+            final String uri = "http://localhost:3002/records/" + nric;
+            RestTemplate restTemplate = new RestTemplate();
+            ElectronicHealthRecord result = restTemplate.getForObject(uri, ElectronicHealthRecord.class);
+            return result;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
 
 }
