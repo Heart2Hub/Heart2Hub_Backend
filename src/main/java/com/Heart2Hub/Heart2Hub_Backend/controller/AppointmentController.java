@@ -73,6 +73,16 @@ public class AppointmentController {
     return ResponseEntity.ok(listOfApptsDTO);
   }
 
+  @GetMapping("/viewPatientAppointments")
+  public ResponseEntity<List<AppointmentDTO>> viewAllAppointmentsByMonth(
+          @RequestParam("patientUsername") String patientUsername) {
+
+    List<Appointment> listOfAppts = appointmentService.viewPatientAppointments(patientUsername);
+    List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
+            .map(appointmentMapper::convertToDto).collect(Collectors.toList());
+    return ResponseEntity.ok(listOfApptsDTO);
+  }
+
   @PostMapping("/updateAppointmentArrival")
   public ResponseEntity<AppointmentDTO> updateAppointmentArrival(
       @RequestParam("appointmentId") Long appointmentId,

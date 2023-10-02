@@ -237,4 +237,10 @@ public class StaffService {
     }
     return listOfRelatedShifts;
   }
+
+  public Staff getStaffById(Long id) {
+    Staff staff = staffRepository.findById(id)
+            .orElseThrow(() -> new StaffNotFoundException("Username Does Not Exist."));
+    return staff;
+  }
 }

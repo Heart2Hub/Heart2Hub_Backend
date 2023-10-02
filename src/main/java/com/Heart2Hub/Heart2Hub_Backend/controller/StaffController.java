@@ -162,4 +162,10 @@ public class StaffController {
     return ResponseEntity.ok(listOfOutpatientStaff);
   }
 
+  @GetMapping("/getStaffById")
+  public ResponseEntity<Staff> getStaffById(
+          @RequestParam("id") Long id) {
+    return ResponseEntity.ok(staffService.getStaffById(id));
+  }
+
 }

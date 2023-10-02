@@ -65,7 +65,7 @@ public class Appointment {
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
-    @JsonBackReference
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "staff_id", nullable = true)
     private Staff currentAssignedStaff = null;
