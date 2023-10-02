@@ -2,6 +2,7 @@ package com.Heart2Hub.Heart2Hub_Backend.controller;
 
 import com.Heart2Hub.Heart2Hub_Backend.dto.AppointmentDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.AppointmentMapper;
 import com.Heart2Hub.Heart2Hub_Backend.service.AppointmentService;
 import java.util.List;
@@ -69,14 +70,6 @@ public class AppointmentController {
         startMonth, startYear, endDay, endMonth, endYear, departmentName, selectStaffId);
     List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
         .map(appointmentMapper::convertToDto).collect(Collectors.toList());
-//        .map(appt -> {
-//              if (appt.getCurrentAssignedStaff() != null) {
-//                System.out.println("STAFF ASSIGNED FOR " + appt.getAppointmentId());
-//              }
-//              System.out.println("APPT NUMBER: " + appt.getAppointmentId());
-//              return appointmentMapper.convertToDto(appt);
-//            }
-//        ).collect(Collectors.toList());
     return ResponseEntity.ok(listOfApptsDTO);
   }
 
@@ -94,6 +87,14 @@ public class AppointmentController {
       @RequestParam("comments") String comments) {
     return ResponseEntity.ok(appointmentMapper.convertToDto(
         appointmentService.updateAppointmentComments(appointmentId, comments)));
+  }
+
+  @PostMapping("/updateAppointmentSwimlaneStatus")
+  public ResponseEntity<AppointmentDTO> updateAppointmentSwimlaneStatus(
+      @RequestParam("appointmentId") Long appointmentId,
+      @RequestParam("swimlaneStatus") String swimlaneStatus) {
+    return ResponseEntity.ok(appointmentMapper.convertToDto(
+        appointmentService.updateAppointmentSwimlaneStatus(appointmentId, SwimlaneStatusEnum.valueOf(swimlaneStatus.toUpperCase()))));
   }
 
 //  @GetMapping("/viewAllAppointmentsByRange")

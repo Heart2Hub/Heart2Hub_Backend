@@ -5,6 +5,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Patient;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PriorityEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.AppointmentAssignmentException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.AppointmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffDisabledException;
@@ -106,9 +107,6 @@ public class AppointmentService {
       System.out.println(listOfAppointments.size());
     }
     return listOfAppointments;
-
-//    return appointmentRepository.findAllByActualDateTimeBetweenAndDepartmentName(
-//        startDate, endDate, departmentName);
   }
 
   //View All Appointments by day OLD
@@ -156,5 +154,10 @@ public class AppointmentService {
     return appointment;
   }
 
+  public Appointment updateAppointmentSwimlaneStatus(Long appointmentId, SwimlaneStatusEnum swimlaneStatusEnum) {
+    Appointment appointment = findAppointmentByAppointmentId(appointmentId);
+    appointment.setSwimlaneStatusEnum(swimlaneStatusEnum);
+    return appointment;
+  }
 
 }

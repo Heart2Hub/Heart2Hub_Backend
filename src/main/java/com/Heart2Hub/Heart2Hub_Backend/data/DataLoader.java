@@ -402,8 +402,6 @@ public class DataLoader implements CommandLineRunner {
 
   private void createAppointmentData() {
 
-    System.out.println(LocalDateTime.now().plusDays(7L).toString());
-
     Patient patient1 = patientService.getPatientByUsername("patient1");
 
     //for today
@@ -440,8 +438,6 @@ public class DataLoader implements CommandLineRunner {
 
     //testing filtering view
     appointmentService.assignAppointmentToStaff(5L,4L);
-
-
 
     appointmentService.createNewAppointment("test description",
         LocalDateTime.now().plusDays(7L).toString(),
