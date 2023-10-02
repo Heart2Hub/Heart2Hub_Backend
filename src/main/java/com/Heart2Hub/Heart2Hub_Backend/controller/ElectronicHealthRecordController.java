@@ -28,4 +28,14 @@ public class ElectronicHealthRecordController {
         );
     }
 
+    @GetMapping("/getAllElectronicHealthRecords")
+    public ResponseEntity<List<ElectronicHealthRecord>> getAllElectronicHealthRecords() {
+        return ResponseEntity.ok(
+                electronicHealthRecordService.getAllElectronicHealthRecords()
+        );
+    }
+
 }
+
+
+

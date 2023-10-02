@@ -32,6 +32,8 @@ public class FacilityBooking {
     @Size(max = 200)
     private String comments;
 
+    private String staffUsername;
+
     @JsonBackReference(value="shift-fb")
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
     private Shift shift;

@@ -47,8 +47,7 @@ public class SecurityConfig {
                 .requestMatchers("/staff/getStaffByUsername").permitAll()
                 .requestMatchers("/staff/changePassword").permitAll()
                 .requestMatchers("/staff/**").permitAll()
-                    .requestMatchers("/patient/createPatient").permitAll()
-                    .requestMatchers("/patient/patientLogin").permitAll()
+                    .requestMatchers("/patient/**").permitAll()
                 .anyRequest().authenticated() // 2
         )
         .sessionManagement((httpSecuritySessionManagementConfigurer -> //3

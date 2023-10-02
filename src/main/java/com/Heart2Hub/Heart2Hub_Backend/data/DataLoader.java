@@ -50,24 +50,19 @@ public class DataLoader implements CommandLineRunner {
   private final LeaveService leaveService;
   private final ShiftConstraintsService shiftConstraintsService;
 
+  private final ConsumableEquipmentService consumableEquipmentService;
+
+  private final AllocatedInventoryService allocatedInventoryService;
+
+  private final SubDepartmentRepository subDepartmentRepository;
+    private final DepartmentRepository departmentRepository;
+    private final WardService wardService;
+    private final WardClassService wardClassService;
   //  private final SubDepartmentRepository subDepartmentRepository;
-  private final DepartmentRepository departmentRepository;
-  private final WardService wardService;
-  private final WardClassService wardClassService;
 
   private final AppointmentService appointmentService;
 
-  public DataLoader(StaffService staffService, ShiftService shiftService,
-      DepartmentService departmentService, AuthenticationManager authenticationManager,
-      FacilityService facilityService, PatientService patientService,
-      NextOfKinRecordService nextOfKinRecordService,
-      PrescriptionRecordService prescriptionRecordService,
-      ProblemRecordService problemRecordService,
-      MedicalHistoryRecordService medicalHistoryRecordService,
-      TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService,
-      ShiftConstraintsService shiftConstraintsService, DepartmentRepository departmentRepository,
-      WardService wardService, WardClassService wardClassService,
-      AppointmentService appointmentService) {
+  public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, AppointmentService appointmentService) {
     this.staffService = staffService;
     this.shiftService = shiftService;
     this.departmentService = departmentService;
@@ -81,6 +76,9 @@ public class DataLoader implements CommandLineRunner {
     this.treatmentPlanRecordService = treatmentPlanRecordService;
     this.leaveService = leaveService;
     this.shiftConstraintsService = shiftConstraintsService;
+    this.consumableEquipmentService = consumableEquipmentService;
+    this.allocatedInventoryService = allocatedInventoryService;
+    this.subDepartmentRepository = subDepartmentRepository;
     this.departmentRepository = departmentRepository;
     this.wardService = wardService;
     this.wardClassService = wardClassService;
@@ -99,13 +97,13 @@ public class DataLoader implements CommandLineRunner {
 
     // Create staff data
     Staff admin = new Staff("staff1", "password1", "Elgin", "Chan", 97882145l,
-        StaffRoleEnum.valueOf("ADMIN"), true);
+            StaffRoleEnum.valueOf("ADMIN"), true);
     Staff superAdmin = staffService.createSuperAdmin(admin);
     System.out.println(superAdmin.getUsername());
 
     // Set auth context using staff1
     Authentication auth = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken("staff1", "password1"));
+            new UsernamePasswordAuthenticationToken("staff1", "password1"));
     SecurityContext sc = SecurityContextHolder.getContext();
     sc.setAuthentication(auth);
 
@@ -117,6 +115,7 @@ public class DataLoader implements CommandLineRunner {
     createShiftData();
     createPatientData();
     createAppointmentData();
+    createConsumableEquipmentData();
 
     //code ends here
 
@@ -153,23 +152,23 @@ public class DataLoader implements CommandLineRunner {
         new Staff("staff9", "password9", "Simon", "Cowell", 81927493l, StaffRoleEnum.NURSE, false),
         "Cardiology", new ImageDocument("id8.png", lt));
     staffService.createStaff(
-        new Staff("staff10", "password10", "James", "Charles", 93420093l, StaffRoleEnum.NURSE,
-            true), "B20", new ImageDocument("id9.png", lt));
+            new Staff("staff10", "password10", "James", "Charles", 93420093l, StaffRoleEnum.NURSE,
+                    true), "B20", new ImageDocument("id9.png", lt));
     staffService.createStaff(
-        new Staff("staff11", "password11", "Ronald", "Weasley", 90897321l, StaffRoleEnum.NURSE,
-            false), "B20", new ImageDocument("id10.png", lt));
+            new Staff("staff11", "password11", "Ronald", "Weasley", 90897321l, StaffRoleEnum.NURSE,
+                    false), "B20", new ImageDocument("id10.png", lt));
 
     leaveService.createLeave(LocalDateTime.now().plusMonths(3),
-        LocalDateTime.now().plusMonths(3).plusDays(2), LeaveTypeEnum.ANNUAL, staff3, staff2,
-        "Going to see F1 race"
+            LocalDateTime.now().plusMonths(3).plusDays(2), LeaveTypeEnum.ANNUAL, staff3, staff2,
+            "Going to see F1 race"
     );
     leaveService.createLeave(LocalDateTime.now().plusMonths(2),
-        LocalDateTime.now().plusMonths(2).plusDays(3), LeaveTypeEnum.ANNUAL, staff4, staff2,
-        "Thailand family trip"
+            LocalDateTime.now().plusMonths(2).plusDays(3), LeaveTypeEnum.ANNUAL, staff4, staff2,
+            "Thailand family trip"
     );
     leaveService.createLeave(LocalDateTime.now().plusMonths(3),
-        LocalDateTime.now().plusMonths(3).plusDays(2), LeaveTypeEnum.ANNUAL, staff5, staff2,
-        "Exam for my Master's degree"
+            LocalDateTime.now().plusMonths(3).plusDays(2), LeaveTypeEnum.ANNUAL, staff5, staff2,
+            "Exam for my Master's degree"
     );
   }
 
@@ -207,14 +206,14 @@ public class DataLoader implements CommandLineRunner {
     // For Sub Department Facility Creation
     for (long L = 1L; L <= 9L; L++) {
       facilityService.createFacility(L,
-          new Facility("Consultation Room 1 " + departmentRepository.findById(L).get().getName(),
-              "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.CONSULTATION_ROOM));
+              new Facility("Consultation Room 1 " + departmentRepository.findById(L).get().getName(),
+                      "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.CONSULTATION_ROOM));
       facilityService.createFacility(L,
-          new Facility("Triage Room 1 " + departmentRepository.findById(L).get().getName(),
-              "Level 2", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
+              new Facility("Triage Room 1 " + departmentRepository.findById(L).get().getName(),
+                      "Level 2", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
       facilityService.createFacility(L,
-          new Facility("Triage Room 2 " + departmentRepository.findById(L).get().getName(),
-              "Level 3", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
+              new Facility("Triage Room 2 " + departmentRepository.findById(L).get().getName(),
+                      "Level 3", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
     }
 //    TO-DO: WARD BED CREATION
 //    for (long L = 1L; L <= 40L; L++) {
@@ -397,115 +396,24 @@ public class DataLoader implements CommandLineRunner {
   }
 
   private void createPatientData() {
-    Patient newPatient1 = patientService.createPatient(new Patient("patient1", "password1"),
-        new ElectronicHealthRecord("S9983422D", "Adam", "Lai",
-            LocalDateTime.of(1978, 9, 16, 0, 0, 0), "Singapore", "Male", "Chinese", "Singaporean",
-            "Pasir Ris St 42", "81348699"));
-    nextOfKinRecordService.createNextOfKinRecord(newPatient1.getPatientId(),
-        new NextOfKinRecord("Father", "S5882617D"));
-    nextOfKinRecordService.createNextOfKinRecord(newPatient1.getPatientId(),
-        new NextOfKinRecord("Mother", "S6882617D"));
-    nextOfKinRecordService.createNextOfKinRecord(newPatient1.getPatientId(),
-        new NextOfKinRecord("Brother", "S7882617D"));
-    prescriptionRecordService.createPrescriptionRecord(newPatient1.getPatientId(),
-        new PrescriptionRecord(LocalDateTime.of(1999, 9, 16, 15, 30, 0), "Panadol", 3, 1,
-            "Pain Relief for Headache", "Stop when symptoms are gone", "Doctor Wen Jie",
-            PrescriptionStatusEnum.UNCOLLECTED));
-    prescriptionRecordService.createPrescriptionRecord(newPatient1.getPatientId(),
-        new PrescriptionRecord(LocalDateTime.of(2000, 3, 10, 14, 45, 0), "Aspirin", 2, 1,
-            "Pain Relief for Backache", "Take with food", "Doctor Sarah Smith",
-            PrescriptionStatusEnum.COLLECTED));
-    problemRecordService.createProblemRecord(newPatient1.getPatientId(),
-        new ProblemRecord("AIDs", "Doctor Wen Jie", LocalDateTime.of(1999, 9, 16, 15, 30, 0),
-            PriorityEnum.HIGH, ProblemTypeEnum.INFECTIOUS_DISEASES));
-    problemRecordService.createProblemRecord(newPatient1.getPatientId(),
-        new ProblemRecord("Diabetes", "Doctor Sarah Smith", LocalDateTime.of(2001, 5, 20, 9, 15, 0),
-            PriorityEnum.MEDIUM, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
-    medicalHistoryRecordService.createMedicalHistoryRecord(newPatient1.getPatientId(),
-        new MedicalHistoryRecord("Smoking", "Doctor Wen Jie",
-            LocalDateTime.of(1998, 9, 16, 15, 30, 0), LocalDateTime.of(1999, 9, 16, 15, 30, 0),
-            PriorityEnum.LOW, ProblemTypeEnum.OTHERS));
-    medicalHistoryRecordService.createMedicalHistoryRecord(newPatient1.getPatientId(),
-        new MedicalHistoryRecord("Allergies to Pollen", "Doctor Sarah Smith",
-            LocalDateTime.of(2000, 8, 5, 11, 30, 0), LocalDateTime.of(2001, 3, 15, 13, 45, 0),
-            PriorityEnum.HIGH, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
-    treatmentPlanRecordService.createTreatmentPlanRecord(newPatient1.getPatientId(),
-        new TreatmentPlanRecord("Dialysis", "Doctor Wen Jie", new ArrayList<>(),
-            LocalDateTime.of(1998, 9, 16, 15, 30, 0), LocalDateTime.of(1999, 9, 16, 15, 30, 0),
-            TreatmentPlanTypeEnum.PREVENTIVE_CARE_PLAN));
-    Patient newPatient2 = patientService.createPatient(new Patient("patient2", "password2"),
-        new ElectronicHealthRecord("S9983423D", "Eva", "Tan",
-            LocalDateTime.of(1985, 5, 12, 0, 0, 0), "Singapore", "Female", "Chinese", "Singaporean",
-            "Orchard Road", "82236471"));
-    nextOfKinRecordService.createNextOfKinRecord(newPatient2.getPatientId(),
-        new NextOfKinRecord("Husband", "S5882618D"));
-    nextOfKinRecordService.createNextOfKinRecord(newPatient2.getPatientId(),
-        new NextOfKinRecord("Sister", "S6882618D"));
-    prescriptionRecordService.createPrescriptionRecord(newPatient2.getPatientId(),
-        new PrescriptionRecord(LocalDateTime.of(2005, 7, 25, 16, 30, 0), "Antibiotics", 4, 2,
-            "Infection Treatment", "Complete the course", "Doctor Emily Wong",
-            PrescriptionStatusEnum.COLLECTED));
-    problemRecordService.createProblemRecord(newPatient2.getPatientId(),
-        new ProblemRecord("Hypertension", "Doctor Emily Wong",
-            LocalDateTime.of(2006, 2, 14, 8, 45, 0), PriorityEnum.MEDIUM,
-            ProblemTypeEnum.CARDIOVASCULAR));
-    medicalHistoryRecordService.createMedicalHistoryRecord(newPatient2.getPatientId(),
-        new MedicalHistoryRecord("High Cholesterol", "Doctor Emily Wong",
-            LocalDateTime.of(2004, 6, 10, 9, 30, 0), LocalDateTime.of(2005, 8, 20, 12, 15, 0),
-            PriorityEnum.HIGH, ProblemTypeEnum.CARDIOVASCULAR));
-    Patient newPatient3 = patientService.createPatient(new Patient("patient3", "password3"),
-        new ElectronicHealthRecord("S9983424D", "John", "Smith",
-            LocalDateTime.of(1990, 2, 28, 0, 0, 0), "Singapore", "Male", "Caucasian", "Singaporean",
-            "Marina Bay Sands", "83571234"));
-    nextOfKinRecordService.createNextOfKinRecord(newPatient3.getPatientId(),
-        new NextOfKinRecord("Wife", "S5882619D"));
-    prescriptionRecordService.createPrescriptionRecord(newPatient3.getPatientId(),
-        new PrescriptionRecord(LocalDateTime.of(2010, 10, 5, 13, 15, 0), "Insulin", 1, 1,
-            "Diabetes Management", "Take before meals", "Doctor Maria Garcia",
-            PrescriptionStatusEnum.COLLECTED));
-    problemRecordService.createProblemRecord(newPatient3.getPatientId(),
-        new ProblemRecord("Type 2 Diabetes", "Doctor Maria Garcia",
-            LocalDateTime.of(2009, 8, 12, 11, 20, 0), PriorityEnum.HIGH,
-            ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
-    medicalHistoryRecordService.createMedicalHistoryRecord(newPatient3.getPatientId(),
-        new MedicalHistoryRecord("High Blood Pressure", "Doctor Maria Garcia",
-            LocalDateTime.of(2008, 4, 18, 14, 30, 0), LocalDateTime.of(2009, 9, 2, 9, 45, 0),
-            PriorityEnum.MEDIUM, ProblemTypeEnum.CARDIOVASCULAR));
-    Patient newPatient4 = patientService.createPatient(new Patient("patient4", "password4"),
-        new ElectronicHealthRecord("S9983425D", "Linda", "Wong",
-            LocalDateTime.of(1973, 11, 8, 0, 0, 0), "Singapore", "Female", "Chinese", "Singaporean",
-            "Jurong West St 71", "81126543"));
-    nextOfKinRecordService.createNextOfKinRecord(newPatient4.getPatientId(),
-        new NextOfKinRecord("Son", "S5882620D"));
-    nextOfKinRecordService.createNextOfKinRecord(newPatient4.getPatientId(),
-        new NextOfKinRecord("Daughter", "S6882620D"));
-    prescriptionRecordService.createPrescriptionRecord(newPatient4.getPatientId(),
-        new PrescriptionRecord(LocalDateTime.of(1995, 3, 2, 10, 30, 0), "Painkillers", 2, 1,
-            "Pain Relief for Arthritis", "Take as needed", "Doctor Kevin Tan",
-            PrescriptionStatusEnum.COLLECTED));
-    problemRecordService.createProblemRecord(newPatient4.getPatientId(),
-        new ProblemRecord("Arthritis", "Doctor Kevin Tan", LocalDateTime.of(1994, 12, 15, 16, 0, 0),
-            PriorityEnum.LOW, ProblemTypeEnum.OBSTETRIC));
-    medicalHistoryRecordService.createMedicalHistoryRecord(newPatient4.getPatientId(),
-        new MedicalHistoryRecord("Asthma", "Doctor Kevin Tan",
-            LocalDateTime.of(1990, 7, 8, 9, 0, 0), LocalDateTime.of(1991, 5, 20, 14, 45, 0),
-            PriorityEnum.MEDIUM, ProblemTypeEnum.RESPIRATORY));
-    Patient newPatient5 = patientService.createPatient(new Patient("patient5", "password5"),
-        new ElectronicHealthRecord("S9983426D", "Megan", "Chua",
-            LocalDateTime.of(2000, 6, 15, 0, 0, 0), "Singapore", "Female", "Chinese", "Singaporean",
-            "Bukit Timah Rd", "87751234"));
-    nextOfKinRecordService.createNextOfKinRecord(newPatient5.getPatientId(),
-        new NextOfKinRecord("Father", "S5882621D"));
-    nextOfKinRecordService.createNextOfKinRecord(newPatient5.getPatientId(),
-        new NextOfKinRecord("Mother", "S6882621D"));
-    prescriptionRecordService.createPrescriptionRecord(newPatient5.getPatientId(),
-        new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Vitamin D", 1, 1,
-            "Vitamin Supplement", "Take daily", "Doctor Sarah Tan",
-            PrescriptionStatusEnum.COLLECTED));
-    problemRecordService.createProblemRecord(newPatient5.getPatientId(),
-        new ProblemRecord("Seasonal Allergies", "Doctor Sarah Tan",
-            LocalDateTime.of(2021, 5, 3, 11, 15, 0), PriorityEnum.LOW,
-            ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
+    Patient newPatient1 = patientService.createPatient(new Patient("patient1", "password1"), "S9983422D");
+    Patient newPatient2 = patientService.createPatient(new Patient("patient2", "password2"), "S9983423D");
+      Patient newPatient3 = patientService.createPatient(new Patient("patient3","password3"), new ElectronicHealthRecord("S9983424D","John","Smith", LocalDateTime.of(1990, 2, 28, 0, 0, 0), "Singapore", "Male", "Caucasian", "Singaporean", "Marina Bay Sands", "83571234"));
+      nextOfKinRecordService.createNextOfKinRecord(newPatient3.getPatientId(),new NextOfKinRecord("Wife", "S5882619D"));
+      prescriptionRecordService.createPrescriptionRecord(newPatient3.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2010, 10, 5, 13, 15, 0), "Insulin", 1, 1, "Diabetes Management", "Take before meals", "Doctor Maria Garcia", PrescriptionStatusEnum.COLLECTED));
+      problemRecordService.createProblemRecord(newPatient3.getPatientId(), new ProblemRecord("Type 2 Diabetes", "Doctor Maria Garcia", LocalDateTime.of(2009, 8, 12, 11, 20, 0), PriorityEnum.HIGH, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
+      medicalHistoryRecordService.createMedicalHistoryRecord(newPatient3.getPatientId(), new MedicalHistoryRecord("High Blood Pressure", "Doctor Maria Garcia", LocalDateTime.of(2008, 4, 18, 14, 30, 0), LocalDateTime.of(2009, 9, 2, 9, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.CARDIOVASCULAR));
+      Patient newPatient4 = patientService.createPatient(new Patient("patient4","password4"), new ElectronicHealthRecord("S9983425D","Linda","Wong", LocalDateTime.of(1973, 11, 8, 0, 0, 0), "Singapore", "Female", "Chinese", "Singaporean", "Jurong West St 71", "81126543"));
+      nextOfKinRecordService.createNextOfKinRecord(newPatient4.getPatientId(),new NextOfKinRecord("Son", "S5882620D"));
+      nextOfKinRecordService.createNextOfKinRecord(newPatient4.getPatientId(),new NextOfKinRecord("Daughter", "S6882620D"));
+      prescriptionRecordService.createPrescriptionRecord(newPatient4.getPatientId(), new PrescriptionRecord(LocalDateTime.of(1995, 3, 2, 10, 30, 0), "Painkillers", 2, 1, "Pain Relief for Arthritis", "Take as needed", "Doctor Kevin Tan", PrescriptionStatusEnum.COLLECTED));
+      problemRecordService.createProblemRecord(newPatient4.getPatientId(), new ProblemRecord("Arthritis", "Doctor Kevin Tan", LocalDateTime.of(1994, 12, 15, 16, 0, 0), PriorityEnum.LOW, ProblemTypeEnum.OBSTETRIC));
+      medicalHistoryRecordService.createMedicalHistoryRecord(newPatient4.getPatientId(), new MedicalHistoryRecord("Asthma", "Doctor Kevin Tan", LocalDateTime.of(1990, 7, 8, 9, 0, 0), LocalDateTime.of(1991, 5, 20, 14, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.RESPIRATORY));
+      Patient newPatient5 = patientService.createPatient(new Patient("patient5","password5"), new ElectronicHealthRecord("S9983426D","Megan","Chua", LocalDateTime.of(2000, 6, 15, 0, 0, 0), "Singapore", "Female", "Chinese", "Singaporean", "Bukit Timah Rd", "87751234"));
+      nextOfKinRecordService.createNextOfKinRecord(newPatient5.getPatientId(),new NextOfKinRecord("Father", "S5882621D"));
+      nextOfKinRecordService.createNextOfKinRecord(newPatient5.getPatientId(),new NextOfKinRecord("Mother", "S6882621D"));
+      prescriptionRecordService.createPrescriptionRecord(newPatient5.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Vitamin D", 1, 1, "Vitamin Supplement", "Take daily", "Doctor Sarah Tan", PrescriptionStatusEnum.COLLECTED));
+      problemRecordService.createProblemRecord(newPatient5.getPatientId(), new ProblemRecord("Seasonal Allergies", "Doctor Sarah Tan", LocalDateTime.of(2021, 5, 3, 11, 15, 0), PriorityEnum.LOW, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
   }
 
   private void createAppointmentData() {
@@ -514,60 +422,111 @@ public class DataLoader implements CommandLineRunner {
 
     Patient patient1 = patientService.getPatientByUsername("patient1");
 
+    //for today
     appointmentService.createNewAppointment("test description",
-        LocalDateTime.now().plusDays(7L).toString(),
-        LocalDateTime.now().toString(),
-        "LOW",
-        patient1.getUsername(),
-        "Orthopedics");
+            LocalDateTime.now().toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient1.getUsername(),
+            "Cardiology");
     appointmentService.createNewAppointment("test description",
-        LocalDateTime.now().plusDays(7L).toString(),
-        LocalDateTime.now().toString(),
-        "LOW",
-        patient1.getUsername(),
-        "Cardiology");
+            LocalDateTime.now().toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient1.getUsername(),
+            "Cardiology");
     appointmentService.createNewAppointment("test description",
-        LocalDateTime.now().plusDays(7L).toString(),
-        LocalDateTime.now().toString(),
-        "LOW",
-        patient1.getUsername(),
-        "Cardiology");
+            LocalDateTime.now().toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient1.getUsername(),
+            "Cardiology");
     appointmentService.createNewAppointment("test description",
-        LocalDateTime.now().plusDays(7L).toString(),
-        LocalDateTime.now().toString(),
-        "LOW",
-        patient1.getUsername(),
-        "Cardiology");
+            LocalDateTime.now().toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient1.getUsername(),
+            "Cardiology");
     appointmentService.createNewAppointment("test description",
-        LocalDateTime.now().plusDays(7L).toString(),
-        LocalDateTime.now().toString(),
-        "LOW",
-        patient1.getUsername(),
-        "Cardiology");
-    appointmentService.createNewAppointment("test description",
-        LocalDateTime.now().plusDays(7L).toString(),
-        LocalDateTime.now().toString(),
-        "LOW",
-        patient1.getUsername(),
-        "Cardiology");
-    appointmentService.createNewAppointment("test description",
-        LocalDateTime.now().plusDays(7L).toString(),
-        LocalDateTime.now().toString(),
-        "LOW",
-        patient1.getUsername(),
-        "Cardiology");
+            LocalDateTime.now().toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient1.getUsername(),
+            "Cardiology");
+
 
     appointmentService.createNewAppointment("test description",
-        LocalDateTime.now().plusDays(9L).toString(),
-        LocalDateTime.now().plusDays(3L).toString(),
-        "LOW",
-        patient1.getUsername(),
-        "Cardiology");
+            LocalDateTime.now().plusDays(7L).toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient1.getUsername(),
+            "Orthopedics");
     appointmentService.createNewAppointment("test description",
-        LocalDateTime.now().plusDays(14L).toString(),
-        LocalDateTime.now().plusDays(5L).toString(),
-        "LOW",
-        patient1.getUsername(),
-        "Cardiology");
+            LocalDateTime.now().plusDays(7L).toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient1.getUsername(),
+            "Cardiology");
+    appointmentService.createNewAppointment("test description",
+            LocalDateTime.now().plusDays(7L).toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient1.getUsername(),
+            "Cardiology");
+    appointmentService.createNewAppointment("test description",
+            LocalDateTime.now().plusDays(7L).toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient1.getUsername(),
+            "Cardiology");
+    appointmentService.createNewAppointment("test description",
+            LocalDateTime.now().plusDays(7L).toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient1.getUsername(),
+            "Cardiology");
+    appointmentService.createNewAppointment("test description",
+            LocalDateTime.now().plusDays(7L).toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient1.getUsername(),
+            "Cardiology");
+    appointmentService.createNewAppointment("test description",
+            LocalDateTime.now().plusDays(7L).toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient1.getUsername(),
+            "Cardiology");
+
+    appointmentService.createNewAppointment("test description",
+            LocalDateTime.now().plusDays(9L).toString(),
+            LocalDateTime.now().plusDays(3L).toString(),
+            "LOW",
+            patient1.getUsername(),
+            "Cardiology");
+    appointmentService.createNewAppointment("test description",
+            LocalDateTime.now().plusDays(14L).toString(),
+            LocalDateTime.now().plusDays(5L).toString(),
+            "LOW",
+            patient1.getUsername(),
+            "Cardiology");
   }
+  private void createConsumableEquipmentData() {
+        ConsumableEquipment newConsumableEquipment1 = consumableEquipmentService.createConsumableEquipment(new ConsumableEquipment("Latex Powder-Free Gloves", "1 Box 100pcs", ItemTypeEnum.CONSUMABLE,100,BigDecimal.TEN));
+      ConsumableEquipment newConsumableEquipment2 = consumableEquipmentService.createConsumableEquipment(new ConsumableEquipment("Surgical Masks", "1 Box 100pcs", ItemTypeEnum.CONSUMABLE,100,BigDecimal.valueOf(5)));
+      ConsumableEquipment newConsumableEquipment3 = consumableEquipmentService.createConsumableEquipment(new ConsumableEquipment("Cotton Wool Pads", "1 Box 200pcs", ItemTypeEnum.CONSUMABLE,50,BigDecimal.valueOf(4)));
+      ConsumableEquipment newConsumableEquipment4 = consumableEquipmentService.createConsumableEquipment(new ConsumableEquipment("Tissue Paper", "1 Box 20pcs", ItemTypeEnum.CONSUMABLE,1000,BigDecimal.valueOf(2)));
+      ConsumableEquipment newConsumableEquipment5 = consumableEquipmentService.createConsumableEquipment(new ConsumableEquipment("Disposable Needles", "1 Box 5pcs", ItemTypeEnum.CONSUMABLE,100,BigDecimal.valueOf(3)));
+
+      Facility f = facilityService.findFacilityById(Long.parseLong("1"));
+
+      AllocatedInventory item1 = allocatedInventoryService.createAllocatedInventory(f.getFacilityId(), newConsumableEquipment1.getInventoryItemId(), 10, 1);
+      AllocatedInventory item2 = allocatedInventoryService.createAllocatedInventory(f.getFacilityId(), newConsumableEquipment2.getInventoryItemId(), 10, 1);
+      AllocatedInventory item3 = allocatedInventoryService.createAllocatedInventory(f.getFacilityId(), newConsumableEquipment3.getInventoryItemId(), 10, 1);
+      AllocatedInventory item4 = allocatedInventoryService.createAllocatedInventory(f.getFacilityId(), newConsumableEquipment4.getInventoryItemId(), 10, 1);
+      AllocatedInventory item5 = allocatedInventoryService.createAllocatedInventory(f.getFacilityId(), newConsumableEquipment5.getInventoryItemId(), 10, 1);
+
+  }
+
+
 }

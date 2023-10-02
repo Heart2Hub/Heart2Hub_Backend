@@ -28,6 +28,7 @@ public class Patient implements UserDetails {
 
     @NotNull
     @Size(min = 6)
+    @Column(unique = true)
     private String username;
 
     @NotNull

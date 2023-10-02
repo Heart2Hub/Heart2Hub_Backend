@@ -1,6 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.dto;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PriorityEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +20,7 @@ public class AppointmentDTO {
   private Boolean arrived;
   private Time elapsedTime ;
   private PriorityEnum priorityEnum;
+  private SwimlaneStatusEnum swimlaneStatusEnum;
   private Long currentAssignedStaffId ;
   private Long patientId;
   private List<Long> listOfStaffsId;
@@ -31,5 +33,7 @@ public class AppointmentDTO {
   private String sex;
   private String contactNumber;
   private String nationality;
+  private LocalDateTime dateOfBirth;
+
   public String departmentName;
 }
