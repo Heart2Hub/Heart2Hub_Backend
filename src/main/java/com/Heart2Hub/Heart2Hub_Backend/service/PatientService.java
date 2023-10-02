@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -35,8 +36,7 @@ public class PatientService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    public PatientService(PatientRepository patientRepository, PasswordEncoder passwordEncoder, ElectronicHealthRecordRepository electronicHealthRecordRepository, AuthenticationManager authenticationManager, JwtService jwtService) {
-    public PatientService(PatientRepository patientRepository, ElectronicHealthRecordRepository electronicHealthRecordRepository, ElectronicHealthRecordService electronicHealthRecordService) {
+    public PatientService(PatientRepository patientRepository, PasswordEncoder passwordEncoder, ElectronicHealthRecordRepository electronicHealthRecordRepository, AuthenticationManager authenticationManager, JwtService jwtService, ElectronicHealthRecordService electronicHealthRecordService) {
         this.patientRepository = patientRepository;
         this.passwordEncoder = passwordEncoder;
         this.electronicHealthRecordRepository = electronicHealthRecordRepository;
@@ -68,6 +68,7 @@ public class PatientService {
             if (nehrRecord == null) {
                 throw new UnableToCreatePatientException("NEHR Record is not found. Please provide NEHR details.");
             }
+            newPatient.setPassword(passwordEncoder.encode(newPatient.getPassword()));
             nehrRecord.setPatient(newPatient);
             newPatient.setElectronicHealthRecord(nehrRecord);
             electronicHealthRecordRepository.save(nehrRecord);
@@ -84,9 +85,9 @@ public class PatientService {
             if (nehrRecord != null) {
                 throw new UnableToCreatePatientException("NEHR Record is found. Please do not create a new record.");
             }
+            newPatient.setPassword(passwordEncoder.encode(newPatient.getPassword()));
             newElectronicHealthRecord.setPatient(newPatient);
             newPatient.setElectronicHealthRecord(newElectronicHealthRecord);
-            newPatient.setPassword(passwordEncoder.encode(newPatient.getPassword()));
             electronicHealthRecordRepository.save(newElectronicHealthRecord);
             patientRepository.save(newPatient);
             RestTemplate restTemplate = new RestTemplate();
@@ -175,4 +176,5 @@ public class PatientService {
             throw new UnableToChangePasswordException("Old Password provided is Incorrect");
         }
     }
+
 }
