@@ -39,6 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
     jwt = authHeader.substring(7);
     username = jwtService.extractUsername(jwt);
+    System.out.println(username);
 
     //check user is auth alr
     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

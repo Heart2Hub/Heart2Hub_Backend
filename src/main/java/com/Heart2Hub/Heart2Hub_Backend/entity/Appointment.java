@@ -63,7 +63,6 @@ public class Appointment {
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "staff_id", nullable = true)
     private Staff currentAssignedStaff = null;
@@ -74,7 +73,6 @@ public class Appointment {
     private Patient patient;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "appointment_id")
     private List<Staff> listOfStaff;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -90,6 +88,7 @@ public class Appointment {
     public Appointment(String description, LocalDateTime actualDateTime,
         LocalDateTime bookedDateTime,
         PriorityEnum priorityEnum, Patient patient, Department department) {
+        this();
         this.description = description;
         this.actualDateTime = actualDateTime;
         this.bookedDateTime = bookedDateTime;
