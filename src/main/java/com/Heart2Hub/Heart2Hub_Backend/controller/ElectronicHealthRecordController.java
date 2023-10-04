@@ -35,6 +35,20 @@ public class ElectronicHealthRecordController {
         );
     }
 
+    @GetMapping("/getElectronicHealthRecordByUsername")
+    public ResponseEntity<ElectronicHealthRecord> getElectronicHealthRecordByUsername(@RequestParam("username") String username) {
+        return ResponseEntity.ok(
+                electronicHealthRecordService.getElectronicHealthRecordByUsername(username)
+        );
+    }
+
+    @PutMapping("/updateElectronicHealthRecord")
+    public ResponseEntity<ElectronicHealthRecord> updateElectronicHealthRecord(@RequestBody ElectronicHealthRecord newElectronicHealthRecord) {
+        return ResponseEntity.ok(
+                electronicHealthRecordService.updateElectronicHealthRecord(newElectronicHealthRecord)
+        );
+    }
+
 }
 
 

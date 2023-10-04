@@ -112,7 +112,7 @@ public class PatientController {
     }
 
     @PostMapping("/createNextOfKinRecordDuringCreatePatient")
-    public ResponseEntity<NextOfKinRecord> createNextOfKinRecordsDuringCreatePatient(
+    public ResponseEntity<NextOfKinRecord> createNextOfKinRecordDuringCreatePatient(
             @RequestParam("ehrId") Long ehrId,
             @RequestBody NextOfKinRecord newNextOfKinRecord) {
         return ResponseEntity.ok(nextOfKinRecordService.createNextOfKinRecord(ehrId, newNextOfKinRecord));
