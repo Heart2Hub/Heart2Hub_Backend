@@ -137,4 +137,17 @@ public class PatientService {
     public Patient getPatientByUsername(String username) {
         return patientRepository.findByUsername(username).orElseThrow(() -> new PatientNotFoundException("Patient does not exist"));
     }
+
+    public List<String> findAllPatientsUsername() {
+        List<Patient> list = patientRepository.findAll();
+        List<String> allPatients = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            allPatients.add(list.get(i).getUsername());
+        }
+        return allPatients;
+    }
+
+    public List<Patient> findAllPatients() {
+        return patientRepository.findAll();
+    }
 }
