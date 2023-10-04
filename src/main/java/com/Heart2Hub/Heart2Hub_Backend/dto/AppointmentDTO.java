@@ -35,4 +35,5 @@ public class AppointmentDTO {
   private String nationality;
   private LocalDateTime dateOfBirth;
   private String departmentName;
+  private String patientProfilePicture;
 }

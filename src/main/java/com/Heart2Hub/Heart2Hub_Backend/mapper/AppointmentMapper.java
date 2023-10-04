@@ -21,6 +21,8 @@ public class AppointmentMapper {
         .addMapping(src -> src.getCurrentAssignedStaff().getStaffId(),
             AppointmentDTO::setCurrentAssignedStaffId)
         .addMapping(src -> src.getPatient().getPatientId(), AppointmentDTO::setPatientId)
+        .addMapping(src -> src.getPatient().getProfilePicture() != null ? src.getPatient()
+            .getProfilePicture().getImageLink() : null, AppointmentDTO::setPatientProfilePicture)
         .addMapping(src -> src.getPatient().getElectronicHealthRecord().getDateOfBirth(),
             AppointmentDTO::setDateOfBirth)
         .addMapping(
@@ -52,12 +54,7 @@ public class AppointmentMapper {
   }
 
   public AppointmentDTO convertToDto(Appointment appointment) {
-    AppointmentDTO dto = modelMapper.map(appointment, AppointmentDTO.class);
-//    if (appointment.getCurrentAssignedStaff() != null) {
-//      dto.setCurrentAssignedStaffId(appointment.getCurrentAssignedStaff().getStaffId());
-//    }
-
-    return dto;
+    return modelMapper.map(appointment, AppointmentDTO.class);
   }
 
   public Appointment convertToEntity(AppointmentDTO appointmentDTO) {

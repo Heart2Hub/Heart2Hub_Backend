@@ -6,6 +6,8 @@ import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.AppointmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffDisabledException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateAppointmentException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateAppointmentArrival;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateAppointmentComments;
 import com.Heart2Hub.Heart2Hub_Backend.repository.AppointmentRepository;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -64,6 +66,36 @@ public class AppointmentService {
     //create appt entity
     Appointment newAppointment = new Appointment(description, actualDateTime,
         bookedDateTime, PriorityEnum.valueOf(priority), patient, department);
+    patient.getListOfCurrentAppointments().add(newAppointment);
+    //newAppointment.setArrived(true);
+    appointmentRepository.save(newAppointment);
+    return appointmentRepository.save(newAppointment);
+  }
+
+  public Appointment createNewWalkInAppointment(String description,
+                                          String actualDateTimeString, String bookedDateTimeString, String priority,
+                                          String nric, String departmentName) {
+    LocalDateTime actualDateTime = LocalDateTime.parse(actualDateTimeString);
+    LocalDateTime bookedDateTime = LocalDateTime.parse(bookedDateTimeString);
+
+    ElectronicHealthRecord ehr = electronicHealthRecordService.findByNric(nric);
+
+    Patient patient = ehr.getPatient();
+
+    //Get department
+    Department department = departmentService.getDepartmentByName(departmentName);
+
+    //check if patient has overlapping appointments
+    List<Appointment> listOfAppointments = patient.getListOfCurrentAppointments().stream()
+            .filter(appt -> actualDateTime.isEqual(appt.getActualDateTime())).toList();
+    if (listOfAppointments.size() != 0) {
+      throw new UnableToCreateAppointmentException(
+              "Unable to create appointment, overlapping appointment exists.");
+    }
+
+    //create appt entity
+    Appointment newAppointment = new Appointment(description, actualDateTime,
+            bookedDateTime, PriorityEnum.valueOf(priority), patient, department);
     patient.getListOfCurrentAppointments().add(newAppointment);
     newAppointment.setArrived(true);
     appointmentRepository.save(newAppointment);
@@ -167,15 +199,36 @@ public class AppointmentService {
     return appointment;
   }
 
-  public Appointment updateAppointmentArrival(Long appointmentId, Boolean arrivalStatus) {
+  public Appointment updateAppointmentArrival(Long appointmentId, Boolean arrivalStatus, Long staffId) {
+
+
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
-    appointment.setArrived(arrivalStatus);
+    //check if appointment is assigned to you first, or else you should not be able to check arrived
+    if (appointment.getCurrentAssignedStaff() == null || !Objects.equals(
+        appointment.getCurrentAssignedStaff().getStaffId(), staffId)) {
+      throw new UnableToUpdateAppointmentArrival("Unable to edit a appointment that is not assigned to you");
+    }
+
+      appointment.setArrived(arrivalStatus);
     return appointment;
   }
 
-  public Appointment updateAppointmentComments(Long appointmentId, String comments) {
+  public Appointment updateAppointmentComments(Long appointmentId, String comments, Long staffId) {
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
-    appointment.setComments(comments);
+
+    //check if appointment is assigned to you first, or else you should not be able to update comments
+    if (appointment.getCurrentAssignedStaff() == null || !Objects.equals(
+        appointment.getCurrentAssignedStaff().getStaffId(), staffId)) {
+      throw new UnableToUpdateAppointmentComments("Unable to edit a appointment that is not assigned to you");
+    }
+
+    Staff staff = staffService.getStaffById(staffId);
+    String newComment = comments + " (" + staff.getStaffRoleEnum()+ " " + staff.getFirstname() + " " + staff.getLastname() + ")";
+    if (!appointment.getComments().equals("")) {
+      newComment = "\n" + newComment;
+    }
+    newComment = appointment.getComments() + newComment;
+    appointment.setComments(newComment);
     return appointment;
   }
 
@@ -188,9 +241,12 @@ public class AppointmentService {
 
   public Appointment updateAppointment(Long appointmentId, String patientUsername, String newTimeString,
                                        String newDescription, String staffUsername) {
+    System.out.println("===== 1 =====");
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     LocalDateTime newTime = LocalDateTime.parse(newTimeString);
     Patient patient = patientService.getPatientByUsername(patientUsername);
+    System.out.println("===== 2 =====");
+
     if (!newTime.isEqual(appointment.getActualDateTime())) {
       List<Appointment> listOfAppointments = patient.getListOfCurrentAppointments().stream()
               .filter(appt -> newTime.isEqual(appt.getActualDateTime())).toList();
@@ -198,12 +254,17 @@ public class AppointmentService {
         throw new UnableToCreateAppointmentException("Unable to update appointment, overlapping appointment exists.");
       }
     }
+    System.out.println("===== 3 =====");
+
     appointment.setActualDateTime(newTime);
     appointment.setDescription(newDescription);
+    System.out.println("===== 4 =====");
     if (staffUsername != null && !staffUsername.isEmpty()) {
       Staff staff = staffService.getStaffByUsername(staffUsername);
       appointment.setCurrentAssignedStaff(staff);
     }
+    System.out.println("===== 5 =====");
+
     return appointment;
   }
 

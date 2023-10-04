@@ -582,6 +582,55 @@ public class DataLoader implements CommandLineRunner {
     Patient patient7 = patientService.getPatientByUsername("patient7");
     Patient patient8 = patientService.getPatientByUsername("patient8");
 
+    //for past appointments
+    appointmentService.createNewAppointment("Chest pain",
+        LocalDateTime.now().minusDays(14).toString(),
+        LocalDateTime.now().minusDays(7).toString(),
+        "LOW",
+        patient1.getElectronicHealthRecord().getNric(),
+        "Cardiology");
+    appointmentService.createNewAppointment("Heart Palpitations",
+        LocalDateTime.now().minusDays(14).toString(),
+        LocalDateTime.now().minusDays(6).toString(),
+        "LOW",
+        patient2.getElectronicHealthRecord().getNric(),
+        "Cardiology");
+    appointmentService.createNewAppointment("Heart Murmurs",
+        LocalDateTime.now().minusDays(17).toString(),
+        LocalDateTime.now().minusDays(5).toString(),
+        "MEDIUM",
+        patient3.getElectronicHealthRecord().getNric(),
+        "Cardiology");
+    appointmentService.createNewAppointment("Valve disease",
+        LocalDateTime.now().minusDays(18).toString(),
+        LocalDateTime.now().minusDays(8).toString(),
+        "LOW",
+        patient4.getElectronicHealthRecord().getNric(),
+        "Cardiology");
+    appointmentService.createNewAppointment("Chest Palpitations",
+        LocalDateTime.now().minusDays(21).toString(),
+        LocalDateTime.now().minusDays(15).toString(),
+        "LOW",
+        patient5.getElectronicHealthRecord().getNric(),
+        "Cardiology");
+    appointmentService.createNewAppointment("Heart checkup",
+        LocalDateTime.now().minusDays(21).toString(),
+        LocalDateTime.now().minusDays(15).toString(),
+        "LOW",
+        patient6.getElectronicHealthRecord().getNric(),
+        "Cardiology");
+    appointmentService.createNewAppointment("High blood pressure",
+        LocalDateTime.now().minusDays(30).toString(),
+        LocalDateTime.now().minusDays(25).toString(),
+        "LOW",
+        patient7.getElectronicHealthRecord().getNric(),
+        "Cardiology");
+    appointmentService.createNewAppointment("Chest discomfort",
+        LocalDateTime.now().minusDays(42).toString(),
+        LocalDateTime.now().minusDays(23).toString(),
+        "LOW",
+        patient8.getElectronicHealthRecord().getNric(),
+        "Cardiology");
 
     //for today
     appointmentService.createNewAppointment("Unstable angina",
@@ -633,6 +682,13 @@ public class DataLoader implements CommandLineRunner {
             patient8.getElectronicHealthRecord().getNric(),
             "Cardiology");
 
+
+    appointmentService.createNewAppointment("Unstable angina appointment 2",
+            LocalDateTime.now().plusDays(5L).toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient1.getElectronicHealthRecord().getNric(),
+            "Cardiology");
     appointmentService.createNewAppointment("Heart attack appointment 2",
             LocalDateTime.now().plusDays(5L).toString(),
             LocalDateTime.now().toString(),
