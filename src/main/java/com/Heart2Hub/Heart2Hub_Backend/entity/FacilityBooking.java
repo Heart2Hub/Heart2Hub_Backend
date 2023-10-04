@@ -39,7 +39,7 @@ public class FacilityBooking {
     private Shift shift;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "facility_id", nullable = false)
+    @JoinColumn(name = "facility_id", nullable = true)
     private Facility facility;
 
     public FacilityBooking() {
