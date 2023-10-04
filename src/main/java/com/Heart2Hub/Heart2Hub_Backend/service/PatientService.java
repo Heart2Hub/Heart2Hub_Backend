@@ -8,6 +8,9 @@ import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordReposito
 import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -28,12 +31,20 @@ import java.util.Optional;
 public class PatientService {
 
     private final PatientRepository patientRepository;
+    private final PasswordEncoder passwordEncoder;
+
     private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
     private final ElectronicHealthRecordService electronicHealthRecordService;
 
-    public PatientService(PatientRepository patientRepository, ElectronicHealthRecordRepository electronicHealthRecordRepository, ElectronicHealthRecordService electronicHealthRecordService) {
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+
+    public PatientService(PatientRepository patientRepository, PasswordEncoder passwordEncoder, ElectronicHealthRecordRepository electronicHealthRecordRepository, AuthenticationManager authenticationManager, JwtService jwtService, ElectronicHealthRecordService electronicHealthRecordService) {
         this.patientRepository = patientRepository;
+        this.passwordEncoder = passwordEncoder;
         this.electronicHealthRecordRepository = electronicHealthRecordRepository;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
         this.electronicHealthRecordService = electronicHealthRecordService;
     }
 
@@ -60,6 +71,7 @@ public class PatientService {
             if (nehrRecord == null) {
                 throw new UnableToCreatePatientException("NEHR Record is not found. Please provide NEHR details.");
             }
+            newPatient.setPassword(passwordEncoder.encode(newPatient.getPassword()));
             nehrRecord.setPatient(newPatient);
             newPatient.setElectronicHealthRecord(nehrRecord);
             electronicHealthRecordRepository.save(nehrRecord);
@@ -76,6 +88,7 @@ public class PatientService {
             if (nehrRecord != null) {
                 throw new UnableToCreatePatientException("NEHR Record is found. Please do not create a new record.");
             }
+            newPatient.setPassword(passwordEncoder.encode(newPatient.getPassword()));
             newElectronicHealthRecord.setPatient(newPatient);
             newPatient.setElectronicHealthRecord(newElectronicHealthRecord);
             electronicHealthRecordRepository.save(newElectronicHealthRecord);
@@ -97,6 +110,17 @@ public class PatientService {
         } catch (Exception ex) {
             throw new UnableToCreatePatientException("Username already exists");
         }
+    }
+
+    public String authenticatePatient(String username, String password) {
+        //authenticate username and password, otherwise fails
+        System.out.println("step 1");
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        //at this point, user is authenticated
+        Patient patient = patientRepository.findByUsername(username)
+                .orElseThrow(() -> new PatientNotFoundException("Patient not found"));
+
+        return jwtService.generateToken(patient);
     }
 
     public List<JSONObject> getAllPatientsWithElectronicHealthRecordSummaryByName(String name) throws PatientNotFoundException {
@@ -137,6 +161,25 @@ public class PatientService {
     public Patient getPatientByUsername(String username) {
         return patientRepository.findByUsername(username).orElseThrow(() -> new PatientNotFoundException("Patient does not exist"));
     }
+
+    public Boolean changePassword(String username, String oldPassword, String newPassword) throws UnableToChangePasswordException{
+        Patient patient = getPatientByUsername(username);
+        if (passwordEncoder.matches(oldPassword, patient.getPassword())) {
+            if (newPassword.length() > 6) {
+                try {
+                    patient.setPassword(passwordEncoder.encode(newPassword));
+                    return Boolean.TRUE;
+                } catch (Exception ex) {
+                    throw new UnableToChangePasswordException("New Password already in use");
+                }
+            } else {
+                throw new UnableToChangePasswordException("New Password provided is too short");
+            }
+        } else {
+            throw new UnableToChangePasswordException("Old Password provided is Incorrect");
+        }
+    }
+
 
     public List<String> findAllPatientsUsername() {
         List<Patient> list = patientRepository.findAll();

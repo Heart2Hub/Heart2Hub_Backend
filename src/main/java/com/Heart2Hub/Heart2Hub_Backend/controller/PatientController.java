@@ -44,6 +44,15 @@ public class PatientController {
         return ResponseEntity.ok(nextOfKinRecordService.getNextOfKinRecordsByEHRId(ehrId));
     }
 
+    @PostMapping("/patientLogin")
+    public ResponseEntity<String> patientLogin(
+            @RequestParam("username") String username,
+            @RequestParam("password") String password) {
+
+        String jwtToken = patientService.authenticatePatient(username,password);
+        return ResponseEntity.ok(jwtToken);
+    }
+
     @GetMapping("/getAllPatientsWithElectronicHealthRecordSummaryByName")
     public ResponseEntity<List<Map<String, Object>>> getAllPatientsWithElectronicHealthRecordSummaryByName(
             @RequestParam("name") String name) throws JSONException {
@@ -60,6 +69,14 @@ public class PatientController {
             result.add(map);
         }
         return ResponseEntity.ok(result);
+    }
+
+    @PutMapping ("/changePassword")
+    public ResponseEntity<Boolean> changePassword(
+            @RequestParam("username") String username,
+            @RequestParam("oldPassword") String oldPassword,
+            @RequestParam("newPassword") String newPassword) {
+        return ResponseEntity.ok(patientService.changePassword(username,oldPassword,newPassword));
     }
 
 //    @PostMapping(value = "/createPatient", consumes = {"application/json"}, produces = {"application/json"})
