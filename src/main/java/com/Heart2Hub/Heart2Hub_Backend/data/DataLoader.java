@@ -27,7 +27,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 
 @Component("loader")
 @Transactional
@@ -222,42 +221,42 @@ public class DataLoader implements CommandLineRunner {
     for (long L = 1L; L <= 9L; L++) {
       facilityService.createFacility(L,
               new Facility("Consultation Room 1 " + departmentRepository.findById(L).get().getName(),
-                      "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.CONSULTATION_ROOM));
+                      "Level 1", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.CONSULTATION_ROOM));
       facilityService.createFacility(L,
               new Facility("Consultation Room 2 " + departmentRepository.findById(L).get().getName(),
-                      "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.CONSULTATION_ROOM));
+                      "Level 1", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.CONSULTATION_ROOM));
       facilityService.createFacility(L,
               new Facility("Consultation Room 3 " + departmentRepository.findById(L).get().getName(),
-                      "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.CONSULTATION_ROOM));
+                      "Level 1", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.CONSULTATION_ROOM));
       facilityService.createFacility(L,
               new Facility("Triage Room 1 " + departmentRepository.findById(L).get().getName(),
-                      "Level 2", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
+                      "Level 2", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.TRIAGE_ROOM));
       facilityService.createFacility(L,
               new Facility("Triage Room 2 " + departmentRepository.findById(L).get().getName(),
-                      "Level 2", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
+                      "Level 2", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.TRIAGE_ROOM));
       facilityService.createFacility(L,
               new Facility("Triage Room 3 " + departmentRepository.findById(L).get().getName(),
-                      "Level 2", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
+                      "Level 2", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.TRIAGE_ROOM));
       facilityService.createFacility(L,
               new Facility("Operating Room 1 " + departmentRepository.findById(L).get().getName(),
-                      "Level 2", "", 6, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.OPERATING_ROOM));
+                      "Level 2", "", 6, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.OPERATING_ROOM));
       facilityService.createFacility(L,
               new Facility("Operating Room 2 " + departmentRepository.findById(L).get().getName(),
-                      "Level 3", "", 6, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.OPERATING_ROOM));
+                      "Level 3", "", 6, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.OPERATING_ROOM));
       facilityService.createFacility(L,
               new Facility("Registration Counter 1 " + departmentRepository.findById(L).get().getName(),
-                      "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.ADMINISTRATION_OFFICES));
+                      "Level 1", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.ADMINISTRATION_OFFICES));
       facilityService.createFacility(L,
               new Facility("Registration Counter 2 " + departmentRepository.findById(L).get().getName(),
-                      "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.ADMINISTRATION_OFFICES));
+                      "Level 1", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.ADMINISTRATION_OFFICES));
 
       if (L == 5L) {
         facilityService.createFacility(L,
                 new Facility("Emergency Room 1 " + departmentRepository.findById(L).get().getName(),
-                        "Level 1", "", 4, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.EMERGENCY_ROOM));
+                        "Level 1", "", 4, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.EMERGENCY_ROOM));
         facilityService.createFacility(L,
                 new Facility("Emergency Room 2 " + departmentRepository.findById(L).get().getName(),
-                        "Level 1", "", 4, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.EMERGENCY_ROOM));
+                        "Level 1", "", 4, FacilityStatusEnum.NON_BOOKABLE, FacilityTypeEnum.EMERGENCY_ROOM));
       }
     }
   }
@@ -572,8 +571,6 @@ public class DataLoader implements CommandLineRunner {
     System.out.println(LocalDateTime.now().plusDays(7L).toString());
 
     Patient patient1 = patientService.getPatientByUsername("patient1");
-    //Just a fix cos i lazy copy paste
-    patient1.setUsername("S9983422D");
     Patient patient2 = patientService.getPatientByUsername("patient2");
     Patient patient3 = patientService.getPatientByUsername("patient3");
     Patient patient4 = patientService.getPatientByUsername("patient4");
