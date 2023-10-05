@@ -1,9 +1,12 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.*;
+import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -177,4 +180,17 @@ public class PatientService {
         }
     }
 
+
+    public List<String> findAllPatientsUsername() {
+        List<Patient> list = patientRepository.findAll();
+        List<String> allPatients = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            allPatients.add(list.get(i).getUsername());
+        }
+        return allPatients;
+    }
+
+    public List<Patient> findAllPatients() {
+        return patientRepository.findAll();
+    }
 }
