@@ -41,9 +41,25 @@ public class Subsidy {
     @NotNull
     private ItemTypeEnum itemTypeEnum;
 
-    public Subsidy(BigDecimal subsidyRate, ItemTypeEnum itemTypeEnum) {
+    @NotNull
+    private LocalDateTime minDOB;
+
+    @NotNull
+    private String sex;
+
+    @NotNull
+    private String race;
+
+    @NotNull
+    private String nationality;
+
+    public Subsidy(BigDecimal subsidyRate, ItemTypeEnum itemTypeEnum, LocalDateTime minDOB, String sex, String race, String nationality) {
         this.subsidyRate = subsidyRate;
         this.itemTypeEnum = itemTypeEnum;
+        this.minDOB = minDOB;
+        this.sex = sex;
+        this.race = race;
+        this.nationality = nationality;
     }
 
     public Subsidy(){}

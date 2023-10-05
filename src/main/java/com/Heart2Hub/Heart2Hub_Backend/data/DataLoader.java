@@ -47,6 +47,8 @@ public class DataLoader implements CommandLineRunner {
   private final ProblemRecordService problemRecordService;
   private final MedicalHistoryRecordService medicalHistoryRecordService;
   private final TreatmentPlanRecordService treatmentPlanRecordService;
+
+  private final SubsidyService subsidyService;
   private final LeaveService leaveService;
   private final ShiftConstraintsService shiftConstraintsService;
 
@@ -64,7 +66,7 @@ public class DataLoader implements CommandLineRunner {
   //  private final SubDepartmentRepository subDepartmentRepository;
     private final AppointmentService appointmentService;
 
-  public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, MedicationService medicationService, ServiceItemService serviceItemService, AppointmentService appointmentService) {
+  public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, SubsidyService subsidyService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, MedicationService medicationService, ServiceItemService serviceItemService, AppointmentService appointmentService) {
     this.staffService = staffService;
     this.shiftService = shiftService;
     this.departmentService = departmentService;
@@ -76,6 +78,7 @@ public class DataLoader implements CommandLineRunner {
     this.problemRecordService = problemRecordService;
     this.medicalHistoryRecordService = medicalHistoryRecordService;
     this.treatmentPlanRecordService = treatmentPlanRecordService;
+    this.subsidyService = subsidyService;
     this.leaveService = leaveService;
     this.shiftConstraintsService = shiftConstraintsService;
     this.consumableEquipmentService = consumableEquipmentService;
@@ -122,6 +125,7 @@ public class DataLoader implements CommandLineRunner {
     createConsumableEquipmentData();
     createMedicationData();
     createServiceItemData();
+    createSubsidyData();
 
     //code ends here
 
@@ -551,5 +555,16 @@ public class DataLoader implements CommandLineRunner {
 
     }
 
+  public void createSubsidyData() {
+    // Calculate the minimum date of birth for individuals above 5 years old
+    LocalDateTime minDOB = LocalDateTime.now();
+
+    Subsidy subsidy1 = subsidyService.createSubsidy(BigDecimal.valueOf(0.5), ItemTypeEnum.MEDICINE, minDOB,
+            "Male", "All", "All");
+
+    Subsidy subsidy2 = subsidyService.createSubsidy(BigDecimal.valueOf(0.7), ItemTypeEnum.INPATIENT, minDOB,
+            "Female", "All", "All");
+
+  }
 
 }
