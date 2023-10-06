@@ -2,6 +2,7 @@ package com.Heart2Hub.Heart2Hub_Backend.controller;
 
 import com.Heart2Hub.Heart2Hub_Backend.dto.AppointmentDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.AppointmentMapper;
 import com.Heart2Hub.Heart2Hub_Backend.service.AppointmentService;
 import java.util.List;
@@ -49,19 +50,6 @@ public class AppointmentController {
         actualDateTime, bookedDateTime, priority, patientUsername, departmentName));
   }
 
-  @PostMapping("/createNewAppointmentWithStaff")
-  public ResponseEntity<Appointment> createNewAppointmentWithStaff(
-          @RequestParam("description") String description,
-          @RequestParam("actualDateTime") String actualDateTime,
-          @RequestParam("bookedDateTime") String bookedDateTime,
-          @RequestParam("priority") String priority,
-          @RequestParam("patientUsername") String patientUsername,
-          @RequestParam("departmentName") String departmentName,
-          @RequestParam("staffUsername") String staffUsername) {
-    return ResponseEntity.ok(appointmentService.createNewAppointmentWithStaff(description,
-            actualDateTime, bookedDateTime, priority, patientUsername, departmentName, staffUsername));
-  }
-
   @PostMapping("/assignAppointmentToStaff")
   public ResponseEntity<Appointment> assignAppointmentToStaff(
       @RequestParam("appointmentId") Long appointmentId,
@@ -75,10 +63,11 @@ public class AppointmentController {
       @RequestParam("startYear") Integer startYear, @RequestParam("endDay") Integer endDay,
       @RequestParam("endMonth") Integer endMonth,
       @RequestParam("endYear") Integer endYear,
-      @RequestParam("departmentName") String departmentName) {
+      @RequestParam("departmentName") String departmentName,
+      @RequestParam("selectStaffId") Long selectStaffId) {
 
     List<Appointment> listOfAppts = appointmentService.viewAllAppointmentsByRange(startDay,
-        startMonth, startYear, endDay, endMonth, endYear, departmentName);
+        startMonth, startYear, endDay, endMonth, endYear, departmentName, selectStaffId);
     List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
         .map(appointmentMapper::convertToDto).collect(Collectors.toList());
     return ResponseEntity.ok(listOfApptsDTO);
@@ -94,17 +83,27 @@ public class AppointmentController {
     return ResponseEntity.ok(listOfApptsDTO);
   }
 
-//  @GetMapping("/viewAllAppointmentsByRange")
-//  public ResponseEntity<List<AppointmentDTO>> viewAllAppointmentsByMonth(
-//      @RequestParam("startDay") Integer startDay, @RequestParam("startMonth") Integer startMonth,
-//      @RequestParam("startYear") Integer startYear, @RequestParam("endDay") Integer endDay,
-//      @RequestParam("endMonth") Integer endMonth,
-//      @RequestParam("endYear") Integer endYear) {
-//
-//    List<Appointment> listOfAppts = appointmentService.viewAllAppointmentsByRange(startDay,
-//        startMonth, startYear, endDay, endMonth, endYear);
-//    List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
-//        .map(appointmentMapper::convertToDto).collect(Collectors.toList());
-//    return ResponseEntity.ok(listOfApptsDTO);
-//  }
+  @PostMapping("/updateAppointmentArrival")
+  public ResponseEntity<AppointmentDTO> updateAppointmentArrival(
+      @RequestParam("appointmentId") Long appointmentId,
+      @RequestParam("arrivalStatus") Boolean arrivalStatus) {
+    return ResponseEntity.ok(appointmentMapper.convertToDto(
+        appointmentService.updateAppointmentArrival(appointmentId, arrivalStatus)));
+  }
+
+  @PostMapping("/updateAppointmentComments")
+  public ResponseEntity<AppointmentDTO> updateAppointmentComments(
+      @RequestParam("appointmentId") Long appointmentId,
+      @RequestParam("comments") String comments) {
+    return ResponseEntity.ok(appointmentMapper.convertToDto(
+        appointmentService.updateAppointmentComments(appointmentId, comments)));
+  }
+
+  @PostMapping("/updateAppointmentSwimlaneStatus")
+  public ResponseEntity<AppointmentDTO> updateAppointmentSwimlaneStatus(
+      @RequestParam("appointmentId") Long appointmentId,
+      @RequestParam("swimlaneStatus") String swimlaneStatus) {
+    return ResponseEntity.ok(appointmentMapper.convertToDto(
+        appointmentService.updateAppointmentSwimlaneStatus(appointmentId, SwimlaneStatusEnum.valueOf(swimlaneStatus.toUpperCase()))));
+  }
 }

@@ -15,6 +15,7 @@ public class AppointmentMapper {
 
   public AppointmentMapper() {
     this.modelMapper = new ModelMapper();
+    modelMapper.getConfiguration().setAmbiguityIgnored(true);
 
     modelMapper.createTypeMap(Appointment.class, AppointmentDTO.class)
         .addMapping(src -> src.getCurrentAssignedStaff().getStaffId(),
@@ -51,7 +52,12 @@ public class AppointmentMapper {
   }
 
   public AppointmentDTO convertToDto(Appointment appointment) {
-    return modelMapper.map(appointment, AppointmentDTO.class);
+    AppointmentDTO dto = modelMapper.map(appointment, AppointmentDTO.class);
+//    if (appointment.getCurrentAssignedStaff() != null) {
+//      dto.setCurrentAssignedStaffId(appointment.getCurrentAssignedStaff().getStaffId());
+//    }
+
+    return dto;
   }
 
   public Appointment convertToEntity(AppointmentDTO appointmentDTO) {
