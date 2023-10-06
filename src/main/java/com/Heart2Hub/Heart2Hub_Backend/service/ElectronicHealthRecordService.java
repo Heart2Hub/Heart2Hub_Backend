@@ -72,9 +72,8 @@ public class ElectronicHealthRecordService {
         }
     }
 
-    public ElectronicHealthRecord updateElectronicHealthRecord(ElectronicHealthRecord newElectronicHealthRecord) throws ElectronicHealthRecordNotFoundException {
+    public ElectronicHealthRecord updateElectronicHealthRecord(Long electronicHealthRecordId, ElectronicHealthRecord newElectronicHealthRecord) throws ElectronicHealthRecordNotFoundException {
         try {
-            Long electronicHealthRecordId = newElectronicHealthRecord.getElectronicHealthRecordId();
             Optional<ElectronicHealthRecord> electronicHealthRecordOptional = electronicHealthRecordRepository.findById(electronicHealthRecordId);
 
             if (electronicHealthRecordOptional.isPresent()) {

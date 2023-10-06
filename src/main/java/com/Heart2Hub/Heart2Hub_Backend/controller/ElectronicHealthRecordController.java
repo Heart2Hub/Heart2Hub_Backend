@@ -43,9 +43,11 @@ public class ElectronicHealthRecordController {
     }
 
     @PutMapping("/updateElectronicHealthRecord")
-    public ResponseEntity<ElectronicHealthRecord> updateElectronicHealthRecord(@RequestBody ElectronicHealthRecord newElectronicHealthRecord) {
+    public ResponseEntity<ElectronicHealthRecord> updateElectronicHealthRecord(
+            @RequestParam("electronicHealthRecordId") Long electronicHealthRecordId,
+            @RequestBody ElectronicHealthRecord newElectronicHealthRecord) {
         return ResponseEntity.ok(
-                electronicHealthRecordService.updateElectronicHealthRecord(newElectronicHealthRecord)
+                electronicHealthRecordService.updateElectronicHealthRecord(electronicHealthRecordId, newElectronicHealthRecord)
         );
     }
 
