@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.controller;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.Invoice;
 import com.Heart2Hub.Heart2Hub_Backend.entity.TransactionItem;
 import com.Heart2Hub.Heart2Hub_Backend.service.TransactionItemService;
 import org.springframework.http.HttpStatus;
@@ -43,5 +44,9 @@ public class TransactionItemController {
     }
 
     // Implement a checkout endpoint as needed
+    @PostMapping("/checkout/{patientId}")
+    public Invoice checkout(@PathVariable Long patientId) {
+        return transactionItemService.checkout(patientId);
+    }
 
 }
