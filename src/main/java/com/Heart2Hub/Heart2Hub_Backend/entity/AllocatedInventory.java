@@ -24,16 +24,17 @@ public class AllocatedInventory {
     @NotNull
     private Integer minimumQuantityBeforeRestock;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "consumble_Equipment_Id", nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "inventory_item_Id", nullable = false)
     private ConsumableEquipment consumableEquipment;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "facility_id", nullable = false)
+    @JoinColumn(name = "facility_id", nullable = true)
     private Facility facility;
 
     public AllocatedInventory(Integer allocatedInventoryCurrentQuantity, Integer minimumQuantityBeforeRestock) {
+        this();
         this.allocatedInventoryCurrentQuantity = allocatedInventoryCurrentQuantity;
         this.minimumQuantityBeforeRestock = minimumQuantityBeforeRestock;
     }

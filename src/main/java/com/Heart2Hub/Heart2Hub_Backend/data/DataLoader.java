@@ -58,11 +58,13 @@ public class DataLoader implements CommandLineRunner {
     private final DepartmentRepository departmentRepository;
     private final WardService wardService;
     private final WardClassService wardClassService;
+    private final MedicationService medicationService;
+    private final ServiceItemService serviceItemService;
+
   //  private final SubDepartmentRepository subDepartmentRepository;
+    private final AppointmentService appointmentService;
 
-  private final AppointmentService appointmentService;
-
-  public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, AppointmentService appointmentService) {
+  public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, MedicationService medicationService, ServiceItemService serviceItemService, AppointmentService appointmentService) {
     this.staffService = staffService;
     this.shiftService = shiftService;
     this.departmentService = departmentService;
@@ -82,6 +84,8 @@ public class DataLoader implements CommandLineRunner {
     this.departmentRepository = departmentRepository;
     this.wardService = wardService;
     this.wardClassService = wardClassService;
+    this.medicationService = medicationService;
+    this.serviceItemService = serviceItemService;
     this.appointmentService = appointmentService;
   }
 
@@ -116,6 +120,8 @@ public class DataLoader implements CommandLineRunner {
     createPatientData();
     createAppointmentData();
     createConsumableEquipmentData();
+    createMedicationData();
+    createServiceItemData();
 
     //code ends here
 
@@ -398,22 +404,22 @@ public class DataLoader implements CommandLineRunner {
   private void createPatientData() {
     Patient newPatient1 = patientService.createPatient(new Patient("patient1", "password1"), "S9983422D");
     Patient newPatient2 = patientService.createPatient(new Patient("patient2", "password2"), "S9983423D");
-      //Patient newPatient3 = patientService.createPatient(new Patient("patient3","password3"), new ElectronicHealthRecord("S9983424D","John","Smith", LocalDateTime.of(1990, 2, 28, 0, 0, 0), "Singapore", "Male", "Caucasian", "Singaporean", "Marina Bay Sands", "83571234"));
-//      nextOfKinRecordService.createNextOfKinRecord(newPatient3.getPatientId(),new NextOfKinRecord("Wife", "S5882619D"));
-//      prescriptionRecordService.createPrescriptionRecord(newPatient3.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2010, 10, 5, 13, 15, 0), "Insulin", 1, 1, "Diabetes Management", "Take before meals", "Doctor Maria Garcia", PrescriptionStatusEnum.COLLECTED));
-//      problemRecordService.createProblemRecord(newPatient3.getPatientId(), new ProblemRecord("Type 2 Diabetes", "Doctor Maria Garcia", LocalDateTime.of(2009, 8, 12, 11, 20, 0), PriorityEnum.HIGH, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
-//      medicalHistoryRecordService.createMedicalHistoryRecord(newPatient3.getPatientId(), new MedicalHistoryRecord("High Blood Pressure", "Doctor Maria Garcia", LocalDateTime.of(2008, 4, 18, 14, 30, 0), LocalDateTime.of(2009, 9, 2, 9, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.CARDIOVASCULAR));
-//      Patient newPatient4 = patientService.createPatient(new Patient("patient4","password4"), new ElectronicHealthRecord("S9983425D","Linda","Wong", LocalDateTime.of(1973, 11, 8, 0, 0, 0), "Singapore", "Female", "Chinese", "Singaporean", "Jurong West St 71", "81126543"));
-//      nextOfKinRecordService.createNextOfKinRecord(newPatient4.getPatientId(),new NextOfKinRecord("Son", "S5882620D"));
-//      nextOfKinRecordService.createNextOfKinRecord(newPatient4.getPatientId(),new NextOfKinRecord("Daughter", "S6882620D"));
-//      prescriptionRecordService.createPrescriptionRecord(newPatient4.getPatientId(), new PrescriptionRecord(LocalDateTime.of(1995, 3, 2, 10, 30, 0), "Painkillers", 2, 1, "Pain Relief for Arthritis", "Take as needed", "Doctor Kevin Tan", PrescriptionStatusEnum.COLLECTED));
-//      problemRecordService.createProblemRecord(newPatient4.getPatientId(), new ProblemRecord("Arthritis", "Doctor Kevin Tan", LocalDateTime.of(1994, 12, 15, 16, 0, 0), PriorityEnum.LOW, ProblemTypeEnum.OBSTETRIC));
-//      medicalHistoryRecordService.createMedicalHistoryRecord(newPatient4.getPatientId(), new MedicalHistoryRecord("Asthma", "Doctor Kevin Tan", LocalDateTime.of(1990, 7, 8, 9, 0, 0), LocalDateTime.of(1991, 5, 20, 14, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.RESPIRATORY));
-//      Patient newPatient5 = patientService.createPatient(new Patient("patient5","password5"), new ElectronicHealthRecord("S9983426D","Megan","Chua", LocalDateTime.of(2000, 6, 15, 0, 0, 0), "Singapore", "Female", "Chinese", "Singaporean", "Bukit Timah Rd", "87751234"));
-//      nextOfKinRecordService.createNextOfKinRecord(newPatient5.getPatientId(),new NextOfKinRecord("Father", "S5882621D"));
-//      nextOfKinRecordService.createNextOfKinRecord(newPatient5.getPatientId(),new NextOfKinRecord("Mother", "S6882621D"));
-//      prescriptionRecordService.createPrescriptionRecord(newPatient5.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Vitamin D", 1, 1, "Vitamin Supplement", "Take daily", "Doctor Sarah Tan", PrescriptionStatusEnum.COLLECTED));
-//      problemRecordService.createProblemRecord(newPatient5.getPatientId(), new ProblemRecord("Seasonal Allergies", "Doctor Sarah Tan", LocalDateTime.of(2021, 5, 3, 11, 15, 0), PriorityEnum.LOW, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
+      Patient newPatient3 = patientService.createPatient(new Patient("patient3","password3"), new ElectronicHealthRecord("S9983424D","John","Smith", LocalDateTime.of(1990, 2, 28, 0, 0, 0), "Singapore", "Male", "Others", "Singapore Citizen", "Marina Bay Sands", "83571234"));
+      nextOfKinRecordService.createNextOfKinRecord(newPatient3.getPatientId(),new NextOfKinRecord("Wife", "S5882619D"));
+      prescriptionRecordService.createPrescriptionRecord(newPatient3.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2010, 10, 5, 13, 15, 0), "Insulin", 1, 1, "Diabetes Management", "Take before meals", "Doctor Maria Garcia", PrescriptionStatusEnum.COLLECTED));
+      problemRecordService.createProblemRecord(newPatient3.getPatientId(), new ProblemRecord("Type 2 Diabetes", "Doctor Maria Garcia", LocalDateTime.of(2009, 8, 12, 11, 20, 0), PriorityEnum.HIGH, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
+      medicalHistoryRecordService.createMedicalHistoryRecord(newPatient3.getPatientId(), new MedicalHistoryRecord("High Blood Pressure", "Doctor Maria Garcia", LocalDateTime.of(2008, 4, 18, 14, 30, 0), LocalDateTime.of(2009, 9, 2, 9, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.CARDIOVASCULAR));
+      Patient newPatient4 = patientService.createPatient(new Patient("patient4","password4"), new ElectronicHealthRecord("S9983425D","Linda","Wong", LocalDateTime.of(1973, 11, 8, 0, 0, 0), "Singapore", "Female", "Chinese", "Singapore Citizen", "Jurong West St 71", "81126543"));
+      nextOfKinRecordService.createNextOfKinRecord(newPatient4.getPatientId(),new NextOfKinRecord("Son", "S5882620D"));
+      nextOfKinRecordService.createNextOfKinRecord(newPatient4.getPatientId(),new NextOfKinRecord("Daughter", "S6882620D"));
+      prescriptionRecordService.createPrescriptionRecord(newPatient4.getPatientId(), new PrescriptionRecord(LocalDateTime.of(1995, 3, 2, 10, 30, 0), "Painkillers", 2, 1, "Pain Relief for Arthritis", "Take as needed", "Doctor Kevin Tan", PrescriptionStatusEnum.COLLECTED));
+      problemRecordService.createProblemRecord(newPatient4.getPatientId(), new ProblemRecord("Arthritis", "Doctor Kevin Tan", LocalDateTime.of(1994, 12, 15, 16, 0, 0), PriorityEnum.LOW, ProblemTypeEnum.OBSTETRIC));
+      medicalHistoryRecordService.createMedicalHistoryRecord(newPatient4.getPatientId(), new MedicalHistoryRecord("Asthma", "Doctor Kevin Tan", LocalDateTime.of(1990, 7, 8, 9, 0, 0), LocalDateTime.of(1991, 5, 20, 14, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.RESPIRATORY));
+      Patient newPatient5 = patientService.createPatient(new Patient("patient5","password5"), new ElectronicHealthRecord("S9983426D","Megan","Chua", LocalDateTime.of(2000, 6, 15, 0, 0, 0), "Singapore", "Female", "Chinese", "Singapore Citizen", "Bukit Timah Rd", "87751234"));
+      nextOfKinRecordService.createNextOfKinRecord(newPatient5.getPatientId(),new NextOfKinRecord("Father", "S5882621D"));
+      nextOfKinRecordService.createNextOfKinRecord(newPatient5.getPatientId(),new NextOfKinRecord("Mother", "S6882621D"));
+      prescriptionRecordService.createPrescriptionRecord(newPatient5.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Vitamin D", 1, 1, "Vitamin Supplement", "Take daily", "Doctor Sarah Tan", PrescriptionStatusEnum.COLLECTED));
+      problemRecordService.createProblemRecord(newPatient5.getPatientId(), new ProblemRecord("Seasonal Allergies", "Doctor Sarah Tan", LocalDateTime.of(2021, 5, 3, 11, 15, 0), PriorityEnum.LOW, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
   }
 
   private void createAppointmentData() {
@@ -519,14 +525,31 @@ public class DataLoader implements CommandLineRunner {
       ConsumableEquipment newConsumableEquipment5 = consumableEquipmentService.createConsumableEquipment(new ConsumableEquipment("Disposable Needles", "1 Box 5pcs", ItemTypeEnum.CONSUMABLE,100,BigDecimal.valueOf(3)));
 
       Facility f = facilityService.findFacilityById(Long.parseLong("1"));
+      Facility f1 = facilityService.findFacilityById(Long.parseLong("2"));
 
       AllocatedInventory item1 = allocatedInventoryService.createAllocatedInventory(f.getFacilityId(), newConsumableEquipment1.getInventoryItemId(), 10, 1);
       AllocatedInventory item2 = allocatedInventoryService.createAllocatedInventory(f.getFacilityId(), newConsumableEquipment2.getInventoryItemId(), 10, 1);
       AllocatedInventory item3 = allocatedInventoryService.createAllocatedInventory(f.getFacilityId(), newConsumableEquipment3.getInventoryItemId(), 10, 1);
       AllocatedInventory item4 = allocatedInventoryService.createAllocatedInventory(f.getFacilityId(), newConsumableEquipment4.getInventoryItemId(), 10, 1);
       AllocatedInventory item5 = allocatedInventoryService.createAllocatedInventory(f.getFacilityId(), newConsumableEquipment5.getInventoryItemId(), 10, 1);
+//      AllocatedInventory item6 = allocatedInventoryService.createAllocatedInventory(f1.getFacilityId(), newConsumableEquipment5.getInventoryItemId(), 10, 1);
 
   }
+
+    private void createMedicationData() {
+        Medication newMedication1 = medicationService.createMedication(new Medication("Paracetamol 500 mg Tablets", "500mg per piece", ItemTypeEnum.MEDICINE,100,BigDecimal.TEN,BigDecimal.TEN));
+        Medication newMedication2 = medicationService.createMedication(new Medication("Cetirizine 10mg Tablets", "10mg per piece", ItemTypeEnum.MEDICINE,100,BigDecimal.valueOf(5),BigDecimal.TEN));
+        Medication newMedication3 = medicationService.createMedication(new Medication("Augmentin 625mg Tablets ", "625mg per piece", ItemTypeEnum.MEDICINE,50,BigDecimal.valueOf(4), BigDecimal.TEN));
+        Medication newMedication4 = medicationService.createMedication(new Medication("Metformin 500mg Tablets", "500mg per piece", ItemTypeEnum.MEDICINE,1000,BigDecimal.valueOf(2), BigDecimal.TEN));
+        Medication newMedication5 = medicationService.createMedication(new Medication("Augmentin 228mg Suspension", "5ml per bottle", ItemTypeEnum.MEDICINE,100,BigDecimal.valueOf(3), BigDecimal.TEN));
+    }
+
+    private void createServiceItemData() {
+        ServiceItem newServiceItem1 = serviceItemService.createServiceItem(new ServiceItem("General A&E Consultation", "Consultation", ItemTypeEnum.OUTPATIENT,BigDecimal.valueOf(400)));
+        ServiceItem newServiceItem2 = serviceItemService.createServiceItem(new ServiceItem("Class A Ward", "per Day", ItemTypeEnum.INPATIENT,BigDecimal.valueOf(300)));
+        ServiceItem newServiceItem3 = serviceItemService.createServiceItem(new ServiceItem("Class B Ward", "per Day", ItemTypeEnum.INPATIENT,BigDecimal.valueOf(200)));
+
+    }
 
 
 }

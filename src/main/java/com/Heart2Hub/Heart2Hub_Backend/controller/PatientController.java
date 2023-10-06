@@ -79,17 +79,6 @@ public class PatientController {
         return ResponseEntity.ok(patientService.changePassword(username,oldPassword,newPassword));
     }
 
-//    @PostMapping(value = "/createPatient", consumes = {"application/json"}, produces = {"application/json"})
-//    public ResponseEntity<Patient> createPatient(@RequestBody Map<String, Object> requestBody) {
-//        ObjectMapper objectMapper = new ObjectMapper()
-//                .registerModule(new ParameterNamesModule())
-//                .registerModule(new Jdk8Module())
-//                .registerModule(new JavaTimeModule());
-//        Patient patient = objectMapper.convertValue(requestBody.get("patient"), Patient.class);
-//        ElectronicHealthRecord ehr = objectMapper.convertValue(requestBody.get("ehr"), ElectronicHealthRecord.class);
-//        return ResponseEntity.ok(patientService.createPatient(patient, ehr));
-//    }
-
     @PostMapping("/createPatientWithNehr")
     public ResponseEntity<Patient> createPatientWithNehr(
             @RequestParam String nric,
@@ -111,22 +100,4 @@ public class PatientController {
         );
     }
 
-    @PostMapping("/createNextOfKinRecordDuringCreatePatient")
-    public ResponseEntity<NextOfKinRecord> createNextOfKinRecordsDuringCreatePatient(
-            @RequestParam("ehrId") Long ehrId,
-            @RequestBody NextOfKinRecord newNextOfKinRecord) {
-        return ResponseEntity.ok(nextOfKinRecordService.createNextOfKinRecord(ehrId, newNextOfKinRecord));
-    }
-
-    @GetMapping("/findAllPatientsUsername")
-    public ResponseEntity<List<String>> findAllPatientsUsername() {
-
-        return ResponseEntity.ok(patientService.findAllPatientsUsername());
-    }
-
-    @GetMapping("/findAllPatients")
-    public ResponseEntity<List<Patient>> findAllPatients() {
-
-        return ResponseEntity.ok(patientService.findAllPatients());
-    }
 }

@@ -53,7 +53,7 @@ public class Facility {
     private List<FacilityBooking> listOfFacilityBookings;
 
     @JsonManagedReference
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "facility")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "facility")
     private List<AllocatedInventory> listOfAllocatedInventories;
 
 //    @JsonIgnore

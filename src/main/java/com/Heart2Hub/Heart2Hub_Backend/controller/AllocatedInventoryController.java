@@ -36,13 +36,14 @@ public class AllocatedInventoryController {
     public ResponseEntity<AllocatedInventory> updateAllocatedInventory(@RequestBody Map<String, Object> requestBody) {
         Long inventoryId = Long.parseLong(requestBody.get("allocatedInventoryIdForUpdate").toString());
         Integer newQuantity = Integer.parseInt(requestBody.get("newQuantity").toString());
-        return ResponseEntity.ok(allocatedInventoryService.updateAllocatedInventory(inventoryId,newQuantity));
+        Integer minQuantity = Integer.parseInt(requestBody.get("minQuantity").toString());
+        return ResponseEntity.ok(allocatedInventoryService.updateAllocatedInventory(inventoryId,newQuantity, minQuantity));
     }
 
     @DeleteMapping("deleteAllocatedInventory/{id}")
     public ResponseEntity<?> deleteAllocatedInventory(@PathVariable(value = "id") Long id) {
-        allocatedInventoryService.deleteAllocatedInventory(id);
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.ok(allocatedInventoryService.deleteAllocatedInventory(id));
 
     }
 }

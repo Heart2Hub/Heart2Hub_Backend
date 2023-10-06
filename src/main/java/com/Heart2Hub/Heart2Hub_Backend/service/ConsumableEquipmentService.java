@@ -1,17 +1,11 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.ConsumableEquipment;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Facility;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.FacilityStatusEnum;
-import com.Heart2Hub.Heart2Hub_Backend.enumeration.FacilityTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.ConsumableEquipmentNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.FacilityNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateConsumableEquipmentException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateFacilityException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ConsumableEquipmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import org.springframework.security.core.Authentication;
@@ -83,30 +77,30 @@ public class ConsumableEquipmentService {
         }
     }
 
-    public String deleteConsumableEquipment(Long consumableEquipmentId) throws ConsumableEquipmentNotFoundException {
+    public String deleteConsumableEquipment(Long inventoryItemId) throws ConsumableEquipmentNotFoundException {
         if (!isLoggedInUserAdmin()) {
             throw new UnableToCreateConsumableEquipmentException("Staff cannot delete inventory as he/she is not an admin.");
         }
         try {
-            Optional<ConsumableEquipment> consumableEquipmentOptional = consumableEquipmentRepository.findById(consumableEquipmentId);
+            Optional<ConsumableEquipment> consumableEquipmentOptional = consumableEquipmentRepository.findById(inventoryItemId);
             if (consumableEquipmentOptional.isPresent()) {
                 ConsumableEquipment consumableEquipment = consumableEquipmentOptional.get();
                 consumableEquipmentRepository.delete(consumableEquipment);
-                return "Consumable Equipment with consumableEquipmentId " + consumableEquipmentId + " has been deleted successfully.";
+                return "Consumable Equipment with consumableEquipmentId " + inventoryItemId + " has been deleted successfully.";
             } else {
-                throw new ConsumableEquipmentNotFoundException("Consumable Equipment with ID: " + consumableEquipmentId + " is not found");
+                throw new ConsumableEquipmentNotFoundException("Consumable Equipment with ID: " + inventoryItemId + " is not found");
             }
         } catch (Exception ex) {
             throw new ConsumableEquipmentNotFoundException(ex.getMessage());
         }
     }
 
-    public ConsumableEquipment updateConsumableEquipment(Long consumableEquipmentId, ConsumableEquipment updatedConsumableEquipment) throws ConsumableEquipmentNotFoundException {
+    public ConsumableEquipment updateConsumableEquipment(Long inventoryItemId, ConsumableEquipment updatedConsumableEquipment) throws ConsumableEquipmentNotFoundException {
         if (!isLoggedInUserAdmin()) {
             throw new UnableToCreateConsumableEquipmentException("Staff cannot update consumable equipment as he/she is not an Admin.");
         }
         try {
-            Optional<ConsumableEquipment> consumableEquipmentOptional = consumableEquipmentRepository.findById(consumableEquipmentId);
+            Optional<ConsumableEquipment> consumableEquipmentOptional = consumableEquipmentRepository.findById(inventoryItemId);
             if (consumableEquipmentOptional.isPresent()) {
                 ConsumableEquipment consumableEquipment = consumableEquipmentOptional.get();
                 String name = consumableEquipment.getInventoryItemName();
@@ -123,7 +117,7 @@ public class ConsumableEquipmentService {
                 }
                 Integer quantity = consumableEquipment.getQuantityInStock();
                 if (quantity < 1) {
-                    throw new UnableToCreateConsumableEquipmentException("Quantity in stock must be more than 0");
+                    throw new UnableToCreateConsumableEquipmentException("Quantity in stock must be more than 0 " + quantity);
                 }
                 BigDecimal price = consumableEquipment.getRestockPricePerQuantity();
                 if (price.equals(BigDecimal.ZERO)) {
@@ -137,7 +131,7 @@ public class ConsumableEquipmentService {
               consumableEquipmentRepository.save(consumableEquipment);
                 return consumableEquipment;
             } else {
-                throw new ConsumableEquipmentNotFoundException("Consumable Equipment with ID: " + consumableEquipmentId + " is not found");
+                throw new ConsumableEquipmentNotFoundException("Consumable Equipment with ID: " + inventoryItemId + " is not found");
             }
         } catch (Exception ex) {
             throw new ConsumableEquipmentNotFoundException(ex.getMessage());
