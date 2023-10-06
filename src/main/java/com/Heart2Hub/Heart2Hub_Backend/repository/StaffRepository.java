@@ -17,4 +17,6 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
 
 
   Optional <List<Staff>> findAllByIsHead(Boolean b);
+
+  List<Staff> findByUnitName(String unitName);
 }
