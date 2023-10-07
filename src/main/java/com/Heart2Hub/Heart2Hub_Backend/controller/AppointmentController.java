@@ -122,7 +122,7 @@ public class AppointmentController {
           @RequestParam("description") String description,
           @RequestParam("actualDateTime") String actualDateTime,
           @RequestParam("patientUsername") String patientUsername,
-          @RequestParam("patientUsername") String staffUsername) {
+          @RequestParam("staffUsername") String staffUsername) {
     return ResponseEntity.ok(appointmentService.updateAppointment(id,patientUsername,
             actualDateTime,description, staffUsername));
   }

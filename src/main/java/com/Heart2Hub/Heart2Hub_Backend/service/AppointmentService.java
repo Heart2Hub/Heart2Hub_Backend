@@ -188,9 +188,12 @@ public class AppointmentService {
 
   public Appointment updateAppointment(Long appointmentId, String patientUsername, String newTimeString,
                                        String newDescription, String staffUsername) {
+    System.out.println("===== 1 =====");
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     LocalDateTime newTime = LocalDateTime.parse(newTimeString);
     Patient patient = patientService.getPatientByUsername(patientUsername);
+    System.out.println("===== 2 =====");
+
     if (!newTime.isEqual(appointment.getActualDateTime())) {
       List<Appointment> listOfAppointments = patient.getListOfCurrentAppointments().stream()
               .filter(appt -> newTime.isEqual(appt.getActualDateTime())).toList();
@@ -198,12 +201,17 @@ public class AppointmentService {
         throw new UnableToCreateAppointmentException("Unable to update appointment, overlapping appointment exists.");
       }
     }
+    System.out.println("===== 3 =====");
+
     appointment.setActualDateTime(newTime);
     appointment.setDescription(newDescription);
+    System.out.println("===== 4 =====");
     if (staffUsername != null && !staffUsername.isEmpty()) {
       Staff staff = staffService.getStaffByUsername(staffUsername);
       appointment.setCurrentAssignedStaff(staff);
     }
+    System.out.println("===== 5 =====");
+
     return appointment;
   }
 
