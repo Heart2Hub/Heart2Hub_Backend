@@ -186,7 +186,8 @@ public class AppointmentService {
     return appointment;
   }
 
-  public Appointment updateAppointment(Long appointmentId, String patientUsername, String newTimeString, String newDescription) {
+  public Appointment updateAppointment(Long appointmentId, String patientUsername, String newTimeString,
+                                       String newDescription, String staffUsername) {
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     LocalDateTime newTime = LocalDateTime.parse(newTimeString);
     Patient patient = patientService.getPatientByUsername(patientUsername);
@@ -199,6 +200,10 @@ public class AppointmentService {
     }
     appointment.setActualDateTime(newTime);
     appointment.setDescription(newDescription);
+    if (staffUsername != null && !staffUsername.isEmpty()) {
+      Staff staff = staffService.getStaffByUsername(staffUsername);
+      appointment.setCurrentAssignedStaff(staff);
+    }
     return appointment;
   }
 
