@@ -118,9 +118,7 @@ public class AppointmentService {
 
   public Appointment createNewAppointmentWithStaff(String description,
       String actualDateTimeString, String bookedDateTimeString,String priority, String patientUsername, String departmentName, String staffUsername) {
-    System.out.println(actualDateTimeString);
     LocalDateTime actualDateTime = LocalDateTime.parse(actualDateTimeString);
-    System.out.println(actualDateTime);
     LocalDateTime bookedDateTime = LocalDateTime.parse(bookedDateTimeString);
     //perform checks
     Patient patient = patientService.getPatientByUsername(patientUsername);
@@ -190,6 +188,32 @@ public class AppointmentService {
     appointment.setSwimlaneStatusEnum(swimlaneStatusEnum);
     appointment.setArrived(false);
     return appointment;
+  }
+
+  public Appointment updateAppointment(Long appointmentId, String patientUsername, String newTimeString, String newDescription) {
+    Appointment appointment = findAppointmentByAppointmentId(appointmentId);
+    LocalDateTime newTime = LocalDateTime.parse(newTimeString);
+    Patient patient = patientService.getPatientByUsername(patientUsername);
+    if (!newTime.isEqual(appointment.getActualDateTime())) {
+      List<Appointment> listOfAppointments = patient.getListOfCurrentAppointments().stream()
+              .filter(appt -> newTime.isEqual(appt.getActualDateTime())).toList();
+      if (listOfAppointments.size() != 0) {
+        throw new UnableToCreateAppointmentException("Unable to update appointment, overlapping appointment exists.");
+      }
+    }
+    appointment.setActualDateTime(newTime);
+    appointment.setDescription(newDescription);
+    return appointment;
+  }
+
+  public String cancelAppointment(Long appointmentId) {
+    Appointment appointment = findAppointmentByAppointmentId(appointmentId);
+    if (appointment.getArrived() || appointment.getSwimlaneStatusEnum() != SwimlaneStatusEnum.REGISTRATION) {
+      throw new UnableToCreateAppointmentException("Unable to delete appointment, patient has already arrived at the clinic.");
+    }
+    appointment.setCurrentAssignedStaff(null);
+    appointmentRepository.delete(appointment);
+    return "Appointment " + appointmentId + " has been deleted successfully!";
   }
 
 }

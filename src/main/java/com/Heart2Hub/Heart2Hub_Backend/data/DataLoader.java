@@ -158,10 +158,19 @@ public class DataLoader implements CommandLineRunner {
         new Staff("staff9", "password9", "Simon", "Cowell", 81927493l, StaffRoleEnum.NURSE, false),
         "Cardiology", new ImageDocument("id8.png", lt));
     staffService.createStaff(
-            new Staff("staff10", "password10", "James", "Charles", 93420093l, StaffRoleEnum.NURSE,
-                    true), "B20", new ImageDocument("id9.png", lt));
+            new Staff("staff10", "password10", "Simon", "Cowell", 80806996l, StaffRoleEnum.NURSE, false),
+            "Cardiology", new ImageDocument("id9.png", lt));
     staffService.createStaff(
-            new Staff("staff11", "password11", "Ronald", "Weasley", 90897321l, StaffRoleEnum.NURSE,
+            new Staff("staff11", "password11", "Harry", "Maguire", 90806996l, StaffRoleEnum.ADMIN, false),
+            "Cardiology", new ImageDocument("id9.png", lt));
+    staffService.createStaff(
+            new Staff("staff12", "password12", "Taylor", "Swift", 89806996l, StaffRoleEnum.ADMIN, false),
+            "Cardiology", new ImageDocument("id9.png", lt));
+    staffService.createStaff(
+            new Staff("staff13", "password13", "James", "Charles", 93420093l, StaffRoleEnum.NURSE,
+                    true), "B20", new ImageDocument("id10.png", lt));
+    staffService.createStaff(
+            new Staff("staff14", "password14", "Ronald", "Weasley", 90897321l, StaffRoleEnum.NURSE,
                     false), "B20", new ImageDocument("id10.png", lt));
 
     leaveService.createLeave(LocalDateTime.now().plusMonths(3),
@@ -188,7 +197,7 @@ public class DataLoader implements CommandLineRunner {
     departmentService.createDepartment(new Department("Surgery"));
     departmentService.createDepartment(new Department("Ophthalmology"));
     departmentService.createDepartment(new Department("Psychiatry"));
-    departmentService.createDepartment(new Department("Postanal Recovery"));
+    departmentService.createDepartment(new Department("Radiology"));
     departmentService.createDepartment(new Department("Admin"));
 
 //    TO-DO: WARD CREATION
@@ -215,17 +224,42 @@ public class DataLoader implements CommandLineRunner {
               new Facility("Consultation Room 1 " + departmentRepository.findById(L).get().getName(),
                       "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.CONSULTATION_ROOM));
       facilityService.createFacility(L,
+              new Facility("Consultation Room 2 " + departmentRepository.findById(L).get().getName(),
+                      "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.CONSULTATION_ROOM));
+      facilityService.createFacility(L,
+              new Facility("Consultation Room 3 " + departmentRepository.findById(L).get().getName(),
+                      "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.CONSULTATION_ROOM));
+      facilityService.createFacility(L,
               new Facility("Triage Room 1 " + departmentRepository.findById(L).get().getName(),
                       "Level 2", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
       facilityService.createFacility(L,
               new Facility("Triage Room 2 " + departmentRepository.findById(L).get().getName(),
-                      "Level 3", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
+                      "Level 2", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
+      facilityService.createFacility(L,
+              new Facility("Triage Room 3 " + departmentRepository.findById(L).get().getName(),
+                      "Level 2", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
+      facilityService.createFacility(L,
+              new Facility("Operating Room 1 " + departmentRepository.findById(L).get().getName(),
+                      "Level 2", "", 6, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.OPERATING_ROOM));
+      facilityService.createFacility(L,
+              new Facility("Operating Room 2 " + departmentRepository.findById(L).get().getName(),
+                      "Level 3", "", 6, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.OPERATING_ROOM));
+      facilityService.createFacility(L,
+              new Facility("Registration Counter 1 " + departmentRepository.findById(L).get().getName(),
+                      "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.ADMINISTRATION_OFFICES));
+      facilityService.createFacility(L,
+              new Facility("Registration Counter 2 " + departmentRepository.findById(L).get().getName(),
+                      "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.ADMINISTRATION_OFFICES));
+
+      if (L == 5L) {
+        facilityService.createFacility(L,
+                new Facility("Emergency Room 1 " + departmentRepository.findById(L).get().getName(),
+                        "Level 1", "", 4, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.EMERGENCY_ROOM));
+        facilityService.createFacility(L,
+                new Facility("Emergency Room 2 " + departmentRepository.findById(L).get().getName(),
+                        "Level 1", "", 4, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.EMERGENCY_ROOM));
+      }
     }
-//    TO-DO: WARD BED CREATION
-//    for (long L = 1L; L <= 40L; L++) {
-//      facilityService.createFacility(L, new Facility("Consultation Room 1", "","",2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.CONSULTATION_ROOM));
-//      facilityService.createFacility(L, new Facility("Bed 1", "","",2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.WARD_BED));
-//    }
   }
 
   private void createShiftData() {
@@ -257,9 +291,23 @@ public class DataLoader implements CommandLineRunner {
     // Cardiology doctor shifts - Working hours (8am - 4pm)
     shiftService.createShift("staff5", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-    shiftService.createShift("staff6", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+    shiftService.createShift("staff6", 2L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-    shiftService.createShift("staff7", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+    shiftService.createShift("staff7", 3L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Cardiology nurse shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff8", 4L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff9", 5L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff10", 6L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Cardiology admin shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff11", 9L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff12", 10L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Tuesday
@@ -278,9 +326,23 @@ public class DataLoader implements CommandLineRunner {
     // Cardiology doctor shifts - Working hours (8am - 4pm)
     shiftService.createShift("staff5", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-    shiftService.createShift("staff6", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+    shiftService.createShift("staff6", 2L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-    shiftService.createShift("staff7", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+    shiftService.createShift("staff7", 3L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Cardiology nurse shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff8", 4L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff9", 5L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff10", 6L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Cardiology admin shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff11", 9L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff12", 10L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Wednesday
@@ -299,9 +361,23 @@ public class DataLoader implements CommandLineRunner {
     // Cardiology doctor shifts - Working hours (8am - 4pm)
     shiftService.createShift("staff5", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-    shiftService.createShift("staff6", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+    shiftService.createShift("staff6", 2L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-    shiftService.createShift("staff7", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+    shiftService.createShift("staff7", 3L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Cardiology nurse shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff8", 4L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff9", 5L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff10", 6L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Cardiology admin shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff11", 9L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff12", 10L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Thursday
@@ -320,9 +396,23 @@ public class DataLoader implements CommandLineRunner {
     // Cardiology doctor shifts - Working hours (8am - 4pm)
     shiftService.createShift("staff5", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-    shiftService.createShift("staff6", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+    shiftService.createShift("staff6", 2L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-    shiftService.createShift("staff7", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+    shiftService.createShift("staff7", 3L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Cardiology nurse shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff8", 4L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff9", 5L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff10", 6L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Cardiology admin shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff11", 9L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff12", 10L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
 
@@ -340,7 +430,17 @@ public class DataLoader implements CommandLineRunner {
     // Cardiology doctor shifts - Working hours (8am - 4pm)
     shiftService.createShift("staff5", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-    shiftService.createShift("staff6", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+    shiftService.createShift("staff6", 2L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Cardiology nurse shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff8", 4L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff9", 5L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Cardiology admin shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff11", 9L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Saturday
@@ -359,7 +459,17 @@ public class DataLoader implements CommandLineRunner {
     // Cardiology doctor shifts - Working hours (8am - 4pm)
     shiftService.createShift("staff5", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-    shiftService.createShift("staff7", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+    shiftService.createShift("staff7", 3L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Cardiology nurse shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff8", 4L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff10", 6L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Cardiology admin shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff12", 10L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Sunday
@@ -368,29 +478,48 @@ public class DataLoader implements CommandLineRunner {
     month = currentDateTime.getMonthValue();
     year = currentDateTime.getYear();
     // Cardiology doctor shifts - Working hours (8am - 4pm)
-    shiftService.createShift("staff6", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+    shiftService.createShift("staff6", 2L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-    shiftService.createShift("staff7", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+    shiftService.createShift("staff7", 3L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
-    // Generate cardiology doctor shifts for the next 2 weeks
-    for (int i=7; i<=13; i++) {
+    // Cardiology nurse shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff9", 5L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("staff10", 6L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Cardiology admin shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff11", 9L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Generate cardiology doctor shifts for the next 8 weeks
+    for (int i=7; i<=48; i++) {
       currentDateTime = monday.plusDays(i);
       day = currentDateTime.getDayOfMonth();
       month = currentDateTime.getMonthValue();
       year = currentDateTime.getYear();
-      System.out.println(currentDateTime);
       // Cardiology doctor shifts - Working hours (8am - 4pm)
-      if (i != 11) {
+      if (i != 11 && i != 18 && i != 25 && i != 32 && i != 39 && i != 46) {
         shiftService.createShift("staff5", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-      }
-      if (i != 12) {
-        shiftService.createShift("staff6", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+        shiftService.createShift("staff8", 4L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+        shiftService.createShift("staff11", 9L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
       }
-      if (i != 13) {
-        shiftService.createShift("staff7", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+      if (i != 12  && i != 19 && i != 26 && i != 33 && i != 40 && i != 47) {
+        shiftService.createShift("staff6", 2L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+        shiftService.createShift("staff9", 5L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+        shiftService.createShift("staff12", 10L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+      }
+      if (i != 13  && i != 20 && i != 27 && i != 34 && i != 41 && i != 48) {
+        shiftService.createShift("staff7", 3L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+        shiftService.createShift("staff10", 6L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
       }
     }
@@ -402,24 +531,40 @@ public class DataLoader implements CommandLineRunner {
   }
 
   private void createPatientData() {
-      Patient newPatient1 = patientService.createPatient(new Patient("patient1","password1"), "S9983422D");
-      Patient newPatient2 = patientService.createPatient(new Patient("patient2","password2"), "S9983423D");
-      Patient newPatient3 = patientService.createPatient(new Patient("patient3","password3"), new ElectronicHealthRecord("S9983424D","John","Smith", LocalDateTime.of(1990, 2, 28, 0, 0, 0), "Singapore", "Male", "Caucasian", "Singaporean", "Marina Bay Sands", "83571234"));
-      nextOfKinRecordService.createNextOfKinRecord(newPatient3.getPatientId(),new NextOfKinRecord("Wife", "S5882619D"));
-      prescriptionRecordService.createPrescriptionRecord(newPatient3.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2010, 10, 5, 13, 15, 0), "Insulin", 1, 1, "Diabetes Management", "Take before meals", "Doctor Maria Garcia", PrescriptionStatusEnum.COLLECTED));
-      problemRecordService.createProblemRecord(newPatient3.getPatientId(), new ProblemRecord("Type 2 Diabetes", "Doctor Maria Garcia", LocalDateTime.of(2009, 8, 12, 11, 20, 0), PriorityEnum.HIGH, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
-      medicalHistoryRecordService.createMedicalHistoryRecord(newPatient3.getPatientId(), new MedicalHistoryRecord("High Blood Pressure", "Doctor Maria Garcia", LocalDateTime.of(2008, 4, 18, 14, 30, 0), LocalDateTime.of(2009, 9, 2, 9, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.CARDIOVASCULAR));
-      Patient newPatient4 = patientService.createPatient(new Patient("patient4","password4"), new ElectronicHealthRecord("S9983425D","Linda","Wong", LocalDateTime.of(1973, 11, 8, 0, 0, 0), "Singapore", "Female", "Chinese", "Singaporean", "Jurong West St 71", "81126543"));
-      nextOfKinRecordService.createNextOfKinRecord(newPatient4.getPatientId(),new NextOfKinRecord("Son", "S5882620D"));
-      nextOfKinRecordService.createNextOfKinRecord(newPatient4.getPatientId(),new NextOfKinRecord("Daughter", "S6882620D"));
-      prescriptionRecordService.createPrescriptionRecord(newPatient4.getPatientId(), new PrescriptionRecord(LocalDateTime.of(1995, 3, 2, 10, 30, 0), "Painkillers", 2, 1, "Pain Relief for Arthritis", "Take as needed", "Doctor Kevin Tan", PrescriptionStatusEnum.COLLECTED));
-      problemRecordService.createProblemRecord(newPatient4.getPatientId(), new ProblemRecord("Arthritis", "Doctor Kevin Tan", LocalDateTime.of(1994, 12, 15, 16, 0, 0), PriorityEnum.LOW, ProblemTypeEnum.OBSTETRIC));
-      medicalHistoryRecordService.createMedicalHistoryRecord(newPatient4.getPatientId(), new MedicalHistoryRecord("Asthma", "Doctor Kevin Tan", LocalDateTime.of(1990, 7, 8, 9, 0, 0), LocalDateTime.of(1991, 5, 20, 14, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.RESPIRATORY));
-      Patient newPatient5 = patientService.createPatient(new Patient("patient5","password5"), new ElectronicHealthRecord("S9983426D","Megan","Chua", LocalDateTime.of(2000, 6, 15, 0, 0, 0), "Singapore", "Female", "Chinese", "Singaporean", "Bukit Timah Rd", "87751234"));
-      nextOfKinRecordService.createNextOfKinRecord(newPatient5.getPatientId(),new NextOfKinRecord("Father", "S5882621D"));
-      nextOfKinRecordService.createNextOfKinRecord(newPatient5.getPatientId(),new NextOfKinRecord("Mother", "S6882621D"));
-      prescriptionRecordService.createPrescriptionRecord(newPatient5.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Vitamin D", 1, 1, "Vitamin Supplement", "Take daily", "Doctor Sarah Tan", PrescriptionStatusEnum.COLLECTED));
-      problemRecordService.createProblemRecord(newPatient5.getPatientId(), new ProblemRecord("Seasonal Allergies", "Doctor Sarah Tan", LocalDateTime.of(2021, 5, 3, 11, 15, 0), PriorityEnum.LOW, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
+    Patient newPatient1 = patientService.createPatient(new Patient("patient1", "password1"), "S9983422D");
+    Patient newPatient2 = patientService.createPatient(new Patient("patient2", "password2"), "S9983423D");
+    Patient newPatient3 = patientService.createPatient(new Patient("patient3","password3"), new ElectronicHealthRecord("S9983424D","John","Smith", LocalDateTime.of(1990, 2, 28, 0, 0, 0), "Singapore", "Male", "Others", "Singapore Citizen", "Marina Bay Sands", "83571234"));
+    nextOfKinRecordService.createNextOfKinRecord(newPatient3.getPatientId(),new NextOfKinRecord("Wife", "S5882619D"));
+    prescriptionRecordService.createPrescriptionRecord(newPatient3.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2010, 10, 5, 13, 15, 0), "Insulin", 1, 1, "Diabetes Management", "Take before meals", "Doctor Maria Garcia", PrescriptionStatusEnum.COLLECTED));
+    problemRecordService.createProblemRecord(newPatient3.getPatientId(), new ProblemRecord("Type 2 Diabetes", "Doctor Maria Garcia", LocalDateTime.of(2009, 8, 12, 11, 20, 0), PriorityEnum.HIGH, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
+    medicalHistoryRecordService.createMedicalHistoryRecord(newPatient3.getPatientId(), new MedicalHistoryRecord("High Blood Pressure", "Doctor Maria Garcia", LocalDateTime.of(2008, 4, 18, 14, 30, 0), LocalDateTime.of(2009, 9, 2, 9, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.CARDIOVASCULAR));
+    Patient newPatient4 = patientService.createPatient(new Patient("patient4","password4"), new ElectronicHealthRecord("S9983425D","Linda","Wong", LocalDateTime.of(1973, 11, 8, 0, 0, 0), "Singapore", "Female", "Chinese", "Singapore Citizen", "Jurong West St 71", "81126543"));
+    nextOfKinRecordService.createNextOfKinRecord(newPatient4.getPatientId(),new NextOfKinRecord("Son", "S5882620D"));
+    nextOfKinRecordService.createNextOfKinRecord(newPatient4.getPatientId(),new NextOfKinRecord("Daughter", "S6882620D"));
+    prescriptionRecordService.createPrescriptionRecord(newPatient4.getPatientId(), new PrescriptionRecord(LocalDateTime.of(1995, 3, 2, 10, 30, 0), "Painkillers", 2, 1, "Pain Relief for Arthritis", "Take as needed", "Doctor Kevin Tan", PrescriptionStatusEnum.COLLECTED));
+    problemRecordService.createProblemRecord(newPatient4.getPatientId(), new ProblemRecord("Arthritis", "Doctor Kevin Tan", LocalDateTime.of(1994, 12, 15, 16, 0, 0), PriorityEnum.LOW, ProblemTypeEnum.OBSTETRIC));
+    medicalHistoryRecordService.createMedicalHistoryRecord(newPatient4.getPatientId(), new MedicalHistoryRecord("Asthma", "Doctor Kevin Tan", LocalDateTime.of(1990, 7, 8, 9, 0, 0), LocalDateTime.of(1991, 5, 20, 14, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.RESPIRATORY));
+    Patient newPatient5 = patientService.createPatient(new Patient("patient5","password5"), new ElectronicHealthRecord("S9983426D","Megan","Chua", LocalDateTime.of(2000, 6, 15, 0, 0, 0), "Singapore", "Female", "Chinese", "Singapore Citizen", "Bukit Timah Rd", "87751234"));
+    nextOfKinRecordService.createNextOfKinRecord(newPatient5.getPatientId(),new NextOfKinRecord("Father", "S5882621D"));
+    nextOfKinRecordService.createNextOfKinRecord(newPatient5.getPatientId(),new NextOfKinRecord("Mother", "S6882621D"));
+    prescriptionRecordService.createPrescriptionRecord(newPatient5.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Vitamin D", 1, 1, "Vitamin Supplement", "Take daily", "Doctor Sarah Tan", PrescriptionStatusEnum.COLLECTED));
+    problemRecordService.createProblemRecord(newPatient5.getPatientId(), new ProblemRecord("Seasonal Allergies", "Doctor Sarah Tan", LocalDateTime.of(2021, 5, 3, 11, 15, 0), PriorityEnum.LOW, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
+    Patient newPatient6 = patientService.createPatient(new Patient("patient6", "password6"), new ElectronicHealthRecord("S9983427D","Michael","Angelo", LocalDateTime.of(1999, 5, 22, 0, 0, 0), "Singapore", "Male", "Malay", "Singapore Citizen", "Pasir Ris St 9", "83571235"));
+    nextOfKinRecordService.createNextOfKinRecord(newPatient6.getPatientId(),new NextOfKinRecord("Father", "S5882622D"));
+    nextOfKinRecordService.createNextOfKinRecord(newPatient6.getPatientId(),new NextOfKinRecord("Mother", "S6882622D"));
+    prescriptionRecordService.createPrescriptionRecord(newPatient6.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Amoxicillin", 3, 1, "Chewable tabs for ear infection", "Take daily", "Doctor Ash Ketchum", PrescriptionStatusEnum.COLLECTED));
+    problemRecordService.createProblemRecord(newPatient6.getPatientId(), new ProblemRecord("Ear infection", "Doctor Ash Ketchum", LocalDateTime.of(2021, 5, 3, 11, 15, 0), PriorityEnum.LOW, ProblemTypeEnum.EYE_AND_EAR));
+    Patient newPatient7 = patientService.createPatient(new Patient("patient7", "password7"), new ElectronicHealthRecord("S9983428D","Tan","Ah Tok", LocalDateTime.of(1985, 2, 28, 0, 0, 0), "Singapore", "Male", "Chinese", "Singapore Citizen", "Orchard Road", "83571236"));
+    nextOfKinRecordService.createNextOfKinRecord(newPatient7.getPatientId(),new NextOfKinRecord("Father", "S5882623D"));
+    nextOfKinRecordService.createNextOfKinRecord(newPatient7.getPatientId(),new NextOfKinRecord("Mother", "S6882623D"));
+    prescriptionRecordService.createPrescriptionRecord(newPatient7.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Colace", 30, 1, "Stool softener", "Take as needed", "Doctor Brown Bum", PrescriptionStatusEnum.COLLECTED));
+    problemRecordService.createProblemRecord(newPatient7.getPatientId(), new ProblemRecord("Explosive diarrhoea", "Doctor Brown Bum", LocalDateTime.of(2021, 5, 3, 11, 15, 0), PriorityEnum.LOW, ProblemTypeEnum.GASTROINTESTINAL));
+    Patient newPatient8 = patientService.createPatient(new Patient("patient8", "password8"), new ElectronicHealthRecord("S9983429D","Parvati","Lakshmi", LocalDateTime.of(1991, 10, 2, 0, 0, 0), "Singapore", "Female", "Indian", "Singapore Citizen", "Punggol Ave 4", "83571237"));
+    nextOfKinRecordService.createNextOfKinRecord(newPatient8.getPatientId(),new NextOfKinRecord("Father", "S5882624D"));
+    nextOfKinRecordService.createNextOfKinRecord(newPatient8.getPatientId(),new NextOfKinRecord("Mother", "S6882624D"));
+    prescriptionRecordService.createPrescriptionRecord(newPatient8.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Metformin HCL", 10, 1, "Tablet", "Take daily", "Doctor Dia Betes", PrescriptionStatusEnum.COLLECTED));
+    problemRecordService.createProblemRecord(newPatient8.getPatientId(), new ProblemRecord("Type 2 Diabetes", "Doctor Dia Betes", LocalDateTime.of(2021, 5, 3, 11, 15, 0), PriorityEnum.HIGH, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
+
   }
 
   private void createAppointmentData() {
@@ -427,90 +572,116 @@ public class DataLoader implements CommandLineRunner {
     System.out.println(LocalDateTime.now().plusDays(7L).toString());
 
     Patient patient1 = patientService.getPatientByUsername("patient1");
+    Patient patient2 = patientService.getPatientByUsername("patient2");
+    Patient patient3 = patientService.getPatientByUsername("patient3");
+    Patient patient4 = patientService.getPatientByUsername("patient4");
+    Patient patient5 = patientService.getPatientByUsername("patient5");
+    Patient patient6 = patientService.getPatientByUsername("patient6");
+    Patient patient7 = patientService.getPatientByUsername("patient7");
+    Patient patient8 = patientService.getPatientByUsername("patient8");
+
 
     //for today
-    appointmentService.createNewAppointment("test description 1",
-        LocalDateTime.now().toString(),
-        LocalDateTime.now().toString(),
-        "LOW",
-        patient1.getUsername(),
-        "Cardiology");
-    appointmentService.createNewAppointment("test description 2",
-        LocalDateTime.now().toString(),
-        LocalDateTime.now().toString(),
-        "LOW",
-        patient1.getUsername(),
-        "Cardiology");
-    appointmentService.createNewAppointment("test description 3",
-        LocalDateTime.now().toString(),
-        LocalDateTime.now().toString(),
-        "LOW",
-        patient1.getUsername(),
-        "Cardiology");
-    appointmentService.createNewAppointment("test description 4",
-        LocalDateTime.now().toString(),
-        LocalDateTime.now().toString(),
-        "LOW",
-        patient1.getUsername(),
-        "Cardiology");
-    appointmentService.createNewAppointment("test description 5",
-        LocalDateTime.now().toString(),
-        LocalDateTime.now().toString(),
-        "LOW",
-        patient1.getUsername(),
-        "Cardiology");
-
-
-    appointmentService.createNewAppointment("test description",
-            LocalDateTime.now().plusDays(7L).toString(),
+    appointmentService.createNewAppointment("Unstable angina",
             LocalDateTime.now().toString(),
-            "LOW",
-            patient1.getUsername(),
-            "Orthopedics");
-    appointmentService.createNewAppointment("test description",
-            LocalDateTime.now().plusDays(7L).toString(),
             LocalDateTime.now().toString(),
             "LOW",
             patient1.getUsername(),
             "Cardiology");
-    appointmentService.createNewAppointment("test description",
-            LocalDateTime.now().plusDays(7L).toString(),
+    appointmentService.createNewAppointment("Heart attack",
+            LocalDateTime.now().toString(),
             LocalDateTime.now().toString(),
             "LOW",
-            patient1.getUsername(),
+            patient2.getUsername(),
             "Cardiology");
-    appointmentService.createNewAppointment("test description",
-            LocalDateTime.now().plusDays(7L).toString(),
+    appointmentService.createNewAppointment("Heart failure",
+            LocalDateTime.now().toString(),
             LocalDateTime.now().toString(),
             "LOW",
-            patient1.getUsername(),
+            patient3.getUsername(),
             "Cardiology");
-    appointmentService.createNewAppointment("test description",
-            LocalDateTime.now().plusDays(7L).toString(),
+    appointmentService.createNewAppointment("Valve disease",
+            LocalDateTime.now().toString(),
             LocalDateTime.now().toString(),
             "LOW",
-            patient1.getUsername(),
+            patient4.getUsername(),
             "Cardiology");
-    appointmentService.createNewAppointment("test description",
-            LocalDateTime.now().plusDays(7L).toString(),
+    appointmentService.createNewAppointment("Arrhythmia",
+            LocalDateTime.now().toString(),
             LocalDateTime.now().toString(),
             "LOW",
-            patient1.getUsername(),
+            patient5.getUsername(),
             "Cardiology");
-    appointmentService.createNewAppointment("test description",
-            LocalDateTime.now().plusDays(7L).toString(),
+    appointmentService.createNewAppointment("Congenital heart conditions",
+            LocalDateTime.now().toString(),
             LocalDateTime.now().toString(),
             "LOW",
-            patient1.getUsername(),
+            patient6.getUsername(),
+            "Cardiology");
+    appointmentService.createNewAppointment("High blood pressure",
+            LocalDateTime.now().toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient7.getUsername(),
+            "Cardiology");
+    appointmentService.createNewAppointment("Inherited heart conditions",
+            LocalDateTime.now().toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient8.getUsername(),
             "Cardiology");
 
-    appointmentService.createNewAppointment("test description",
+
+    appointmentService.createNewAppointment("Unstable angina appointment 2",
+            LocalDateTime.now().plusDays(5L).toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient1.getUsername(),
+            "Cardiology");
+    appointmentService.createNewAppointment("Heart attack appointment 2",
+            LocalDateTime.now().plusDays(5L).toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient2.getUsername(),
+            "Cardiology");
+    appointmentService.createNewAppointment("Heart failure appointment 2",
+            LocalDateTime.now().plusDays(6L).toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient3.getUsername(),
+            "Cardiology");
+    appointmentService.createNewAppointment("Valve disease appointment 2",
+            LocalDateTime.now().plusDays(7L).toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient4.getUsername(),
+            "Cardiology");
+    appointmentService.createNewAppointment("Arrhythmia appointment 2",
+            LocalDateTime.now().plusDays(7L).toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient5.getUsername(),
+            "Cardiology");
+    appointmentService.createNewAppointment("Congenital heart conditions appointment 2",
+            LocalDateTime.now().plusDays(7L).toString(),
+            LocalDateTime.now().toString(),
+            "LOW",
+            patient6.getUsername(),
+            "Cardiology");
+    appointmentService.createNewAppointment("High blood pressure appointment 2",
             LocalDateTime.now().plusDays(9L).toString(),
             LocalDateTime.now().plusDays(3L).toString(),
             "LOW",
-            patient1.getUsername(),
+            patient7.getUsername(),
             "Cardiology");
-    appointmentService.createNewAppointment("test description",
+
+    appointmentService.createNewAppointment("Inherited heart conditions appointment 2",
+            LocalDateTime.now().plusDays(13L).toString(),
+            LocalDateTime.now().plusDays(5L).toString(),
+            "LOW",
+            patient8.getUsername(),
+            "Cardiology");
+    appointmentService.createNewAppointment("Unstable angina appointment 3",
             LocalDateTime.now().plusDays(14L).toString(),
             LocalDateTime.now().plusDays(5L).toString(),
             "LOW",
@@ -552,5 +723,4 @@ public class DataLoader implements CommandLineRunner {
     }
 
 
-  }
 }

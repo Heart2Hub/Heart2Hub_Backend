@@ -34,6 +34,5 @@ public class AppointmentDTO {
   private String contactNumber;
   private String nationality;
   private LocalDateTime dateOfBirth;
-
-  public String departmentName;
+  private String departmentName;
 }

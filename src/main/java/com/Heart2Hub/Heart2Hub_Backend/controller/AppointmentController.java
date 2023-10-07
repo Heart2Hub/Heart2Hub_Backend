@@ -9,11 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/appointment")
@@ -105,5 +101,33 @@ public class AppointmentController {
       @RequestParam("swimlaneStatus") String swimlaneStatus) {
     return ResponseEntity.ok(appointmentMapper.convertToDto(
         appointmentService.updateAppointmentSwimlaneStatus(appointmentId, SwimlaneStatusEnum.valueOf(swimlaneStatus.toUpperCase()))));
+  }
+
+  @PostMapping("/createNewAppointmentWithStaff")
+  public ResponseEntity<Appointment> createNewAppointmentWithStaff(
+          @RequestParam("description") String description,
+          @RequestParam("actualDateTime") String actualDateTime,
+          @RequestParam("bookedDateTime") String bookedDateTime,
+          @RequestParam("priority") String priority,
+          @RequestParam("patientUsername") String patientUsername,
+          @RequestParam("departmentName") String departmentName,
+          @RequestParam("staffUsername") String staffUsername) {
+    return ResponseEntity.ok(appointmentService.createNewAppointmentWithStaff(description,
+            actualDateTime, bookedDateTime, priority, patientUsername, departmentName, staffUsername));
+  }
+
+  @PutMapping("/updateAppointment")
+  public ResponseEntity<Appointment> updateAppointment(
+          @RequestParam("appointmentId") Long id,
+          @RequestParam("description") String description,
+          @RequestParam("actualDateTime") String actualDateTime,
+          @RequestParam("patientUsername") String patientUsername) {
+    return ResponseEntity.ok(appointmentService.updateAppointment(id,patientUsername,actualDateTime,description));
+  }
+
+  @DeleteMapping("/cancelAppointment")
+  public ResponseEntity<String> cancelAppointment(
+          @RequestParam("appointmentId") Long id) {
+    return ResponseEntity.ok(appointmentService.cancelAppointment(id));
   }
 }
