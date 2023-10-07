@@ -100,4 +100,16 @@ public class PatientController {
         );
     }
 
+    @GetMapping("/findAllPatientsUsername")
+    public ResponseEntity<List<String>> findAllPatientsUsername() {
+
+        return ResponseEntity.ok(patientService.findAllPatientsUsername());
+    }
+
+    @GetMapping("/findAllPatients")
+    public ResponseEntity<List<Patient>> findAllPatients() {
+
+        return ResponseEntity.ok(patientService.findAllPatients());
+    }
+
 }

@@ -1,21 +1,14 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
-import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Patient;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PriorityEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
-import com.Heart2Hub.Heart2Hub_Backend.exception.AppointmentAssignmentException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.AppointmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffDisabledException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateAppointmentException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.AppointmentRepository;
 import java.time.LocalDateTime;
-import java.time.YearMonth;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -30,15 +23,16 @@ public class AppointmentService {
   private final PatientService patientService;
 
   private final DepartmentService departmentService;
-
+  private final ElectronicHealthRecordService electronicHealthRecordService;
   private final StaffService staffService;
 
 
   public AppointmentService(AppointmentRepository appointmentRepository,
-      PatientService patientService,DepartmentService departmentService, StaffService staffService) {
+                            PatientService patientService, DepartmentService departmentService, ElectronicHealthRecordService electronicHealthRecordService, StaffService staffService) {
     this.appointmentRepository = appointmentRepository;
     this.patientService = patientService;
     this.departmentService = departmentService;
+    this.electronicHealthRecordService = electronicHealthRecordService;
     this.staffService = staffService;
   }
 
@@ -48,12 +42,13 @@ public class AppointmentService {
 
   public Appointment createNewAppointment(String description,
       String actualDateTimeString, String bookedDateTimeString, String priority,
-      String patientUsername, String departmentName) {
+      String nric, String departmentName) {
     LocalDateTime actualDateTime = LocalDateTime.parse(actualDateTimeString);
     LocalDateTime bookedDateTime = LocalDateTime.parse(bookedDateTimeString);
-    //perform checks
-    Patient patient = patientService.getPatientByUsername(patientUsername);
-    // patient has no disabled field?
+
+    ElectronicHealthRecord ehr = electronicHealthRecordService.findByNric(nric);
+
+    Patient patient = ehr.getPatient();
 
     //Get department
     Department department = departmentService.getDepartmentByName(departmentName);
@@ -70,6 +65,7 @@ public class AppointmentService {
     Appointment newAppointment = new Appointment(description, actualDateTime,
         bookedDateTime, PriorityEnum.valueOf(priority), patient, department);
     patient.getListOfCurrentAppointments().add(newAppointment);
+    newAppointment.setArrived(true);
     appointmentRepository.save(newAppointment);
     return appointmentRepository.save(newAppointment);
   }
