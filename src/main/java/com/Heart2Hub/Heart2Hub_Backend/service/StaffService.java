@@ -11,12 +11,14 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateStaffException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import com.Heart2Hub.Heart2Hub_Backend.repository.SubDepartmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.UnitRepository;
+import java.util.stream.Collectors;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,16 +34,20 @@ public class StaffService {
   private final AuthenticationManager authenticationManager;
   private final StaffRepository staffRepository;
   private final UnitRepository unitRepository;
+
+  private final DepartmentService departmentService;
   private final ImageDocumentService imageDocumentService;
 
   public StaffService(JwtService jwtService, PasswordEncoder passwordEncoder,
       AuthenticationManager authenticationManager, StaffRepository staffRepository,
-      UnitRepository unitRepository, ImageDocumentService imageDocumentService) {
+      UnitRepository unitRepository, DepartmentService departmentService,
+      ImageDocumentService imageDocumentService) {
     this.jwtService = jwtService;
     this.passwordEncoder = passwordEncoder;
     this.authenticationManager = authenticationManager;
     this.staffRepository = staffRepository;
     this.unitRepository = unitRepository;
+    this.departmentService = departmentService;
     this.imageDocumentService = imageDocumentService;
   }
 
@@ -213,6 +219,23 @@ public class StaffService {
     } else {
       throw new UnableToChangePasswordException("Old Password provided is Incorrect");
     }
+  }
+
+  public List<Shift> getStaffsWorkingInCurrentShiftAndDepartment(String departmentName) {
+
+    List<Staff> listOfStaff = staffRepository.findByUnitName(departmentName);
+    LocalDateTime now = LocalDateTime.now();
+    List<Shift> listOfRelatedShifts = new ArrayList<>();
+    for (Staff staff : listOfStaff) {
+      for (Shift shift: staff.getListOfShifts()) {
+        //check if staff working now
+        if (shift.getStartTime().isBefore(now) && shift.getEndTime().isAfter(now)) {
+          listOfRelatedShifts.add(shift);
+          break;
+        }
+      }
+    }
+    return listOfRelatedShifts;
   }
 
   public Staff getStaffById(Long id) {
