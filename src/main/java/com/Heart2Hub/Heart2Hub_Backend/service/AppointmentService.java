@@ -65,6 +65,36 @@ public class AppointmentService {
     Appointment newAppointment = new Appointment(description, actualDateTime,
         bookedDateTime, PriorityEnum.valueOf(priority), patient, department);
     patient.getListOfCurrentAppointments().add(newAppointment);
+    //newAppointment.setArrived(true);
+    appointmentRepository.save(newAppointment);
+    return appointmentRepository.save(newAppointment);
+  }
+
+  public Appointment createNewWalkInAppointment(String description,
+                                          String actualDateTimeString, String bookedDateTimeString, String priority,
+                                          String nric, String departmentName) {
+    LocalDateTime actualDateTime = LocalDateTime.parse(actualDateTimeString);
+    LocalDateTime bookedDateTime = LocalDateTime.parse(bookedDateTimeString);
+
+    ElectronicHealthRecord ehr = electronicHealthRecordService.findByNric(nric);
+
+    Patient patient = ehr.getPatient();
+
+    //Get department
+    Department department = departmentService.getDepartmentByName(departmentName);
+
+    //check if patient has overlapping appointments
+    List<Appointment> listOfAppointments = patient.getListOfCurrentAppointments().stream()
+            .filter(appt -> actualDateTime.isEqual(appt.getActualDateTime())).toList();
+    if (listOfAppointments.size() != 0) {
+      throw new UnableToCreateAppointmentException(
+              "Unable to create appointment, overlapping appointment exists.");
+    }
+
+    //create appt entity
+    Appointment newAppointment = new Appointment(description, actualDateTime,
+            bookedDateTime, PriorityEnum.valueOf(priority), patient, department);
+    patient.getListOfCurrentAppointments().add(newAppointment);
     newAppointment.setArrived(true);
     appointmentRepository.save(newAppointment);
     return appointmentRepository.save(newAppointment);

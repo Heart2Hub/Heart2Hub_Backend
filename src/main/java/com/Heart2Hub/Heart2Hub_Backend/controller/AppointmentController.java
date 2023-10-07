@@ -42,7 +42,7 @@ public class AppointmentController {
       @RequestParam("priority") String priority,
       @RequestParam("patientUsername") String patientUsername,
       @RequestParam("departmentName") String departmentName) {
-    return ResponseEntity.ok(appointmentService.createNewAppointment(description,
+    return ResponseEntity.ok(appointmentService.createNewWalkInAppointment(description,
         actualDateTime, bookedDateTime, priority, patientUsername, departmentName));
   }
 
