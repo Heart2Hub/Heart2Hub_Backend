@@ -571,8 +571,6 @@ public class DataLoader implements CommandLineRunner {
     System.out.println(LocalDateTime.now().plusDays(7L).toString());
 
     Patient patient1 = patientService.getPatientByUsername("patient1");
-    //Just a fix cos i lazy copy paste
-    patient1.setUsername("S9983422D");
     Patient patient2 = patientService.getPatientByUsername("patient2");
     Patient patient3 = patientService.getPatientByUsername("patient3");
     Patient patient4 = patientService.getPatientByUsername("patient4");
