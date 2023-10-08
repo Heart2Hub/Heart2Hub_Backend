@@ -42,7 +42,7 @@ public class AppointmentController {
       @RequestParam("priority") String priority,
       @RequestParam("patientUsername") String patientUsername,
       @RequestParam("departmentName") String departmentName) {
-    return ResponseEntity.ok(appointmentService.createNewAppointment(description,
+    return ResponseEntity.ok(appointmentService.createNewWalkInAppointment(description,
         actualDateTime, bookedDateTime, priority, patientUsername, departmentName));
   }
 
@@ -71,28 +71,31 @@ public class AppointmentController {
 
   @GetMapping("/viewPatientAppointments")
   public ResponseEntity<List<AppointmentDTO>> viewAllAppointmentsByMonth(
-          @RequestParam("patientUsername") String patientUsername) {
+      @RequestParam("patientUsername") String patientUsername) {
 
     List<Appointment> listOfAppts = appointmentService.viewPatientAppointments(patientUsername);
     List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
-            .map(appointmentMapper::convertToDto).collect(Collectors.toList());
+        .map(appointmentMapper::convertToDto).collect(Collectors.toList());
     return ResponseEntity.ok(listOfApptsDTO);
   }
 
   @PostMapping("/updateAppointmentArrival")
   public ResponseEntity<AppointmentDTO> updateAppointmentArrival(
       @RequestParam("appointmentId") Long appointmentId,
-      @RequestParam("arrivalStatus") Boolean arrivalStatus) {
+      @RequestParam("arrivalStatus") Boolean arrivalStatus,
+      @RequestParam("staffId") Long staffId) {
     return ResponseEntity.ok(appointmentMapper.convertToDto(
-        appointmentService.updateAppointmentArrival(appointmentId, arrivalStatus)));
+        appointmentService.updateAppointmentArrival(appointmentId, arrivalStatus, staffId)));
   }
 
   @PostMapping("/updateAppointmentComments")
   public ResponseEntity<AppointmentDTO> updateAppointmentComments(
       @RequestParam("appointmentId") Long appointmentId,
-      @RequestParam("comments") String comments) {
+      @RequestParam("comments") String comments,
+      @RequestParam("staffId") Long staffId) {
+
     return ResponseEntity.ok(appointmentMapper.convertToDto(
-        appointmentService.updateAppointmentComments(appointmentId, comments)));
+        appointmentService.updateAppointmentComments(appointmentId, comments,staffId)));
   }
 
   @PostMapping("/updateAppointmentSwimlaneStatus")
@@ -100,36 +103,37 @@ public class AppointmentController {
       @RequestParam("appointmentId") Long appointmentId,
       @RequestParam("swimlaneStatus") String swimlaneStatus) {
     return ResponseEntity.ok(appointmentMapper.convertToDto(
-        appointmentService.updateAppointmentSwimlaneStatus(appointmentId, SwimlaneStatusEnum.valueOf(swimlaneStatus.toUpperCase()))));
+        appointmentService.updateAppointmentSwimlaneStatus(appointmentId,
+            SwimlaneStatusEnum.valueOf(swimlaneStatus.toUpperCase()))));
   }
 
   @PostMapping("/createNewAppointmentWithStaff")
   public ResponseEntity<Appointment> createNewAppointmentWithStaff(
-          @RequestParam("description") String description,
-          @RequestParam("actualDateTime") String actualDateTime,
-          @RequestParam("bookedDateTime") String bookedDateTime,
-          @RequestParam("priority") String priority,
-          @RequestParam("patientUsername") String patientUsername,
-          @RequestParam("departmentName") String departmentName,
-          @RequestParam("staffUsername") String staffUsername) {
+      @RequestParam("description") String description,
+      @RequestParam("actualDateTime") String actualDateTime,
+      @RequestParam("bookedDateTime") String bookedDateTime,
+      @RequestParam("priority") String priority,
+      @RequestParam("patientUsername") String patientUsername,
+      @RequestParam("departmentName") String departmentName,
+      @RequestParam("staffUsername") String staffUsername) {
     return ResponseEntity.ok(appointmentService.createNewAppointmentWithStaff(description,
-            actualDateTime, bookedDateTime, priority, patientUsername, departmentName, staffUsername));
+        actualDateTime, bookedDateTime, priority, patientUsername, departmentName, staffUsername));
   }
 
   @PutMapping("/updateAppointment")
   public ResponseEntity<Appointment> updateAppointment(
-          @RequestParam("appointmentId") Long id,
-          @RequestParam("description") String description,
-          @RequestParam("actualDateTime") String actualDateTime,
-          @RequestParam("patientUsername") String patientUsername,
-          @RequestParam("staffUsername") String staffUsername) {
-    return ResponseEntity.ok(appointmentService.updateAppointment(id,patientUsername,
-            actualDateTime,description, staffUsername));
+      @RequestParam("appointmentId") Long id,
+      @RequestParam("description") String description,
+      @RequestParam("actualDateTime") String actualDateTime,
+      @RequestParam("patientUsername") String patientUsername,
+      @RequestParam("staffUsername") String staffUsername) {
+    return ResponseEntity.ok(appointmentService.updateAppointment(id, patientUsername,
+        actualDateTime, description, staffUsername));
   }
 
   @DeleteMapping("/cancelAppointment")
   public ResponseEntity<String> cancelAppointment(
-          @RequestParam("appointmentId") Long id) {
+      @RequestParam("appointmentId") Long id) {
     return ResponseEntity.ok(appointmentService.cancelAppointment(id));
   }
 }

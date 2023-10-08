@@ -27,7 +27,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 
 @Component("loader")
 @Transactional
@@ -222,42 +221,42 @@ public class DataLoader implements CommandLineRunner {
     for (long L = 1L; L <= 9L; L++) {
       facilityService.createFacility(L,
               new Facility("Consultation Room 1 " + departmentRepository.findById(L).get().getName(),
-                      "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.CONSULTATION_ROOM));
+                      "Level 1", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.CONSULTATION_ROOM));
       facilityService.createFacility(L,
               new Facility("Consultation Room 2 " + departmentRepository.findById(L).get().getName(),
-                      "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.CONSULTATION_ROOM));
+                      "Level 1", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.CONSULTATION_ROOM));
       facilityService.createFacility(L,
               new Facility("Consultation Room 3 " + departmentRepository.findById(L).get().getName(),
-                      "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.CONSULTATION_ROOM));
+                      "Level 1", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.CONSULTATION_ROOM));
       facilityService.createFacility(L,
               new Facility("Triage Room 1 " + departmentRepository.findById(L).get().getName(),
-                      "Level 2", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
+                      "Level 2", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.TRIAGE_ROOM));
       facilityService.createFacility(L,
               new Facility("Triage Room 2 " + departmentRepository.findById(L).get().getName(),
-                      "Level 2", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
+                      "Level 2", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.TRIAGE_ROOM));
       facilityService.createFacility(L,
               new Facility("Triage Room 3 " + departmentRepository.findById(L).get().getName(),
-                      "Level 2", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.TRIAGE_ROOM));
+                      "Level 2", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.TRIAGE_ROOM));
       facilityService.createFacility(L,
               new Facility("Operating Room 1 " + departmentRepository.findById(L).get().getName(),
-                      "Level 2", "", 6, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.OPERATING_ROOM));
+                      "Level 2", "", 6, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.OPERATING_ROOM));
       facilityService.createFacility(L,
               new Facility("Operating Room 2 " + departmentRepository.findById(L).get().getName(),
-                      "Level 3", "", 6, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.OPERATING_ROOM));
+                      "Level 3", "", 6, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.OPERATING_ROOM));
       facilityService.createFacility(L,
               new Facility("Registration Counter 1 " + departmentRepository.findById(L).get().getName(),
-                      "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.ADMINISTRATION_OFFICES));
+                      "Level 1", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.ADMINISTRATION_OFFICES));
       facilityService.createFacility(L,
               new Facility("Registration Counter 2 " + departmentRepository.findById(L).get().getName(),
-                      "Level 1", "", 2, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.ADMINISTRATION_OFFICES));
+                      "Level 1", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.ADMINISTRATION_OFFICES));
 
       if (L == 5L) {
         facilityService.createFacility(L,
                 new Facility("Emergency Room 1 " + departmentRepository.findById(L).get().getName(),
-                        "Level 1", "", 4, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.EMERGENCY_ROOM));
+                        "Level 1", "", 4, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.EMERGENCY_ROOM));
         facilityService.createFacility(L,
                 new Facility("Emergency Room 2 " + departmentRepository.findById(L).get().getName(),
-                        "Level 1", "", 4, FacilityStatusEnum.AVAILABLE, FacilityTypeEnum.EMERGENCY_ROOM));
+                        "Level 1", "", 4, FacilityStatusEnum.NON_BOOKABLE, FacilityTypeEnum.EMERGENCY_ROOM));
       }
     }
   }
@@ -572,6 +571,8 @@ public class DataLoader implements CommandLineRunner {
     System.out.println(LocalDateTime.now().plusDays(7L).toString());
 
     Patient patient1 = patientService.getPatientByUsername("patient1");
+    //Just a fix cos i lazy copy paste
+    patient1.setUsername("S9983422D");
     Patient patient2 = patientService.getPatientByUsername("patient2");
     Patient patient3 = patientService.getPatientByUsername("patient3");
     Patient patient4 = patientService.getPatientByUsername("patient4");
@@ -580,55 +581,104 @@ public class DataLoader implements CommandLineRunner {
     Patient patient7 = patientService.getPatientByUsername("patient7");
     Patient patient8 = patientService.getPatientByUsername("patient8");
 
+    //for past appointments
+    appointmentService.createNewAppointment("Chest pain",
+        LocalDateTime.now().minusDays(14).toString(),
+        LocalDateTime.now().minusDays(7).toString(),
+        "LOW",
+        patient1.getElectronicHealthRecord().getNric(),
+        "Cardiology");
+    appointmentService.createNewAppointment("Heart Palpitations",
+        LocalDateTime.now().minusDays(14).toString(),
+        LocalDateTime.now().minusDays(6).toString(),
+        "LOW",
+        patient2.getElectronicHealthRecord().getNric(),
+        "Cardiology");
+    appointmentService.createNewAppointment("Heart Murmurs",
+        LocalDateTime.now().minusDays(17).toString(),
+        LocalDateTime.now().minusDays(5).toString(),
+        "MEDIUM",
+        patient3.getElectronicHealthRecord().getNric(),
+        "Cardiology");
+    appointmentService.createNewAppointment("Valve disease",
+        LocalDateTime.now().minusDays(18).toString(),
+        LocalDateTime.now().minusDays(8).toString(),
+        "LOW",
+        patient4.getElectronicHealthRecord().getNric(),
+        "Cardiology");
+    appointmentService.createNewAppointment("Chest Palpitations",
+        LocalDateTime.now().minusDays(21).toString(),
+        LocalDateTime.now().minusDays(15).toString(),
+        "LOW",
+        patient5.getElectronicHealthRecord().getNric(),
+        "Cardiology");
+    appointmentService.createNewAppointment("Heart checkup",
+        LocalDateTime.now().minusDays(21).toString(),
+        LocalDateTime.now().minusDays(15).toString(),
+        "LOW",
+        patient6.getElectronicHealthRecord().getNric(),
+        "Cardiology");
+    appointmentService.createNewAppointment("High blood pressure",
+        LocalDateTime.now().minusDays(30).toString(),
+        LocalDateTime.now().minusDays(25).toString(),
+        "LOW",
+        patient7.getElectronicHealthRecord().getNric(),
+        "Cardiology");
+    appointmentService.createNewAppointment("Chest discomfort",
+        LocalDateTime.now().minusDays(42).toString(),
+        LocalDateTime.now().minusDays(23).toString(),
+        "LOW",
+        patient8.getElectronicHealthRecord().getNric(),
+        "Cardiology");
 
     //for today
     appointmentService.createNewAppointment("Unstable angina",
             LocalDateTime.now().toString(),
-            LocalDateTime.now().toString(),
-            "LOW",
-            "S9983422D",
+            LocalDateTime.now().minusDays(7).toString(),
+            "MEDIUM",
+            patient1.getElectronicHealthRecord().getNric(),
             "Cardiology");
     appointmentService.createNewAppointment("Heart attack",
             LocalDateTime.now().toString(),
-            LocalDateTime.now().toString(),
-            "LOW",
-            "S9983423D",
+            LocalDateTime.now().minusDays(8).toString(),
+            "HIGH",
+            patient2.getElectronicHealthRecord().getNric(),
             "Cardiology");
     appointmentService.createNewAppointment("Heart failure",
             LocalDateTime.now().toString(),
-            LocalDateTime.now().toString(),
-            "LOW",
-            "S9983424D",
+            LocalDateTime.now().minusDays(9).toString(),
+            "HIGH",
+            patient3.getElectronicHealthRecord().getNric(),
             "Cardiology");
     appointmentService.createNewAppointment("Valve disease",
             LocalDateTime.now().toString(),
-            LocalDateTime.now().toString(),
+            LocalDateTime.now().minusDays(10).toString(),
             "LOW",
-            "S9983425D",
+            patient4.getElectronicHealthRecord().getNric(),
             "Cardiology");
     appointmentService.createNewAppointment("Arrhythmia",
             LocalDateTime.now().toString(),
-            LocalDateTime.now().toString(),
-            "LOW",
-            "S9983426D",
+            LocalDateTime.now().minusDays(11).toString(),
+            "MEDIUM",
+            patient5.getElectronicHealthRecord().getNric(),
             "Cardiology");
     appointmentService.createNewAppointment("Congenital heart conditions",
             LocalDateTime.now().toString(),
-            LocalDateTime.now().toString(),
-            "LOW",
-            "S9983427D",
+            LocalDateTime.now().minusDays(12).toString(),
+            "MEDIUM",
+            patient6.getElectronicHealthRecord().getNric(),
             "Cardiology");
     appointmentService.createNewAppointment("High blood pressure",
             LocalDateTime.now().toString(),
-            LocalDateTime.now().toString(),
+            LocalDateTime.now().minusDays(13).toString(),
             "LOW",
-            "S9983428D",
+            patient7.getElectronicHealthRecord().getNric(),
             "Cardiology");
     appointmentService.createNewAppointment("Inherited heart conditions",
             LocalDateTime.now().toString(),
-            LocalDateTime.now().toString(),
+            LocalDateTime.now().minusDays(14).toString(),
             "LOW",
-            "S9983429D",
+            patient8.getElectronicHealthRecord().getNric(),
             "Cardiology");
 
 
@@ -636,56 +686,56 @@ public class DataLoader implements CommandLineRunner {
             LocalDateTime.now().plusDays(5L).toString(),
             LocalDateTime.now().toString(),
             "LOW",
-            "S9983422D",
+            patient1.getElectronicHealthRecord().getNric(),
             "Cardiology");
     appointmentService.createNewAppointment("Heart attack appointment 2",
             LocalDateTime.now().plusDays(5L).toString(),
             LocalDateTime.now().toString(),
-            "LOW",
-            "S9983423D",
+            "HIGH",
+            patient2.getElectronicHealthRecord().getNric(),
             "Cardiology");
     appointmentService.createNewAppointment("Heart failure appointment 2",
             LocalDateTime.now().plusDays(6L).toString(),
             LocalDateTime.now().toString(),
-            "LOW",
-            "S9983424D",
+            "HIGH",
+            patient3.getElectronicHealthRecord().getNric(),
             "Cardiology");
     appointmentService.createNewAppointment("Valve disease appointment 2",
             LocalDateTime.now().plusDays(7L).toString(),
             LocalDateTime.now().toString(),
             "LOW",
-            "S9983425D",
+            patient4.getElectronicHealthRecord().getNric(),
             "Cardiology");
     appointmentService.createNewAppointment("Arrhythmia appointment 2",
             LocalDateTime.now().plusDays(7L).toString(),
             LocalDateTime.now().toString(),
             "LOW",
-            "S9983426D",
+            patient5.getElectronicHealthRecord().getNric(),
             "Cardiology");
     appointmentService.createNewAppointment("Congenital heart conditions appointment 2",
             LocalDateTime.now().plusDays(7L).toString(),
             LocalDateTime.now().toString(),
             "LOW",
-            "S9983427D",
+            patient6.getElectronicHealthRecord().getNric(),
             "Cardiology");
     appointmentService.createNewAppointment("High blood pressure appointment 2",
             LocalDateTime.now().plusDays(9L).toString(),
             LocalDateTime.now().plusDays(3L).toString(),
             "LOW",
-            "S9983428D",
+            patient7.getElectronicHealthRecord().getNric(),
             "Cardiology");
 
     appointmentService.createNewAppointment("Inherited heart conditions appointment 2",
             LocalDateTime.now().plusDays(13L).toString(),
             LocalDateTime.now().plusDays(5L).toString(),
             "LOW",
-            "S9983429D",
+            patient8.getElectronicHealthRecord().getNric(),
             "Cardiology");
     appointmentService.createNewAppointment("Unstable angina appointment 3",
             LocalDateTime.now().plusDays(14L).toString(),
             LocalDateTime.now().plusDays(5L).toString(),
             "LOW",
-            "S9983422D",
+            patient1.getElectronicHealthRecord().getNric(),
             "Cardiology");
   }
   private void createConsumableEquipmentData() {
