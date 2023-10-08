@@ -119,8 +119,8 @@ public class MedicationService {
                     throw new UnableToCreateMedicationException("Item Type must be present");
                 }
                 Integer quantity = medication.getQuantityInStock();
-                if (quantity < 1) {
-                    throw new UnableToCreateMedicationException("Quantity in stock must be more than 0 " + quantity);
+                if (updatedMedication.getQuantityInStock() < 0) {
+                    throw new UnableToCreateMedicationException("Quantity in stock cannot be less than 0");
                 }
                 BigDecimal price = medication.getRestockPricePerQuantity();
                 if (price.equals(BigDecimal.ZERO)) {
@@ -139,7 +139,7 @@ public class MedicationService {
                 medicationRepository.save(medication);
                 return medication;
             } else {
-                throw new MedicationNotFoundException("Consumable Equipment with ID: " + inventoryItemId + " is not found");
+                throw new MedicationNotFoundException("Medication with ID: " + inventoryItemId + " is not found");
             }
         } catch (Exception ex) {
             throw new MedicationNotFoundException(ex.getMessage());

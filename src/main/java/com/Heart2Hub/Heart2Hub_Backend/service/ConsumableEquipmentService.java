@@ -1,11 +1,14 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.AllocatedInventory;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ConsumableEquipment;
+import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.ConsumableEquipmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateConsumableEquipmentException;
+import com.Heart2Hub.Heart2Hub_Backend.repository.AllocatedInventoryRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ConsumableEquipmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import org.springframework.security.core.Authentication;
@@ -23,10 +26,12 @@ public class ConsumableEquipmentService {
 
     private final StaffRepository staffRepository;
     private final ConsumableEquipmentRepository consumableEquipmentRepository;
+    private final AllocatedInventoryRepository allocatedInventoryRepository;
 
-    public ConsumableEquipmentService(StaffRepository staffRepository, ConsumableEquipmentRepository consumableEquipmentRepository) {
+    public ConsumableEquipmentService(StaffRepository staffRepository, ConsumableEquipmentRepository consumableEquipmentRepository, AllocatedInventoryRepository allocatedInventoryRepository) {
         this.staffRepository = staffRepository;
         this.consumableEquipmentRepository = consumableEquipmentRepository;
+        this.allocatedInventoryRepository = allocatedInventoryRepository;
     }
 
     public boolean isLoggedInUserAdmin() {
@@ -83,8 +88,16 @@ public class ConsumableEquipmentService {
         }
         try {
             Optional<ConsumableEquipment> consumableEquipmentOptional = consumableEquipmentRepository.findById(inventoryItemId);
+
             if (consumableEquipmentOptional.isPresent()) {
                 ConsumableEquipment consumableEquipment = consumableEquipmentOptional.get();
+                List<AllocatedInventory> allItemInAllocatedInventory = allocatedInventoryRepository.findAllocatedInventoriesByConsumableEquipment(consumableEquipment);
+                for (int i = allItemInAllocatedInventory.size() - 1; i >= 0; i--) {
+                    AllocatedInventory allocatedInventory = allItemInAllocatedInventory.get(i);
+                    System.out.println(allocatedInventory.getAllocatedInventoryId());
+                    allocatedInventoryRepository.delete(allocatedInventory);
+//                    allocatedInventoryService.deleteAllocatedInventory(allocatedInventory.getAllocatedInventoryId());
+                }
                 consumableEquipmentRepository.delete(consumableEquipment);
                 return "Consumable Equipment with consumableEquipmentId " + inventoryItemId + " has been deleted successfully.";
             } else {
@@ -116,8 +129,9 @@ public class ConsumableEquipmentService {
                     throw new UnableToCreateConsumableEquipmentException("Item Type must be present");
                 }
                 Integer quantity = consumableEquipment.getQuantityInStock();
-                if (quantity < 1) {
-                    throw new UnableToCreateConsumableEquipmentException("Quantity in stock must be more than 0 " + quantity);
+                System.out.println("Quantity " + updatedConsumableEquipment.getQuantityInStock());
+                if (updatedConsumableEquipment.getQuantityInStock() < 0) {
+                    throw new UnableToCreateConsumableEquipmentException("Quantity in stock cannot be less than 0");
                 }
                 BigDecimal price = consumableEquipment.getRestockPricePerQuantity();
                 if (price.equals(BigDecimal.ZERO)) {

@@ -26,11 +26,11 @@ public class Appointment {
     private Long appointmentId;
 
     @NotNull
-    @Size(max = 200)
+    @Size(max = 5000, message = "Description too long")
     private String description;
 
     @NotNull
-    @Size(max = 200)
+    @Size(max = 5000, message = "Comments too long")
     private String comments = "";
 
     @NotNull

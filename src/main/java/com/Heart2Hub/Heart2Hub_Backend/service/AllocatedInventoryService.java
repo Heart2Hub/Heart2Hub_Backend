@@ -37,6 +37,11 @@ public class AllocatedInventoryService {
         return allocatedInventoryRepository.findAllocatedInventoriesByFacility(f);
     }
 
+//    public List<AllocatedInventory> findAllAllocatedInventoryByItemId(Long id) {
+//        ConsumableEquipment f = facilityRepository.findById(id).get();
+//        return allocatedInventoryRepository.findAllocatedInventoriesByFacility(f);
+//    }
+
     public AllocatedInventory createAllocatedInventory(Long facilityId, Long inventoryItemId, Integer quantity, Integer minQuantity) {
         AllocatedInventory item = new AllocatedInventory(quantity, minQuantity);
         ConsumableEquipment equipment = consumableEquipmentRepository.findById(inventoryItemId).get();
@@ -65,6 +70,9 @@ public class AllocatedInventoryService {
     public AllocatedInventory updateAllocatedInventory(long inventoryId, Integer newQuantity, Integer minQuantity) {
         AllocatedInventory inventory = allocatedInventoryRepository.findById(inventoryId).get();
         ConsumableEquipment item = consumableEquipmentRepository.findById(inventory.getConsumableEquipment().getInventoryItemId()).get();
+        if (newQuantity < 0) {
+            throw new InsufficientLeaveBalanceException("Quantity cannot be less than 0");
+        }
         if (item.getQuantityInStock() + inventory.getAllocatedInventoryCurrentQuantity() < newQuantity) {
             throw new InsufficientLeaveBalanceException("Not enough quantity");
         }

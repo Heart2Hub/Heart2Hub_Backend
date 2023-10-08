@@ -8,7 +8,9 @@ import java.util.Optional;
 
 public interface ElectronicHealthRecordRepository extends JpaRepository<ElectronicHealthRecord, Long> {
 
+    Optional<ElectronicHealthRecord> findByNricIgnoreCase(String nric);
     Optional<ElectronicHealthRecord> findByNric(String nric);
+
     List<ElectronicHealthRecord> findByFirstNameContainsIgnoreCase(String firstName);
     List<ElectronicHealthRecord> findByLastNameContainsIgnoreCase(String lastName);
 
