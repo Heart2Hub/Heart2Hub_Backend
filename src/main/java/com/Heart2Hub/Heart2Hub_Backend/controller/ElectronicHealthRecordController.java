@@ -28,6 +28,14 @@ public class ElectronicHealthRecordController {
         );
     }
 
+    @GetMapping("/getElectronicHealthRecordByNric")
+    public ResponseEntity<ElectronicHealthRecord> getElectronicHealthRecordByNric(
+            @RequestParam("nric") String nric) {
+        return ResponseEntity.ok(
+                electronicHealthRecordService.findByNric(nric)
+        );
+    }
+
     @GetMapping("/getAllElectronicHealthRecords")
     public ResponseEntity<List<ElectronicHealthRecord>> getAllElectronicHealthRecords() {
         return ResponseEntity.ok(

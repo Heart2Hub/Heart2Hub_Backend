@@ -563,7 +563,10 @@ public class DataLoader implements CommandLineRunner {
     nextOfKinRecordService.createNextOfKinRecord(newPatient8.getPatientId(),new NextOfKinRecord("Mother", "S6882624D"));
     prescriptionRecordService.createPrescriptionRecord(newPatient8.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Metformin HCL", 10, 1, "Tablet", "Take daily", "Doctor Dia Betes", PrescriptionStatusEnum.COLLECTED));
     problemRecordService.createProblemRecord(newPatient8.getPatientId(), new ProblemRecord("Type 2 Diabetes", "Doctor Dia Betes", LocalDateTime.of(2021, 5, 3, 11, 15, 0), PriorityEnum.HIGH, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
-
+    Patient newPatient9 = patientService.createPatient(new Patient("patient9", "password9"), new ElectronicHealthRecord("S5882617D","Adamanthium","Lai", LocalDateTime.of(1965, 10, 2, 0, 0, 0), "Singapore", "Singapore", "Chinese", "Singapore Citizen", "Punggol Ave 23", "99971237"));
+    nextOfKinRecordService.createNextOfKinRecord(newPatient9.getPatientId(),new NextOfKinRecord("Son", "S9983422D"));
+    problemRecordService.createProblemRecord(newPatient9.getPatientId(), new ProblemRecord("Type 2 Diabetes", "Doctor Dia Loh", LocalDateTime.of(2021, 5, 3, 11, 15, 0), PriorityEnum.HIGH, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
+    medicalHistoryRecordService.createMedicalHistoryRecord(newPatient9.getPatientId(), new MedicalHistoryRecord("Super Aids", "Doctor Kevin Tan", LocalDateTime.of(1990, 7, 8, 9, 0, 0), LocalDateTime.of(1991, 5, 20, 14, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.RESPIRATORY));
   }
 
   private void createAppointmentData() {
