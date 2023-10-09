@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.controller;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Subsidy;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.service.SubsidyService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +15,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/subsidy")
+@RequiredArgsConstructor
 public class SubsidyController {
 
     private final SubsidyService subsidyService;
-
-    public SubsidyController(SubsidyService subsidyService) {
-        this.subsidyService = subsidyService;
-    }
 
     @GetMapping("/getAllSubsidies")
     public ResponseEntity<List<Subsidy>> getAllSubsidies() {
