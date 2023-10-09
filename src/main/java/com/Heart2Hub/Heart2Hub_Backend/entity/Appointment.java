@@ -75,9 +75,8 @@ public class Appointment {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @JsonBackReference
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "appointment_id")
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Staff> listOfStaff;
 
     @JsonIgnore

@@ -169,10 +169,12 @@ public class AppointmentService {
 
     if (staffUsername != null && !staffUsername.isEmpty()) {
       Staff staff = staffService.getStaffByUsername(staffUsername);
+      newAppointment.setComments("To be assigned to Dr." + staff.getFirstname() + " " + staff.getLastname());
       newAppointment.setCurrentAssignedStaff(staff);
+      staff.getListOfAssignedAppointments().add(newAppointment);
+      newAppointment.setCurrentAssignedStaff(null);
     }
 
-    appointmentRepository.save(newAppointment);
     return appointmentRepository.save(newAppointment);
   }
 
