@@ -35,6 +35,7 @@ public class AppointmentController {
     return ResponseEntity.ok(appointmentService.viewAllAppointmentsByDay(localDateTimeString));
   }
 
+  //Uses NRIC to search, Creates an Appointment with arrival = false
   @PostMapping("/createNewAppointment")
   public ResponseEntity<Appointment> createNewAppointment(
       @RequestParam("description") String description,
@@ -43,8 +44,21 @@ public class AppointmentController {
       @RequestParam("priority") String priority,
       @RequestParam("patientUsername") String patientUsername,
       @RequestParam("departmentName") String departmentName) {
-    return ResponseEntity.ok(appointmentService.createNewWalkInAppointment(description,
+    return ResponseEntity.ok(appointmentService.createNewAppointment(description,
         actualDateTime, bookedDateTime, priority, patientUsername, departmentName));
+  }
+
+  //Uses NRIC to search, Creates an Appointment with arrival = true
+  @PostMapping("/createNewAppointmentOnWeb")
+  public ResponseEntity<Appointment> createNewAppointmentOnWeb(
+          @RequestParam("description") String description,
+          @RequestParam("actualDateTime") String actualDateTime,
+          @RequestParam("bookedDateTime") String bookedDateTime,
+          @RequestParam("priority") String priority,
+          @RequestParam("patientUsername") String patientUsername,
+          @RequestParam("departmentName") String departmentName) {
+    return ResponseEntity.ok(appointmentService.createNewAppointmentOnWeb(description,
+            actualDateTime, bookedDateTime, priority, patientUsername, departmentName));
   }
 
   @PostMapping("/assignAppointmentToStaff")

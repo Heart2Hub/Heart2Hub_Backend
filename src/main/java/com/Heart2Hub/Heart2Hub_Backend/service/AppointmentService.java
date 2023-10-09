@@ -68,12 +68,11 @@ public class AppointmentService {
     Appointment newAppointment = new Appointment(description, actualDateTime,
         bookedDateTime, PriorityEnum.valueOf(priority), patient, department);
     patient.getListOfCurrentAppointments().add(newAppointment);
-    //newAppointment.setArrived(true);
     appointmentRepository.save(newAppointment);
     return appointmentRepository.save(newAppointment);
   }
 
-  public Appointment createNewWalkInAppointment(String description,
+  public Appointment createNewAppointmentOnWeb(String description,
                                           String actualDateTimeString, String bookedDateTimeString, String priority,
                                           String nric, String departmentName) {
     LocalDateTime actualDateTime = LocalDateTime.parse(actualDateTimeString);
