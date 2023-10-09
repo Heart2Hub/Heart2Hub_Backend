@@ -53,6 +53,7 @@ public class SecurityConfig {
                     .requestMatchers("/appointment/**").permitAll()
                     .requestMatchers("/shift/**").permitAll()
                     .requestMatchers("/department/**").permitAll()
+                    .requestMatchers("/nextOfKinRecord/**").permitAll()
                 .anyRequest().authenticated() // 2
         )
         .sessionManagement((httpSecuritySessionManagementConfigurer -> //3
