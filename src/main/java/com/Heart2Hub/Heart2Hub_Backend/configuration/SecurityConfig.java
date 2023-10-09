@@ -48,6 +48,8 @@ public class SecurityConfig {
                 .requestMatchers("/staff/changePassword").permitAll()
                 .requestMatchers("/staff/**").permitAll()
                     .requestMatchers("/patient/**").permitAll()
+                    .requestMatchers("/electronicHealthRecord/**").permitAll()
+                    .requestMatchers("/nextOfKinRecord/**").permitAll()
                 .anyRequest().authenticated() // 2
         )
         .sessionManagement((httpSecuritySessionManagementConfigurer -> //3
