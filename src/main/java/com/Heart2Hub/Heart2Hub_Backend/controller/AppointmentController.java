@@ -2,6 +2,7 @@ package com.Heart2Hub.Heart2Hub_Backend.controller;
 
 import com.Heart2Hub.Heart2Hub_Backend.dto.AppointmentDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
+import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.AppointmentMapper;
 import com.Heart2Hub.Heart2Hub_Backend.service.AppointmentService;
@@ -95,7 +96,7 @@ public class AppointmentController {
       @RequestParam("staffId") Long staffId) {
 
     return ResponseEntity.ok(appointmentMapper.convertToDto(
-        appointmentService.updateAppointmentComments(appointmentId, comments,staffId)));
+        appointmentService.updateAppointmentComments(appointmentId, comments, staffId)));
   }
 
   @PostMapping("/updateAppointmentSwimlaneStatus")
@@ -135,5 +136,22 @@ public class AppointmentController {
   public ResponseEntity<String> cancelAppointment(
       @RequestParam("appointmentId") Long id) {
     return ResponseEntity.ok(appointmentService.cancelAppointment(id));
+  }
+
+  @PostMapping("/addImageAttachmentToAppointment")
+  public ResponseEntity<AppointmentDTO> addImageAttachmentToAppointment(
+      @RequestParam("appointmentId") Long appointmentId,
+      @RequestParam("imageLink") String imageLink,
+      @RequestParam("createdDate") String createdDate) {
+
+    return ResponseEntity.ok(appointmentMapper.convertToDto(
+        appointmentService.addImageAttachmentToAppointment(appointmentId, imageLink, createdDate)));
+  }
+
+  @GetMapping("/viewAppointmentAttachments")
+  public ResponseEntity<List<ImageDocument>> viewAppointmentAttachments(
+      @RequestParam("appointmentId") Long appointmentId) {
+    return ResponseEntity.ok(appointmentService.viewAppointmentAttachments(appointmentId));
+
   }
 }

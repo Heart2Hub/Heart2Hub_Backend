@@ -24,7 +24,8 @@ public class AppointmentDTO {
   private Long currentAssignedStaffId ;
   private Long patientId;
   private List<Long> listOfStaffsId;
-  private List<Long> listOfImageDocumentsId;
+//  private List<Long> listOfImageDocumentsId;
+  private List<String> listOfImageDocumentsImageLinks;
   private Long electronicHealthRecordId;
   private String firstName;
   private String lastName;

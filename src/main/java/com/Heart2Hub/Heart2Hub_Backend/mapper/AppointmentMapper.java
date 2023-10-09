@@ -47,10 +47,20 @@ public class AppointmentMapper {
                 .map(Staff::getStaffId)
                 .collect(Collectors.toList()) : null,
             AppointmentDTO::setListOfStaffsId)
+//        .addMapping(
+//            src -> (src.getListOfImageDocuments() != null) ? src.getListOfImageDocuments().stream()
+//                .map(ImageDocument::getImageDocumentId).collect(Collectors.toList()) : null,
+//            AppointmentDTO::setListOfImageDocumentsId)
+//        .addMapping(
+//            src -> (src.getListOfImageDocuments() != null) ? src.getListOfImageDocuments().stream()
+//                .filter(imageDoc -> imageDoc != null && imageDoc.getImageDocumentId() != null)
+//                .map(ImageDocument::getImageDocumentId).collect(Collectors.toList()) : null,
+//            AppointmentDTO::setListOfImageDocumentsId)
         .addMapping(
             src -> (src.getListOfImageDocuments() != null) ? src.getListOfImageDocuments().stream()
-                .map(ImageDocument::getImageDocumentId).collect(Collectors.toList()) : null,
-            AppointmentDTO::setListOfImageDocumentsId);
+                .map(ImageDocument::getImageLink).collect(Collectors.toList()) : null,
+            AppointmentDTO::setListOfImageDocumentsImageLinks);
+
   }
 
   public AppointmentDTO convertToDto(Appointment appointment) {

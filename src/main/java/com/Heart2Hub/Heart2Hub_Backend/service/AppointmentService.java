@@ -10,6 +10,7 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateAppointmentArriva
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateAppointmentComments;
 import com.Heart2Hub.Heart2Hub_Backend.repository.AppointmentRepository;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -272,6 +273,22 @@ public class AppointmentService {
     appointment.setCurrentAssignedStaff(null);
     appointmentRepository.delete(appointment);
     return "Appointment " + appointmentId + " has been deleted successfully!";
+  }
+
+  public Appointment addImageAttachmentToAppointment(Long appointmentId, String imageLink, String createdDate) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss");
+    LocalDateTime createdDateTime = LocalDateTime.parse(createdDate, formatter);
+    ImageDocument imageDocument = new ImageDocument(imageLink, createdDateTime);
+
+    Appointment appointment = findAppointmentByAppointmentId(appointmentId);
+    appointment.getListOfImageDocuments().add(imageDocument);
+
+    return appointment;
+  }
+
+  public List<ImageDocument> viewAppointmentAttachments(Long appointmentId) {
+    Appointment appointment = findAppointmentByAppointmentId(appointmentId);
+    return appointment.getListOfImageDocuments();
   }
 
 }

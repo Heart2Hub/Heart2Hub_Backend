@@ -91,13 +91,15 @@ public class AllocatedInventoryService {
     }
 
     public String deleteAllocatedInventory(long inventoryId) {
-//        AllocatedInventory deleteInventory = updateAllocatedInventory(inventoryId, 0, 0);
-//        deleteInventory.setConsumableEquipment(null);
-//        allocatedInventoryRepository.delete(deleteInventory);
+
         try {
         Optional<AllocatedInventory> allocatedInventoryOptional = allocatedInventoryRepository.findById(inventoryId);
+
         if (allocatedInventoryOptional.isPresent()) {
             AllocatedInventory allocatedInventory = allocatedInventoryOptional.get();
+            ConsumableEquipment item = consumableEquipmentRepository.findById(allocatedInventory.getConsumableEquipment().getInventoryItemId()).get();
+            item.setQuantityInStock(item.getQuantityInStock() + allocatedInventory.getAllocatedInventoryCurrentQuantity());
+
             Facility facility = allocatedInventory.getFacility();
             facility.getListOfAllocatedInventories().remove(allocatedInventory);
 //            ConsumableEquipment consumableEquipment = allocatedInventory.getConsumableEquipment();
