@@ -57,6 +57,9 @@ public class ShiftConstraintsService {
           }
         }
         Facility facility = facilityRepository.findByNameContainingIgnoreCase(facilityName).get(0);
+        if (shiftConstraints.getMinPax() > facility.getCapacity()) {
+          throw new UnableToCreateShiftConstraintsException("Min pax cannot be greater than the minimum capacity of this facility (" + facility.getCapacity() + ")");
+        }
         shiftConstraints.setFacility(facility);
         shiftConstraintsRepository.save(shiftConstraints);
         return shiftConstraints;
@@ -143,6 +146,9 @@ public class ShiftConstraintsService {
             if (updatedShiftConstraints.getEndTime() != null) sc.setEndTime(updatedShiftConstraints.getEndTime());
             if (updatedShiftConstraints.getMinPax() != null) sc.setMinPax(updatedShiftConstraints.getMinPax());
             Facility facility = facilityRepository.findByNameContainingIgnoreCase(facilityName).get(0);
+            if (sc.getMinPax() > facility.getCapacity()) {
+              throw new UnableToCreateShiftConstraintsException("Min pax cannot be greater than the minimum capacity of this facility (" + facility.getCapacity() + ")");
+            }
             sc.setFacility(facility);
             shiftConstraintsRepository.save(sc);
             return sc;

@@ -17,5 +17,5 @@ public interface FacilityBookingRepository extends JpaRepository<FacilityBooking
 
     List<FacilityBooking> findFacilityBookingByStaffUsername(String staffUsername);
 
-    List<FacilityBooking> findAllByStartDateTimeBetween(LocalDateTime shiftStart, LocalDateTime shiftEnd);
+    List<FacilityBooking> findAllByFacilityNameAndStartDateTimeBetween(String facilityName, LocalDateTime shiftStart, LocalDateTime shiftEnd);
 }

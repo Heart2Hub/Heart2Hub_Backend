@@ -40,17 +40,11 @@ public class FacilityBookingService {
   }
 
   public void updateBooking(Long facilityBookingId, Long facilityId) {
-    System.out.println("here1");
     FacilityBooking facilityBooking = facilityBookingRepository.findById(facilityBookingId).get();
-    System.out.println("here2");
     Facility oldFacility = facilityBooking.getFacility();
-    System.out.println("here3");
     oldFacility.getListOfFacilityBookings().remove(facilityBooking);
-    System.out.println("here4");
     Facility facility = facilityRepository.findById(facilityId).get();
-    System.out.println("here5");
     facility.getListOfFacilityBookings().add(facilityBooking);
-    System.out.println("here6");
     facilityBooking.setFacility(facility);
   }
 
@@ -151,7 +145,7 @@ if (facilityBooking.getShift() != null) {
     facilityBookingRepository.delete(facilityBooking);
   }
 
-  public List<FacilityBooking> getAllFacilityBookingsWithinTime(LocalDateTime start, LocalDateTime end) {
-    return facilityBookingRepository.findAllByStartDateTimeBetween(start, end);
+  public List<FacilityBooking> getAllFacilityBookingsWithinTime(String name, LocalDateTime start, LocalDateTime end) {
+    return facilityBookingRepository.findAllByFacilityNameAndStartDateTimeBetween(name, start, end);
   }
 }

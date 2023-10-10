@@ -64,9 +64,12 @@ public class ShiftService {
             newShift.setStaff(assignedStaff);
             Optional<Facility> f = facilityRepository.findById(facilityId);
             if (f.isPresent()) {
-//              Facility facility = f.get();
-//              List<FacilityBooking> facilityBookingList = facilityBookingService.getAllFacilityBookingsWithinTime(newShift.getStartTime(), newShift.getEndTime());
-
+              Facility facility = f.get();
+              List<FacilityBooking> facilityBookingList = facilityBookingService.getAllFacilityBookingsWithinTime(facility.getName(), newShift.getStartTime(), newShift.getEndTime());
+              System.out.println(facilityBookingList.size());
+              if (facilityBookingList.size() >= facility.getCapacity()) {
+                throw new UnableToCreateShiftException("Staff cannot work at this facility as it has reached its maximum capacity.");
+              }
               FacilityBooking fb = new FacilityBooking(newShift.getStartTime(), newShift.getEndTime(), "Shift for staff " + assignedStaff.getUsername());
               fb.setStaffUsername(staffUsername);
               FacilityBooking newFacilityBooking = facilityBookingService.createBooking(fb, facilityId);
@@ -201,7 +204,15 @@ public class ShiftService {
         if (updatedShift.getComments() != null) shift.setComments(updatedShift.getComments());
         if (shift.getStaff().getStaffRoleEnum() != StaffRoleEnum.NURSE || shift.getFacilityBooking() != null) {
           if (shift.getFacilityBooking().getFacility().getFacilityId() != facilityId) {
-            facilityBookingService.updateBooking(shift.getFacilityBooking().getFacilityBookingId(), facilityId);
+            Optional<Facility> f = facilityRepository.findById(facilityId);
+            if (f.isPresent()) {
+              Facility facility = f.get();
+              List<FacilityBooking> facilityBookingList = facilityBookingService.getAllFacilityBookingsWithinTime(facility.getName(), shift.getStartTime(), shift.getEndTime());
+              if (facilityBookingList.size() >= facility.getCapacity()) {
+                throw new UnableToCreateShiftException("Staff cannot work at this facility as it has reached its maximum capacity.");
+              }
+              facilityBookingService.updateBooking(shift.getFacilityBooking().getFacilityBookingId(), facilityId);
+            }
           }
         }
         if (checkShiftConditions(shift, shift.getStaff())) {
