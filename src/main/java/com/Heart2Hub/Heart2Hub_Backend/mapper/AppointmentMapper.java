@@ -3,84 +3,108 @@ package com.Heart2Hub.Heart2Hub_Backend.mapper;
 import com.Heart2Hub.Heart2Hub_Backend.dto.AppointmentDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-import java.time.LocalDateTime;
-import java.util.stream.Collectors;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class AppointmentMapper {
 
-  private final ModelMapper modelMapper;
+  public AppointmentDTO toDTO(Appointment appointment) {
+    if (appointment == null) {
+      return null;
+    }
 
-  public AppointmentMapper() {
-    this.modelMapper = new ModelMapper();
-    modelMapper.getConfiguration().setAmbiguityIgnored(true);
+    AppointmentDTO dto = new AppointmentDTO();
 
-    modelMapper.createTypeMap(Appointment.class, AppointmentDTO.class)
-//        .addMapping(src -> src.getActualDateTime() != null ? src.getActualDateTime() : null,
-//            AppointmentDTO::setActualDateTime)
-//        .addMapping(src -> LocalDateTime.now(),
-//            AppointmentDTO::setActualDateTime)
-        .addMapping(src -> src.getCurrentAssignedStaff().getStaffId(),
-            AppointmentDTO::setCurrentAssignedStaffId)
-        .addMapping(src -> src.getPatient().getPatientId(), AppointmentDTO::setPatientId)
-        .addMapping(src -> src.getPatient().getProfilePicture() != null ? src.getPatient()
-            .getProfilePicture().getImageLink() : null, AppointmentDTO::setPatientProfilePicture)
-        .addMapping(src -> src.getPatient().getElectronicHealthRecord().getDateOfBirth(),
-            AppointmentDTO::setDateOfBirth)
-        .addMapping(
-            src -> src.getPatient().getElectronicHealthRecord().getElectronicHealthRecordId(),
-            AppointmentDTO::setElectronicHealthRecordId)
-        .addMapping(src -> src.getPatient().getElectronicHealthRecord().getFirstName(),
-            AppointmentDTO::setFirstName)
-        .addMapping(src -> src.getPatient().getElectronicHealthRecord().getLastName(),
-            AppointmentDTO::setLastName)
-        .addMapping(src -> src.getPatient().getElectronicHealthRecord().getNric(),
-            AppointmentDTO::setNric)
-        .addMapping(src -> src.getPatient().getElectronicHealthRecord().getPlaceOfBirth(),
-            AppointmentDTO::setPlaceOfBirth)
-        .addMapping(src -> src.getPatient().getElectronicHealthRecord().getSex(),
-            AppointmentDTO::setSex)
-        .addMapping(src -> src.getPatient().getElectronicHealthRecord().getContactNumber(),
-            AppointmentDTO::setContactNumber)
-        .addMapping(src -> src.getPatient().getElectronicHealthRecord().getNationality(),
-            AppointmentDTO::setNationality)
-        .addMapping(
-            src -> (src.getListOfStaff() != null) ? src.getListOfStaff().stream()
-                .map(Staff::getStaffId)
-                .collect(Collectors.toList()) : null,
-            AppointmentDTO::setListOfStaffsId)
-//        .addMapping(
-//            src -> (src.getListOfImageDocuments() != null) ? src.getListOfImageDocuments().stream()
-//                .map(ImageDocument::getImageDocumentId).collect(Collectors.toList()) : null,
-//            AppointmentDTO::setListOfImageDocumentsId)
-//        .addMapping(
-//            src -> (src.getListOfImageDocuments() != null) ? src.getListOfImageDocuments().stream()
-//                .filter(imageDoc -> imageDoc != null && imageDoc.getImageDocumentId() != null)
-//                .map(ImageDocument::getImageDocumentId).collect(Collectors.toList()) : null,
-//            AppointmentDTO::setListOfImageDocumentsId)
-        .addMapping(
-            src -> (src.getListOfImageDocuments() != null) ? src.getListOfImageDocuments().stream()
-                .map(ImageDocument::getImageLink).collect(Collectors.toList()) : null,
-            AppointmentDTO::setListOfImageDocumentsImageLinks);
+    dto.setAppointmentId(appointment.getAppointmentId());
+    dto.setDescription(appointment.getDescription());
+    dto.setComments(appointment.getComments());
+    dto.setActualDateTime(appointment.getActualDateTime());
+    dto.setBookedDateTime(appointment.getBookedDateTime());
+    dto.setEstimatedDuration(appointment.getEstimatedDuration());
+    dto.setArrived(appointment.getArrived());
+    dto.setPriorityEnum(appointment.getPriorityEnum());
+    dto.setSwimlaneStatusEnum(appointment.getSwimlaneStatusEnum());
+    //current assigned staff
+    if (appointment.getCurrentAssignedStaff() != null) {
+      dto.setCurrentAssignedStaffId(appointment.getCurrentAssignedStaff().getStaffId());
+    }
+    //Patient
+    System.out.println(appointment.getPatient().getPatientId());
+    if (appointment.getPatient()!=null) {
+      dto.setPatientId(appointment.getPatient().getPatientId());
 
-  }
+      if (appointment.getPatient().getProfilePicture() != null) {
+        dto.setPatientProfilePicture(appointment.getPatient().getProfilePicture().getImageLink());
+      }
 
-  public AppointmentDTO convertToDto(Appointment appointment) {
-    System.out.println("Converting in convertToDTO");
-    System.out.println(appointment.getAppointmentId());
-    AppointmentDTO dto  = modelMapper.map(appointment, AppointmentDTO.class);
-    System.out.println("OUTPUT OF CONVERSION");
-    System.out.println(dto ==null );
-    System.out.println(dto.getAppointmentId());
-    System.out.println(dto.getActualDateTime());
+      if (appointment.getPatient().getElectronicHealthRecord() != null) {
+
+        dto.setFirstName(appointment.getPatient().getElectronicHealthRecord().getFirstName());
+        dto.setLastName(appointment.getPatient().getElectronicHealthRecord().getLastName());
+        dto.setNric(appointment.getPatient().getElectronicHealthRecord().getNric());
+        dto.setPlaceOfBirth(appointment.getPatient().getElectronicHealthRecord().getPlaceOfBirth());
+        dto.setSex(appointment.getPatient().getElectronicHealthRecord().getSex());
+        dto.setContactNumber(appointment.getPatient().getElectronicHealthRecord().getContactNumber());
+        dto.setNationality(appointment.getPatient().getElectronicHealthRecord().getNationality());
+        dto.setDateOfBirth(appointment.getPatient().getElectronicHealthRecord().getDateOfBirth());
+      }
+    }
+
+    //departmentName
+    if (appointment.getDepartment() != null) {
+      dto.setDepartmentName(appointment.getDepartment().getName());
+    }
+
+    // Convert listOfImageDocuments to listOfImageDocumentsImageLinks
+    if (appointment.getListOfImageDocuments() != null) {
+      List<String> imageLinks = new ArrayList<>();
+      for (ImageDocument imageDoc : appointment.getListOfImageDocuments()) {
+        imageLinks.add(imageDoc.getImageLink());
+      }
+      dto.setListOfImageDocumentsImageLinks(imageLinks);
+    }
+
+    // Add other complex mappings if needed...
+
     return dto;
-//    return modelMapper.map(appointment, AppointmentDTO.class);
   }
 
-  public Appointment convertToEntity(AppointmentDTO appointmentDTO) {
-    return modelMapper.map(appointmentDTO, Appointment.class);
+  //DO NOT USE
+  public Appointment toEntity(AppointmentDTO dto) {
+    if (dto == null) {
+      return null;
+    }
+
+    Appointment appointment = new Appointment();
+
+    appointment.setAppointmentId(dto.getAppointmentId());
+    appointment.setDescription(dto.getDescription());
+    appointment.setComments(dto.getComments());
+    // ... set other fields ...
+
+    // Convert back from DTO to entity requires more information and might need services to fetch related entities like 'CurrentAssignedStaff' by id, etc.
+
+    return appointment;
+  }
+
+  //DO NOT USE
+  public List<AppointmentDTO> toDTOList(List<Appointment> appointments) {
+    List<AppointmentDTO> dtos = new ArrayList<>();
+    for (Appointment appointment : appointments) {
+      dtos.add(toDTO(appointment));
+    }
+    return dtos;
+  }
+
+  //DO NOT USE
+  public List<Appointment> toEntityList(List<AppointmentDTO> dtos) {
+    List<Appointment> appointments = new ArrayList<>();
+    for (AppointmentDTO dto : dtos) {
+      appointments.add(toEntity(dto));
+    }
+    return appointments;
   }
 }
