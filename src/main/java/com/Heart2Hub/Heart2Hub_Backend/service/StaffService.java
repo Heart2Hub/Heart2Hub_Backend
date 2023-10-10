@@ -243,4 +243,8 @@ public class StaffService {
             .orElseThrow(() -> new StaffNotFoundException("Username Does Not Exist."));
     return staff;
   }
+
+  public List<Staff> getAllStaffByUnit(String unitName) {
+    return staffRepository.findByUnitName(unitName);
+  }
 }

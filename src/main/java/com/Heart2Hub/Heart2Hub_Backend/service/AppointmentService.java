@@ -106,7 +106,7 @@ public class AppointmentService {
 //        actualDateTime,
         bookedDateTime, PriorityEnum.valueOf(priority), patient, department);
     patient.getListOfCurrentAppointments().add(newAppointment);
-    newAppointment.setArrived(true);
+    //newAppointment.setArrived(true);
 //    appointmentRepository.save(newAppointment);
     return appointmentRepository.save(newAppointment);
   }
@@ -148,13 +148,13 @@ public class AppointmentService {
     return appointmentRepository.findAllByPatientUsername(patientUsername);
   }
 
-  public List<Appointment> viewStaffAppointments(Integer startDay, Integer startMonth,
-      Integer startYear, Integer endDay, Integer endMonth, Integer endYear, String username) {
-    LocalDateTime startDate = LocalDateTime.of(startYear, startMonth, startDay, 0, 0, 0);
-    LocalDateTime endDate = LocalDateTime.of(endYear, endMonth, endDay, 23, 59, 59);
-    return appointmentRepository.findAllByActualDateTimeBetweenAndCurrentAssignedStaffUsername(
-        startDate, endDate, username);
-  }
+//  public List<Appointment> viewStaffAppointments(Integer startDay, Integer startMonth,
+//      Integer startYear, Integer endDay, Integer endMonth, Integer endYear, String username) {
+//    LocalDateTime startDate = LocalDateTime.of(startYear, startMonth, startDay, 0, 0, 0);
+//    LocalDateTime endDate = LocalDateTime.of(endYear, endMonth, endDay, 23, 59, 59);
+//    return appointmentRepository.findAllByActualDateTimeBetweenAndCurrentAssignedStaffUsername(
+//        startDate, endDate, username);
+//  }
 
   public Appointment createNewAppointmentWithStaff(String description,
 //      String actualDateTimeString,
@@ -186,10 +186,8 @@ public class AppointmentService {
     if (staffUsername != null && !staffUsername.isEmpty()) {
       Staff staff = staffService.getStaffByUsername(staffUsername);
       newAppointment.setComments(
-          "To be assigned to Dr." + staff.getFirstname() + " " + staff.getLastname());
-      newAppointment.setCurrentAssignedStaff(staff);
-      staff.getListOfAssignedAppointments().add(newAppointment);
-      newAppointment.setCurrentAssignedStaff(null);
+          "To be assigned to Dr." + staff.getFirstname() + " " + staff.getLastname() + " (SYSTEM GENERATED)");
+      newAppointment.getListOfStaff().add(staff);
     }
 
     return appointmentRepository.save(newAppointment);
@@ -281,20 +279,20 @@ public class AppointmentService {
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     LocalDateTime newTime = LocalDateTime.parse(newTimeString);
     Patient patient = patientService.getPatientByUsername(patientUsername);
-    if (!newTime.isEqual(appointment.getActualDateTime())) {
+    if (!newTime.isEqual(appointment.getBookedDateTime())) {
       List<Appointment> listOfAppointments = patient.getListOfCurrentAppointments().stream()
-          .filter(appt -> newTime.isEqual(appt.getActualDateTime())).toList();
+          .filter(appt -> newTime.isEqual(appt.getBookedDateTime())).toList();
       if (listOfAppointments.size() != 0) {
         throw new UnableToCreateAppointmentException(
             "Unable to update appointment, overlapping appointment exists.");
       }
     }
 
-    appointment.setActualDateTime(newTime);
+    appointment.setBookedDateTime(newTime);
     appointment.setDescription(newDescription);
     if (staffUsername != null && !staffUsername.isEmpty()) {
       Staff staff = staffService.getStaffByUsername(staffUsername);
-      appointment.setCurrentAssignedStaff(staff);
+      appointment.getListOfStaff().add(staff);
     }
 
     return appointment;
@@ -306,6 +304,16 @@ public class AppointmentService {
         || appointment.getSwimlaneStatusEnum() != SwimlaneStatusEnum.REGISTRATION) {
       throw new UnableToCreateAppointmentException(
           "Unable to delete appointment, patient has already arrived at the clinic.");
+    }
+    List<Staff> staffList = staffService.getAllStaffByUnit(appointment.getDepartment().getName());
+    for (Staff staff : staffList) {
+      if (!staff.getListOfAssignedAppointments().isEmpty()) {
+        for (Appointment appt : staff.getListOfAssignedAppointments()) {
+          if (appt.getAppointmentId() == appointmentId) {
+            staff.getListOfAssignedAppointments().remove(appt);
+          }
+        }
+      }
     }
     appointment.setCurrentAssignedStaff(null);
     appointmentRepository.delete(appointment);

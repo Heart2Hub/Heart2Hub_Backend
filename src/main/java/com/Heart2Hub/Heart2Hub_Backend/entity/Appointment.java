@@ -76,7 +76,7 @@ public class Appointment {
     private Patient patient;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Staff> listOfStaff;
 
     @JsonIgnore

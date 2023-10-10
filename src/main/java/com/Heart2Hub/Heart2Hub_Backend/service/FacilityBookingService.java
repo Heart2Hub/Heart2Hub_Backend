@@ -4,6 +4,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Facility;
 import com.Heart2Hub.Heart2Hub_Backend.entity.FacilityBooking;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.exception.OverlappingBookingException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToDeleteFacilityException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -124,6 +125,10 @@ public class FacilityBookingService {
       throw new OverlappingBookingException("Start Time same as End Time!");
     }
 
+    if (existingBooking.getShift() != null) {
+      throw new UnableToDeleteFacilityException("Cannot change booking associated with a shift");
+    }
+
     existingBooking.setComments(comments);
     existingBooking.setStartDateTime(startDateTime);
     existingBooking.setEndDateTime(endDateTime);
@@ -136,6 +141,9 @@ public class FacilityBookingService {
     FacilityBooking facilityBooking = getFacilityBookingById(id);
 
     Staff s = staffRepository.findByUsername(facilityBooking.getStaffUsername()).get();
+if (facilityBooking.getShift() != null) {
+  throw new UnableToDeleteFacilityException("Cannot delete booking associated with a shift");
+}
     s.getListOfFacilityBookings().remove(facilityBooking);
     staffRepository.save(s);
 

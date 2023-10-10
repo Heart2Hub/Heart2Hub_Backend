@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.mapper;
 import com.Heart2Hub.Heart2Hub_Backend.dto.AppointmentDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
+import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -31,17 +32,25 @@ public class AppointmentMapper {
     if (appointment.getCurrentAssignedStaff() != null) {
       dto.setCurrentAssignedStaffId(appointment.getCurrentAssignedStaff().getStaffId());
     }
+    if (appointment.getListOfStaff() != null) {
+      List<Long> staffIds = new ArrayList<>();
+      for (Staff staff : appointment.getListOfStaff()) {
+        staffIds.add(staff.getStaffId());
+      }
+      dto.setListOfStaffsId(staffIds);
+    }
     //Patient
     System.out.println(appointment.getPatient().getPatientId());
     if (appointment.getPatient()!=null) {
       dto.setPatientId(appointment.getPatient().getPatientId());
+      dto.setUsername(appointment.getPatient().getUsername());
 
       if (appointment.getPatient().getProfilePicture() != null) {
         dto.setPatientProfilePicture(appointment.getPatient().getProfilePicture().getImageLink());
       }
 
       if (appointment.getPatient().getElectronicHealthRecord() != null) {
-
+        dto.setElectronicHealthRecordId(appointment.getPatient().getElectronicHealthRecord().getElectronicHealthRecordId());
         dto.setFirstName(appointment.getPatient().getElectronicHealthRecord().getFirstName());
         dto.setLastName(appointment.getPatient().getElectronicHealthRecord().getLastName());
         dto.setNric(appointment.getPatient().getElectronicHealthRecord().getNric());
