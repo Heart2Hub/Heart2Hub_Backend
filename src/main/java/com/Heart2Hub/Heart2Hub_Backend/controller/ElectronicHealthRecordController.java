@@ -50,6 +50,15 @@ public class ElectronicHealthRecordController {
         );
     }
 
+    @GetMapping("/getNehrRecord")
+    public ResponseEntity<ElectronicHealthRecord> getNehrRecord(
+            @RequestParam("nric") String nric) {
+        return ResponseEntity.ok(
+                electronicHealthRecordService.getNehrRecordByNric(nric)
+        );
+    }
+
+
     @PutMapping("/updateElectronicHealthRecord")
     public ResponseEntity<ElectronicHealthRecord> updateElectronicHealthRecord(
             @RequestParam("electronicHealthRecordId") Long electronicHealthRecordId,
