@@ -29,33 +29,55 @@ public class AppointmentController {
   }
 
   @GetMapping("/viewAllAppointmentsByDay")
-  public ResponseEntity<List<Appointment>> viewAllAppointmentsByDay(
+//  public ResponseEntity<List<Appointment>> viewAllAppointmentsByDay(
+   public ResponseEntity<List<AppointmentDTO>> viewAllAppointmentsByDay(
       @RequestParam("date") String localDateTimeString) {
-
-    return ResponseEntity.ok(appointmentService.viewAllAppointmentsByDay(localDateTimeString));
+    List<Appointment> listOfAppts = appointmentService.viewAllAppointmentsByDay(localDateTimeString);
+    List<AppointmentDTO> listOfApptDTOs = listOfAppts.stream().map(appointment -> appointmentMapper.toDTO(appointment)).collect(
+        Collectors.toList());
+    return ResponseEntity.ok(listOfApptDTOs);
+//    return ResponseEntity.ok(appointmentService.viewAllAppointmentsByDay(localDateTimeString));
   }
 
+  //Uses NRIC to search, Creates an Appointment with arrival = false
   @PostMapping("/createNewAppointment")
   public ResponseEntity<Appointment> createNewAppointment(
       @RequestParam("description") String description,
-      @RequestParam("actualDateTime") String actualDateTime,
+//      @RequestParam("actualDateTime") String actualDateTime,
       @RequestParam("bookedDateTime") String bookedDateTime,
       @RequestParam("priority") String priority,
       @RequestParam("patientUsername") String patientUsername,
       @RequestParam("departmentName") String departmentName) {
-    return ResponseEntity.ok(appointmentService.createNewWalkInAppointment(description,
-        actualDateTime, bookedDateTime, priority, patientUsername, departmentName));
+    return ResponseEntity.ok(appointmentService.createNewAppointment(description,
+//        actualDateTime,
+        bookedDateTime, priority, patientUsername, departmentName));
+  }
+
+  //Uses NRIC to search, Creates an Appointment with arrival = true
+  @PostMapping("/createNewAppointmentOnWeb")
+  public ResponseEntity<Appointment> createNewAppointmentOnWeb(
+          @RequestParam("description") String description,
+//          @RequestParam("actualDateTime") String actualDateTime,
+          @RequestParam("bookedDateTime") String bookedDateTime,
+          @RequestParam("priority") String priority,
+          @RequestParam("patientUsername") String patientUsername,
+          @RequestParam("departmentName") String departmentName) {
+    return ResponseEntity.ok(appointmentService.createNewAppointmentOnWeb(description,
+//            actualDateTime,
+        bookedDateTime, priority, patientUsername, departmentName));
   }
 
   @PostMapping("/assignAppointmentToStaff")
   public ResponseEntity<Appointment> assignAppointmentToStaff(
       @RequestParam("appointmentId") Long appointmentId,
-      @RequestParam("staffId") Long staffId) {
-    return ResponseEntity.ok(appointmentService.assignAppointmentToStaff(appointmentId, staffId));
+      @RequestParam("toStaffId") Long toStaffId,
+      @RequestParam("fromStaffId") Long fromStaffId) {
+    return ResponseEntity.ok(appointmentService.assignAppointmentToStaff(appointmentId, toStaffId, fromStaffId));
   }
 
   @GetMapping("/viewAllAppointmentsByRange")
   public ResponseEntity<List<AppointmentDTO>> viewAllAppointmentsByMonth(
+//      public ResponseEntity<List<Appointment>> viewAllAppointmentsByMonth(
       @RequestParam("startDay") Integer startDay, @RequestParam("startMonth") Integer startMonth,
       @RequestParam("startYear") Integer startYear, @RequestParam("endDay") Integer endDay,
       @RequestParam("endMonth") Integer endMonth,
@@ -65,8 +87,10 @@ public class AppointmentController {
 
     List<Appointment> listOfAppts = appointmentService.viewAllAppointmentsByRange(startDay,
         startMonth, startYear, endDay, endMonth, endYear, departmentName, selectStaffId);
+
     List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
-        .map(appointmentMapper::convertToDto).collect(Collectors.toList());
+        .map(appointmentMapper::toDTO).collect(Collectors.toList());
+
     return ResponseEntity.ok(listOfApptsDTO);
   }
 
@@ -76,7 +100,8 @@ public class AppointmentController {
 
     List<Appointment> listOfAppts = appointmentService.viewPatientAppointments(patientUsername);
     List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
-        .map(appointmentMapper::convertToDto).collect(Collectors.toList());
+//        .map(appointmentMapper::convertToDto).collect(Collectors.toList());
+        .map(appointmentMapper::toDTO).collect(Collectors.toList());
     return ResponseEntity.ok(listOfApptsDTO);
   }
 
@@ -85,8 +110,10 @@ public class AppointmentController {
       @RequestParam("appointmentId") Long appointmentId,
       @RequestParam("arrivalStatus") Boolean arrivalStatus,
       @RequestParam("staffId") Long staffId) {
-    return ResponseEntity.ok(appointmentMapper.convertToDto(
+    return ResponseEntity.ok(appointmentMapper.toDTO(
         appointmentService.updateAppointmentArrival(appointmentId, arrivalStatus, staffId)));
+//    return ResponseEntity.ok(appointmentMapper.convertToDto(
+//        appointmentService.updateAppointmentArrival(appointmentId, arrivalStatus, staffId)));
   }
 
   @PostMapping("/updateAppointmentComments")
@@ -95,15 +122,20 @@ public class AppointmentController {
       @RequestParam("comments") String comments,
       @RequestParam("staffId") Long staffId) {
 
-    return ResponseEntity.ok(appointmentMapper.convertToDto(
+    return ResponseEntity.ok(appointmentMapper.toDTO(
         appointmentService.updateAppointmentComments(appointmentId, comments, staffId)));
+//    return ResponseEntity.ok(appointmentMapper.convertToDto(
+//        appointmentService.updateAppointmentComments(appointmentId, comments, staffId)));
   }
 
   @PostMapping("/updateAppointmentSwimlaneStatus")
   public ResponseEntity<AppointmentDTO> updateAppointmentSwimlaneStatus(
       @RequestParam("appointmentId") Long appointmentId,
       @RequestParam("swimlaneStatus") String swimlaneStatus) {
-    return ResponseEntity.ok(appointmentMapper.convertToDto(
+//    return ResponseEntity.ok(appointmentMapper.convertToDto(
+//        appointmentService.updateAppointmentSwimlaneStatus(appointmentId,
+//            SwimlaneStatusEnum.valueOf(swimlaneStatus.toUpperCase()))));
+    return ResponseEntity.ok(appointmentMapper.toDTO(
         appointmentService.updateAppointmentSwimlaneStatus(appointmentId,
             SwimlaneStatusEnum.valueOf(swimlaneStatus.toUpperCase()))));
   }
@@ -111,25 +143,26 @@ public class AppointmentController {
   @PostMapping("/createNewAppointmentWithStaff")
   public ResponseEntity<Appointment> createNewAppointmentWithStaff(
       @RequestParam("description") String description,
-      @RequestParam("actualDateTime") String actualDateTime,
+//      @RequestParam("actualDateTime") String actualDateTime,
       @RequestParam("bookedDateTime") String bookedDateTime,
       @RequestParam("priority") String priority,
       @RequestParam("patientUsername") String patientUsername,
       @RequestParam("departmentName") String departmentName,
       @RequestParam("staffUsername") String staffUsername) {
     return ResponseEntity.ok(appointmentService.createNewAppointmentWithStaff(description,
-        actualDateTime, bookedDateTime, priority, patientUsername, departmentName, staffUsername));
+//        actualDateTime,
+        bookedDateTime, priority, patientUsername, departmentName, staffUsername));
   }
 
   @PutMapping("/updateAppointment")
   public ResponseEntity<Appointment> updateAppointment(
       @RequestParam("appointmentId") Long id,
       @RequestParam("description") String description,
-      @RequestParam("actualDateTime") String actualDateTime,
+      @RequestParam("bookedDateTime") String bookedDateTime,
       @RequestParam("patientUsername") String patientUsername,
       @RequestParam("staffUsername") String staffUsername) {
     return ResponseEntity.ok(appointmentService.updateAppointment(id, patientUsername,
-        actualDateTime, description, staffUsername));
+            bookedDateTime, description, staffUsername));
   }
 
   @DeleteMapping("/cancelAppointment")
@@ -142,10 +175,13 @@ public class AppointmentController {
   public ResponseEntity<AppointmentDTO> addImageAttachmentToAppointment(
       @RequestParam("appointmentId") Long appointmentId,
       @RequestParam("imageLink") String imageLink,
-      @RequestParam("createdDate") String createdDate) {
+      @RequestParam("createdDate") String createdDate,
+      @RequestParam("staffId") Long staffId) {
 
-    return ResponseEntity.ok(appointmentMapper.convertToDto(
-        appointmentService.addImageAttachmentToAppointment(appointmentId, imageLink, createdDate)));
+//    return ResponseEntity.ok(appointmentMapper.convertToDto(
+//        appointmentService.addImageAttachmentToAppointment(appointmentId, imageLink, createdDate)));
+    return ResponseEntity.ok(appointmentMapper.toDTO(
+        appointmentService.addImageAttachmentToAppointment(appointmentId, imageLink, createdDate, staffId)));
   }
 
   @GetMapping("/viewAppointmentAttachments")

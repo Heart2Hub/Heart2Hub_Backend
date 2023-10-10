@@ -29,6 +29,7 @@ public class AppointmentDTO {
   private Long electronicHealthRecordId;
   private String firstName;
   private String lastName;
+  private String username;
   private String nric;
   private String placeOfBirth;
   private String sex;

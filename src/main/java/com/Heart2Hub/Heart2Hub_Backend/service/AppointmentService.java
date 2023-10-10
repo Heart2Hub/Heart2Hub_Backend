@@ -5,6 +5,8 @@ import com.Heart2Hub.Heart2Hub_Backend.enumeration.PriorityEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.AppointmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffDisabledException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToAddImageAttachmentToAppointmentException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToAssignAppointmentException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateAppointmentException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateAppointmentArrival;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateAppointmentComments;
@@ -31,7 +33,8 @@ public class AppointmentService {
 
 
   public AppointmentService(AppointmentRepository appointmentRepository,
-                            PatientService patientService, DepartmentService departmentService, ElectronicHealthRecordService electronicHealthRecordService, StaffService staffService) {
+      PatientService patientService, DepartmentService departmentService,
+      ElectronicHealthRecordService electronicHealthRecordService, StaffService staffService) {
     this.appointmentRepository = appointmentRepository;
     this.patientService = patientService;
     this.departmentService = departmentService;
@@ -40,13 +43,15 @@ public class AppointmentService {
   }
 
   public Appointment findAppointmentByAppointmentId(Long appointmentId) {
-    return appointmentRepository.findById(appointmentId).orElseThrow(() -> new AppointmentNotFoundException("Appointment Does not Exist"));
+    return appointmentRepository.findById(appointmentId)
+        .orElseThrow(() -> new AppointmentNotFoundException("Appointment Does not Exist"));
   }
 
   public Appointment createNewAppointment(String description,
-      String actualDateTimeString, String bookedDateTimeString, String priority,
+//      String actualDateTimeString,
+      String bookedDateTimeString, String priority,
       String nric, String departmentName) {
-    LocalDateTime actualDateTime = LocalDateTime.parse(actualDateTimeString);
+//    LocalDateTime actualDateTime = LocalDateTime.parse(actualDateTimeString);
     LocalDateTime bookedDateTime = LocalDateTime.parse(bookedDateTimeString);
 
     ElectronicHealthRecord ehr = electronicHealthRecordService.findByNric(nric);
@@ -58,25 +63,27 @@ public class AppointmentService {
 
     //check if patient has overlapping appointments
     List<Appointment> listOfAppointments = patient.getListOfCurrentAppointments().stream()
-        .filter(appt -> actualDateTime.isEqual(appt.getActualDateTime())).toList();
+        .filter(appt -> bookedDateTime.isEqual(appt.getBookedDateTime())).toList();
     if (listOfAppointments.size() != 0) {
       throw new UnableToCreateAppointmentException(
           "Unable to create appointment, overlapping appointment exists.");
     }
 
     //create appt entity
-    Appointment newAppointment = new Appointment(description, actualDateTime,
+    Appointment newAppointment = new Appointment(description,
+//        actualDateTime,
         bookedDateTime, PriorityEnum.valueOf(priority), patient, department);
     patient.getListOfCurrentAppointments().add(newAppointment);
     //newAppointment.setArrived(true);
-    appointmentRepository.save(newAppointment);
+//    appointmentRepository.save(newAppointment);
     return appointmentRepository.save(newAppointment);
   }
 
-  public Appointment createNewWalkInAppointment(String description,
-                                          String actualDateTimeString, String bookedDateTimeString, String priority,
-                                          String nric, String departmentName) {
-    LocalDateTime actualDateTime = LocalDateTime.parse(actualDateTimeString);
+  public Appointment createNewAppointmentOnWeb(String description,
+//                                          String actualDateTimeString,
+      String bookedDateTimeString, String priority,
+      String nric, String departmentName) {
+//    LocalDateTime actualDateTime = LocalDateTime.parse(actualDateTimeString);
     LocalDateTime bookedDateTime = LocalDateTime.parse(bookedDateTimeString);
 
     ElectronicHealthRecord ehr = electronicHealthRecordService.findByNric(nric);
@@ -88,25 +95,26 @@ public class AppointmentService {
 
     //check if patient has overlapping appointments
     List<Appointment> listOfAppointments = patient.getListOfCurrentAppointments().stream()
-            .filter(appt -> actualDateTime.isEqual(appt.getActualDateTime())).toList();
+        .filter(appt -> bookedDateTime.isEqual(appt.getBookedDateTime())).toList();
     if (listOfAppointments.size() != 0) {
       throw new UnableToCreateAppointmentException(
-              "Unable to create appointment, overlapping appointment exists.");
+          "Unable to create appointment, overlapping appointment exists.");
     }
 
     //create appt entity
-    Appointment newAppointment = new Appointment(description, actualDateTime,
-            bookedDateTime, PriorityEnum.valueOf(priority), patient, department);
+    Appointment newAppointment = new Appointment(description,
+//        actualDateTime,
+        bookedDateTime, PriorityEnum.valueOf(priority), patient, department);
     patient.getListOfCurrentAppointments().add(newAppointment);
-    newAppointment.setArrived(true);
-    appointmentRepository.save(newAppointment);
+    //newAppointment.setArrived(true);
+//    appointmentRepository.save(newAppointment);
     return appointmentRepository.save(newAppointment);
   }
 
   //View All Appointments by day
   public List<Appointment> viewAllAppointmentsByDay(String localDateTimeString) {
     LocalDateTime localDateTime = LocalDateTime.parse(localDateTimeString);
-    return appointmentRepository.findAllByActualDateTimeBetween(
+    return appointmentRepository.findAllByBookedDateTimeBetween(
         localDateTime.toLocalDate().atStartOfDay(),
         localDateTime.plusDays(1).toLocalDate().atStartOfDay());
   }
@@ -119,7 +127,7 @@ public class AppointmentService {
     LocalDateTime startDate = LocalDateTime.of(startYear, startMonth, startDay, 0, 0, 0);
     LocalDateTime endDate = LocalDateTime.of(endYear, endMonth, endDay, 23, 59, 59);
 
-    List<Appointment> listOfAppointments = appointmentRepository.findAllByActualDateTimeBetweenAndDepartmentName(
+    List<Appointment> listOfAppointments = appointmentRepository.findAllByBookedDateTimeBetweenAndDepartmentName(
         startDate, endDate, departmentName);
     System.out.println("====== WORKING HERE ======");
 
@@ -127,9 +135,10 @@ public class AppointmentService {
     if (selectStaffId > 0L) {
       System.out.println("====== NOT ZERO ======");
       listOfAppointments = listOfAppointments.stream().filter(
-          appointment -> appointment.getCurrentAssignedStaff() != null
-              && Objects.equals(appointment.getCurrentAssignedStaff().getStaffId(), selectStaffId)).collect(
-          Collectors.toList());
+              appointment -> appointment.getCurrentAssignedStaff() != null
+                  && Objects.equals(appointment.getCurrentAssignedStaff().getStaffId(), selectStaffId))
+          .collect(
+              Collectors.toList());
       System.out.println(listOfAppointments.size());
     }
     return listOfAppointments;
@@ -139,15 +148,19 @@ public class AppointmentService {
     return appointmentRepository.findAllByPatientUsername(patientUsername);
   }
 
-  public List<Appointment> viewStaffAppointments(Integer startDay,Integer startMonth,Integer startYear,Integer endDay,Integer endMonth,Integer endYear, String username) {
-    LocalDateTime startDate = LocalDateTime.of(startYear,startMonth,startDay,0,0,0);
-    LocalDateTime endDate = LocalDateTime.of(endYear,endMonth,endDay,23,59,59);
-    return appointmentRepository.findAllByActualDateTimeBetweenAndCurrentAssignedStaffUsername(startDate, endDate, username);
-  }
+//  public List<Appointment> viewStaffAppointments(Integer startDay, Integer startMonth,
+//      Integer startYear, Integer endDay, Integer endMonth, Integer endYear, String username) {
+//    LocalDateTime startDate = LocalDateTime.of(startYear, startMonth, startDay, 0, 0, 0);
+//    LocalDateTime endDate = LocalDateTime.of(endYear, endMonth, endDay, 23, 59, 59);
+//    return appointmentRepository.findAllByActualDateTimeBetweenAndCurrentAssignedStaffUsername(
+//        startDate, endDate, username);
+//  }
 
   public Appointment createNewAppointmentWithStaff(String description,
-      String actualDateTimeString, String bookedDateTimeString,String priority, String patientUsername, String departmentName, String staffUsername) {
-    LocalDateTime actualDateTime = LocalDateTime.parse(actualDateTimeString);
+//      String actualDateTimeString,
+      String bookedDateTimeString, String priority,
+      String patientUsername, String departmentName, String staffUsername) {
+//    LocalDateTime actualDateTime = LocalDateTime.parse(actualDateTimeString);
     LocalDateTime bookedDateTime = LocalDateTime.parse(bookedDateTimeString);
     //perform checks
     Patient patient = patientService.getPatientByUsername(patientUsername);
@@ -158,61 +171,75 @@ public class AppointmentService {
 
     //check if patient has overlapping appointments
     List<Appointment> listOfAppointments = patient.getListOfCurrentAppointments().stream()
-        .filter(appt -> actualDateTime.isEqual(appt.getActualDateTime())).toList();
+        .filter(appt -> bookedDateTime.isEqual(appt.getBookedDateTime())).toList();
     if (listOfAppointments.size() != 0) {
-      throw new UnableToCreateAppointmentException("Unable to create appointment, overlapping appointment exists.");
+      throw new UnableToCreateAppointmentException(
+          "Unable to create appointment, overlapping appointment exists.");
     }
 
     //create appt entity
-    Appointment newAppointment = new Appointment(description, actualDateTime,
+    Appointment newAppointment = new Appointment(description,
+//        actualDateTime,
         bookedDateTime, PriorityEnum.valueOf(priority), patient, department);
     patient.getListOfCurrentAppointments().add(newAppointment);
 
     if (staffUsername != null && !staffUsername.isEmpty()) {
       Staff staff = staffService.getStaffByUsername(staffUsername);
-      newAppointment.setComments("To be assigned to Dr." + staff.getFirstname() + " " + staff.getLastname());
-      newAppointment.setCurrentAssignedStaff(staff);
-      staff.getListOfAssignedAppointments().add(newAppointment);
-      newAppointment.setCurrentAssignedStaff(null);
+      newAppointment.setComments(
+          "To be assigned to Dr." + staff.getFirstname() + " " + staff.getLastname() + " (SYSTEM GENERATED)");
+      newAppointment.getListOfStaff().add(staff);
     }
 
     return appointmentRepository.save(newAppointment);
   }
 
-  public Appointment assignAppointmentToStaff(Long appointmentId, Long staffId) {
+  public Appointment assignAppointmentToStaff(Long appointmentId, Long toStaffId, Long fromStaffId) {
 
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
-    Staff staff = staffService.findById(staffId);
+    Staff staff = staffService.findById(toStaffId);
 
     //check staff not disabled
     if (staff.getDisabled()) {
       throw new StaffDisabledException("Unable to assign appointment to Disabled Staff");
     }
 
-//    if (appointment.getCurrentAssignedStaff() != null && appointment.getCurrentAssignedStaff()
-//        .getStaffId().equals(staffId)) {
-//      throw new AppointmentAssignmentException("Staff is already allocated the appointment");
+    //staff only can assign if the appointment is unassigned, or that assignment belongs to that staff
+    if (appointment.getCurrentAssignedStaff() == null
+        || (appointment.getCurrentAssignedStaff() != null && Objects.equals(
+        appointment.getCurrentAssignedStaff().getStaffId(), fromStaffId))) {
+
+      //assign new staff to appointment
+      appointment.setCurrentAssignedStaff(staff);
+
+      //set arrived to false because handover to new staff
+      appointment.setArrived(false);
+
+      // BIG PROBLEM HERE
+//    if (!appointment.getListOfStaff().contains(staff)) {
+//      appointment.getListOfStaff().add(staff);
 //    }
 
-    //assign new staff to appointment
-    appointment.setCurrentAssignedStaff(staff);
-    // BIG PROBLEM HERE
-//    appointment.getListOfStaff().add(staff);
-    staff.getListOfAssignedAppointments().add(appointment);
-    return appointment;
+      staff.getListOfAssignedAppointments().add(appointment);
+      return appointment;
+    } else {
+      throw new UnableToAssignAppointmentException(
+          "Unable to assign an appointment ticket that is not yours");
+    }
   }
 
-  public Appointment updateAppointmentArrival(Long appointmentId, Boolean arrivalStatus, Long staffId) {
-
+  public Appointment updateAppointmentArrival(Long appointmentId, Boolean arrivalStatus,
+      Long staffId) {
 
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     //check if appointment is assigned to you first, or else you should not be able to check arrived
-    if (appointment.getCurrentAssignedStaff() == null || !Objects.equals(
+    if (appointment.getCurrentAssignedStaff() != null && !Objects.equals(
         appointment.getCurrentAssignedStaff().getStaffId(), staffId)) {
-      throw new UnableToUpdateAppointmentArrival("Unable to edit a appointment that is not assigned to you");
+      throw new UnableToUpdateAppointmentArrival(
+          "Unable to edit a appointment that is not assigned to you");
     }
 
-      appointment.setArrived(arrivalStatus);
+    appointment.setArrived(arrivalStatus);
+    appointment.setActualDateTime(LocalDateTime.now());
     return appointment;
   }
 
@@ -222,11 +249,14 @@ public class AppointmentService {
     //check if appointment is assigned to you first, or else you should not be able to update comments
     if (appointment.getCurrentAssignedStaff() == null || !Objects.equals(
         appointment.getCurrentAssignedStaff().getStaffId(), staffId)) {
-      throw new UnableToUpdateAppointmentComments("Unable to edit a appointment that is not assigned to you");
+      throw new UnableToUpdateAppointmentComments(
+          "Unable to edit a appointment that is not assigned to you");
     }
 
     Staff staff = staffService.getStaffById(staffId);
-    String newComment = comments + " (" + staff.getStaffRoleEnum()+ " " + staff.getFirstname() + " " + staff.getLastname() + ")";
+    String newComment =
+        comments + " (" + staff.getStaffRoleEnum() + " " + staff.getFirstname() + " "
+            + staff.getLastname() + ")";
     if (!appointment.getComments().equals("")) {
       newComment = "\n" + newComment;
     }
@@ -235,31 +265,35 @@ public class AppointmentService {
     return appointment;
   }
 
-  public Appointment updateAppointmentSwimlaneStatus(Long appointmentId, SwimlaneStatusEnum swimlaneStatusEnum) {
+  public Appointment updateAppointmentSwimlaneStatus(Long appointmentId,
+      SwimlaneStatusEnum swimlaneStatusEnum) {
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     appointment.setSwimlaneStatusEnum(swimlaneStatusEnum);
     appointment.setArrived(false);
     return appointment;
   }
 
-  public Appointment updateAppointment(Long appointmentId, String patientUsername, String newTimeString,
-                                       String newDescription, String staffUsername) {
+  public Appointment updateAppointment(Long appointmentId, String patientUsername,
+      String newTimeString,
+      String newDescription, String staffUsername) {
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     LocalDateTime newTime = LocalDateTime.parse(newTimeString);
     Patient patient = patientService.getPatientByUsername(patientUsername);
-    if (!newTime.isEqual(appointment.getActualDateTime())) {
+    if (!newTime.isEqual(appointment.getBookedDateTime())) {
       List<Appointment> listOfAppointments = patient.getListOfCurrentAppointments().stream()
-              .filter(appt -> newTime.isEqual(appt.getActualDateTime())).toList();
+          .filter(appt -> newTime.isEqual(appt.getBookedDateTime())).toList();
       if (listOfAppointments.size() != 0) {
-        throw new UnableToCreateAppointmentException("Unable to update appointment, overlapping appointment exists.");
+        throw new UnableToCreateAppointmentException(
+            "Unable to update appointment, overlapping appointment exists.");
       }
     }
 
-    appointment.setActualDateTime(newTime);
+    appointment.setBookedDateTime(newTime);
     appointment.setDescription(newDescription);
     if (staffUsername != null && !staffUsername.isEmpty()) {
       Staff staff = staffService.getStaffByUsername(staffUsername);
-      appointment.setCurrentAssignedStaff(staff);
+      appointment.getListOfStaff().clear();
+      appointment.getListOfStaff().add(staff);
     }
 
     return appointment;
@@ -267,28 +301,36 @@ public class AppointmentService {
 
   public String cancelAppointment(Long appointmentId) {
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
-    if (appointment.getArrived() || appointment.getSwimlaneStatusEnum() != SwimlaneStatusEnum.REGISTRATION) {
-      throw new UnableToCreateAppointmentException("Unable to delete appointment, patient has already arrived at the clinic.");
+    if (appointment.getArrived()
+        || appointment.getSwimlaneStatusEnum() != SwimlaneStatusEnum.REGISTRATION) {
+      throw new UnableToCreateAppointmentException(
+          "Unable to delete appointment, patient has already arrived at the clinic.");
     }
-    appointment.setCurrentAssignedStaff(null);
+    appointment.getListOfStaff().clear();
     appointmentRepository.delete(appointment);
     return "Appointment " + appointmentId + " has been deleted successfully!";
   }
 
-  public Appointment addImageAttachmentToAppointment(Long appointmentId, String imageLink, String createdDate) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss");
-    LocalDateTime createdDateTime = LocalDateTime.parse(createdDate, formatter);
-    ImageDocument imageDocument = new ImageDocument(imageLink, createdDateTime);
+  public Appointment addImageAttachmentToAppointment(Long appointmentId, String imageLink,
+      String createdDate, Long staffId) {
 
-    Appointment appointment = findAppointmentByAppointmentId(appointmentId);
-    appointment.getListOfImageDocuments().add(imageDocument);
+      Appointment appointment = findAppointmentByAppointmentId(appointmentId);
+    if (appointment.getCurrentAssignedStaff()!= null && Objects.equals(
+        appointment.getCurrentAssignedStaff().getStaffId(), staffId)) {
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss");
+      LocalDateTime createdDateTime = LocalDateTime.parse(createdDate, formatter);
+      ImageDocument imageDocument = new ImageDocument(imageLink, createdDateTime);
 
-    return appointment;
+      appointment.getListOfImageDocuments().add(imageDocument);
+
+      return appointment;
+    } else {
+      throw new UnableToAddImageAttachmentToAppointmentException("Unable to add image attachment to a appointment that you are not currently assigned to");
+    }
   }
 
   public List<ImageDocument> viewAppointmentAttachments(Long appointmentId) {
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     return appointment.getListOfImageDocuments();
   }
-
 }

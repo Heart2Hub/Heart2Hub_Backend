@@ -33,10 +33,10 @@ public class Appointment {
     @Size(max = 5000, message = "Comments too long")
     private String comments = "";
 
-    @NotNull
+//    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime actualDateTime;
+    private LocalDateTime actualDateTime= null;
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
@@ -44,13 +44,13 @@ public class Appointment {
     private LocalDateTime bookedDateTime;
 
     @NotNull
-    private Time estimatedDuration = Time.valueOf("00:45:00");
+    private Time estimatedDuration = Time.valueOf("01:00:00");
 
     @NotNull
     private Boolean arrived = false;
 
     @NotNull
-    private Time elapsedTime = Time.valueOf("00:45:00");
+    private Time elapsedTime = Time.valueOf("00:00:00");
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -76,7 +76,7 @@ public class Appointment {
     private Patient patient;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Staff> listOfStaff;
 
     @JsonIgnore
@@ -90,12 +90,14 @@ public class Appointment {
     }
 
 
-    public Appointment(String description, LocalDateTime actualDateTime,
+    public Appointment(String description,
+//        LocalDateTime actualDateTime,
         LocalDateTime bookedDateTime,
         PriorityEnum priorityEnum, Patient patient, Department department) {
         this();
         this.description = description;
-        this.actualDateTime = actualDateTime;
+//        this.actualDateTime = actualDateTime;
+        this.actualDateTime = null;
         this.bookedDateTime = bookedDateTime;
         this.priorityEnum = priorityEnum;
         this.patient = patient;
