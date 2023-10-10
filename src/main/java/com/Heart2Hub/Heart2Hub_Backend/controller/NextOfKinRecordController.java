@@ -38,4 +38,10 @@ public class NextOfKinRecordController {
             @RequestBody NextOfKinRecord newNextOfKinRecord) {
         return ResponseEntity.ok(nextOfKinRecordService.createNextOfKinRecord(ehrId, newNextOfKinRecord));
     }
+
+    @DeleteMapping("/deleteNextOfKinRecord")
+    public ResponseEntity<String> deleteNextOfKinRecord(
+            @RequestParam ("nextOfKinRecordId") Long nextOfKinRecordId) {
+        return ResponseEntity.ok(nextOfKinRecordService.deleteNextOfKinRecord(nextOfKinRecordId));
+    }
 }

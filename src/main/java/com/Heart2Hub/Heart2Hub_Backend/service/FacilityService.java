@@ -75,6 +75,9 @@ public class FacilityService {
             if (facilityTypeEnum == null) {
                 throw new UnableToCreateFacilityException("Facility type must be present");
             }
+            if (facilityTypeEnum.equals(FacilityTypeEnum.CONSULTATION_ROOM) && capacity != 1) {
+                throw new UnableToCreateFacilityException("Capacity of Consultation Room must be 1");
+            }
             Optional<Department> optionalDepartment = departmentRepository.findById(departmentId);
             if (optionalDepartment.isPresent()) {
                 Department assignedDepartment = optionalDepartment.get();
@@ -113,19 +116,22 @@ public class FacilityService {
                 System.out.println("allocatedInventory.getAllocatedInventoryId()");
                 facility.getListOfAllocatedInventories().clear();
 
-//                List<FacilityBooking> facilityBookings = new ArrayList<>(facility.getListOfFacilityBookings());
-//
-//                System.out.println("help??");
-//                for (int i = facilityBookings.size() - 1; i >= 0; i--) {
-//                    FacilityBooking facilityBooking = facilityBookings.get(i);
-//                    System.out.println(facilityBooking.getFacilityBookingId());
-//                    facilityBookings.remove(i);
-//                    facilityBooking.setFacility(null);
-//                }
-//
-//                System.out.println(facilityBookings.size());
-//                System.out.println("facility Booking done()");
-//                facility.getListOfFacilityBookings().clear();
+                List<FacilityBooking> facilityBookings = new ArrayList<>(facility.getListOfFacilityBookings());
+
+                System.out.println("help??");
+                if (!facilityBookings.isEmpty()) {
+                    throw new FacilityNotFoundException("Bookings for Facility found. Facility cannot be deleted");
+//                } else {
+//                    for (int i = facilityBookings.size() - 1; i >= 0; i--) {
+//                        FacilityBooking facilityBooking = facilityBookings.get(i);
+//                        System.out.println(facilityBooking.getFacilityBookingId());
+//                        facilityBookings.remove(i);
+//                        facilityBooking.setFacility(null);
+//                    }
+                }
+
+                System.out.println("facility Booking done()");
+                facility.getListOfFacilityBookings().clear();
 
 List<ShiftConstraints> shiftConstraintsList = shiftConstraintsRepository.findByFacility(facility);
                 System.out.println("Hello??");
@@ -138,21 +144,6 @@ List<ShiftConstraints> shiftConstraintsList = shiftConstraintsRepository.findByF
                 }
                 System.out.println("shiftConstraint");
 
-//                facility.getListOfAllocatedInventories().clear();
-//
-//                 List<AllocatedInventory> allocatedInventories = new ArrayList<>(facility.getListOfAllocatedInventories());
-//
-//                System.out.println("Hello is empty??");
-//                for (int i = allocatedInventories.size() - 1; i >= 0; i--) {
-//                    AllocatedInventory allocatedInventory = allocatedInventories.get(i);
-//                    System.out.println(allocatedInventory.getAllocatedInventoryId());
-//                    allocatedInventories.remove(i);
-//                    allocatedInventoryService.deleteAllocatedInventory(allocatedInventory.getAllocatedInventoryId());
-//                }
-//
-//                System.out.println(allocatedInventories.size());
-//                System.out.println("allocatedInventory.getAllocatedInventoryId()");
-//                facility.getListOfAllocatedInventories().clear();
 
                 // TO-DO: CHECK AND REMOVE FACILITY BOOKINGS
                 // TO-DO: CHECK AND REMOVE ALLOCATED INVENTORY
@@ -189,6 +180,11 @@ List<ShiftConstraints> shiftConstraintsList = shiftConstraintsRepository.findByF
                 FacilityStatusEnum facilityStatusEnum = facility.getFacilityStatusEnum();
                 if (facilityStatusEnum == null) {
                     throw new UnableToCreateFacilityException("Facility status must be present");
+                }
+                if (facility.getFacilityStatusEnum().equals(FacilityStatusEnum.BOOKABLE) && updatedFacility.getFacilityStatusEnum().equals(FacilityStatusEnum.NON_BOOKABLE)) {
+                    if (!facility.getListOfFacilityBookings().isEmpty()) {
+                        throw new UnableToCreateFacilityException("Bookings found for facility. Facility status cannot be changed");
+                    }
                 }
                 FacilityTypeEnum facilityTypeEnum = facility.getFacilityTypeEnum();
                 if (facilityTypeEnum == null) {

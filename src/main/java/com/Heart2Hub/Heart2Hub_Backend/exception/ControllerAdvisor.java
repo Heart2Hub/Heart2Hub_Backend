@@ -93,6 +93,18 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
   }
 
+  @ExceptionHandler(UnableToUpdateAppointmentArrival.class)
+  public ResponseEntity<Object> UnableToUpdateAppointmentArrivalException(
+      UnableToUpdateAppointmentArrival ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(UnableToUpdateAppointmentComments.class)
+  public ResponseEntity<Object> UnableToUpdateAppointmentCommentsException(
+      UnableToUpdateAppointmentComments ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
   @ExceptionHandler(UnableToCreateAppointmentException.class)
   public ResponseEntity<Object> handleUnableToCreateAppointmentException(
       UnableToCreateAppointmentException ex) {
