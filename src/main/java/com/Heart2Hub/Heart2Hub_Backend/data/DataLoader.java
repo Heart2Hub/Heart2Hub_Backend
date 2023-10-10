@@ -617,70 +617,70 @@ public class DataLoader implements CommandLineRunner {
     Patient patient8 = patientService.getPatientByUsername("patient8");
 
     //for past appointments
-    LocalDateTime pastDate1 = LocalDateTime.now().minusDays(14).withHour(9).withMinute(0)
-        .withSecond(0);
-    appointmentService.createNewAppointment("Chest pain",
-        pastDate1.toString(),
-//        LocalDateTime.now().minusDays(7).toString(),
-        "LOW",
-        patient1.getElectronicHealthRecord().getNric(),
-        "Cardiology");
-    LocalDateTime pastDate2 = LocalDateTime.now().minusDays(14).withHour(15).withMinute(0)
-        .withSecond(0);
-    appointmentService.createNewAppointment("Heart Palpitations",
-        pastDate2.toString(),
-//        LocalDateTime.now().minusDays(6).toString(),
-        "LOW",
-        patient2.getElectronicHealthRecord().getNric(),
-        "Cardiology");
-    LocalDateTime pastDate3 = LocalDateTime.now().minusDays(17).withHour(15).withMinute(0)
-        .withSecond(0);
-    appointmentService.createNewAppointment("Heart Murmurs",
-        pastDate3.toString(),
-//        LocalDateTime.now().minusDays(5).toString(),
-        "MEDIUM",
-        patient3.getElectronicHealthRecord().getNric(),
-        "Cardiology");
-    LocalDateTime pastDate4 = LocalDateTime.now().minusDays(18).withHour(15).withMinute(0)
-        .withSecond(0);
-    appointmentService.createNewAppointment("Valve disease",
-        pastDate4.toString(),
-//        LocalDateTime.now().minusDays(8).toString(),
-        "LOW",
-        patient4.getElectronicHealthRecord().getNric(),
-        "Cardiology");
-    LocalDateTime pastDate5 = LocalDateTime.now().minusDays(21).withHour(13).withMinute(0)
-        .withSecond(0);
-    appointmentService.createNewAppointment("Chest Palpitations",
-        pastDate5.toString(),
-//        LocalDateTime.now().minusDays(15).toString(),
-        "LOW",
-        patient5.getElectronicHealthRecord().getNric(),
-        "Cardiology");
-    LocalDateTime pastDate6 = LocalDateTime.now().minusDays(21).withHour(16).withMinute(0)
-        .withSecond(0);
-    appointmentService.createNewAppointment("Heart checkup",
-        pastDate6.toString(),
-//        LocalDateTime.now().minusDays(15).toString(),
-        "LOW",
-        patient6.getElectronicHealthRecord().getNric(),
-        "Cardiology");
-    LocalDateTime pastDate7 = LocalDateTime.now().minusDays(30).withHour(16).withMinute(0)
-        .withSecond(0);
-    appointmentService.createNewAppointment("High blood pressure",
-        pastDate7.toString(),
-//        LocalDateTime.now().minusDays(25).toString(),
-        "LOW",
-        patient7.getElectronicHealthRecord().getNric(),
-        "Cardiology");
-    LocalDateTime pastDate8 = LocalDateTime.now().minusDays(42).withHour(11).withMinute(0)
-        .withSecond(0);
-    appointmentService.createNewAppointment("Chest discomfort",
-        pastDate8.toString(),
-//        LocalDateTime.now().minusDays(23).toString(),
-        "LOW",
-        patient8.getElectronicHealthRecord().getNric(),
-        "Cardiology");
+//    LocalDateTime pastDate1 = LocalDateTime.now().minusDays(14).withHour(9).withMinute(0)
+//        .withSecond(0);
+//    appointmentService.createNewAppointment("Chest pain",
+//        pastDate1.toString(),
+////        LocalDateTime.now().minusDays(7).toString(),
+//        "LOW",
+//        patient1.getElectronicHealthRecord().getNric(),
+//        "Cardiology");
+//    LocalDateTime pastDate2 = LocalDateTime.now().minusDays(14).withHour(15).withMinute(0)
+//        .withSecond(0);
+//    appointmentService.createNewAppointment("Heart Palpitations",
+//        pastDate2.toString(),
+////        LocalDateTime.now().minusDays(6).toString(),
+//        "LOW",
+//        patient2.getElectronicHealthRecord().getNric(),
+//        "Cardiology");
+//    LocalDateTime pastDate3 = LocalDateTime.now().minusDays(17).withHour(15).withMinute(0)
+//        .withSecond(0);
+//    appointmentService.createNewAppointment("Heart Murmurs",
+//        pastDate3.toString(),
+////        LocalDateTime.now().minusDays(5).toString(),
+//        "MEDIUM",
+//        patient3.getElectronicHealthRecord().getNric(),
+//        "Cardiology");
+//    LocalDateTime pastDate4 = LocalDateTime.now().minusDays(18).withHour(15).withMinute(0)
+//        .withSecond(0);
+//    appointmentService.createNewAppointment("Valve disease",
+//        pastDate4.toString(),
+////        LocalDateTime.now().minusDays(8).toString(),
+//        "LOW",
+//        patient4.getElectronicHealthRecord().getNric(),
+//        "Cardiology");
+//    LocalDateTime pastDate5 = LocalDateTime.now().minusDays(21).withHour(13).withMinute(0)
+//        .withSecond(0);
+//    appointmentService.createNewAppointment("Chest Palpitations",
+//        pastDate5.toString(),
+////        LocalDateTime.now().minusDays(15).toString(),
+//        "LOW",
+//        patient5.getElectronicHealthRecord().getNric(),
+//        "Cardiology");
+//    LocalDateTime pastDate6 = LocalDateTime.now().minusDays(21).withHour(16).withMinute(0)
+//        .withSecond(0);
+//    appointmentService.createNewAppointment("Heart checkup",
+//        pastDate6.toString(),
+////        LocalDateTime.now().minusDays(15).toString(),
+//        "LOW",
+//        patient6.getElectronicHealthRecord().getNric(),
+//        "Cardiology");
+//    LocalDateTime pastDate7 = LocalDateTime.now().minusDays(30).withHour(16).withMinute(0)
+//        .withSecond(0);
+//    appointmentService.createNewAppointment("High blood pressure",
+//        pastDate7.toString(),
+////        LocalDateTime.now().minusDays(25).toString(),
+//        "LOW",
+//        patient7.getElectronicHealthRecord().getNric(),
+//        "Cardiology");
+//    LocalDateTime pastDate8 = LocalDateTime.now().minusDays(42).withHour(11).withMinute(0)
+//        .withSecond(0);
+//    appointmentService.createNewAppointment("Chest discomfort",
+//        pastDate8.toString(),
+////        LocalDateTime.now().minusDays(23).toString(),
+//        "LOW",
+//        patient8.getElectronicHealthRecord().getNric(),
+//        "Cardiology");
 
     //for today
     LocalDateTime date1 = LocalDateTime.now().withHour(9).withMinute(0).withSecond(0);
