@@ -33,13 +33,13 @@ public class Appointment {
     @Size(max = 5000, message = "Comments too long")
     private String comments = "";
 
-    @NotNull
-//    @Temporal(TemporalType.TIMESTAMP)
+//    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime actualDateTime= LocalDateTime.now();
+    private LocalDateTime actualDateTime= null;
 
     @NotNull
-//    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime bookedDateTime;
 

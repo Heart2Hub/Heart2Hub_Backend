@@ -72,6 +72,7 @@ public class AppointmentController {
 
   @GetMapping("/viewAllAppointmentsByRange")
   public ResponseEntity<List<AppointmentDTO>> viewAllAppointmentsByMonth(
+//      public ResponseEntity<List<Appointment>> viewAllAppointmentsByMonth(
       @RequestParam("startDay") Integer startDay, @RequestParam("startMonth") Integer startMonth,
       @RequestParam("startYear") Integer startYear, @RequestParam("endDay") Integer endDay,
       @RequestParam("endMonth") Integer endMonth,
@@ -82,15 +83,8 @@ public class AppointmentController {
     List<Appointment> listOfAppts = appointmentService.viewAllAppointmentsByRange(startDay,
         startMonth, startYear, endDay, endMonth, endYear, departmentName, selectStaffId);
 
-    System.out.println("WORKING HERE");
-
-    System.out.println(listOfAppts.size());
-
     List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
-        .map(appointmentMapper::convertToDto).collect(Collectors.toList());
-
-    System.out.println("WORKING HERE TOO");
-    System.out.println(listOfApptsDTO.size());
+        .map(appointmentMapper::toDTO).collect(Collectors.toList());
 
     return ResponseEntity.ok(listOfApptsDTO);
   }
@@ -101,7 +95,8 @@ public class AppointmentController {
 
     List<Appointment> listOfAppts = appointmentService.viewPatientAppointments(patientUsername);
     List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
-        .map(appointmentMapper::convertToDto).collect(Collectors.toList());
+//        .map(appointmentMapper::convertToDto).collect(Collectors.toList());
+        .map(appointmentMapper::toDTO).collect(Collectors.toList());
     return ResponseEntity.ok(listOfApptsDTO);
   }
 
@@ -110,8 +105,10 @@ public class AppointmentController {
       @RequestParam("appointmentId") Long appointmentId,
       @RequestParam("arrivalStatus") Boolean arrivalStatus,
       @RequestParam("staffId") Long staffId) {
-    return ResponseEntity.ok(appointmentMapper.convertToDto(
+    return ResponseEntity.ok(appointmentMapper.toDTO(
         appointmentService.updateAppointmentArrival(appointmentId, arrivalStatus, staffId)));
+//    return ResponseEntity.ok(appointmentMapper.convertToDto(
+//        appointmentService.updateAppointmentArrival(appointmentId, arrivalStatus, staffId)));
   }
 
   @PostMapping("/updateAppointmentComments")
@@ -120,15 +117,20 @@ public class AppointmentController {
       @RequestParam("comments") String comments,
       @RequestParam("staffId") Long staffId) {
 
-    return ResponseEntity.ok(appointmentMapper.convertToDto(
+    return ResponseEntity.ok(appointmentMapper.toDTO(
         appointmentService.updateAppointmentComments(appointmentId, comments, staffId)));
+//    return ResponseEntity.ok(appointmentMapper.convertToDto(
+//        appointmentService.updateAppointmentComments(appointmentId, comments, staffId)));
   }
 
   @PostMapping("/updateAppointmentSwimlaneStatus")
   public ResponseEntity<AppointmentDTO> updateAppointmentSwimlaneStatus(
       @RequestParam("appointmentId") Long appointmentId,
       @RequestParam("swimlaneStatus") String swimlaneStatus) {
-    return ResponseEntity.ok(appointmentMapper.convertToDto(
+//    return ResponseEntity.ok(appointmentMapper.convertToDto(
+//        appointmentService.updateAppointmentSwimlaneStatus(appointmentId,
+//            SwimlaneStatusEnum.valueOf(swimlaneStatus.toUpperCase()))));
+    return ResponseEntity.ok(appointmentMapper.toDTO(
         appointmentService.updateAppointmentSwimlaneStatus(appointmentId,
             SwimlaneStatusEnum.valueOf(swimlaneStatus.toUpperCase()))));
   }
@@ -170,7 +172,9 @@ public class AppointmentController {
       @RequestParam("imageLink") String imageLink,
       @RequestParam("createdDate") String createdDate) {
 
-    return ResponseEntity.ok(appointmentMapper.convertToDto(
+//    return ResponseEntity.ok(appointmentMapper.convertToDto(
+//        appointmentService.addImageAttachmentToAppointment(appointmentId, imageLink, createdDate)));
+    return ResponseEntity.ok(appointmentMapper.toDTO(
         appointmentService.addImageAttachmentToAppointment(appointmentId, imageLink, createdDate)));
   }
 
