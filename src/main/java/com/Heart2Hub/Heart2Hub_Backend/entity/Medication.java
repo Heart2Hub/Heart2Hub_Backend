@@ -4,18 +4,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @Table(name = "medication")
 public class Medication extends InventoryItem {
-    @NotNull
-    private Long medicationId;
 
-    @NotNull
-    private String medicationUUID;
+//    @NotNull
+//    private String medicationUUID;
 
     @NotNull
     private BigDecimal retailPricePerQuantity;
@@ -26,18 +26,16 @@ public class Medication extends InventoryItem {
     @NotNull
     private Integer quantityInStock;
 
-    public Medication(String inventoryItemName, String inventoryItemDescription, ItemTypeEnum itemTypeEnum, Long medicationId, String medicationUUID, BigDecimal retailPricePerQuantity, BigDecimal restockPricePerQuantity, Integer quantityInStock) {
+    public Medication(String inventoryItemName, String inventoryItemDescription, ItemTypeEnum itemTypeEnum, Integer quantityInStock, BigDecimal retailPricePerQuantity, BigDecimal restockPricePerQuantity) {
         super(inventoryItemName, inventoryItemDescription, itemTypeEnum);
-        this.medicationId = medicationId;
-        this.medicationUUID = medicationUUID;
+//        this.medicationUUID = medicationUUID;
         this.retailPricePerQuantity = retailPricePerQuantity;
         this.restockPricePerQuantity = restockPricePerQuantity;
         this.quantityInStock = quantityInStock;
     }
 
-    public Medication(Long medicationId, String medicationUUID, BigDecimal retailPricePerQuantity, BigDecimal restockPricePerQuantity, Integer quantityInStock) {
-        this.medicationId = medicationId;
-        this.medicationUUID = medicationUUID;
+    public Medication(Integer quantityInStock, BigDecimal retailPricePerQuantity, BigDecimal restockPricePerQuantity) {
+//        this.medicationUUID = medicationUUID;
         this.retailPricePerQuantity = retailPricePerQuantity;
         this.restockPricePerQuantity = restockPricePerQuantity;
         this.quantityInStock = quantityInStock;

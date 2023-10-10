@@ -6,15 +6,15 @@ import com.Heart2Hub.Heart2Hub_Backend.enumeration.FacilityTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.FacilityNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateFacilityException;
-import com.Heart2Hub.Heart2Hub_Backend.repository.FacilityRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.SubDepartmentRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,12 +24,18 @@ public class FacilityService {
 
     private final FacilityRepository facilityRepository;
     private final StaffRepository staffRepository;
-    private final SubDepartmentRepository subDepartmentRepository;
+    private final DepartmentRepository departmentRepository;
+    private final AllocatedInventoryService allocatedInventoryService;
+    private final ShiftConstraintsRepository shiftConstraintsRepository;
+    private final FacilityBookingService facilityBookingService;
 
-    public FacilityService(FacilityRepository facilityRepository, StaffRepository staffRepository, SubDepartmentRepository subDepartmentRepository) {
+    public FacilityService(FacilityRepository facilityRepository, StaffRepository staffRepository, DepartmentRepository departmentRepository, AllocatedInventoryService allocatedInventoryService, ShiftConstraintsRepository shiftConstraintsRepository, FacilityBookingService facilityBookingService) {
         this.facilityRepository = facilityRepository;
         this.staffRepository = staffRepository;
-        this.subDepartmentRepository = subDepartmentRepository;
+        this.departmentRepository = departmentRepository;
+        this.allocatedInventoryService = allocatedInventoryService;
+        this.shiftConstraintsRepository = shiftConstraintsRepository;
+        this.facilityBookingService = facilityBookingService;
     }
 
     public boolean isLoggedInUserAdmin() {
@@ -48,15 +54,11 @@ public class FacilityService {
         return isAdmin;
     }
 
-    public Facility createFacility(Long subDepartmentId, Facility newFacility) throws UnableToCreateFacilityException {
+    public Facility createFacility(Long departmentId, Facility newFacility) {
         if (!isLoggedInUserAdmin()) {
             throw new UnableToCreateFacilityException("Staff cannot create facilities as he/she is not an admin.");
         }
-        try {
             String name = newFacility.getName();
-            if (name.trim().equals("")) {
-                throw new UnableToCreateFacilityException("Name must be present.");
-            }
             Integer capacity = newFacility.getCapacity();
             if (capacity < 1) {
                 throw new UnableToCreateFacilityException("Capacity must be above 1");
@@ -73,15 +75,20 @@ public class FacilityService {
             if (facilityTypeEnum == null) {
                 throw new UnableToCreateFacilityException("Facility type must be present");
             }
-            SubDepartment assignedSubDepartment = subDepartmentRepository.findById(subDepartmentId).get();
-            assignedSubDepartment.getListOfFacilities().add(newFacility);
-            newFacility.setSubDepartment(assignedSubDepartment);
-            subDepartmentRepository.save(assignedSubDepartment);
-            facilityRepository.save(newFacility);
-            return newFacility;
-        } catch (Exception ex) {
-            throw new UnableToCreateFacilityException(ex.getMessage());
-        }
+            if (facilityTypeEnum.equals(FacilityTypeEnum.CONSULTATION_ROOM) && capacity != 1) {
+                throw new UnableToCreateFacilityException("Capacity of Consultation Room must be 1");
+            }
+            Optional<Department> optionalDepartment = departmentRepository.findById(departmentId);
+            if (optionalDepartment.isPresent()) {
+                Department assignedDepartment = optionalDepartment.get();
+                assignedDepartment.getListOfFacilities().add(newFacility);
+                newFacility.setDepartment(assignedDepartment);
+                departmentRepository.save(assignedDepartment);
+                facilityRepository.save(newFacility);
+                return newFacility;
+            } else {
+                throw new UnableToCreateFacilityException("Dept not found");
+            }
     }
 
     public String deleteFacility(Long facilityId) throws FacilityNotFoundException {
@@ -92,8 +99,52 @@ public class FacilityService {
             Optional<Facility> facilityOptional = facilityRepository.findById(facilityId);
             if (facilityOptional.isPresent()) {
                 Facility facility = facilityOptional.get();
-                SubDepartment subDepartment = facility.getSubDepartment();
-                subDepartment.getListOfFacilities().remove(facility);
+                Department department = facility.getDepartment();
+                department.getListOfFacilities().remove(facility);
+
+                List<AllocatedInventory> allocatedInventories = new ArrayList<>(facility.getListOfAllocatedInventories());
+
+                System.out.println("Hello is empty??");
+                for (int i = allocatedInventories.size() - 1; i >= 0; i--) {
+                    AllocatedInventory allocatedInventory = allocatedInventories.get(i);
+                    System.out.println(allocatedInventory.getAllocatedInventoryId());
+                    allocatedInventories.remove(i);
+                    allocatedInventoryService.deleteAllocatedInventory(allocatedInventory.getAllocatedInventoryId());
+                }
+
+                System.out.println(allocatedInventories.size());
+                System.out.println("allocatedInventory.getAllocatedInventoryId()");
+                facility.getListOfAllocatedInventories().clear();
+
+                List<FacilityBooking> facilityBookings = new ArrayList<>(facility.getListOfFacilityBookings());
+
+                System.out.println("help??");
+                if (!facilityBookings.isEmpty()) {
+                    throw new FacilityNotFoundException("Bookings for Facility found. Facility cannot be deleted");
+//                } else {
+//                    for (int i = facilityBookings.size() - 1; i >= 0; i--) {
+//                        FacilityBooking facilityBooking = facilityBookings.get(i);
+//                        System.out.println(facilityBooking.getFacilityBookingId());
+//                        facilityBookings.remove(i);
+//                        facilityBooking.setFacility(null);
+//                    }
+                }
+
+                System.out.println("facility Booking done()");
+                facility.getListOfFacilityBookings().clear();
+
+List<ShiftConstraints> shiftConstraintsList = shiftConstraintsRepository.findByFacility(facility);
+                System.out.println("Hello??");
+                for (int i = shiftConstraintsList.size() - 1; i >= 0; i--) {
+                    ShiftConstraints shiftConstraint = shiftConstraintsList.get(i);
+                    System.out.println(shiftConstraint.getFacility().getFacilityId());
+                    shiftConstraint.setFacility(null);
+                    shiftConstraintsRepository.save(shiftConstraint);
+                    shiftConstraintsList.remove(i);
+                }
+                System.out.println("shiftConstraint");
+
+
                 // TO-DO: CHECK AND REMOVE FACILITY BOOKINGS
                 // TO-DO: CHECK AND REMOVE ALLOCATED INVENTORY
                 facilityRepository.delete(facility);
@@ -108,7 +159,7 @@ public class FacilityService {
 
     public Facility updateFacility(Long facilityId, Facility updatedFacility) throws FacilityNotFoundException {
         if (!isLoggedInUserAdmin()) {
-            throw new UnableToCreateFacilityException("Staff cannot update facilities as he/she is not an Admin.");
+            throw new UnableToCreateFacilityException("Staff cannot update facilities as he/she is not an Admin. " + updatedFacility.getName());
         }
         try {
             Optional<Facility> facilityOptional = facilityRepository.findById(facilityId);
@@ -129,6 +180,11 @@ public class FacilityService {
                 FacilityStatusEnum facilityStatusEnum = facility.getFacilityStatusEnum();
                 if (facilityStatusEnum == null) {
                     throw new UnableToCreateFacilityException("Facility status must be present");
+                }
+                if (facility.getFacilityStatusEnum().equals(FacilityStatusEnum.BOOKABLE) && updatedFacility.getFacilityStatusEnum().equals(FacilityStatusEnum.NON_BOOKABLE)) {
+                    if (!facility.getListOfFacilityBookings().isEmpty()) {
+                        throw new UnableToCreateFacilityException("Bookings found for facility. Facility status cannot be changed");
+                    }
                 }
                 FacilityTypeEnum facilityTypeEnum = facility.getFacilityTypeEnum();
                 if (facilityTypeEnum == null) {
@@ -167,6 +223,23 @@ public class FacilityService {
         } catch (Exception ex) {
             throw new FacilityNotFoundException(ex.getMessage());
         }
+    }
+
+    public List<Facility> getAllFacilitiesByDepartmentName(String departmentName) throws FacilityNotFoundException {
+        try {
+            List<Facility> facilitiesList = facilityRepository.findByDepartmentNameContainingIgnoreCase(departmentName);
+            return facilitiesList;
+        } catch (Exception ex) {
+            throw new FacilityNotFoundException(ex.getMessage());
+        }
+    }
+
+    public Facility findFacilityById(Long id){
+        return facilityRepository.findById(id).get();
+    }
+
+    public List<Facility> findAllFacilities() {
+        return facilityRepository.findAll();
     }
 
 }

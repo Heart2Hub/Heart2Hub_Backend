@@ -27,8 +27,7 @@ public class MedishieldClaim {
     private ApprovalStatusEnum approvalStatusEnum;
 
     @JsonBackReference
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "invoice_id")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
     private Invoice invoice;
 
 

@@ -13,4 +13,6 @@ public interface FacilityRepository extends JpaRepository<Facility, Long> {
     List<Facility> findByFacilityStatusEnum(FacilityStatusEnum facilityStatusEnum);
 
     List<Facility> findByNameContainingIgnoreCase(String name);
+
+    List<Facility> findByDepartmentNameContainingIgnoreCase(String name);
 }

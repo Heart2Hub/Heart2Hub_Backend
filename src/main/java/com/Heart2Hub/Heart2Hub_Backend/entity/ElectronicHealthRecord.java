@@ -1,6 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -23,13 +24,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Data
-@Table(name = "electronicHeatlhRecord")
+@Table(name = "electronicHealthRecord")
 public class ElectronicHealthRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long electronicHealthRecordId;
 
     @NotNull
+    @Column(unique = true)
     private String nric;
 
     @NotNull
@@ -39,6 +41,7 @@ public class ElectronicHealthRecord {
     private String lastName;
 
     @NotNull
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dateOfBirth;
 
     @NotNull
@@ -59,49 +62,41 @@ public class ElectronicHealthRecord {
     @NotNull
     private String contactNumber;
 
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "EHR_Id")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "EHR_Id", nullable = true)
     private List<Subsidy> listOfSubsidies;
 
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "EHR_Id")
     private List<Admission> listOfPastAdmissions;
-
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "EHR_Id")
     private List<Appointment> listOfPastAppointments;
 
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "EHR_Id")
     private List<NextOfKinRecord> listOfNextOfKinRecords;
 
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "EHR_Id")
     private List<PrescriptionRecord> listOfPrescriptionRecords;
 
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "EHR_Id")
     private List<ProblemRecord> listOfProblemRecords;
 
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "EHR_Id")
     private List<MedicalHistoryRecord> listOfMedicalHistoryRecords;
 
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "EHR_Id")
     private List<TreatmentPlanRecord> listOfTreatmentPlanRecords;
 
-    @JsonIgnore
-    @NotNull
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "electronicHealthRecord", fetch = FetchType.LAZY)
+    @JsonBackReference
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "electronicHealthRecord", fetch = FetchType.LAZY, optional = false)
     private Patient patient;
 
     public ElectronicHealthRecord(){

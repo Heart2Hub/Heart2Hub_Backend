@@ -13,6 +13,7 @@ import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,12 +46,64 @@ public class ElectronicHealthRecordService {
                     return electronicHealthRecord;
                 }
             } else {
-                throw new ElectronicHealthRecordNotFoundException("Electronic Health Record with NRIC: " + electronicHealthRecordId + " is not found");
+                throw new ElectronicHealthRecordNotFoundException("Electronic Health Record with Id: " + electronicHealthRecordId + " is not found");
             }
         } catch (Exception ex) {
             throw new ElectronicHealthRecordNotFoundException(ex.getMessage());
         }
     }
 
+    public List<ElectronicHealthRecord> getAllElectronicHealthRecords() {
+        return electronicHealthRecordRepository.findAll();
+    }
+
+    public ElectronicHealthRecord getElectronicHealthRecordByUsername(String username) throws ElectronicHealthRecordNotFoundException {
+        return electronicHealthRecordRepository.findByPatientUsername(username).orElseThrow(() -> new ElectronicHealthRecordNotFoundException("Electronic Health Record does not exist for " + username));
+    }
+
+    public ElectronicHealthRecord getNehrRecordByNric(String nric){
+        try {
+            final String uri = "http://localhost:3002/records/" + nric;
+            RestTemplate restTemplate = new RestTemplate();
+            ElectronicHealthRecord result = restTemplate.getForObject(uri, ElectronicHealthRecord.class);
+            return result;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public ElectronicHealthRecord updateElectronicHealthRecord(Long electronicHealthRecordId, ElectronicHealthRecord newElectronicHealthRecord) throws ElectronicHealthRecordNotFoundException {
+        try {
+            Optional<ElectronicHealthRecord> electronicHealthRecordOptional = electronicHealthRecordRepository.findById(electronicHealthRecordId);
+
+            if (electronicHealthRecordOptional.isPresent()) {
+                ElectronicHealthRecord existingElectronicHealthRecord = electronicHealthRecordOptional.get();
+                existingElectronicHealthRecord.setFirstName(newElectronicHealthRecord.getFirstName());
+                existingElectronicHealthRecord.setLastName(newElectronicHealthRecord.getLastName());
+                existingElectronicHealthRecord.setSex(newElectronicHealthRecord.getSex());
+                existingElectronicHealthRecord.setDateOfBirth(newElectronicHealthRecord.getDateOfBirth());
+                existingElectronicHealthRecord.setPlaceOfBirth(newElectronicHealthRecord.getPlaceOfBirth());
+                existingElectronicHealthRecord.setNationality(newElectronicHealthRecord.getNationality());
+                existingElectronicHealthRecord.setRace(newElectronicHealthRecord.getRace());
+                existingElectronicHealthRecord.setAddress(newElectronicHealthRecord.getAddress());
+                existingElectronicHealthRecord.setContactNumber(newElectronicHealthRecord.getContactNumber());
+
+                electronicHealthRecordRepository.save(existingElectronicHealthRecord);
+                return existingElectronicHealthRecord;
+            } else {
+                throw new ElectronicHealthRecordNotFoundException("Electronic Health Record with Id: " + electronicHealthRecordId + " is not found");
+            }
+        } catch (Exception ex) {
+            throw new ElectronicHealthRecordNotFoundException(ex.getMessage());
+        }
+    }
+
+    public ElectronicHealthRecord findByNric(String nric) {
+        try {
+            return electronicHealthRecordRepository.findByNricIgnoreCase(nric).get();
+        } catch (Exception ex) {
+            throw new ElectronicHealthRecordNotFoundException("Invalid NRIC");
+        }
+    }
 
 }
