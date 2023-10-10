@@ -24,16 +24,18 @@ public class AppointmentDTO {
   private Long currentAssignedStaffId ;
   private Long patientId;
   private List<Long> listOfStaffsId;
-  private List<Long> listOfImageDocumentsId;
+//  private List<Long> listOfImageDocumentsId;
+  private List<String> listOfImageDocumentsImageLinks;
   private Long electronicHealthRecordId;
   private String firstName;
   private String lastName;
+  private String username;
   private String nric;
   private String placeOfBirth;
   private String sex;
   private String contactNumber;
   private String nationality;
   private LocalDateTime dateOfBirth;
-
-  public String departmentName;
+  private String departmentName;
+  private String patientProfilePicture;
 }

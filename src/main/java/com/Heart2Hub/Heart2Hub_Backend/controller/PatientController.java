@@ -82,22 +82,43 @@ public class PatientController {
     @PostMapping("/createPatientWithNehr")
     public ResponseEntity<Patient> createPatientWithNehr(
             @RequestParam String nric,
-            @RequestBody Patient newPatient) {
+            @RequestBody Map<String, Object> requestBody) {
+        ObjectMapper objectMapper = new ObjectMapper()
+                .registerModule(new ParameterNamesModule())
+                .registerModule(new Jdk8Module())
+                .registerModule(new JavaTimeModule());
+        Patient newPatient = objectMapper.convertValue(requestBody.get("newPatient"), Patient.class);
+        ImageDocument imageDocument = objectMapper.convertValue(requestBody.get("imageDocument"), ImageDocument.class);
         return ResponseEntity.ok(
-                patientService.createPatient(newPatient,nric)
+                patientService.createPatient(newPatient, nric, imageDocument)
         );
     }
 
     @PostMapping("/createPatientWithoutNehr")
     public ResponseEntity<Patient> createPatientWithoutNehr(
-            @RequestBody Map<String, Object> newPatientRequest) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        Patient newPatient = objectMapper.readValue(objectMapper.writeValueAsString(newPatientRequest.get("newPatient")), Patient.class);
-        ElectronicHealthRecord newElectronicHealthRecord = objectMapper.readValue(objectMapper.writeValueAsString(newPatientRequest.get("newElectronicHealthRecord")), ElectronicHealthRecord.class);
+            @RequestBody Map<String, Object> requestBody) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper()
+                .registerModule(new ParameterNamesModule())
+                .registerModule(new Jdk8Module())
+                .registerModule(new JavaTimeModule());
+        Patient newPatient = objectMapper.readValue(objectMapper.writeValueAsString(requestBody.get("newPatient")), Patient.class);
+        ElectronicHealthRecord newElectronicHealthRecord = objectMapper.readValue(objectMapper.writeValueAsString(requestBody.get("newElectronicHealthRecord")), ElectronicHealthRecord.class);
+        ImageDocument imageDocument = objectMapper.convertValue(requestBody.get("imageDocument"), ImageDocument.class);
         return ResponseEntity.ok(
-                patientService.createPatient(newPatient,newElectronicHealthRecord)
+                patientService.createPatient(newPatient, newElectronicHealthRecord, imageDocument)
         );
+    }
+
+    @GetMapping("/findAllPatientsUsername")
+    public ResponseEntity<List<String>> findAllPatientsUsername() {
+
+        return ResponseEntity.ok(patientService.findAllPatientsUsername());
+    }
+
+    @GetMapping("/findAllPatients")
+    public ResponseEntity<List<Patient>> findAllPatients() {
+
+        return ResponseEntity.ok(patientService.findAllPatients());
     }
 
 }

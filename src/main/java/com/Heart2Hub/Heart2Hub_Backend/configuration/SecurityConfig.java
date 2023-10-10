@@ -48,6 +48,12 @@ public class SecurityConfig {
                 .requestMatchers("/staff/changePassword").permitAll()
                 .requestMatchers("/staff/**").permitAll()
                     .requestMatchers("/patient/**").permitAll()
+                    .requestMatchers("/electronicHealthRecord/**").permitAll() // temp fixes for mobile to work
+                    .requestMatchers("/nextOfKinRecord/**").permitAll()
+                    .requestMatchers("/appointment/**").permitAll()
+                    .requestMatchers("/shift/**").permitAll()
+                    .requestMatchers("/department/**").permitAll()
+                    .requestMatchers("/nextOfKinRecord/**").permitAll()
                 .anyRequest().authenticated() // 2
         )
         .sessionManagement((httpSecuritySessionManagementConfigurer -> //3
