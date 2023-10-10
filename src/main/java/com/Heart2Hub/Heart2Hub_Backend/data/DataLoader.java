@@ -515,36 +515,43 @@ public class DataLoader implements CommandLineRunner {
       day = currentDateTime.getDayOfMonth();
       month = currentDateTime.getMonthValue();
       year = currentDateTime.getYear();
-      // Cardiology doctor shifts - Working hours (8am - 4pm)
-      if (i != 11 && i != 18 && i != 25 && i != 32 && i != 39 && i != 46) {
+      // 29 oct only 1 doctor
+      if (day == 29 && month == 10 && year == 2023) {
         shiftService.createShift("staff5", 1L,
-            new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
-                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-        shiftService.createShift("staff8", 4L,
-            new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
-                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-        shiftService.createShift("staff11", 9L,
-            new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
-                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-      }
-      if (i != 12 && i != 19 && i != 26 && i != 33 && i != 40 && i != 47) {
-        shiftService.createShift("staff6", 2L,
-            new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
-                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-        shiftService.createShift("staff9", 5L,
-            new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
-                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-        shiftService.createShift("staff12", 10L,
-            new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
-                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-      }
-      if (i != 13 && i != 20 && i != 27 && i != 34 && i != 41 && i != 48) {
-        shiftService.createShift("staff7", 3L,
-            new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
-                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-        shiftService.createShift("staff10", 6L,
-            new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
-                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+                new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                        LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+      } else {
+        // Cardiology doctor shifts - Working hours (8am - 4pm)
+        if (i != 11 && i != 18 && i != 25 && i != 32 && i != 39 && i != 46) {
+          shiftService.createShift("staff5", 1L,
+                  new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                          LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+          shiftService.createShift("staff8", 4L,
+                  new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                          LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+          shiftService.createShift("staff11", 9L,
+                  new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                          LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+        }
+        if (i != 12 && i != 19 && i != 26 && i != 33 && i != 40 && i != 47) {
+          shiftService.createShift("staff6", 2L,
+                  new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                          LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+          shiftService.createShift("staff9", 5L,
+                  new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                          LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+          shiftService.createShift("staff12", 10L,
+                  new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                          LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+        }
+        if (i != 13 && i != 20 && i != 27 && i != 34 && i != 41 && i != 48) {
+          shiftService.createShift("staff7", 3L,
+                  new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                          LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+          shiftService.createShift("staff10", 6L,
+                  new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                          LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+        }
       }
     }
 
