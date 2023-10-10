@@ -7,6 +7,7 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.OverlappingBookingException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToDeleteFacilityException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -148,5 +149,9 @@ if (facilityBooking.getShift() != null) {
     staffRepository.save(s);
 
     facilityBookingRepository.delete(facilityBooking);
+  }
+
+  public List<FacilityBooking> getAllFacilityBookingsWithinTime(LocalDateTime start, LocalDateTime end) {
+    return facilityBookingRepository.findAllByStartDateTimeBetween(start, end);
   }
 }
