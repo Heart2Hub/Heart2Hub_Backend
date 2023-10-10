@@ -146,6 +146,8 @@ if (facilityBooking.getShift() != null) {
   }
 
   public List<FacilityBooking> getAllFacilityBookingsWithinTime(String name, LocalDateTime start, LocalDateTime end) {
+    start = start.plusMinutes(1L);
+    end = end.minusMinutes(1L);
     return facilityBookingRepository.findAllByFacilityNameAndStartDateTimeBetween(name, start, end);
   }
 }
