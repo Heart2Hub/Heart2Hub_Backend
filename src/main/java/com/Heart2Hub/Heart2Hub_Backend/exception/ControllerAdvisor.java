@@ -111,6 +111,18 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
   }
 
+  @ExceptionHandler(UnableToAssignAppointmentException.class)
+  public ResponseEntity<Object> handleUnableToAssignAppointmentException(
+      UnableToAssignAppointmentException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(UnableToAddImageAttachmentToAppointmentException.class)
+  public ResponseEntity<Object> handleUnableToAddImageAttachmentToAppointmentException(
+      UnableToAddImageAttachmentToAppointmentException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
     List<String> errorList = ex

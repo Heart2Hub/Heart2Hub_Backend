@@ -5,6 +5,8 @@ import com.Heart2Hub.Heart2Hub_Backend.enumeration.PriorityEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.AppointmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.StaffDisabledException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToAddImageAttachmentToAppointmentException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToAssignAppointmentException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateAppointmentException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateAppointmentArrival;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateAppointmentComments;
@@ -79,8 +81,8 @@ public class AppointmentService {
 
   public Appointment createNewAppointmentOnWeb(String description,
 //                                          String actualDateTimeString,
-                                          String bookedDateTimeString, String priority,
-                                          String nric, String departmentName) {
+      String bookedDateTimeString, String priority,
+      String nric, String departmentName) {
 //    LocalDateTime actualDateTime = LocalDateTime.parse(actualDateTimeString);
     LocalDateTime bookedDateTime = LocalDateTime.parse(bookedDateTimeString);
 
@@ -191,29 +193,38 @@ public class AppointmentService {
     return appointmentRepository.save(newAppointment);
   }
 
-  public Appointment assignAppointmentToStaff(Long appointmentId, Long staffId) {
+  public Appointment assignAppointmentToStaff(Long appointmentId, Long toStaffId, Long fromStaffId) {
 
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
-    Staff staff = staffService.findById(staffId);
+    Staff staff = staffService.findById(toStaffId);
 
     //check staff not disabled
     if (staff.getDisabled()) {
       throw new StaffDisabledException("Unable to assign appointment to Disabled Staff");
     }
 
-//    if (appointment.getCurrentAssignedStaff() != null && appointment.getCurrentAssignedStaff()
-//        .getStaffId().equals(staffId)) {
-//      throw new AppointmentAssignmentException("Staff is already allocated the appointment");
-//    }
+    //staff only can assign if the appointment is unassigned, or that assignment belongs to that staff
+    if (appointment.getCurrentAssignedStaff() == null
+        || (appointment.getCurrentAssignedStaff() != null && Objects.equals(
+        appointment.getCurrentAssignedStaff().getStaffId(), fromStaffId))) {
 
-    //assign new staff to appointment
-    appointment.setCurrentAssignedStaff(staff);
-    // BIG PROBLEM HERE
+      //assign new staff to appointment
+      appointment.setCurrentAssignedStaff(staff);
+
+      //set arrived to false because handover to new staff
+      appointment.setArrived(false);
+
+      // BIG PROBLEM HERE
 //    if (!appointment.getListOfStaff().contains(staff)) {
 //      appointment.getListOfStaff().add(staff);
 //    }
-    staff.getListOfAssignedAppointments().add(appointment);
-    return appointment;
+
+      staff.getListOfAssignedAppointments().add(appointment);
+      return appointment;
+    } else {
+      throw new UnableToAssignAppointmentException(
+          "Unable to assign an appointment ticket that is not yours");
+    }
   }
 
   public Appointment updateAppointmentArrival(Long appointmentId, Boolean arrivalStatus,
@@ -221,7 +232,7 @@ public class AppointmentService {
 
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     //check if appointment is assigned to you first, or else you should not be able to check arrived
-    if (appointment.getCurrentAssignedStaff() == null || !Objects.equals(
+    if (appointment.getCurrentAssignedStaff() != null && !Objects.equals(
         appointment.getCurrentAssignedStaff().getStaffId(), staffId)) {
       throw new UnableToUpdateAppointmentArrival(
           "Unable to edit a appointment that is not assigned to you");
@@ -310,20 +321,25 @@ public class AppointmentService {
   }
 
   public Appointment addImageAttachmentToAppointment(Long appointmentId, String imageLink,
-      String createdDate) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss");
-    LocalDateTime createdDateTime = LocalDateTime.parse(createdDate, formatter);
-    ImageDocument imageDocument = new ImageDocument(imageLink, createdDateTime);
+      String createdDate, Long staffId) {
 
-    Appointment appointment = findAppointmentByAppointmentId(appointmentId);
-    appointment.getListOfImageDocuments().add(imageDocument);
+      Appointment appointment = findAppointmentByAppointmentId(appointmentId);
+    if (appointment.getCurrentAssignedStaff()!= null && Objects.equals(
+        appointment.getCurrentAssignedStaff().getStaffId(), staffId)) {
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss");
+      LocalDateTime createdDateTime = LocalDateTime.parse(createdDate, formatter);
+      ImageDocument imageDocument = new ImageDocument(imageLink, createdDateTime);
 
-    return appointment;
+      appointment.getListOfImageDocuments().add(imageDocument);
+
+      return appointment;
+    } else {
+      throw new UnableToAddImageAttachmentToAppointmentException("Unable to add image attachment to a appointment that you are not currently assigned to");
+    }
   }
 
   public List<ImageDocument> viewAppointmentAttachments(Long appointmentId) {
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     return appointment.getListOfImageDocuments();
   }
-
 }
