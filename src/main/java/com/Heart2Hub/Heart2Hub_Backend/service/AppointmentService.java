@@ -292,6 +292,7 @@ public class AppointmentService {
     appointment.setDescription(newDescription);
     if (staffUsername != null && !staffUsername.isEmpty()) {
       Staff staff = staffService.getStaffByUsername(staffUsername);
+      appointment.getListOfStaff().clear();
       appointment.getListOfStaff().add(staff);
     }
 
@@ -305,17 +306,7 @@ public class AppointmentService {
       throw new UnableToCreateAppointmentException(
           "Unable to delete appointment, patient has already arrived at the clinic.");
     }
-    List<Staff> staffList = staffService.getAllStaffByUnit(appointment.getDepartment().getName());
-    for (Staff staff : staffList) {
-      if (!staff.getListOfAssignedAppointments().isEmpty()) {
-        for (Appointment appt : staff.getListOfAssignedAppointments()) {
-          if (appt.getAppointmentId() == appointmentId) {
-            staff.getListOfAssignedAppointments().remove(appt);
-          }
-        }
-      }
-    }
-    appointment.setCurrentAssignedStaff(null);
+    appointment.getListOfStaff().clear();
     appointmentRepository.delete(appointment);
     return "Appointment " + appointmentId + " has been deleted successfully!";
   }
