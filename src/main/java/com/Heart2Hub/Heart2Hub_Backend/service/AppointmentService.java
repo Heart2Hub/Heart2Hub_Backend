@@ -77,10 +77,10 @@ public class AppointmentService {
     return appointmentRepository.save(newAppointment);
   }
 
-  public Appointment createNewWalkInAppointment(String description,
-//      String actualDateTimeString,
-      String bookedDateTimeString, String priority,
-      String nric, String departmentName) {
+  public Appointment createNewAppointmentOnWeb(String description,
+//                                          String actualDateTimeString,
+                                          String bookedDateTimeString, String priority,
+                                          String nric, String departmentName) {
 //    LocalDateTime actualDateTime = LocalDateTime.parse(actualDateTimeString);
     LocalDateTime bookedDateTime = LocalDateTime.parse(bookedDateTimeString);
 
