@@ -171,31 +171,21 @@ public class DataLoader implements CommandLineRunner {
         new Staff("staff9", "password9", "Simon", "Cowell", 81927493l, StaffRoleEnum.NURSE, false),
         "Cardiology", new ImageDocument("id8.png", lt));
     staffService.createStaff(
-        new Staff("staff10", "password10", "Simon", "Cowell", 80806996l, StaffRoleEnum.NURSE,
+        new Staff("staff10", "password10", "Simone", "Lim", 80806996l, StaffRoleEnum.NURSE,
             false),
         "Cardiology", new ImageDocument("id9.png", lt));
     staffService.createStaff(
-        new Staff("staff11", "password11", "Harry", "Maguire", 90806996l, StaffRoleEnum.ADMIN,
-            false),
-        "Cardiology", new ImageDocument("id9.png", lt));
-            new Staff("staff11", "password11", "Harry", "Maguire", 90806996l, StaffRoleEnum.ADMIN, false),
-            "Cardiology", new ImageDocument("id10.png", lt));
+        new Staff("staff11", "password11", "Harry", "Maguire", 90806996l, StaffRoleEnum.ADMIN, false),
+        "Cardiology", new ImageDocument("id10.png", lt));
     staffService.createStaff(
-        new Staff("staff12", "password12", "Taylor", "Swift", 89806996l, StaffRoleEnum.ADMIN,
-            false),
-        "Cardiology", new ImageDocument("id9.png", lt));
-            new Staff("staff12", "password12", "Taylor", "Swift", 89806996l, StaffRoleEnum.ADMIN, false),
-            "Cardiology", new ImageDocument("id11.png", lt));
+        new Staff("staff12", "password12", "Taylor", "Swift", 89806996l, StaffRoleEnum.ADMIN, false),
+        "Cardiology", new ImageDocument("id11.png", lt));
     staffService.createStaff(
         new Staff("staff13", "password13", "James", "Charles", 93420093l, StaffRoleEnum.NURSE,
-            true), "B20", new ImageDocument("id10.png", lt));
-            new Staff("staff13", "password13", "James", "Charles", 93420093l, StaffRoleEnum.NURSE,
-                    true), "B20", new ImageDocument("id12.png", lt));
+            true), "B20", new ImageDocument("id12.png", lt));
     staffService.createStaff(
         new Staff("staff14", "password14", "Ronald", "Weasley", 90897321l, StaffRoleEnum.NURSE,
-            false), "B20", new ImageDocument("id10.png", lt));
-            new Staff("staff14", "password14", "Ronald", "Weasley", 90897321l, StaffRoleEnum.NURSE,
-                    false), "B20", new ImageDocument("id13.png", lt));
+            false), "B20", new ImageDocument("id13.png", lt));
 
     leaveService.createLeave(LocalDateTime.now().plusMonths(3),
         LocalDateTime.now().plusMonths(3).plusDays(2), LeaveTypeEnum.ANNUAL, staff3, staff2,

@@ -73,7 +73,7 @@ public class AppointmentService {
         bookedDateTime, PriorityEnum.valueOf(priority), patient, department);
     patient.getListOfCurrentAppointments().add(newAppointment);
     //newAppointment.setArrived(true);
-    appointmentRepository.save(newAppointment);
+//    appointmentRepository.save(newAppointment);
     return appointmentRepository.save(newAppointment);
   }
 
@@ -105,7 +105,7 @@ public class AppointmentService {
         bookedDateTime, PriorityEnum.valueOf(priority), patient, department);
     patient.getListOfCurrentAppointments().add(newAppointment);
     newAppointment.setArrived(true);
-    appointmentRepository.save(newAppointment);
+//    appointmentRepository.save(newAppointment);
     return appointmentRepository.save(newAppointment);
   }
 

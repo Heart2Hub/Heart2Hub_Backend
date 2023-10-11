@@ -4,6 +4,7 @@ import com.Heart2Hub.Heart2Hub_Backend.dto.AppointmentDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,10 @@ public class AppointmentMapper {
     modelMapper.getConfiguration().setAmbiguityIgnored(true);
 
     modelMapper.createTypeMap(Appointment.class, AppointmentDTO.class)
+//        .addMapping(src -> src.getActualDateTime() != null ? src.getActualDateTime() : null,
+//            AppointmentDTO::setActualDateTime)
+//        .addMapping(src -> LocalDateTime.now(),
+//            AppointmentDTO::setActualDateTime)
         .addMapping(src -> src.getCurrentAssignedStaff().getStaffId(),
             AppointmentDTO::setCurrentAssignedStaffId)
         .addMapping(src -> src.getPatient().getPatientId(), AppointmentDTO::setPatientId)
@@ -64,7 +69,15 @@ public class AppointmentMapper {
   }
 
   public AppointmentDTO convertToDto(Appointment appointment) {
-    return modelMapper.map(appointment, AppointmentDTO.class);
+    System.out.println("Converting in convertToDTO");
+    System.out.println(appointment.getAppointmentId());
+    AppointmentDTO dto  = modelMapper.map(appointment, AppointmentDTO.class);
+    System.out.println("OUTPUT OF CONVERSION");
+    System.out.println(dto ==null );
+    System.out.println(dto.getAppointmentId());
+    System.out.println(dto.getActualDateTime());
+    return dto;
+//    return modelMapper.map(appointment, AppointmentDTO.class);
   }
 
   public Appointment convertToEntity(AppointmentDTO appointmentDTO) {

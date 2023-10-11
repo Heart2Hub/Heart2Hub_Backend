@@ -81,8 +81,17 @@ public class AppointmentController {
 
     List<Appointment> listOfAppts = appointmentService.viewAllAppointmentsByRange(startDay,
         startMonth, startYear, endDay, endMonth, endYear, departmentName, selectStaffId);
+
+    System.out.println("WORKING HERE");
+
+    System.out.println(listOfAppts.size());
+
     List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
         .map(appointmentMapper::convertToDto).collect(Collectors.toList());
+
+    System.out.println("WORKING HERE TOO");
+    System.out.println(listOfApptsDTO.size());
+
     return ResponseEntity.ok(listOfApptsDTO);
   }
 
