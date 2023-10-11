@@ -53,13 +53,21 @@ public class Subsidy {
     @NotNull
     private String nationality;
 
-    public Subsidy(BigDecimal subsidyRate, ItemTypeEnum itemTypeEnum, LocalDateTime minDOB, String sex, String race, String nationality) {
+    private String subsidyName;
+
+    private String subsidyDescription;
+
+    public Subsidy(BigDecimal subsidyRate, ItemTypeEnum itemTypeEnum,
+                   LocalDateTime minDOB, String sex, String race, String nationality,
+                   String subsidyName, String subsidyDescription) {
         this.subsidyRate = subsidyRate;
         this.itemTypeEnum = itemTypeEnum;
         this.minDOB = minDOB;
         this.sex = sex;
         this.race = race;
         this.nationality = nationality;
+        this.subsidyName = subsidyName;
+        this.subsidyDescription = subsidyDescription;
     }
 
     public Subsidy(){}

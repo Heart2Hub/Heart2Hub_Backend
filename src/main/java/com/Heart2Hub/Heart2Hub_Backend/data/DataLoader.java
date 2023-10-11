@@ -70,21 +70,7 @@ public class DataLoader implements CommandLineRunner {
   private final InventoryItemRepository inventoryItemRepository;
   private final InvoiceService invoiceService;
 
-  public DataLoader(StaffService staffService, ShiftService shiftService,
-      DepartmentService departmentService, AuthenticationManager authenticationManager,
-      FacilityService facilityService, PatientService patientService,
-      NextOfKinRecordService nextOfKinRecordService,
-      PrescriptionRecordService prescriptionRecordService,
-      ProblemRecordService problemRecordService,
-      MedicalHistoryRecordService medicalHistoryRecordService,
-      TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService,
-      ShiftConstraintsService shiftConstraintsService,
-      ConsumableEquipmentService consumableEquipmentService,
-      AllocatedInventoryService allocatedInventoryService,
-      SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository,
-      WardService wardService, WardClassService wardClassService,
-      MedicationService medicationService, ServiceItemService serviceItemService,
-      AppointmentService appointmentService) {
+  public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, SubsidyService subsidyService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, MedicationService medicationService, ServiceItemService serviceItemService, TransactionItemService transactionItemService, AppointmentService appointmentService, InventoryItemRepository inventoryItemRepository, InvoiceService invoiceService) {
     this.staffService = staffService;
     this.shiftService = shiftService;
     this.departmentService = departmentService;
@@ -889,9 +875,9 @@ public class DataLoader implements CommandLineRunner {
     // Calculate the minimum date of birth for individuals above 5 years old
     LocalDateTime minDOB = LocalDateTime.now();
     Subsidy subsidy1 = subsidyService.createSubsidy(BigDecimal.valueOf(0.5), ItemTypeEnum.MEDICINE, minDOB,
-            "Male", "All", "All");
+            "Male", "All", "All", "SG Males Subsidy", "Subsidised rates for all Singaporean Males");
     Subsidy subsidy2 = subsidyService.createSubsidy(BigDecimal.valueOf(0.7), ItemTypeEnum.INPATIENT, minDOB,
-            "Female", "All", "All");
+            "Female", "All", "All", "SG Females Subsidy", "Subsidised rates for all Singaporean Females");
   }
 
   public void createTransactionItems() {

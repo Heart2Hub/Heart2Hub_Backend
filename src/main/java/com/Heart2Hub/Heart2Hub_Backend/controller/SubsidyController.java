@@ -33,8 +33,10 @@ public class SubsidyController {
                                                  @RequestParam LocalDateTime minDOB,
                                                  @RequestParam String sex,
                                                  @RequestParam String race,
-                                                 @RequestParam String nationality) {
-        Subsidy createdSubsidy = subsidyService.createSubsidy(subsidyRate, itemTypeEnum, minDOB, sex, race, nationality);
+                                                 @RequestParam String nationality,
+                                                 @RequestParam String subsidyName,
+                                                 @RequestParam String subsidyDescription) {
+        Subsidy createdSubsidy = subsidyService.createSubsidy(subsidyRate, itemTypeEnum, minDOB, sex, race, nationality, subsidyName, subsidyDescription);
         return new ResponseEntity<>(createdSubsidy, HttpStatus.CREATED);
     }
 

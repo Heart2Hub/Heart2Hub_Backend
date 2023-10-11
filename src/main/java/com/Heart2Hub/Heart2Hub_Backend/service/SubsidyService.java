@@ -34,8 +34,9 @@ public class SubsidyService {
     }
 
     public Subsidy createSubsidy(BigDecimal subsidyRate, ItemTypeEnum itemTypeEnum,
-                                 LocalDateTime minDOB, String sex, String race, String nationality) {
-        Subsidy s = new Subsidy(subsidyRate, itemTypeEnum, minDOB, sex, race, nationality);
+                                 LocalDateTime minDOB, String sex, String race, String nationality,
+                                 String subsidyName, String subsidyDescription) {
+        Subsidy s = new Subsidy(subsidyRate, itemTypeEnum, minDOB, sex, race, nationality, subsidyName, subsidyDescription);
 
         List<ElectronicHealthRecord> listOfEHR = electronicHealthRecordService.getAllElectronicHealthRecords()
                 .stream()
