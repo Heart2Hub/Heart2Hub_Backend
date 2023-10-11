@@ -38,13 +38,14 @@ public class AppointmentController {
   @PostMapping("/createNewAppointment")
   public ResponseEntity<Appointment> createNewAppointment(
       @RequestParam("description") String description,
-      @RequestParam("actualDateTime") String actualDateTime,
+//      @RequestParam("actualDateTime") String actualDateTime,
       @RequestParam("bookedDateTime") String bookedDateTime,
       @RequestParam("priority") String priority,
       @RequestParam("patientUsername") String patientUsername,
       @RequestParam("departmentName") String departmentName) {
     return ResponseEntity.ok(appointmentService.createNewWalkInAppointment(description,
-        actualDateTime, bookedDateTime, priority, patientUsername, departmentName));
+//        actualDateTime,
+        bookedDateTime, priority, patientUsername, departmentName));
   }
 
   @PostMapping("/assignAppointmentToStaff")
@@ -111,14 +112,15 @@ public class AppointmentController {
   @PostMapping("/createNewAppointmentWithStaff")
   public ResponseEntity<Appointment> createNewAppointmentWithStaff(
       @RequestParam("description") String description,
-      @RequestParam("actualDateTime") String actualDateTime,
+//      @RequestParam("actualDateTime") String actualDateTime,
       @RequestParam("bookedDateTime") String bookedDateTime,
       @RequestParam("priority") String priority,
       @RequestParam("patientUsername") String patientUsername,
       @RequestParam("departmentName") String departmentName,
       @RequestParam("staffUsername") String staffUsername) {
     return ResponseEntity.ok(appointmentService.createNewAppointmentWithStaff(description,
-        actualDateTime, bookedDateTime, priority, patientUsername, departmentName, staffUsername));
+//        actualDateTime,
+        bookedDateTime, priority, patientUsername, departmentName, staffUsername));
   }
 
   @PutMapping("/updateAppointment")

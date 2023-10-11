@@ -69,7 +69,7 @@ public class Staff implements UserDetails {
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "staff")
   private List<Shift> listOfShifts;
 
-  @OneToMany(fetch = FetchType.LAZY)
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "currentAssignedStaff")
   private List<Appointment> listOfAssignedAppointments;
 
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = false)
