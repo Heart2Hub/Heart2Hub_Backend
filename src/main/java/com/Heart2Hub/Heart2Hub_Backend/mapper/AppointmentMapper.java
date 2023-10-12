@@ -43,13 +43,14 @@ public class AppointmentMapper {
     System.out.println(appointment.getPatient().getPatientId());
     if (appointment.getPatient()!=null) {
       dto.setPatientId(appointment.getPatient().getPatientId());
+      dto.setUsername(appointment.getPatient().getUsername());
 
       if (appointment.getPatient().getProfilePicture() != null) {
         dto.setPatientProfilePicture(appointment.getPatient().getProfilePicture().getImageLink());
       }
 
       if (appointment.getPatient().getElectronicHealthRecord() != null) {
-
+        dto.setElectronicHealthRecordId(appointment.getPatient().getElectronicHealthRecord().getElectronicHealthRecordId());
         dto.setFirstName(appointment.getPatient().getElectronicHealthRecord().getFirstName());
         dto.setLastName(appointment.getPatient().getElectronicHealthRecord().getLastName());
         dto.setNric(appointment.getPatient().getElectronicHealthRecord().getNric());
