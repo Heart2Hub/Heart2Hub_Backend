@@ -153,11 +153,11 @@ public class AppointmentController {
   public ResponseEntity<Appointment> updateAppointment(
       @RequestParam("appointmentId") Long id,
       @RequestParam("description") String description,
-      @RequestParam("actualDateTime") String actualDateTime,
+      @RequestParam("bookedDateTime") String bookedDateTime,
       @RequestParam("patientUsername") String patientUsername,
       @RequestParam("staffUsername") String staffUsername) {
     return ResponseEntity.ok(appointmentService.updateAppointment(id, patientUsername,
-        actualDateTime, description, staffUsername));
+            bookedDateTime, description, staffUsername));
   }
 
   @DeleteMapping("/cancelAppointment")

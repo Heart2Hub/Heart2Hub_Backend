@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.mapper;
 import com.Heart2Hub.Heart2Hub_Backend.dto.AppointmentDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
+import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -30,6 +31,13 @@ public class AppointmentMapper {
     //current assigned staff
     if (appointment.getCurrentAssignedStaff() != null) {
       dto.setCurrentAssignedStaffId(appointment.getCurrentAssignedStaff().getStaffId());
+    }
+    if (appointment.getListOfStaff() != null) {
+      List<Long> staffIds = new ArrayList<>();
+      for (Staff staff : appointment.getListOfStaff()) {
+        staffIds.add(staff.getStaffId());
+      }
+      dto.setListOfStaffsId(staffIds);
     }
     //Patient
     System.out.println(appointment.getPatient().getPatientId());
