@@ -893,30 +893,30 @@ public class DataLoader implements CommandLineRunner {
     ServiceItem serviceItem = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("11")).get();
 
     //For patient 1
-    transactionItemService.addToCart(Long.parseLong("1"), new TransactionItem("Consumable",
-            "", 10,
+    transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Consumable",
+            "Consumable", 10,
             consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
             consumableEquipment));
-    transactionItemService.addToCart(Long.parseLong("1"), new TransactionItem("Medication",
-            "", 10,
+    transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Medication",
+            "Medication", 10,
             medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
             medication));
-    transactionItemService.addToCart(Long.parseLong("1"), new TransactionItem("Service",
-            "", 10,
+    transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Service",
+            "Service", 10,
             serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(10)),
             serviceItem));
 
     //For patient 2
-    transactionItemService.addToCart(Long.parseLong("2"), new TransactionItem("Consumable",
-            "", 10,
+    transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem("Consumable",
+            "Consumable", 10,
             consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
             consumableEquipment));
-    transactionItemService.addToCart(Long.parseLong("2"), new TransactionItem("Medication",
-            "", 10,
+    transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem("Medication",
+            "Medication", 10,
             medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
             medication));
-    transactionItemService.addToCart(Long.parseLong("2"), new TransactionItem("Service",
-            "", 10,
+    transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem("Service",
+            "Service", 10,
             serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(10)),
             serviceItem));
   }

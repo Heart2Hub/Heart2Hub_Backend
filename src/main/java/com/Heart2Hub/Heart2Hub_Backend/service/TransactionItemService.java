@@ -33,12 +33,56 @@ public class TransactionItemService {
         this.invoiceService = invoiceService;
     }
 
-    public List<TransactionItem> getCartItemsForPatient(Long patientId) {
-        Patient p = patientRepository.findById(patientId).get();
-        return p.getListOfTransactionItem();
+    public List<TransactionItem> getAllItems() {
+        return transactionItemRepository.findAll();
     }
 
-    public TransactionItem addToCart(Long patientId, TransactionItem transactionItem) {
+    public List<TransactionItem> getCartItemsForPatient(Long patientId) {
+        Patient p = patientRepository.findById(patientId).get();
+        List<TransactionItem> item = new ArrayList<>();
+
+        for(int i = 0; i < p.getListOfTransactionItem().size(); i++) {
+            item.add(p.getListOfTransactionItem().get(i));
+        }
+
+        return item;
+    }
+
+    public TransactionItem addToCart(Long patientId, String inventoryItemName, String inventoryItemDescription,
+                                     Integer transactionItemQuantity, BigDecimal transactionItemPrice, Long itemId) {
+        TransactionItem transactionItem = new TransactionItem(inventoryItemName, inventoryItemDescription,
+                transactionItemQuantity, transactionItemPrice, inventoryItemRepository.findById(itemId).get());
+        Patient p = patientRepository.findById(patientId).get();
+        transactionItemRepository.save(transactionItem);
+        p.getListOfTransactionItem().add(transactionItem);
+        patientRepository.save(p);
+
+        InventoryItem item = inventoryItemRepository.
+                findById(transactionItem.getInventoryItem()
+                        .getInventoryItemId()).get();
+
+        if (item instanceof ServiceItem) {
+            ServiceItem serviceItem = (ServiceItem) item;
+        } else if (item instanceof Medication) {
+            Medication medicationItem = (Medication) item;
+            medicationItem.setQuantityInStock(
+                    medicationItem.getQuantityInStock()
+                            - transactionItem.getTransactionItemQuantity()
+            );
+            inventoryItemRepository.save(medicationItem);
+        } else if (item instanceof ConsumableEquipment) {
+            ConsumableEquipment consumableEquipment = (ConsumableEquipment) item;
+            consumableEquipment.setQuantityInStock(
+                    consumableEquipment.getQuantityInStock()
+                    - transactionItem.getTransactionItemQuantity()
+            );
+            inventoryItemRepository.save(consumableEquipment);
+        }
+        return transactionItem;
+    }
+
+    public TransactionItem addToCartDataLoader(Long patientId, TransactionItem transactionItem) {
+
         Patient p = patientRepository.findById(patientId).get();
         TransactionItem addedItem = transactionItemRepository.save(transactionItem);
         p.getListOfTransactionItem().add(addedItem);
@@ -61,13 +105,12 @@ public class TransactionItemService {
             ConsumableEquipment consumableEquipment = (ConsumableEquipment) item;
             consumableEquipment.setQuantityInStock(
                     consumableEquipment.getQuantityInStock()
-                    - transactionItem.getTransactionItemQuantity()
+                            - transactionItem.getTransactionItemQuantity()
             );
             inventoryItemRepository.save(consumableEquipment);
         }
         return addedItem;
     }
-
 
     public void removeFromCart(Long patientId, Long transactionItemId) {
         Patient p = patientRepository.findById(patientId).get();

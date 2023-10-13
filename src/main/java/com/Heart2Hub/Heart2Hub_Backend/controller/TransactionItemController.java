@@ -1,14 +1,18 @@
 package com.Heart2Hub.Heart2Hub_Backend.controller;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.InventoryItem;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Invoice;
 import com.Heart2Hub.Heart2Hub_Backend.entity.TransactionItem;
 import com.Heart2Hub.Heart2Hub_Backend.service.TransactionItemService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/transactionItem")
@@ -23,9 +27,21 @@ public class TransactionItemController {
         return ResponseEntity.ok(cartItems);
     }
 
+    @GetMapping("/getAllItems")
+    public ResponseEntity<List<TransactionItem>> getAllItems() {
+        List<TransactionItem> cartItems = transactionItemService.getAllItems();
+        return ResponseEntity.ok(cartItems);
+    }
+
     @PostMapping("/addToCart/{patientId}")
-    public ResponseEntity<TransactionItem> addToCart(@PathVariable Long patientId, @RequestBody TransactionItem transactionItem) {
-        TransactionItem addedItem = transactionItemService.addToCart(patientId, transactionItem);
+    public ResponseEntity<TransactionItem> addToCart(@PathVariable Long patientId, @RequestBody Map<String, Object> requestBody) {
+        String inventoryItemName = requestBody.get("transactionItemName").toString();
+        String inventoryItemDescription = requestBody.get("transactionItemDescription").toString();
+        Integer transactionItemQuantity = Integer.parseInt(requestBody.get("transactionItemQuantity").toString());
+        BigDecimal transactionItemPrice = BigDecimal.valueOf(Integer.parseInt(requestBody.get("transactionItemPrice").toString()));
+        Long itemId = Long.parseLong(requestBody.get("inventoryItem").toString());
+        TransactionItem addedItem = transactionItemService.addToCart(patientId, inventoryItemName,
+                inventoryItemDescription, transactionItemQuantity, transactionItemPrice, itemId);
         return ResponseEntity.status(HttpStatus.CREATED).body(addedItem);
     }
 

@@ -44,7 +44,7 @@ public class Patient implements UserDetails {
     private List<PaymentMethod> listOfPaymentMethods;
 
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "patient_id")
     private List<TransactionItem> listOfTransactionItem;
 
