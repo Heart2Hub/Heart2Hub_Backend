@@ -5,6 +5,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.LeaveTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.InventoryItemRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.SubDepartmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.service.LeaveService;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
@@ -46,6 +47,8 @@ public class DataLoader implements CommandLineRunner {
   private final ProblemRecordService problemRecordService;
   private final MedicalHistoryRecordService medicalHistoryRecordService;
   private final TreatmentPlanRecordService treatmentPlanRecordService;
+
+  private final SubsidyService subsidyService;
   private final LeaveService leaveService;
   private final ShiftConstraintsService shiftConstraintsService;
 
@@ -60,24 +63,14 @@ public class DataLoader implements CommandLineRunner {
   private final MedicationService medicationService;
   private final ServiceItemService serviceItemService;
 
-  //  private final SubDepartmentRepository subDepartmentRepository;
-  private final AppointmentService appointmentService;
+    private final TransactionItemService transactionItemService;
 
-  public DataLoader(StaffService staffService, ShiftService shiftService,
-      DepartmentService departmentService, AuthenticationManager authenticationManager,
-      FacilityService facilityService, PatientService patientService,
-      NextOfKinRecordService nextOfKinRecordService,
-      PrescriptionRecordService prescriptionRecordService,
-      ProblemRecordService problemRecordService,
-      MedicalHistoryRecordService medicalHistoryRecordService,
-      TreatmentPlanRecordService treatmentPlanRecordService, LeaveService leaveService,
-      ShiftConstraintsService shiftConstraintsService,
-      ConsumableEquipmentService consumableEquipmentService,
-      AllocatedInventoryService allocatedInventoryService,
-      SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository,
-      WardService wardService, WardClassService wardClassService,
-      MedicationService medicationService, ServiceItemService serviceItemService,
-      AppointmentService appointmentService) {
+  //  private final SubDepartmentRepository subDepartmentRepository;
+    private final AppointmentService appointmentService;
+  private final InventoryItemRepository inventoryItemRepository;
+  private final InvoiceService invoiceService;
+
+  public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, SubsidyService subsidyService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, MedicationService medicationService, ServiceItemService serviceItemService, TransactionItemService transactionItemService, AppointmentService appointmentService, InventoryItemRepository inventoryItemRepository, InvoiceService invoiceService) {
     this.staffService = staffService;
     this.shiftService = shiftService;
     this.departmentService = departmentService;
@@ -89,6 +82,7 @@ public class DataLoader implements CommandLineRunner {
     this.problemRecordService = problemRecordService;
     this.medicalHistoryRecordService = medicalHistoryRecordService;
     this.treatmentPlanRecordService = treatmentPlanRecordService;
+    this.subsidyService = subsidyService;
     this.leaveService = leaveService;
     this.shiftConstraintsService = shiftConstraintsService;
     this.consumableEquipmentService = consumableEquipmentService;
@@ -99,7 +93,10 @@ public class DataLoader implements CommandLineRunner {
     this.wardClassService = wardClassService;
     this.medicationService = medicationService;
     this.serviceItemService = serviceItemService;
+    this.transactionItemService = transactionItemService;
     this.appointmentService = appointmentService;
+    this.inventoryItemRepository = inventoryItemRepository;
+    this.invoiceService = invoiceService;
   }
 
   @Override
@@ -135,7 +132,9 @@ public class DataLoader implements CommandLineRunner {
     createConsumableEquipmentData();
     createMedicationData();
     createServiceItemData();
-
+    createSubsidyData();
+    createTransactionItems();
+    createInvoice();
     //code ends here
 
     long endTime = System.currentTimeMillis();
@@ -877,6 +876,55 @@ public class DataLoader implements CommandLineRunner {
 
   }
 
+
+
+  public void createSubsidyData() {
+    // Calculate the minimum date of birth for individuals above 5 years old
+    LocalDateTime minDOB = LocalDateTime.now();
+    Subsidy subsidy1 = subsidyService.createSubsidy(BigDecimal.valueOf(0.5), ItemTypeEnum.MEDICINE, minDOB,
+            "Male", "All", "All", "SG Males Subsidy", "Subsidised rates for all Singaporean Males");
+    Subsidy subsidy2 = subsidyService.createSubsidy(BigDecimal.valueOf(0.7), ItemTypeEnum.INPATIENT, minDOB,
+            "Female", "All", "All", "SG Females Subsidy", "Subsidised rates for all Singaporean Females");
+  }
+
+  public void createTransactionItems() {
+    ConsumableEquipment consumableEquipment = (ConsumableEquipment) inventoryItemRepository.findById(Long.parseLong("1")).get();
+    Medication medication= (Medication) inventoryItemRepository.findById(Long.parseLong("6")).get();
+    ServiceItem serviceItem = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("11")).get();
+
+    //For patient 1
+    transactionItemService.addToCart(Long.parseLong("1"), new TransactionItem("Consumable",
+            "", 10,
+            consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+            consumableEquipment));
+    transactionItemService.addToCart(Long.parseLong("1"), new TransactionItem("Medication",
+            "", 10,
+            medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+            medication));
+    transactionItemService.addToCart(Long.parseLong("1"), new TransactionItem("Service",
+            "", 10,
+            serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+            serviceItem));
+
+    //For patient 2
+    transactionItemService.addToCart(Long.parseLong("2"), new TransactionItem("Consumable",
+            "", 10,
+            consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+            consumableEquipment));
+    transactionItemService.addToCart(Long.parseLong("2"), new TransactionItem("Medication",
+            "", 10,
+            medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+            medication));
+    transactionItemService.addToCart(Long.parseLong("2"), new TransactionItem("Service",
+            "", 10,
+            serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+            serviceItem));
+  }
+
+  public void createInvoice() {
+    transactionItemService.checkout(Long.parseLong("1"));
+    invoiceService.createInsuranceClaim(Long.parseLong("1"), BigDecimal.valueOf(1000),
+            "Great Eastern", true);
+    invoiceService.createMedishieldClaim(Long.parseLong("1"), BigDecimal.valueOf(1000));
+  }
 }
-
-

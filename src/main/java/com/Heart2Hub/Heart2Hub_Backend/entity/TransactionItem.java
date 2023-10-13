@@ -27,7 +27,7 @@ public class TransactionItem {
     @NotNull
     private BigDecimal transactionItemPrice;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "iventory_Item_Id", nullable = false)
     private InventoryItem inventoryItem;
 
