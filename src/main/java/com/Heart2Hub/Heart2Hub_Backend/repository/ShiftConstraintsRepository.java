@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.repository;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.Facility;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Shift;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ShiftConstraints;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
@@ -11,7 +12,14 @@ import java.util.List;
 
 public interface ShiftConstraintsRepository extends JpaRepository<ShiftConstraints, Long> {
 
-    List<ShiftConstraints> findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndStaffRoleEnumEquals(LocalTime startTime, LocalTime endTime, StaffRoleEnum staffRoleEnum);
+    List<ShiftConstraints> findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndFacilityNameAndStaffRoleEnumEquals(LocalTime startTime, LocalTime endTime, String name, StaffRoleEnum staffRoleEnum);
 
-    List<ShiftConstraints> findByStaffRoleEnum(StaffRoleEnum staffRoleEnum);
+    List<ShiftConstraints> findShiftConstraintsByStartTimeLessThanAndEndTimeGreaterThanAndWardNameAndStaffRoleEnumEquals(LocalTime startTime, LocalTime endTime, String name, StaffRoleEnum staffRoleEnum);
+
+    List<ShiftConstraints> findByStaffRoleEnumAndFacilityName(StaffRoleEnum staffRoleEnum, String name);
+
+    List<ShiftConstraints> findByStaffRoleEnumAndWardName(StaffRoleEnum staffRoleEnum, String name);
+
+    List<ShiftConstraints> findByFacility(Facility facility);
+
 }

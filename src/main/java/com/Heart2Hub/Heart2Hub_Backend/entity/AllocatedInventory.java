@@ -1,6 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -23,12 +24,17 @@ public class AllocatedInventory {
     @NotNull
     private Integer minimumQuantityBeforeRestock;
 
-    @JsonManagedReference
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "consumble_Equipment_Id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "inventory_item_Id", nullable = false)
     private ConsumableEquipment consumableEquipment;
 
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "facility_id", nullable = true)
+    private Facility facility;
+
     public AllocatedInventory(Integer allocatedInventoryCurrentQuantity, Integer minimumQuantityBeforeRestock) {
+        this();
         this.allocatedInventoryCurrentQuantity = allocatedInventoryCurrentQuantity;
         this.minimumQuantityBeforeRestock = minimumQuantityBeforeRestock;
     }

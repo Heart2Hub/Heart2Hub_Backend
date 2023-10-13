@@ -13,8 +13,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface StaffRepository extends JpaRepository<Staff, Long> {
 
   Optional<Staff> findByUsername(String username);
-  List<Staff> findByStaffRoleEnum(StaffRoleEnum staffRoleEnum);
+  List<Staff> findByStaffRoleEnumAndUnitNameEqualsIgnoreCase(StaffRoleEnum staffRoleEnum, String name);
 
 
   Optional <List<Staff>> findAllByIsHead(Boolean b);
+
+  List<Staff> findByUnitName(String unitName);
 }

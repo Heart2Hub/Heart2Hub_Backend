@@ -1,6 +1,8 @@
 package com.Heart2Hub.Heart2Hub_Backend.configuration;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.Patient;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -21,15 +23,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ApplicationConfig {
 
   private final StaffRepository staffRepository;
+  private final PatientRepository patientRepository;
 
   @Bean
   public UserDetailsService userDetailsService() {
     return (username) -> {
       Optional<Staff> staffOptional = staffRepository.findByUsername(username);
+      Optional<Patient> patientOptional = patientRepository.findByUsername(username);
 
       //User used here is part of the UserDetails
-      //TODO to add Patient here next
-      if (staffOptional.isPresent()) {
+      if (patientOptional.isPresent()) {
+        return User.withUsername(username).password(patientOptional.get().getPassword())
+                .roles("Patient")
+                .build();
+      } else if (staffOptional.isPresent()) {
         return User.withUsername(username).password(staffOptional.get().getPassword())
             .roles(staffOptional.get().getStaffRoleEnum().toString())
             .build();

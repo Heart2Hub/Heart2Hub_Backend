@@ -32,9 +32,9 @@ public class ShiftController {
   }
 
   @GetMapping(value="/getAllShifts/{role}", produces={"application/json"})
-  public ResponseEntity getAllShifts(@PathVariable String role) {
+  public ResponseEntity getAllShifts(@PathVariable String role, @RequestParam("unit") String unit) {
     try {
-      return ResponseEntity.ok(shiftService.getAllShiftsByRole(role));
+      return ResponseEntity.ok(shiftService.getAllShiftsByRole(role, unit));
     } catch (UnableToCreateShiftException | StaffRoleNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
@@ -73,6 +73,24 @@ public class ShiftController {
     try {
       return ResponseEntity.ok(shiftService.viewWeeklyRoster(username, date));
     } catch (StaffNotFoundException ex) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+  }
+
+  @GetMapping(value="/viewOverallRoster/{username}", produces={"application/json"})
+  public ResponseEntity viewMonthlyRoster(@PathVariable String username) {
+    try {
+      return ResponseEntity.ok(shiftService.viewOverallRoster(username));
+    } catch (StaffNotFoundException ex) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+  }
+
+  @GetMapping(value="/getAllShiftsFromDate/{username}", produces={"application/json"})
+  public ResponseEntity getAllShifts(@PathVariable String username, @RequestParam String startDate, @RequestParam String endDate) {
+    try {
+      return ResponseEntity.ok(shiftService.getAllShiftsForStaffFromDates(username, startDate, endDate));
+    } catch (StaffRoleNotFoundException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
   }
