@@ -149,4 +149,12 @@ public class ElectronicHealthRecordService {
         }
     }
 
+    public ElectronicHealthRecord findByNric(String nric) {
+        try {
+            return electronicHealthRecordRepository.findByNricIgnoreCase(nric).get();
+        } catch (Exception ex) {
+            throw new ElectronicHealthRecordNotFoundException("Invalid NRIC");
+        }
+    }
+
 }

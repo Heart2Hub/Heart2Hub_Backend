@@ -38,14 +38,16 @@ public class PatientService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final ImageDocumentService imageDocumentService;
 
-    public PatientService(PatientRepository patientRepository, PasswordEncoder passwordEncoder, ElectronicHealthRecordRepository electronicHealthRecordRepository, AuthenticationManager authenticationManager, JwtService jwtService, ElectronicHealthRecordService electronicHealthRecordService) {
+    public PatientService(PatientRepository patientRepository, PasswordEncoder passwordEncoder, ElectronicHealthRecordRepository electronicHealthRecordRepository, AuthenticationManager authenticationManager, JwtService jwtService, ElectronicHealthRecordService electronicHealthRecordService, ImageDocumentService imageDocumentService) {
         this.patientRepository = patientRepository;
         this.passwordEncoder = passwordEncoder;
         this.electronicHealthRecordRepository = electronicHealthRecordRepository;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.electronicHealthRecordService = electronicHealthRecordService;
+        this.imageDocumentService = imageDocumentService;
     }
 
     public String validateNric(String nric) throws UnableToCreatePatientException {
@@ -65,13 +67,24 @@ public class PatientService {
         }
     }
 
-    public Patient createPatient(Patient newPatient, String nric) throws UnableToCreatePatientException {
+    public Patient createPatient(Patient newPatient, String nric) {
+        return createPatient(newPatient, nric, null);
+    }
+
+    public Patient createPatient(Patient newPatient, String nric, ImageDocument imageDocument) throws UnableToCreatePatientException {
         try {
             ElectronicHealthRecord nehrRecord = electronicHealthRecordService.getNehrRecordByNric(nric);
             if (nehrRecord == null) {
                 throw new UnableToCreatePatientException("NEHR Record is not found. Please provide NEHR details.");
             }
             newPatient.setPassword(passwordEncoder.encode(newPatient.getPassword()));
+
+            if (imageDocument != null) {
+                ImageDocument createdImageDocument = imageDocumentService.createImageDocument(
+                        imageDocument);
+                newPatient.setProfilePicture(createdImageDocument);
+            }
+
             nehrRecord.setPatient(newPatient);
             newPatient.setElectronicHealthRecord(nehrRecord);
             electronicHealthRecordRepository.save(nehrRecord);
@@ -83,13 +96,24 @@ public class PatientService {
         }
     }
 
-    public Patient createPatient(Patient newPatient, ElectronicHealthRecord newElectronicHealthRecord) throws UnableToCreatePatientException {
+    public Patient createPatient(Patient newPatient, ElectronicHealthRecord newElectronicHealthRecord) {
+        return createPatient(newPatient, newElectronicHealthRecord, null);
+    }
+
+    public Patient createPatient(Patient newPatient, ElectronicHealthRecord newElectronicHealthRecord, ImageDocument imageDocument) throws UnableToCreatePatientException {
         try {
             ElectronicHealthRecord nehrRecord = electronicHealthRecordService.getNehrRecordByNric(newElectronicHealthRecord.getNric());
             if (nehrRecord != null) {
                 throw new UnableToCreatePatientException("NEHR Record is found. Please do not create a new record.");
             }
             newPatient.setPassword(passwordEncoder.encode(newPatient.getPassword()));
+
+            if (imageDocument != null) {
+                ImageDocument createdImageDocument = imageDocumentService.createImageDocument(
+                        imageDocument);
+                newPatient.setProfilePicture(createdImageDocument);
+            }
+
             newElectronicHealthRecord.setPatient(newPatient);
             newPatient.setElectronicHealthRecord(newElectronicHealthRecord);
             electronicHealthRecordRepository.save(newElectronicHealthRecord);
