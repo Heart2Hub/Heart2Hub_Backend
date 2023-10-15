@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.InsufficientInventoryException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.AppointmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.InventoryItemRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
@@ -68,6 +69,9 @@ public class TransactionItemService {
             ServiceItem serviceItem = (ServiceItem) item;
         } else if (item instanceof Medication) {
             Medication medicationItem = (Medication) item;
+            if (medicationItem.getQuantityInStock() - transactionItem.getTransactionItemQuantity() < 0) {
+                throw new InsufficientInventoryException("Insufficient Inventory for Medication");
+            }
             medicationItem.setQuantityInStock(
                     medicationItem.getQuantityInStock()
                             - transactionItem.getTransactionItemQuantity()
@@ -75,6 +79,9 @@ public class TransactionItemService {
             inventoryItemRepository.save(medicationItem);
         } else if (item instanceof ConsumableEquipment) {
             ConsumableEquipment consumableEquipment = (ConsumableEquipment) item;
+            if (consumableEquipment.getQuantityInStock() - transactionItem.getTransactionItemQuantity() < 0) {
+                throw new InsufficientInventoryException("Insufficient Inventory for Consumable");
+            }
             consumableEquipment.setQuantityInStock(
                     consumableEquipment.getQuantityInStock()
                     - transactionItem.getTransactionItemQuantity()
@@ -99,6 +106,9 @@ public class TransactionItemService {
             ServiceItem serviceItem = (ServiceItem) item;
         } else if (item instanceof Medication) {
             Medication medicationItem = (Medication) item;
+            if (medicationItem.getQuantityInStock() - transactionItem.getTransactionItemQuantity() < 0) {
+                throw new InsufficientInventoryException("Insufficient Inventory for Medication");
+            }
             medicationItem.setQuantityInStock(
                     medicationItem.getQuantityInStock()
                             - transactionItem.getTransactionItemQuantity()
@@ -106,6 +116,9 @@ public class TransactionItemService {
             inventoryItemRepository.save(medicationItem);
         } else if (item instanceof ConsumableEquipment) {
             ConsumableEquipment consumableEquipment = (ConsumableEquipment) item;
+            if (consumableEquipment.getQuantityInStock() - transactionItem.getTransactionItemQuantity() < 0) {
+                throw new InsufficientInventoryException("Insufficient Inventory for Medication");
+            }
             consumableEquipment.setQuantityInStock(
                     consumableEquipment.getQuantityInStock()
                             - transactionItem.getTransactionItemQuantity()
@@ -224,7 +237,7 @@ public class TransactionItemService {
             breakdown.append("Item: ").append(itemName).append(", ");
             breakdown.append("Quantity: ").append(itemQuantity).append(", ");
             breakdown.append("Price per unit: $").append(itemPrice).append(", ");
-            breakdown.append("Total Cost: $").append(totalCost).append("\n");
+            breakdown.append("Total Cost for Item: $").append(totalCost).append("\n");
 
             // Apply subsidies based on item type
             if (item.getInventoryItem().getItemTypeEnum() == ItemTypeEnum.MEDICINE && subsidyMedication != null) {
