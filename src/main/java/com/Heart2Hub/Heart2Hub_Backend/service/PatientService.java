@@ -78,6 +78,7 @@ public class PatientService {
             patientRepository.save(newPatient);
             return newPatient;
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
             throw new UnableToCreatePatientException("Username already exists");
         }
     }
@@ -108,6 +109,7 @@ public class PatientService {
                 throw new UnableToCreatePatientException("Failed to create patient. Server returned status code: " + responseEntity.getStatusCodeValue());
             }
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
             throw new UnableToCreatePatientException("Username already exists");
         }
     }

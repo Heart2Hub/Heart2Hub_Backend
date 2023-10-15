@@ -1,22 +1,24 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
-import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
+import com.Heart2Hub.Heart2Hub_Backend.configuration.Heart2HubConfig;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ElectronicHealthRecord;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Patient;
-import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
 import com.Heart2Hub.Heart2Hub_Backend.exception.ElectronicHealthRecordNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateElectronicHealthRecordException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateSubDepartmentException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,13 +26,17 @@ import java.util.Optional;
 @Transactional
 public class ElectronicHealthRecordService {
 
-    private final PatientRepository patientRepository;
-    private final StaffRepository staffRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    private final Heart2HubConfig heart2HubConfig;
+
     private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
 
-    public ElectronicHealthRecordService(PatientRepository patientRepository, StaffRepository staffRepository, ElectronicHealthRecordRepository electronicHealthRecordRepository) {
-        this.patientRepository = patientRepository;
-        this.staffRepository = staffRepository;
+    public ElectronicHealthRecordService(PasswordEncoder passwordEncoder,
+        Heart2HubConfig heart2HubConfig,
+        ElectronicHealthRecordRepository electronicHealthRecordRepository) {
+        this.passwordEncoder = passwordEncoder;
+        this.heart2HubConfig = heart2HubConfig;
         this.electronicHealthRecordRepository = electronicHealthRecordRepository;
     }
 
@@ -62,13 +68,58 @@ public class ElectronicHealthRecordService {
     }
 
     public ElectronicHealthRecord getNehrRecordByNric(String nric){
+        System.out.println("CALLING NEHR");
         try {
+
+            //default use staff1 jwt
+//            String jwtToken = staffService.authenticateStaff("staff1", "password1");
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.set("Authorization", "Bearer " + jwtToken);
+//            HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+
             final String uri = "http://localhost:3002/records/" + nric;
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("encoded-message", encodeSecretMessage());
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+
+            System.out.println(headers);
+            HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
             RestTemplate restTemplate = new RestTemplate();
-            ElectronicHealthRecord result = restTemplate.getForObject(uri, ElectronicHealthRecord.class);
+            ElectronicHealthRecord result = restTemplate.exchange(uri, HttpMethod.GET, entity, ElectronicHealthRecord.class).getBody();
+//            ElectronicHealthRecord result = restTemplate.getForObject(uri, ElectronicHealthRecord.class);
+            System.out.println(result);
+            System.out.println("NEHR WORKING");
+
             return result;
+
         } catch (Exception ex) {
+            System.out.println("NEHR NOT WORKING");
+            System.out.println(ex.getMessage());
             return null;
+        }
+    }
+
+//    private String encodeSecretMessage() {
+//        String SECRET_MESSAGE = heart2HubConfig.getJwt().getSecretMessage();
+//        return passwordEncoder.encode(SECRET_MESSAGE);
+//    }
+
+    private String encodeSecretMessage() {
+        try {
+            String SECRET_MESSAGE = heart2HubConfig.getJwt().getSecretMessage();
+            String SECRET_KEY = heart2HubConfig.getJwt().getSecretKey(); // import your SECRET_KEY
+
+            Mac hmac = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            hmac.init(secretKeySpec);
+
+            byte[] hash = hmac.doFinal(SECRET_MESSAGE.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(hash);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to compute HMAC", e);
         }
     }
 
