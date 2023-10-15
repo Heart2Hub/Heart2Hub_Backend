@@ -40,6 +40,13 @@ public class AllocatedInventoryController {
         return ResponseEntity.ok(allocatedInventoryService.updateAllocatedInventory(inventoryId,newQuantity, minQuantity));
     }
 
+    @PutMapping("/useAllocatedInventory")
+    public ResponseEntity<AllocatedInventory> useAllocatedInventory(@RequestBody Map<String, Object> requestBody) {
+        Long inventoryId = Long.parseLong(requestBody.get("allocatedInventoryIdForUpdate").toString());
+        Integer newQuantity = Integer.parseInt(requestBody.get("newQuantity").toString());
+        return ResponseEntity.ok(allocatedInventoryService.useAllocatedInventory(inventoryId,newQuantity));
+    }
+
     @DeleteMapping("deleteAllocatedInventory/{id}")
     public ResponseEntity<?> deleteAllocatedInventory(@PathVariable(value = "id") Long id) {
 
