@@ -882,9 +882,18 @@ public class DataLoader implements CommandLineRunner {
     // Calculate the minimum date of birth for individuals above 5 years old
     LocalDateTime minDOB = LocalDateTime.now();
     Subsidy subsidy1 = subsidyService.createSubsidy(BigDecimal.valueOf(0.5), ItemTypeEnum.MEDICINE, minDOB,
-            "Male", "All", "All", "SG Males Subsidy", "Subsidised rates for all Singaporean Males");
-    Subsidy subsidy2 = subsidyService.createSubsidy(BigDecimal.valueOf(0.7), ItemTypeEnum.INPATIENT, minDOB,
-            "Female", "All", "All", "SG Females Subsidy", "Subsidised rates for all Singaporean Females");
+            "Male", "All", "All", "SG Males Medicine Subsidy",
+            "Subsidised rates for all Singaporean Males");
+    Subsidy subsidy2 = subsidyService.createSubsidy(BigDecimal.valueOf(0.5), ItemTypeEnum.INPATIENT, minDOB,
+            "Male", "All", "All", "SG Males Service Subsidy",
+            "Subsidised rates for all Singaporean Males");
+
+    Subsidy subsidy3 = subsidyService.createSubsidy(BigDecimal.valueOf(0.7), ItemTypeEnum.INPATIENT, minDOB,
+            "Female", "All", "All", "SG Females Service Subsidy",
+            "Subsidised rates for all Singaporean Females");
+    Subsidy subsidy4 = subsidyService.createSubsidy(BigDecimal.valueOf(0.7), ItemTypeEnum.MEDICINE, minDOB,
+            "Female", "All", "All", "SG Females Medicine Subsidy",
+            "Subsidised rates for all Singaporean Females");
   }
 
   public void createTransactionItems() {
@@ -894,37 +903,38 @@ public class DataLoader implements CommandLineRunner {
 
     //For patient 1
     transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Consumable",
-            "Consumable", 10,
-            consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+            "Consumable", 1,
+            consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
             consumableEquipment));
     transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Medication",
-            "Medication", 10,
-            medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+            "Medication", 1,
+            medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
             medication));
     transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Service",
-            "Service", 10,
-            serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+            "Service", 1,
+            serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
             serviceItem));
 
     //For patient 2
     transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem("Consumable",
-            "Consumable", 10,
-            consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+            "Consumable", 1,
+            consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
             consumableEquipment));
     transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem("Medication",
-            "Medication", 10,
-            medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+            "Medication", 1,
+            medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
             medication));
     transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem("Service",
-            "Service", 10,
-            serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+            "Service", 1,
+            serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
             serviceItem));
   }
 
   public void createInvoice() {
     transactionItemService.checkout(Long.parseLong("1"));
-    invoiceService.createInsuranceClaim(Long.parseLong("1"), BigDecimal.valueOf(1000),
-            "Great Eastern", true);
-    invoiceService.createMedishieldClaim(Long.parseLong("1"), BigDecimal.valueOf(1000));
+    transactionItemService.checkout(Long.parseLong("2"));
+//    invoiceService.createInsuranceClaim(Long.parseLong("1"), BigDecimal.valueOf(1000),
+//            "Great Eastern", true);
+//    invoiceService.createMedishieldClaim(Long.parseLong("1"), BigDecimal.valueOf(1000));
   }
 }

@@ -2,6 +2,8 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
+import com.Heart2Hub.Heart2Hub_Backend.repository.AppointmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.InventoryItemRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.TransactionItemRepository;
@@ -22,14 +24,15 @@ public class TransactionItemService {
     private final PatientService patientService;
     private final PatientRepository patientRepository;
     private final InventoryItemRepository inventoryItemRepository;
-
+    private final AppointmentRepository appointmentRepository;
     private final InvoiceService invoiceService;
 
-    public TransactionItemService(TransactionItemRepository transactionItemRepository, PatientService patientService, PatientRepository patientRepository, InventoryItemRepository inventoryItemRepository, InvoiceService invoiceService) {
+    public TransactionItemService(TransactionItemRepository transactionItemRepository, PatientService patientService, PatientRepository patientRepository, InventoryItemRepository inventoryItemRepository, AppointmentRepository appointmentRepository, InvoiceService invoiceService) {
         this.transactionItemRepository = transactionItemRepository;
         this.patientService = patientService;
         this.patientRepository = patientRepository;
         this.inventoryItemRepository = inventoryItemRepository;
+        this.appointmentRepository = appointmentRepository;
         this.invoiceService = invoiceService;
     }
 
@@ -255,6 +258,12 @@ public class TransactionItemService {
         patientRepository.save(p);
 
         return invoice;
+    }
+
+    public void dischargePatient(Long appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId).get();
+        appointment.setSwimlaneStatusEnum(SwimlaneStatusEnum.DONE);
+        appointmentRepository.save(appointment);
     }
 }
 

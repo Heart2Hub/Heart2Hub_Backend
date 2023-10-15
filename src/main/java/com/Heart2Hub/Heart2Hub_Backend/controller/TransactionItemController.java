@@ -58,9 +58,11 @@ public class TransactionItemController {
     }
 
     // Implement a checkout endpoint as needed
-    @PostMapping("/checkout/{patientId}")
-    public Invoice checkout(@PathVariable Long patientId) {
-        return transactionItemService.checkout(patientId);
+    @PostMapping("/checkout/{patientId}/{appointmentId}")
+    public Invoice checkout(@PathVariable Long patientId, @PathVariable Long appointmentId) {
+        Invoice i = transactionItemService.checkout(patientId);
+        transactionItemService.dischargePatient(appointmentId);
+        return i;
     }
 
 }
