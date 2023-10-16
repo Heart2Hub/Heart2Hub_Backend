@@ -68,48 +68,25 @@ public class ElectronicHealthRecordService {
     }
 
     public ElectronicHealthRecord getNehrRecordByNric(String nric){
-        System.out.println("CALLING NEHR");
         try {
-
-            //default use staff1 jwt
-//            String jwtToken = staffService.authenticateStaff("staff1", "password1");
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.set("Authorization", "Bearer " + jwtToken);
-//            HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-
             final String uri = "http://localhost:3002/records/" + nric;
-
             HttpHeaders headers = new HttpHeaders();
             headers.set("encoded-message", encodeSecretMessage());
             headers.setContentType(MediaType.APPLICATION_JSON);
-
-
-            System.out.println(headers);
             HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
             RestTemplate restTemplate = new RestTemplate();
             ElectronicHealthRecord result = restTemplate.exchange(uri, HttpMethod.GET, entity, ElectronicHealthRecord.class).getBody();
-//            ElectronicHealthRecord result = restTemplate.getForObject(uri, ElectronicHealthRecord.class);
-            System.out.println(result);
-            System.out.println("NEHR WORKING");
-
             return result;
-
         } catch (Exception ex) {
-            System.out.println("NEHR NOT WORKING");
             System.out.println(ex.getMessage());
             return null;
         }
     }
 
-//    private String encodeSecretMessage() {
-//        String SECRET_MESSAGE = heart2HubConfig.getJwt().getSecretMessage();
-//        return passwordEncoder.encode(SECRET_MESSAGE);
-//    }
-
-    private String encodeSecretMessage() {
+    public String encodeSecretMessage() {
         try {
             String SECRET_MESSAGE = heart2HubConfig.getJwt().getSecretMessage();
-            String SECRET_KEY = heart2HubConfig.getJwt().getSecretKey(); // import your SECRET_KEY
+            String SECRET_KEY = heart2HubConfig.getJwt().getSecretKey();
 
             Mac hmac = Mac.getInstance("HmacSHA256");
             SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
