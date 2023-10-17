@@ -74,7 +74,7 @@ public class InvoiceService {
     public Invoice createMedishieldClaim(Long invoiceId, BigDecimal insuranceClaimAmount) {
         Invoice i = invoiceRepository.findById(invoiceId).get();
 
-        MedishieldClaim claim = new MedishieldClaim(LocalDateTime.now(),insuranceClaimAmount, ApprovalStatusEnum.PENDING, i);
+        MedishieldClaim claim = new MedishieldClaim(LocalDateTime.now(),insuranceClaimAmount, ApprovalStatusEnum.PENDING);
         medishieldClaimRepository.save(claim);
 
         i.setInvoiceAmount(i.getInvoiceAmount().subtract(insuranceClaimAmount));

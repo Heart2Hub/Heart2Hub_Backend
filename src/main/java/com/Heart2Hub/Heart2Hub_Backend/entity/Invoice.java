@@ -45,9 +45,8 @@ public class Invoice {
     @JoinColumn(name = "insuranceClaim_id", nullable = true)
     private InsuranceClaim insuranceClaim;
 
-    @JsonManagedReference
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "invoice", fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "insuranceClaim_id", nullable = true)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "medishieldClaim_id", nullable = true)
     private MedishieldClaim medishieldClaim;
 
     @JsonBackReference

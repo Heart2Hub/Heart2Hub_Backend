@@ -933,8 +933,8 @@ public class DataLoader implements CommandLineRunner {
   public void createInvoice() {
     transactionItemService.checkout(Long.parseLong("1"));
     transactionItemService.checkout(Long.parseLong("2"));
-//    invoiceService.createInsuranceClaim(Long.parseLong("1"), BigDecimal.valueOf(1000),
-//            "Great Eastern", true);
-//    invoiceService.createMedishieldClaim(Long.parseLong("1"), BigDecimal.valueOf(1000));
+    invoiceService.createInsuranceClaim(Long.parseLong("1"), BigDecimal.valueOf(1000),
+            "Great Eastern", true);
+    invoiceService.createMedishieldClaim(Long.parseLong("1"), BigDecimal.valueOf(1000));
   }
 }
