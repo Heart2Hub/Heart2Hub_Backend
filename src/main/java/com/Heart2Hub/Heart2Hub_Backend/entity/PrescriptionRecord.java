@@ -43,6 +43,10 @@ public class PrescriptionRecord {
     @Enumerated(EnumType.STRING)
     private PrescriptionStatusEnum prescriptionStatusEnum;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "medication_id", nullable = false)
+    private Medication medication;
+
     public PrescriptionRecord() {
     }
 

@@ -66,6 +66,7 @@ public class ElectronicHealthRecordService {
             final String uri = "http://localhost:3002/records/" + nric;
             RestTemplate restTemplate = new RestTemplate();
             ElectronicHealthRecord result = restTemplate.getForObject(uri, ElectronicHealthRecord.class);
+            System.out.println(result);
             return result;
         } catch (Exception ex) {
             return null;
