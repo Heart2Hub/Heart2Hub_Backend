@@ -61,6 +61,7 @@ public class ElectronicHealthRecordService {
         return electronicHealthRecordRepository.findByPatientUsername(username).orElseThrow(() -> new ElectronicHealthRecordNotFoundException("Electronic Health Record does not exist for " + username));
     }
 
+    // TO-DO: Update with NEHR DTO
     public ElectronicHealthRecord getNehrRecordByNric(String nric){
         try {
             final String uri = "http://localhost:3002/records/" + nric;
@@ -87,6 +88,15 @@ public class ElectronicHealthRecordService {
                 existingElectronicHealthRecord.setRace(newElectronicHealthRecord.getRace());
                 existingElectronicHealthRecord.setAddress(newElectronicHealthRecord.getAddress());
                 existingElectronicHealthRecord.setContactNumber(newElectronicHealthRecord.getContactNumber());
+
+                existingElectronicHealthRecord.setListOfSubsidies(newElectronicHealthRecord.getListOfSubsidies());
+                existingElectronicHealthRecord.setListOfPastAdmissions(newElectronicHealthRecord.getListOfPastAdmissions());
+                existingElectronicHealthRecord.setListOfPastAppointments(newElectronicHealthRecord.getListOfPastAppointments());
+                existingElectronicHealthRecord.setListOfNextOfKinRecords(newElectronicHealthRecord.getListOfNextOfKinRecords());
+                existingElectronicHealthRecord.setListOfPrescriptionRecords(newElectronicHealthRecord.getListOfPrescriptionRecords());
+                existingElectronicHealthRecord.setListOfProblemRecords(newElectronicHealthRecord.getListOfProblemRecords());
+                existingElectronicHealthRecord.setListOfMedicalHistoryRecords(newElectronicHealthRecord.getListOfMedicalHistoryRecords());
+                existingElectronicHealthRecord.setListOfTreatmentPlanRecords(newElectronicHealthRecord.getListOfTreatmentPlanRecords());
 
                 electronicHealthRecordRepository.save(existingElectronicHealthRecord);
                 return existingElectronicHealthRecord;

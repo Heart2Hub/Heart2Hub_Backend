@@ -91,7 +91,7 @@ public class PatientService {
             patientRepository.save(newPatient);
             return newPatient;
         } catch (Exception ex) {
-            throw new UnableToCreatePatientException("Username already exists");
+            throw new UnableToCreatePatientException(ex.getMessage());
         }
     }
 

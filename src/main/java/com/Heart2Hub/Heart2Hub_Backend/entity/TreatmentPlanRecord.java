@@ -24,7 +24,6 @@ public class TreatmentPlanRecord {
     @NotNull
     private String primaryDoctor;
 
-    @NotNull
     @ElementCollection
     private List<String> secondaryDoctors;
 

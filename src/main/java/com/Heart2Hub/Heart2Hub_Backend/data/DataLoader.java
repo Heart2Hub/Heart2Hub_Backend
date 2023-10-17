@@ -134,7 +134,7 @@ public class DataLoader implements CommandLineRunner {
     createServiceItemData();
     createSubsidyData();
     createTransactionItems();
-    createInvoice();
+    //createInvoice();
     //code ends here
 
     long endTime = System.currentTimeMillis();
