@@ -190,4 +190,18 @@ public class AppointmentController {
     return ResponseEntity.ok(appointmentService.viewAppointmentAttachments(appointmentId));
 
   }
+
+  @PostMapping("/createReferral")
+  public ResponseEntity<Appointment> createReferral(
+          @RequestParam("prevAppointmentId") Long prevAppointmentId,
+          @RequestParam("description") String description,
+          @RequestParam("bookedDate") String bookedDate,
+          @RequestParam("departmentName") String departmentName,
+          @RequestParam("staffUsername") String staffUsername
+          ) {
+    return ResponseEntity.ok(
+            appointmentService.createReferral(prevAppointmentId, description, bookedDate, departmentName, staffUsername)
+    );
+
+  }
 }

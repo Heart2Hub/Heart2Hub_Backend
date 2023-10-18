@@ -614,6 +614,9 @@ public class DataLoader implements CommandLineRunner {
     Patient patient6 = patientService.getPatientByUsername("patient6");
     Patient patient7 = patientService.getPatientByUsername("patient7");
     Patient patient8 = patientService.getPatientByUsername("patient8");
+//
+//    Staff d1 = staffService.getStaffByUsername("staff5");
+//    Staff n1 = staffService.getStaffByUsername("staff8");
 
     //for past appointments
 //    LocalDateTime pastDate1 = LocalDateTime.now().minusDays(14).withHour(9).withMinute(0)
@@ -735,6 +738,9 @@ public class DataLoader implements CommandLineRunner {
         "LOW",
         patient8.getElectronicHealthRecord().getNric(),
         "Cardiology");
+//    appointmentService.assignAppointmentToStaff(a.getAppointmentId(),d1.getStaffId(),n1.getStaffId());
+//    appointmentService.updateAppointmentSwimlaneStatus(a.getAppointmentId(),SwimlaneStatusEnum.CONSULTATION);
+//    appointmentService.updateAppointmentArrival(a.getAppointmentId(),true,d1.getStaffId());
 
     //for future dates
     LocalDateTime futureDate1 = LocalDateTime.now().plusDays(5L).withHour(19).withMinute(0)
