@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
+import com.Heart2Hub.Heart2Hub_Backend.dto.NehrDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ElectronicHealthRecord;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Patient;
@@ -7,10 +8,12 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
 import com.Heart2Hub.Heart2Hub_Backend.exception.ElectronicHealthRecordNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateElectronicHealthRecordException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateSubDepartmentException;
+import com.Heart2Hub.Heart2Hub_Backend.mapper.NehrMapper;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -61,14 +64,24 @@ public class ElectronicHealthRecordService {
         return electronicHealthRecordRepository.findByPatientUsername(username).orElseThrow(() -> new ElectronicHealthRecordNotFoundException("Electronic Health Record does not exist for " + username));
     }
 
-    // TO-DO: Update with NEHR DTO
     public ElectronicHealthRecord getNehrRecordByNric(String nric){
         try {
+            System.out.println("HERHEHREHREHRHERHERHERHEHRHER");
             final String uri = "http://localhost:3002/records/" + nric;
             RestTemplate restTemplate = new RestTemplate();
-            ElectronicHealthRecord result = restTemplate.getForObject(uri, ElectronicHealthRecord.class);
-            return result;
+
+            ResponseEntity<String> responseEntity = restTemplate.getForEntity(uri, String.class);
+            String jsonResponse = responseEntity.getBody();
+            System.out.println("Raw JSON response: " + jsonResponse);
+
+            NehrDTO result = restTemplate.getForObject(uri, NehrDTO.class);
+            System.out.println("sdasd" + result);
+            NehrMapper nehrMapper = new NehrMapper();
+            ElectronicHealthRecord toReturn = nehrMapper.convertToEntity(result);
+            System.out.println(toReturn);
+            return toReturn;
         } catch (Exception ex) {
+            System.out.print("asdadsasd" + ex.getMessage());
             return null;
         }
     }
