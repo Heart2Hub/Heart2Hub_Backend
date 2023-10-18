@@ -69,36 +69,36 @@ public class StaffController {
 //    }
 //  }
 
-  @PostMapping(value="/createStaff/{subDepartmentName}", consumes={"application/json"}, produces={"application/json"})
-  public ResponseEntity<Staff> createStaff(@PathVariable String subDepartmentName,@RequestBody Staff staff) {
-      return ResponseEntity.ok(staffService.createStaff(staff, subDepartmentName));
+  @PostMapping(value="/createStaff/{unitName}", consumes={"application/json"}, produces={"application/json"})
+  public ResponseEntity<Staff> createStaff(@PathVariable String unitName,@RequestBody Staff staff) {
+      return ResponseEntity.ok(staffService.createStaff(staff, unitName));
   }
 
-  @PostMapping(value = "/createStaffWithImage/{subDepartmentName}", consumes = {"application/json"}, produces = {"application/json"})
-  public ResponseEntity<Staff> createStaffWithImage(@PathVariable String subDepartmentName, @RequestBody Map<String, Object> requestBody) {
+  @PostMapping(value = "/createStaffWithImage/{unitName}", consumes = {"application/json"}, produces = {"application/json"})
+  public ResponseEntity<Staff> createStaffWithImage(@PathVariable String unitName, @RequestBody Map<String, Object> requestBody) {
     ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new ParameterNamesModule())
             .registerModule(new Jdk8Module())
             .registerModule(new JavaTimeModule());
     Staff staff = objectMapper.convertValue(requestBody.get("staff"), Staff.class);
     ImageDocument imageDocument = objectMapper.convertValue(requestBody.get("imageDocument"), ImageDocument.class);
-    return ResponseEntity.ok(staffService.createStaff(staff, subDepartmentName, imageDocument));
+    return ResponseEntity.ok(staffService.createStaff(staff, unitName, imageDocument));
   }
 
-  @PutMapping(value="/updateStaff/{subDepartmentName}", consumes={"application/json"}, produces={"application/json"})
-  public ResponseEntity<Staff> updateStaff(@PathVariable String subDepartmentName, @RequestBody Staff staff) {
-    return ResponseEntity.ok(staffService.updateStaff(staff, subDepartmentName));
+  @PutMapping(value="/updateStaff/{unitName}", consumes={"application/json"}, produces={"application/json"})
+  public ResponseEntity<Staff> updateStaff(@PathVariable String unitName, @RequestBody Staff staff) {
+    return ResponseEntity.ok(staffService.updateStaff(staff, unitName));
   }
 
-  @PutMapping(value = "/updateStaffWithImage/{subDepartmentName}", consumes = {"application/json"}, produces = {"application/json"})
-  public ResponseEntity<Staff> updateStaffWithImage(@PathVariable String subDepartmentName, @RequestBody Map<String, Object> requestBody) {
+  @PutMapping(value = "/updateStaffWithImage/{unitName}", consumes = {"application/json"}, produces = {"application/json"})
+  public ResponseEntity<Staff> updateStaffWithImage(@PathVariable String unitName, @RequestBody Map<String, Object> requestBody) {
     ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new ParameterNamesModule())
             .registerModule(new Jdk8Module())
             .registerModule(new JavaTimeModule());
     Staff staff = objectMapper.convertValue(requestBody.get("staff"), Staff.class);
     ImageDocument imageDocument = objectMapper.convertValue(requestBody.get("imageDocument"), ImageDocument.class);
-    return ResponseEntity.ok(staffService.updateStaff(staff, subDepartmentName, imageDocument));
+    return ResponseEntity.ok(staffService.updateStaff(staff, unitName, imageDocument));
   }
 
   @PutMapping("/disableStaff/{username}")

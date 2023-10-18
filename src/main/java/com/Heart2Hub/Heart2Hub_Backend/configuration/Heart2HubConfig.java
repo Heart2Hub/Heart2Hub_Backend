@@ -22,6 +22,7 @@ public class Heart2HubConfig {
     private Long accessTokenExpiry;
     private Long refreshTokenExpiry;
     private String secretKey;
+    private String secretMessage;
 
     public String getSecretKey() {
       return secretKey;
@@ -47,6 +48,13 @@ public class Heart2HubConfig {
       this.refreshTokenExpiry = refreshTokenExpiry;
     }
 
-  }
+    public String getSecretMessage() {
+      return secretMessage;
+    }
 
+    public void setSecretMessage(String secretMessage) {
+      this.secretMessage = secretMessage;
+    }
+
+  }
 }
