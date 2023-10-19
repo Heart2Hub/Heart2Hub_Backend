@@ -28,6 +28,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component("loader")
 @Transactional
@@ -846,21 +848,27 @@ public class DataLoader implements CommandLineRunner {
   }
 
   private void createMedicationData() {
+    List<AllergenEnum> allergenList1 = new ArrayList<>();
+    allergenList1.add(AllergenEnum.NONE);
+    List<AllergenEnum> allergenList2 = new ArrayList<>();
+    allergenList2.add(AllergenEnum.PENICILLIN_V_);
+    allergenList2.add(AllergenEnum.AMOXICILLIN_);
+
     Medication newMedication1 = medicationService.createMedication(
         new Medication("Paracetamol 500 mg Tablets", "500mg per piece", ItemTypeEnum.MEDICINE, 100,
-            BigDecimal.TEN, BigDecimal.TEN));
+            BigDecimal.TEN, BigDecimal.TEN, allergenList1));
     Medication newMedication2 = medicationService.createMedication(
         new Medication("Cetirizine 10mg Tablets", "10mg per piece", ItemTypeEnum.MEDICINE, 100,
-            BigDecimal.valueOf(5), BigDecimal.TEN));
+            BigDecimal.valueOf(5), BigDecimal.TEN, allergenList1));
     Medication newMedication3 = medicationService.createMedication(
         new Medication("Augmentin 625mg Tablets ", "625mg per piece", ItemTypeEnum.MEDICINE, 50,
-            BigDecimal.valueOf(4), BigDecimal.TEN));
+            BigDecimal.valueOf(4), BigDecimal.TEN, allergenList2));
     Medication newMedication4 = medicationService.createMedication(
         new Medication("Metformin 500mg Tablets", "500mg per piece", ItemTypeEnum.MEDICINE, 1000,
-            BigDecimal.valueOf(2), BigDecimal.TEN));
+            BigDecimal.valueOf(2), BigDecimal.TEN, allergenList1));
     Medication newMedication5 = medicationService.createMedication(
         new Medication("Augmentin 228mg Suspension", "5ml per bottle", ItemTypeEnum.MEDICINE, 100,
-            BigDecimal.valueOf(3), BigDecimal.TEN));
+            BigDecimal.valueOf(3), BigDecimal.TEN, allergenList2));
   }
 
   private void createServiceItemData() {
