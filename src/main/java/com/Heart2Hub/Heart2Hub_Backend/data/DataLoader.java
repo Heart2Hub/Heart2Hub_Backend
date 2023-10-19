@@ -849,7 +849,6 @@ public class DataLoader implements CommandLineRunner {
 
   private void createMedicationData() {
     List<AllergenEnum> allergenList1 = new ArrayList<>();
-    allergenList1.add(AllergenEnum.NONE);
     List<AllergenEnum> allergenList2 = new ArrayList<>();
     allergenList2.add(AllergenEnum.PENICILLIN_V_);
     allergenList2.add(AllergenEnum.AMOXICILLIN_);
