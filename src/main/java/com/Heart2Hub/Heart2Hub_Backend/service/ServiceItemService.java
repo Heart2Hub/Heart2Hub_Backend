@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Medication;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ServiceItem;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.entity.Unit;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.MedicationNotFoundException;
@@ -12,6 +13,7 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateServiceItemExcept
 import com.Heart2Hub.Heart2Hub_Backend.repository.MedicationRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ServiceItemRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.UnitRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -27,10 +29,13 @@ import java.util.Optional;
 public class ServiceItemService {
     private final StaffRepository staffRepository;
     private final ServiceItemRepository serviceItemRepository;
+    private final UnitRepository unitRepository;
 
-    public ServiceItemService(StaffRepository staffRepository, ServiceItemRepository serviceItemRepository) {
+
+    public ServiceItemService(StaffRepository staffRepository, ServiceItemRepository serviceItemRepository, UnitRepository unitRepository) {
         this.staffRepository = staffRepository;
         this.serviceItemRepository = serviceItemRepository;
+        this.unitRepository = unitRepository;
     }
 
     public boolean isLoggedInUserAdmin() {
@@ -49,7 +54,7 @@ public class ServiceItemService {
         return isAdmin;
     }
 
-    public ServiceItem createServiceItem(ServiceItem newServiceItem) throws UnableToCreateServiceItemException {
+    public ServiceItem createServiceItem(Long unitId, ServiceItem newServiceItem) throws UnableToCreateServiceItemException {
         if (!isLoggedInUserAdmin()) {
             throw new UnableToCreateServiceItemException("Staff cannot create medication as he/she is not an admin.");
         }
@@ -69,6 +74,11 @@ public class ServiceItemService {
             BigDecimal retailPrice = newServiceItem.getRetailPricePerQuantity();
             if (retailPrice.equals(BigDecimal.ZERO)) {
                 throw new UnableToCreateServiceItemException("Price must be more than 0.00");
+            }
+            Optional<Unit> unitOptional = unitRepository.findById(unitId);
+            if (unitOptional.isPresent()) {
+                Unit unit = unitOptional.get();
+                newServiceItem.setUnit(unit);
             }
             serviceItemRepository.save(newServiceItem);
             return newServiceItem;
@@ -133,9 +143,9 @@ public class ServiceItemService {
         }
     }
 
-    public List<ServiceItem> getAllServiceItemByName(String name) throws ServiceItemNotFoundException {
+    public List<ServiceItem> getAllServiceItem() throws ServiceItemNotFoundException {
         try {
-            List<ServiceItem> serviceItemList = serviceItemRepository.findByInventoryItemNameContainingIgnoreCase(name);
+            List<ServiceItem> serviceItemList = serviceItemRepository.findAll();
             System.out.print("get equipment");
             return serviceItemList;
         } catch (Exception ex) {
