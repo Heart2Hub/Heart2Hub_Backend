@@ -1,12 +1,16 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.AllergenEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -26,19 +30,28 @@ public class Medication extends InventoryItem {
     @NotNull
     private Integer quantityInStock;
 
-    public Medication(String inventoryItemName, String inventoryItemDescription, ItemTypeEnum itemTypeEnum, Integer quantityInStock, BigDecimal retailPricePerQuantity, BigDecimal restockPricePerQuantity) {
+    @ElementCollection(targetClass = AllergenEnum.class)
+    @CollectionTable
+    @Enumerated(EnumType.STRING)
+    private Collection<AllergenEnum> allergenEnumList;
+
+    public Medication(String inventoryItemName, String inventoryItemDescription, ItemTypeEnum itemTypeEnum, Integer quantityInStock, BigDecimal retailPricePerQuantity, BigDecimal restockPricePerQuantity, Collection<AllergenEnum> allergenEnumList) {
         super(inventoryItemName, inventoryItemDescription, itemTypeEnum);
 //        this.medicationUUID = medicationUUID;
         this.retailPricePerQuantity = retailPricePerQuantity;
         this.restockPricePerQuantity = restockPricePerQuantity;
         this.quantityInStock = quantityInStock;
+        this.allergenEnumList = allergenEnumList;
+
     }
 
-    public Medication(Integer quantityInStock, BigDecimal retailPricePerQuantity, BigDecimal restockPricePerQuantity) {
+    public Medication(Integer quantityInStock, BigDecimal retailPricePerQuantity, BigDecimal restockPricePerQuantity, Collection<AllergenEnum> allergenEnumList) {
 //        this.medicationUUID = medicationUUID;
         this.retailPricePerQuantity = retailPricePerQuantity;
         this.restockPricePerQuantity = restockPricePerQuantity;
         this.quantityInStock = quantityInStock;
+        this.allergenEnumList = allergenEnumList;
+
     }
 
     public Medication() {}
