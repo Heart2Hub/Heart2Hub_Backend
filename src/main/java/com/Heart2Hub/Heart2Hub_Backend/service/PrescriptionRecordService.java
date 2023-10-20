@@ -61,7 +61,7 @@ public class PrescriptionRecordService {
         Medication medicine = (Medication) pr.getInventoryItem();
         Patient p = electronicHealthRecordRepository.findById(ehrId).get().getPatient();
 
-        TransactionItem item = transactionItemService.addToCart(p.getPatientId(), medicine.getInventoryItemName(), medicine.getInventoryItemDescription(),
+        TransactionItem item = transactionItemService.addToCart(p.getPatientId(), "Prescription Record " +pr.getPrescriptionRecordId() + " " + medicine.getInventoryItemName(), medicine.getInventoryItemDescription(),
                 pr.getMedicationQuantity(), medicine.getRetailPricePerQuantity(), medicine.getInventoryItemId());
 
         return item;
@@ -74,9 +74,10 @@ public class PrescriptionRecordService {
     }
 
     public PrescriptionRecord updatePrescriptionRecord(Long id,  Integer medicationQuantity,
-                                                       Integer dosage, String description, String comments) {
+                                                       Integer dosage, String description, String comments, PrescriptionStatusEnum prescriptionStatusEnum) {
         PrescriptionRecord prescriptionRecord = prescriptionRecordRepository.findById(id).get();
         // Update the necessary fields with the new values from updatedRecord
+        prescriptionRecord.setPrescriptionStatusEnum(prescriptionStatusEnum);
         prescriptionRecord.setMedicationQuantity(medicationQuantity);
         prescriptionRecord.setDosage(dosage);
         prescriptionRecord.setDescription(description);

@@ -4,10 +4,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.InsufficientInventoryException;
-import com.Heart2Hub.Heart2Hub_Backend.repository.AppointmentRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.InventoryItemRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.TransactionItemRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -27,14 +24,17 @@ public class TransactionItemService {
     private final InventoryItemRepository inventoryItemRepository;
     private final AppointmentRepository appointmentRepository;
     private final InvoiceService invoiceService;
+    private final InvoiceRepository invoiceRepository;
 
-    public TransactionItemService(TransactionItemRepository transactionItemRepository, PatientService patientService, PatientRepository patientRepository, InventoryItemRepository inventoryItemRepository, AppointmentRepository appointmentRepository, InvoiceService invoiceService) {
+    public TransactionItemService(TransactionItemRepository transactionItemRepository, PatientService patientService, PatientRepository patientRepository, InventoryItemRepository inventoryItemRepository, AppointmentRepository appointmentRepository, InvoiceService invoiceService,
+                                  InvoiceRepository invoiceRepository) {
         this.transactionItemRepository = transactionItemRepository;
         this.patientService = patientService;
         this.patientRepository = patientRepository;
         this.inventoryItemRepository = inventoryItemRepository;
         this.appointmentRepository = appointmentRepository;
         this.invoiceService = invoiceService;
+        this.invoiceRepository = invoiceRepository;
     }
 
     public List<TransactionItem> getAllItems() {
@@ -225,6 +225,9 @@ public class TransactionItemService {
         LocalDateTime invoiceDueDate = LocalDateTime.now().plus(30, ChronoUnit.DAYS);
         StringBuilder breakdown = new StringBuilder();
         BigDecimal totalInvoiceAmount = BigDecimal.ZERO;
+        List<TransactionItem> subsidyItemMedicationList = new ArrayList<>();
+//        List<TransactionItem> subsidyItemConsumableList = new ArrayList<>();
+        List<TransactionItem> subsidyItemServiceList = new ArrayList<>();
 
         for (TransactionItem item : listOfItems) {
             String itemName = item.getTransactionItemName();
@@ -245,20 +248,46 @@ public class TransactionItemService {
                 BigDecimal subsidyAmount = totalCost.multiply(subsidyRate);
                 totalInvoiceAmount = totalInvoiceAmount.subtract(subsidyAmount);
                 breakdown.append("Medication Subsidy: -$").append(subsidyAmount).append("\n");
-            } else if (item.getInventoryItem().getItemTypeEnum() == ItemTypeEnum.CONSUMABLE && subsidyConsumable != null) {
-                BigDecimal subsidyRate = subsidyConsumable.getSubsidyRate();
-                BigDecimal subsidyAmount = totalCost.multiply(subsidyRate);
-                totalInvoiceAmount = totalInvoiceAmount.subtract(subsidyAmount);
-                breakdown.append("Consumable Subsidy: -$").append(subsidyAmount).append("\n");
+                TransactionItem subsidyItemMedication= new TransactionItem(item.getTransactionItemName() + "("+ subsidyMedication.getSubsidyName() + ")"
+                        , subsidyMedication.getSubsidyDescription(), 1,
+                        subsidyAmount.multiply(BigDecimal.valueOf(-1)), null);
+                transactionItemRepository.save(subsidyItemMedication);
+                subsidyItemMedicationList.add(subsidyItemMedication);
+
+//                //item.setTransactionItemName(item.getTransactionItemName() + " (Medication Subsidy of $" + subsidyAmount + ")");
+//            } else if (item.getInventoryItem().getItemTypeEnum() == ItemTypeEnum.CONSUMABLE && subsidyConsumable != null) {
+//                BigDecimal subsidyRate = subsidyConsumable.getSubsidyRate();
+//                BigDecimal subsidyAmount = totalCost.multiply(subsidyRate);
+//                totalInvoiceAmount = totalInvoiceAmount.subtract(subsidyAmount);
+//                breakdown.append("Consumable Subsidy: -$").append(subsidyAmount).append("\n");
+//                TransactionItem subsidyItemConsumable = new TransactionItem(subsidyConsumable.getSubsidyName()
+//                        , subsidyConsumable.getSubsidyDescription(), 1,
+//                        subsidyAmount.multiply(BigDecimal.valueOf(-1)), null);
+//                transactionItemRepository.save(subsidyItemConsumable);
+//                subsidyItemConsumableList.add(subsidyItemConsumable);
+//                //item.setTransactionItemName(item.getTransactionItemName() + " (Consumable Subsidy of $" + subsidyAmount + ")");
+
             } else if (subsidyService != null) {
                 BigDecimal subsidyRate = subsidyService.getSubsidyRate();
                 BigDecimal subsidyAmount = totalCost.multiply(subsidyRate);
                 totalInvoiceAmount = totalInvoiceAmount.subtract(subsidyAmount);
                 breakdown.append("Service Subsidy: -$").append(subsidyAmount).append("\n");
+                TransactionItem subsidyItemService = new TransactionItem(item.getTransactionItemName() + "("+ subsidyMedication.getSubsidyName() + ")"
+                        , subsidyService.getSubsidyDescription(), 1,
+                        subsidyAmount.multiply(BigDecimal.valueOf(-1)), null);
+                transactionItemRepository.save(subsidyItemService);
+                subsidyItemServiceList.add(subsidyItemService);
+                //item.setTransactionItemName(item.getTransactionItemName() + " (Service Subsidy of $" + subsidyAmount + ")");
+
             }
         }
         breakdown.append("Final Invoice Amount: $").append(totalInvoiceAmount).append("\n");
         String costBreakdown = breakdown.toString();
+
+        listOfItems.addAll(subsidyItemServiceList);
+//        listOfItems.addAll(subsidyItemConsumableList);
+        listOfItems.addAll(subsidyItemMedicationList);
+
 
         List<TransactionItem> invoiceItems = new ArrayList<>(listOfItems); // Create a copy of listOfItems
 

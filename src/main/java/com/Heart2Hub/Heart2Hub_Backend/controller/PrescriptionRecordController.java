@@ -48,10 +48,11 @@ public class PrescriptionRecordController {
 
         Integer medicationQuantity = Integer.parseInt(requestBody.get("medicationQuantity").toString());
         Integer dosage = Integer.parseInt(requestBody.get("dosage").toString());
+        PrescriptionStatusEnum prescriptionStatusEnum = PrescriptionStatusEnum.valueOf(requestBody.get("prescriptionStatusEnum").toString());
 
 
         PrescriptionRecord updatedPrescriptionRecord = prescriptionRecordService.updatePrescriptionRecord(prescriptionRecordId, medicationQuantity,
-                dosage, description, comments);
+                dosage, description, comments, prescriptionStatusEnum);
         return ResponseEntity.ok(updatedPrescriptionRecord);
     }
 

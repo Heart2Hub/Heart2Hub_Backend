@@ -1,8 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
-import com.Heart2Hub.Heart2Hub_Backend.entity.InsuranceClaim;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Invoice;
-import com.Heart2Hub.Heart2Hub_Backend.entity.MedishieldClaim;
+import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ApprovalStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.InvoiceStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.repository.InsuranceClaimRepository;
@@ -41,6 +39,16 @@ public class InvoiceService {
                 .get().getListOfInvoices();
     }
 
+    public ElectronicHealthRecord findPatientOfInvoice(Long invoiceId) {
+        Patient p = invoiceRepository.findById(invoiceId).get().getPatient();
+        return p.getElectronicHealthRecord();
+    }
+
+    public List<TransactionItem> findItemsOfInvoice(Long invoiceId) {
+        Invoice i = invoiceRepository.findById(invoiceId).get();
+        return i.getListOfTransactionItem();
+    }
+
     public Invoice createNewInvoice(Invoice invoice) {
         return invoiceRepository.save(invoice);
     }
@@ -67,6 +75,10 @@ public class InvoiceService {
 
         i.setInvoiceBreakdown(costBreakdown);
         i.setInsuranceClaim(claim);
+
+        if (i.getInvoiceAmount().compareTo(BigDecimal.ZERO) == 0) {
+            i.setInvoiceStatusEnum(InvoiceStatusEnum.PAID);
+        }
         invoiceRepository.save(i);
         return i;
     }
@@ -84,6 +96,9 @@ public class InvoiceService {
 
         i.setInvoiceBreakdown(costBreakdown);
         i.setMedishieldClaim(claim);
+        if (i.getInvoiceAmount().compareTo(BigDecimal.ZERO) == 0) {
+            i.setInvoiceStatusEnum(InvoiceStatusEnum.PAID);
+        }
         invoiceRepository.save(i);
         return i;
     }

@@ -93,7 +93,6 @@ public class PatientService {
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             throw new UnableToCreatePatientException("Username already exists");
-            throw new UnableToCreatePatientException(ex.getMessage());
         }
     }
 

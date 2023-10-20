@@ -921,29 +921,29 @@ public class DataLoader implements CommandLineRunner {
     }
 
     //For patient 1
-    transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Consumable",
-            "Consumable", 1,
-            consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
-            consumableEquipment));
-    transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Medication",
+//    transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Consumable",
+//            "Consumable", 1,
+//            consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+//            consumableEquipment));
+    transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem(medication.getInventoryItemName(),
             "Medication", 1,
             medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
             medication));
-    transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Service",
+    transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem(serviceItem.getInventoryItemName(),
             "Service", 1,
             serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
             serviceItem));
 
     //For patient 2
-    transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem("Consumable",
-            "Consumable", 1,
-            consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
-            consumableEquipment));
-    transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem("Medication",
+//    transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem("Consumable",
+//            "Consumable", 1,
+//            consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+//            consumableEquipment));
+    transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem(medication.getInventoryItemName(),
             "Medication", 1,
             medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
             medication));
-    transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem("Service",
+    transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem(serviceItem.getInventoryItemName(),
             "Service", 1,
             serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
             serviceItem));
@@ -952,8 +952,8 @@ public class DataLoader implements CommandLineRunner {
   public void createInvoice() {
     transactionItemService.checkout(Long.parseLong("1"));
     transactionItemService.checkout(Long.parseLong("2"));
-    invoiceService.createInsuranceClaim(Long.parseLong("1"), BigDecimal.valueOf(1000),
+    invoiceService.createInsuranceClaim(Long.parseLong("1"), BigDecimal.valueOf(100),
             "Great Eastern", true);
-    invoiceService.createMedishieldClaim(Long.parseLong("1"), BigDecimal.valueOf(1000));
+    invoiceService.createMedishieldClaim(Long.parseLong("1"), BigDecimal.valueOf(110));
   }
 }
