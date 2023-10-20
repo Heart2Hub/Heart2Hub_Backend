@@ -1,8 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,6 +16,10 @@ public class ServiceItem extends InventoryItem{
 
     @NotNull
     private BigDecimal retailPricePerQuantity;
+
+    @ManyToOne(fetch = FetchType.EAGER,optional = true)
+    @JoinColumn(name = "unit_id", nullable = true)
+    private Unit unit;
 
     public ServiceItem(String inventoryItemName, String inventoryItemDescription, ItemTypeEnum itemTypeEnum, BigDecimal retailPricePerQuantity) {
         super(inventoryItemName, inventoryItemDescription, itemTypeEnum);

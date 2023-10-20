@@ -872,13 +872,14 @@ public class DataLoader implements CommandLineRunner {
   }
 
   private void createServiceItemData() {
-    ServiceItem newServiceItem1 = serviceItemService.createServiceItem(
+
+    ServiceItem newServiceItem1 = serviceItemService.createServiceItem(Long.parseLong("5"),
             new ServiceItem("General A&E Consultation", "Consultation", ItemTypeEnum.OUTPATIENT,
                     BigDecimal.valueOf(400)));
-    ServiceItem newServiceItem2 = serviceItemService.createServiceItem(
+    ServiceItem newServiceItem2 = serviceItemService.createServiceItem(Long.parseLong("11"),
             new ServiceItem("Class A Ward", "per Day", ItemTypeEnum.INPATIENT,
                     BigDecimal.valueOf(300)));
-    ServiceItem newServiceItem3 = serviceItemService.createServiceItem(
+    ServiceItem newServiceItem3 = serviceItemService.createServiceItem(Long.parseLong("12"),
             new ServiceItem("Class B Ward", "per Day", ItemTypeEnum.INPATIENT,
                     BigDecimal.valueOf(200)));
 
@@ -895,39 +896,39 @@ public class DataLoader implements CommandLineRunner {
             "Female", "All", "All", "SG Females Subsidy", "Subsidised rates for all Singaporean Females");
   }
 
-  public void createTransactionItems() {
-    ConsumableEquipment consumableEquipment = (ConsumableEquipment) inventoryItemRepository.findById(Long.parseLong("1")).get();
-    Medication medication= (Medication) inventoryItemRepository.findById(Long.parseLong("6")).get();
-    ServiceItem serviceItem = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("11")).get();
-
-    //For patient 1
-    transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Consumable",
-            "Consumable", 10,
-            consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
-            consumableEquipment));
-    transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Medication",
-            "Medication", 10,
-            medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
-            medication));
-    transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Service",
-            "Service", 10,
-            serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(10)),
-            serviceItem));
-
-    //For patient 2
-    transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem("Consumable",
-            "Consumable", 10,
-            consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
-            consumableEquipment));
-    transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem("Medication",
-            "Medication", 10,
-            medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
-            medication));
-    transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem("Service",
-            "Service", 10,
-            serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(10)),
-            serviceItem));
-  }
+//  public void createTransactionItems() {
+//    ConsumableEquipment consumableEquipment = (ConsumableEquipment) inventoryItemRepository.findById(Long.parseLong("1")).get();
+//    Medication medication= (Medication) inventoryItemRepository.findById(Long.parseLong("6")).get();
+//    ServiceItem serviceItem = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("11")).get();
+//
+//    //For patient 1
+//    transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Consumable",
+//            "Consumable", 10,
+//            consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+//            consumableEquipment));
+//    transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Medication",
+//            "Medication", 10,
+//            medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+//            medication));
+//    transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Service",
+//            "Service", 10,
+//            serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+//            serviceItem));
+//
+//    //For patient 2
+//    transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem("Consumable",
+//            "Consumable", 10,
+//            consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+//            consumableEquipment));
+//    transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem("Medication",
+//            "Medication", 10,
+//            medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+//            medication));
+//    transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem("Service",
+//            "Service", 10,
+//            serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(10)),
+//            serviceItem));
+//  }
 
   public void createInvoice() {
     transactionItemService.checkout(Long.parseLong("1"));
