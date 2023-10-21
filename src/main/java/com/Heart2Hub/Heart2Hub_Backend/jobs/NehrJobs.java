@@ -66,7 +66,7 @@ public class NehrJobs {
                 try {
                     NehrMapper nehrMapper = new NehrMapper();
                     ElectronicHealthRecord record = nehrMapper.convertToEntity(nehrDTO);
-                    electronicHealthRecordService.updateElectronicHealthRecord(electronicHealthRecordService.findByNric(record.getNric()).getElectronicHealthRecordId(), record);
+                    electronicHealthRecordService.updateCascadeElectronicHealthRecord(electronicHealthRecordService.findByNric(record.getNric()).getElectronicHealthRecordId(), record);
                 } catch (ElectronicHealthRecordNotFoundException ex) {
                     LOGGER.info("EHR record not in Heart2Hub. Skipping...");
                 } catch (Exception ex) {
