@@ -237,7 +237,9 @@ public class ElectronicHealthRecordService {
                             }
                             // For delete staff
                             for (Staff existingStaff : pastAppointmentToUpdate.getListOfStaff()) {
-                                if (!pastAppointment.getListOfStaff().contains(existingStaff)) {
+                                if (!newElectronicHealthRecord.getListOfMedicalHistoryRecords().stream()
+                                        .anyMatch(medicalHistoryRecord ->
+                                                medicalHistoryRecord.getMedicalHistoryRecordNehrId().equals(existingStaff.getStaffNehrId()))) {
                                     pastAppointmentToUpdate.getListOfStaff().remove(existingStaff);
                                 }
                             }
