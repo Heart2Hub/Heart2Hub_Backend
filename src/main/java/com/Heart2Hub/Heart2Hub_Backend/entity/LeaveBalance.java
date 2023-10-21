@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -20,6 +21,10 @@ public class LeaveBalance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long leaveBalanceId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID leaveBalanceNehrId = UUID.randomUUID();
 
     @NotNull
     private Integer annualLeave = 14;

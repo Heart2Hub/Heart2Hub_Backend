@@ -21,6 +21,8 @@ import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
+
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,6 +36,9 @@ public class Staff implements UserDetails {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long staffId;
+  @NotNull
+  @Column(unique = true)
+  private UUID staffNehrId = UUID.randomUUID();
   @NotNull
   @Size(min = 6)
   @Column(unique = true)

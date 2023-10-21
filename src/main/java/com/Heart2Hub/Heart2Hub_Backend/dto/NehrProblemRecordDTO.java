@@ -6,9 +6,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 public class NehrProblemRecordDTO {
+    private UUID problemRecordNehrId;
     private String description;
     private String createdBy;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

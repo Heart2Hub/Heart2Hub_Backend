@@ -1,25 +1,17 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.dto.NehrDTO;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
-import com.Heart2Hub.Heart2Hub_Backend.entity.ElectronicHealthRecord;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Patient;
-import com.Heart2Hub.Heart2Hub_Backend.entity.SubDepartment;
+import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.exception.ElectronicHealthRecordNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateElectronicHealthRecordException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateSubDepartmentException;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.NehrMapper;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,22 +58,14 @@ public class ElectronicHealthRecordService {
 
     public ElectronicHealthRecord getNehrRecordByNric(String nric){
         try {
-            System.out.println("HERHEHREHREHRHERHERHERHEHRHER");
             final String uri = "http://localhost:3002/records/" + nric;
             RestTemplate restTemplate = new RestTemplate();
-
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity(uri, String.class);
-            String jsonResponse = responseEntity.getBody();
-            System.out.println("Raw JSON response: " + jsonResponse);
-
             NehrDTO result = restTemplate.getForObject(uri, NehrDTO.class);
-            System.out.println("sdasd" + result);
             NehrMapper nehrMapper = new NehrMapper();
             ElectronicHealthRecord toReturn = nehrMapper.convertToEntity(result);
-            System.out.println(toReturn);
             return toReturn;
         } catch (Exception ex) {
-            System.out.print("asdadsasd" + ex.getMessage());
+            System.out.print(ex.getMessage());
             return null;
         }
     }
@@ -102,14 +86,61 @@ public class ElectronicHealthRecordService {
                 existingElectronicHealthRecord.setAddress(newElectronicHealthRecord.getAddress());
                 existingElectronicHealthRecord.setContactNumber(newElectronicHealthRecord.getContactNumber());
 
-                existingElectronicHealthRecord.setListOfSubsidies(newElectronicHealthRecord.getListOfSubsidies());
-                existingElectronicHealthRecord.setListOfPastAdmissions(newElectronicHealthRecord.getListOfPastAdmissions());
-                existingElectronicHealthRecord.setListOfPastAppointments(newElectronicHealthRecord.getListOfPastAppointments());
-                existingElectronicHealthRecord.setListOfNextOfKinRecords(newElectronicHealthRecord.getListOfNextOfKinRecords());
-                existingElectronicHealthRecord.setListOfPrescriptionRecords(newElectronicHealthRecord.getListOfPrescriptionRecords());
-                existingElectronicHealthRecord.setListOfProblemRecords(newElectronicHealthRecord.getListOfProblemRecords());
-                existingElectronicHealthRecord.setListOfMedicalHistoryRecords(newElectronicHealthRecord.getListOfMedicalHistoryRecords());
-                existingElectronicHealthRecord.setListOfTreatmentPlanRecords(newElectronicHealthRecord.getListOfTreatmentPlanRecords());
+                // Delete all and recreate (May screw with Id order). Cannot update because no Id unless check contents (May be flawed?).
+
+                // Subsidies
+                // TO-DO: Do the same for subsidies.
+
+                // Past Admissions
+                // TO-DO: Do the same for past admissions.
+
+                // Past Appointments
+//                if (newElectronicHealthRecord.getListOfPastAppointments() != null) {
+//                    appointmentService.deleteAllPastAppointmentsFromElectronicHealthRecord(existingElectronicHealthRecord.getElectronicHealthRecordId());
+//                    for (Appointment appointment : newElectronicHealthRecord.getListOfPastAppointments()) {
+//                        appointmentService.createNewAppointment(appointment.getDescription(), String.valueOf(appointment.getBookedDateTime()),appointment.getPriorityEnum().toString(), newElectronicHealthRecord.getNric(),appointment.getDepartment().getName());
+//                    }
+//                }
+
+                // Next of Kin Records
+//                if (newElectronicHealthRecord.getListOfNextOfKinRecords() != null) {
+//                    nextOfKinRecordService.deleteAllNextOfKinRecordsFromElectronicHealthRecord(existingElectronicHealthRecord.getElectronicHealthRecordId());
+//                    for (NextOfKinRecord nextOfKinRecord : newElectronicHealthRecord.getListOfNextOfKinRecords()) {
+//                        nextOfKinRecordService.createNextOfKinRecord(newElectronicHealthRecord.getElectronicHealthRecordId(),nextOfKinRecord);
+//                    }
+//                }
+
+                // Prescription Records
+//                if (newElectronicHealthRecord.getListOfPrescriptionRecords() != null) {
+//                    prescriptionRecordService.deleteAllPrescriptionRecordsFromElectronicHealthRecord(existingElectronicHealthRecord.getElectronicHealthRecordId());
+//                    for (PrescriptionRecord prescriptionRecord : newElectronicHealthRecord.getListOfPrescriptionRecords()) {
+//                        prescriptionRecordService.createPrescriptionRecord(newElectronicHealthRecord.getElectronicHealthRecordId(),prescriptionRecord);
+//                    }
+//                }
+
+                // Problem Records
+//                if (newElectronicHealthRecord.getListOfProblemRecords() != null) {
+//                    problemRecordService.deleteAllProblemRecordsFromElectronicHealthRecord(existingElectronicHealthRecord.getElectronicHealthRecordId());
+//                    for (ProblemRecord problemRecord : newElectronicHealthRecord.getListOfProblemRecords()) {
+//                        problemRecordService.createProblemRecord(newElectronicHealthRecord.getElectronicHealthRecordId(),problemRecord);
+//                    }
+//                }
+
+                // Medical History Records
+//                if (newElectronicHealthRecord.getListOfMedicalHistoryRecords() != null) {
+//                    medicalHistoryRecordService.deleteAllMedicalHistoryRecordsFromElectronicHealthRecord(existingElectronicHealthRecord.getElectronicHealthRecordId());
+//                    for (MedicalHistoryRecord medicalHistoryRecord : newElectronicHealthRecord.getListOfMedicalHistoryRecords()) {
+//                        medicalHistoryRecordService.createMedicalHistoryRecord(newElectronicHealthRecord.getElectronicHealthRecordId(), medicalHistoryRecord);
+//                    }
+//                }
+
+                // Treatment Plan Records
+//                if (newElectronicHealthRecord.getListOfTreatmentPlanRecords() != null) {
+//                    treatmentPlanRecordService.deleteAllTreatmentPlanRecordsFromElectronicHealthRecord(existingElectronicHealthRecord.getElectronicHealthRecordId());
+//                    for (TreatmentPlanRecord treatmentPlanRecord : newElectronicHealthRecord.getListOfTreatmentPlanRecords()) {
+//                        treatmentPlanRecordService.createTreatmentPlanRecord(newElectronicHealthRecord.getElectronicHealthRecordId(), treatmentPlanRecord);
+//                    }
+//                }
 
                 electronicHealthRecordRepository.save(existingElectronicHealthRecord);
                 return existingElectronicHealthRecord;

@@ -5,9 +5,11 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class NehrAppointmentDTO {
+    private UUID appointmentNehrId;
     private String description;
     private String comments = "";
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

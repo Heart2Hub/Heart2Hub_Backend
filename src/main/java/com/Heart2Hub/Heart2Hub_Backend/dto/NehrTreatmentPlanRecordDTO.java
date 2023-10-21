@@ -6,9 +6,11 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class NehrTreatmentPlanRecordDTO {
+    private UUID treatmentPlanRecordNehrId;
     private String description;
     private String primaryDoctor;
     private List<String> secondaryDoctors;

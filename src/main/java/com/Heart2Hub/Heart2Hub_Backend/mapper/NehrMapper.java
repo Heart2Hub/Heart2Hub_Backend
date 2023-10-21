@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.mapper;
 import com.Heart2Hub.Heart2Hub_Backend.dto.NehrDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -14,6 +15,8 @@ public class NehrMapper {
 
   public NehrMapper() {
     this.modelMapper = new ModelMapper();
+    modelMapper.getConfiguration()
+            .setMatchingStrategy(MatchingStrategies.STRICT);
 
     modelMapper.createTypeMap(ElectronicHealthRecord.class, NehrDTO.class)
             .addMapping(src -> (src.getListOfSubsidies() != null) ?
@@ -41,7 +44,7 @@ public class NehrMapper {
                             : null,
                     NehrDTO::setListOfProblemRecords)
             .addMapping(src -> (src.getListOfMedicalHistoryRecords() != null) ?
-                            src.getListOfMedicalHistoryRecords().stream().map(MedicalHistoryRecord::getMedicalRecordId).collect(Collectors.toList())
+                            src.getListOfMedicalHistoryRecords().stream().map(MedicalHistoryRecord::getMedicalHistoryRecordId).collect(Collectors.toList())
                             : null,
                     NehrDTO::setListOfMedicalHistoryRecords)
             .addMapping(src -> (src.getListOfTreatmentPlanRecords() != null) ?

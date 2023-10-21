@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -15,6 +16,10 @@ public class PrescriptionRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long prescriptionRecordId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID prescriptionRecordNehrId = UUID.randomUUID();
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)

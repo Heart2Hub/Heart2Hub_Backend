@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ElectronicHealthRecord;
 import com.Heart2Hub.Heart2Hub_Backend.entity.TreatmentPlanRecord;
 import com.Heart2Hub.Heart2Hub_Backend.entity.NextOfKinRecord;
+import com.Heart2Hub.Heart2Hub_Backend.exception.ElectronicHealthRecordNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateTreatmentPlanRecordException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateNextOfKinRecordException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
@@ -10,6 +11,8 @@ import com.Heart2Hub.Heart2Hub_Backend.repository.TreatmentPlanRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.NextOfKinRecordRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -33,6 +36,23 @@ public class TreatmentPlanRecordService {
             return newTreatmentPlanRecord;
         } catch (Exception ex) {
             throw new UnableToCreateTreatmentPlanRecordException(ex.getMessage());
+        }
+    }
+
+    public ElectronicHealthRecord deleteAllTreatmentPlanRecordsFromElectronicHealthRecord(Long electronicHealthRecordId) throws ElectronicHealthRecordNotFoundException {
+        try {
+            Optional<ElectronicHealthRecord> electronicHealthRecordOptional = electronicHealthRecordRepository.findById(electronicHealthRecordId);
+
+            if (electronicHealthRecordOptional.isPresent()) {
+                ElectronicHealthRecord existingElectronicHealthRecord = electronicHealthRecordOptional.get();
+                existingElectronicHealthRecord.getListOfTreatmentPlanRecords().clear();
+                electronicHealthRecordRepository.save(existingElectronicHealthRecord);
+                return existingElectronicHealthRecord;
+            } else {
+                throw new ElectronicHealthRecordNotFoundException("Electronic Health Record with Id: " + electronicHealthRecordId + " is not found");
+            }
+        } catch (Exception ex) {
+            throw new ElectronicHealthRecordNotFoundException(ex.getMessage());
         }
     }
 

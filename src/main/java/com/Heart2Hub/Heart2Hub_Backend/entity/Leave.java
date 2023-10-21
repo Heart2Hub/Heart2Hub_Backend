@@ -13,6 +13,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -22,6 +23,10 @@ public class Leave {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long leaveId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID leaveNehrId = UUID.randomUUID();
 
     @NotNull
     private LocalDateTime startDate;

@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import lombok.Data;
 
@@ -21,6 +22,10 @@ public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long invoiceId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID invoiceNehrId = UUID.randomUUID();
 
     @NotNull
     private BigDecimal invoiceAmount;

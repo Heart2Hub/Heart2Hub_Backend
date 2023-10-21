@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -15,7 +16,11 @@ import java.time.LocalDateTime;
 public class MedicalHistoryRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long medicalRecordId;
+    private Long medicalHistoryRecordId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID medicalHistoryRecordNehrId = UUID.randomUUID();
 
     @NotNull
     private String description;

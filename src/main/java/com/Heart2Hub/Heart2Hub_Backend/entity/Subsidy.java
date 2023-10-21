@@ -20,6 +20,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
+
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,6 +36,10 @@ public class Subsidy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long subsidyId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID subsidyNehrId = UUID.randomUUID();
 
     @NotNull
     private BigDecimal subsidyRate;

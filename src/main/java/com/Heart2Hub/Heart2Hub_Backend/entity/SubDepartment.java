@@ -12,6 +12,7 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -21,6 +22,10 @@ public class SubDepartment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long subDepartmentId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID subDepartmentNehrId = UUID.randomUUID();
 
     @NotNull
     private String name;

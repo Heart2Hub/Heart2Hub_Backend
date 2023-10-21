@@ -29,8 +29,8 @@ public class NehrJobs {
         this.electronicHealthRecordService = electronicHealthRecordService;
     }
 
-    @Scheduled(cron = "0 0 2 * * *") // Pull every 2am for deployment
-    // @Scheduled(cron = "0 * * * * *") // Pull every minute for debugging
+    // @Scheduled(cron = "0 0 2 * * *") // Pull every 2am for deployment
+    @Scheduled(cron = "0 * * * * *") // Pull every minute for debugging
     @SchedulerLock(name = "pushToNehr")
     public void pushToNehr() {
         LOGGER.info("Pushing to NEHR at "+ LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));

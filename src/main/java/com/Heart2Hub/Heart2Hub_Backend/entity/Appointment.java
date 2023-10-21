@@ -15,6 +15,7 @@ import lombok.Data;
 import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -24,6 +25,10 @@ public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long appointmentId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID appointmentNehrId = UUID.randomUUID();
 
     @NotNull
     @Size(max = 5000, message = "Description too long")

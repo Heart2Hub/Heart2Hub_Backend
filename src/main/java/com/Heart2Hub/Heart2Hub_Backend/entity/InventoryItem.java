@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
+import java.util.UUID;
+
 @Getter
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -13,6 +15,10 @@ public abstract class InventoryItem {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     private Long inventoryItemId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID inventoryItemNehrId = UUID.randomUUID();
 
     @NotNull
     private String inventoryItemName;

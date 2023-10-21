@@ -6,9 +6,11 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 public class NehrSubsidyDTO {
+    private UUID subsidyNehrId;
     private BigDecimal subsidyRate;
     private ItemTypeEnum itemTypeEnum;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

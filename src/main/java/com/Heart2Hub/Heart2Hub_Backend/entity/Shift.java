@@ -17,6 +17,7 @@ import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @EqualsAndHashCode(exclude="facilityBooking")
@@ -27,6 +28,10 @@ public class Shift {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long shiftId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID shiftNehrId = UUID.randomUUID();
 
     @NotNull
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")

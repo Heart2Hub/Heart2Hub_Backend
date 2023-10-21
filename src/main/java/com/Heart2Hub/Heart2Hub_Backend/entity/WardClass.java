@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -17,6 +18,10 @@ public class WardClass {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long wardClassId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID wardClassNehrId = UUID.randomUUID();
 
     @Size(max = 100)
     @NotNull

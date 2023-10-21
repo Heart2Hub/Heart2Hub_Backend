@@ -5,10 +5,12 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 // TO-DO: Include default values for non-mapped not null fields. So when pulled from NEHR can just create a new instance.
 @Data
 public class NehrDTO {
+    private UUID electronicHealthRecordNehrId;
     private String nric;
     private String firstName;
     private String lastName;
