@@ -185,6 +185,9 @@ public class DataLoader implements CommandLineRunner {
     staffService.createStaff(
         new Staff("staff14", "password14", "Ronald", "Weasley", 90897321l, StaffRoleEnum.NURSE,
             false), "B20", new ImageDocument("id13.png", lt));
+    staffService.createStaff(
+        new Staff("staff15", "password15", "Meeeeeeeeelvin", "Tan", 93693693l, StaffRoleEnum.DIAGNOSTIC_RADIOGRAPHERS,
+            false), "Cardiology", new ImageDocument("id13.png", lt));
 
     leaveService.createLeave(LocalDateTime.now().plusMonths(3),
         LocalDateTime.now().plusMonths(3).plusDays(2), LeaveTypeEnum.ANNUAL, staff3, staff2,
@@ -255,8 +258,8 @@ public class DataLoader implements CommandLineRunner {
           new Facility("Operating Room 1 " + departmentRepository.findById(L).get().getName(),
               "Level 2", "", 6, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.OPERATING_ROOM));
       facilityService.createFacility(L,
-          new Facility("Operating Room 2 " + departmentRepository.findById(L).get().getName(),
-              "Level 3", "", 6, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.OPERATING_ROOM));
+              new Facility("Operating Room 2 " + departmentRepository.findById(L).get().getName(),
+                      "Level 3", "", 6, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.OPERATING_ROOM));
       facilityService.createFacility(L,
           new Facility("Registration Counter 1 " + departmentRepository.findById(L).get().getName(),
               "Level 1", "", 2, FacilityStatusEnum.BOOKABLE,
@@ -265,6 +268,9 @@ public class DataLoader implements CommandLineRunner {
           new Facility("Registration Counter 2 " + departmentRepository.findById(L).get().getName(),
               "Level 1", "", 2, FacilityStatusEnum.BOOKABLE,
               FacilityTypeEnum.ADMINISTRATION_OFFICES));
+      facilityService.createFacility(L,
+              new Facility("X-Ray Room 1 " + departmentRepository.findById(L).get().getName(),
+                      "Level 3", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.RADIOLOGY_AND_IMAGING_ROOM));
 
       if (L == 5L) {
         facilityService.createFacility(L,
@@ -395,6 +401,10 @@ public class DataLoader implements CommandLineRunner {
         LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
     shiftService.createShift("staff12", 10L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
         LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Cardiology diagnostic radiographers shifts - Working hours (8am - 4pm)
+    shiftService.createShift("staff15", 11L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Thursday
     currentDateTime = monday.plusDays(3);
