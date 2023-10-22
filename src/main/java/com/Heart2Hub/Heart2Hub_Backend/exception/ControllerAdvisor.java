@@ -117,6 +117,12 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
   }
 
+  @ExceptionHandler(ElectronicHealthRecordNotFoundException.class)
+  public ResponseEntity<Object> handleElectronicHealthRecordNotFoundException(
+      ElectronicHealthRecordNotFoundException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
   @ExceptionHandler(UnableToAddImageAttachmentToAppointmentException.class)
   public ResponseEntity<Object> handleUnableToAddImageAttachmentToAppointmentException(
       UnableToAddImageAttachmentToAppointmentException ex) {
