@@ -1,14 +1,13 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
-import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Medication;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.AllergenEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.AppointmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.MedicationNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateMedicationException;
+import com.Heart2Hub.Heart2Hub_Backend.repository.DrugRestrictionRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.MedicationRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import org.springframework.security.core.Authentication;
@@ -26,10 +25,14 @@ import java.util.Optional;
 public class MedicationService {
     private final StaffRepository staffRepository;
     private final MedicationRepository medicationRepository;
+    private final DrugRestrictionRepository drugRestrictionRepository;
 
-    public MedicationService(StaffRepository staffRepository, MedicationRepository medicationRepository) {
+
+    public MedicationService(StaffRepository staffRepository, MedicationRepository medicationRepository, DrugRestrictionRepository drugRestrictionRepository) {
         this.staffRepository = staffRepository;
         this.medicationRepository = medicationRepository;
+        this.drugRestrictionRepository = drugRestrictionRepository;
+
     }
 
     public boolean isLoggedInUserAdmin() {
@@ -102,6 +105,13 @@ public class MedicationService {
             Optional<Medication> newMedicationOptional = medicationRepository.findById(inventoryItemId);
             if (newMedicationOptional.isPresent()) {
                 Medication medication = newMedicationOptional.get();
+                    List<DrugRestriction> drugList = drugRestrictionRepository.findAll();
+                    for (DrugRestriction drug : drugList) {
+                        if (drug.getDrugName().equals(medication.getInventoryItemName())) {
+                            drugRestrictionRepository.delete(drug)  ;
+                        }
+                    }
+
                 medicationRepository.delete(medication);
                 return "Consumable Equipment with inventoryItemId  " + inventoryItemId + " has been deleted successfully.";
             } else {
@@ -144,13 +154,24 @@ public class MedicationService {
                 if (retailPrice.equals(BigDecimal.ZERO)) {
                     throw new UnableToCreateMedicationException("Price must be more than 0.00");
                 }
-                if (updatedMedication.getInventoryItemName() != null) medication.setInventoryItemName(updatedMedication.getInventoryItemName());
+                if (updatedMedication.getInventoryItemName() != null) {
+                    List<DrugRestriction> drugList = drugRestrictionRepository.findAll();
+                    for (DrugRestriction drug : drugList) {
+                        if (drug.getDrugName().equals(medication.getInventoryItemName())) {
+                            drug.setDrugName(updatedMedication.getInventoryItemName());
+                        }
+                    }
+                    medication.setInventoryItemName(updatedMedication.getInventoryItemName());
+                }
                 if (updatedMedication.getInventoryItemDescription() != null) medication.setInventoryItemDescription(updatedMedication.getInventoryItemDescription());
                 if (updatedMedication.getItemTypeEnum() != null) medication.setItemTypeEnum(updatedMedication.getItemTypeEnum());
                 if (updatedMedication.getQuantityInStock() != null) medication.setQuantityInStock(updatedMedication.getQuantityInStock());
                 if (updatedMedication.getRestockPricePerQuantity() != null) medication.setRestockPricePerQuantity(updatedMedication.getRestockPricePerQuantity());
                 if (updatedMedication.getRetailPricePerQuantity() != null) medication.setRetailPricePerQuantity(updatedMedication.getRetailPricePerQuantity());
                 if (updatedMedication.getAllergenEnumList() != null) medication.setAllergenEnumList(updatedMedication.getAllergenEnumList());
+                if (updatedMedication.getComments() != null) medication.setComments(updatedMedication.getComments());
+                if (updatedMedication.getDrugRestrictions() != null) medication.setDrugRestrictions(updatedMedication.getDrugRestrictions());
+
                 medicationRepository.save(medication);
                 return medication;
             } else {

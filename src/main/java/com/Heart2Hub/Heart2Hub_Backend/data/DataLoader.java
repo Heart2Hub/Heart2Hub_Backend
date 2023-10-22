@@ -73,7 +73,9 @@ public class DataLoader implements CommandLineRunner {
   private final InventoryItemRepository inventoryItemRepository;
   private final InvoiceService invoiceService;
 
-  public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, SubsidyService subsidyService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, MedicationService medicationService, ServiceItemService serviceItemService, TransactionItemService transactionItemService, AppointmentService appointmentService, InventoryItemRepository inventoryItemRepository, InvoiceService invoiceService) {
+  private final DrugRestrictionService drugRestrictionService;
+
+  public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, SubsidyService subsidyService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, MedicationService medicationService, ServiceItemService serviceItemService, TransactionItemService transactionItemService, AppointmentService appointmentService, InventoryItemRepository inventoryItemRepository, InvoiceService invoiceService, DrugRestrictionService drugRestrictionService) {
     this.staffService = staffService;
     this.shiftService = shiftService;
     this.departmentService = departmentService;
@@ -100,6 +102,7 @@ public class DataLoader implements CommandLineRunner {
     this.appointmentService = appointmentService;
     this.inventoryItemRepository = inventoryItemRepository;
     this.invoiceService = invoiceService;
+    this.drugRestrictionService = drugRestrictionService;
   }
 
   @Override
@@ -854,21 +857,41 @@ public class DataLoader implements CommandLineRunner {
     allergenList2.add(AllergenEnum.PENICILLIN_V);
     allergenList2.add(AllergenEnum.AMOXICILLIN);
 
+    DrugRestriction newDrugRestriction1 = drugRestrictionService.createDrugRestriction(
+            new DrugRestriction("Warfarin"));
+    DrugRestriction newDrugRestriction2 = drugRestrictionService.createDrugRestriction(
+            new DrugRestriction("Paracetamol"));
+    List<DrugRestriction> drugList1 = new ArrayList<>();
+    List<DrugRestriction> drugList2 = new ArrayList<>();
+    drugList2.add(newDrugRestriction1);
+    List<DrugRestriction> drugList3 = new ArrayList<>();
+    drugList3.add(newDrugRestriction2);
+
+
     Medication newMedication1 = medicationService.createMedication(
             new Medication("Paracetamol 500 mg Tablets", "500mg per piece", ItemTypeEnum.MEDICINE, 100,
-                    BigDecimal.TEN, BigDecimal.TEN, allergenList1));
+                    BigDecimal.TEN, BigDecimal.TEN, allergenList1, "", drugList2));
     Medication newMedication2 = medicationService.createMedication(
             new Medication("Cetirizine 10mg Tablets", "10mg per piece", ItemTypeEnum.MEDICINE, 100,
-                    BigDecimal.valueOf(5), BigDecimal.TEN, allergenList1));
+                    BigDecimal.valueOf(5), BigDecimal.TEN, allergenList1, "Do not take with alcohol", drugList1));
     Medication newMedication3 = medicationService.createMedication(
             new Medication("Augmentin 625mg Tablets ", "625mg per piece", ItemTypeEnum.MEDICINE, 50,
-                    BigDecimal.valueOf(4), BigDecimal.TEN, allergenList2));
+                    BigDecimal.valueOf(4), BigDecimal.TEN, allergenList2, "", drugList1));
     Medication newMedication4 = medicationService.createMedication(
             new Medication("Metformin 500mg Tablets", "500mg per piece", ItemTypeEnum.MEDICINE, 1000,
-                    BigDecimal.valueOf(2), BigDecimal.TEN, allergenList1));
+                    BigDecimal.valueOf(2), BigDecimal.TEN, allergenList1, "Do not take with alcohol", drugList1));
     Medication newMedication5 = medicationService.createMedication(
             new Medication("Augmentin 228mg Suspension", "5ml per bottle", ItemTypeEnum.MEDICINE, 100,
-                    BigDecimal.valueOf(3), BigDecimal.TEN, allergenList2));
+                    BigDecimal.valueOf(3), BigDecimal.TEN, allergenList2, "", drugList1));
+    Medication newMedication6 = medicationService.createMedication(
+            new Medication("Warfarin 1mg Tablet", "1mg per piece", ItemTypeEnum.MEDICINE, 10000,
+                    BigDecimal.valueOf(3), BigDecimal.TEN, allergenList1, "", drugList3));
+    Medication newMedication7 = medicationService.createMedication(
+            new Medication("Warfarin 3mg Tablet", "3mg per piece", ItemTypeEnum.MEDICINE, 10000,
+                    BigDecimal.valueOf(3), BigDecimal.TEN, allergenList1, "", drugList3));
+    Medication newMedication8 = medicationService.createMedication(
+            new Medication("Warfarin 5mg Tablet", "5mg per piece", ItemTypeEnum.MEDICINE, 10000,
+                    BigDecimal.valueOf(3), BigDecimal.TEN, allergenList1, "", drugList3));
   }
 
   private void createServiceItemData() {
