@@ -1,6 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.DispensaryStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PriorityEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
@@ -245,8 +246,9 @@ public class AppointmentService {
 
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     //check if appointment is assigned to you first, or else you should not be able to check arrived
-    if (appointment.getCurrentAssignedStaff() != null && !Objects.equals(
-        appointment.getCurrentAssignedStaff().getStaffId(), staffId)) {
+    if (appointment.getCurrentAssignedStaff() == null ||
+        (appointment.getCurrentAssignedStaff() != null && !Objects.equals(
+        appointment.getCurrentAssignedStaff().getStaffId(), staffId))) {
       throw new UnableToUpdateAppointmentArrival(
           "Unable to edit a appointment that is not assigned to you");
     }
@@ -373,5 +375,12 @@ public class AppointmentService {
 
   public List<Appointment> getAllPharmacyTickets() {
     return appointmentRepository.findAllBySwimlaneStatusEnumEquals(SwimlaneStatusEnum.PHARMACY);
+  }
+
+  public Appointment updateAppointmentDispensaryStatus(Long appointmentId,
+                                                     DispensaryStatusEnum dispensaryStatusEnum) {
+    Appointment appointment = findAppointmentByAppointmentId(appointmentId);
+    appointment.setDispensaryStatusEnum(dispensaryStatusEnum);
+    return appointment;
   }
 }

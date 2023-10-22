@@ -787,13 +787,13 @@ public class DataLoader implements CommandLineRunner {
         "LOW",
         patient4.getElectronicHealthRecord().getNric(),
         "Cardiology");
-    appointmentService.createNewAppointment("Arrhythmia",
+    Appointment a4 = appointmentService.createNewAppointment("Arrhythmia",
         date2.toString(),
 //            LocalDateTime.now().minusDays(11).toString(),
         "MEDIUM",
         patient5.getElectronicHealthRecord().getNric(),
         "Cardiology");
-    appointmentService.createNewAppointment("Congenital heart conditions",
+    Appointment a3 = appointmentService.createNewAppointment("Congenital heart conditions",
         date2.toString(),
 //            LocalDateTime.now().minusDays(12).toString(),
         "MEDIUM",
@@ -814,12 +814,15 @@ public class DataLoader implements CommandLineRunner {
         patient8.getElectronicHealthRecord().getNric(),
         "Cardiology");
 //    appointmentService.assignAppointmentToStaff(a1.getAppointmentId(),p1.getStaffId(),d1.getStaffId());
-    appointmentService.updateAppointmentSwimlaneStatus(a1.getAppointmentId(),SwimlaneStatusEnum.PHARMACY);
+//    appointmentService.updateAppointmentSwimlaneStatus(a1.getAppointmentId(),SwimlaneStatusEnum.PHARMACY);
 //    appointmentService.updateAppointmentArrival(a1.getAppointmentId(),true,p1.getStaffId());
 
 //    appointmentService.assignAppointmentToStaff(a2.getAppointmentId(),p1.getStaffId(),d1.getStaffId());
-    appointmentService.updateAppointmentSwimlaneStatus(a2.getAppointmentId(),SwimlaneStatusEnum.PHARMACY);
+//    appointmentService.updateAppointmentSwimlaneStatus(a2.getAppointmentId(),SwimlaneStatusEnum.PHARMACY);
 //    appointmentService.updateAppointmentArrival(a2.getAppointmentId(),true,p1.getStaffId());
+//    appointmentService.updateAppointmentSwimlaneStatus(a3.getAppointmentId(),SwimlaneStatusEnum.PHARMACY);
+//    appointmentService.updateAppointmentSwimlaneStatus(a4.getAppointmentId(),SwimlaneStatusEnum.PHARMACY);
+
 
     //for future dates
     LocalDateTime futureDate1 = LocalDateTime.now().plusDays(5L).withHour(19).withMinute(0)

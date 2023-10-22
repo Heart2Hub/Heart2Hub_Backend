@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.controller;
 import com.Heart2Hub.Heart2Hub_Backend.dto.AppointmentDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.DispensaryStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.AppointmentMapper;
 import com.Heart2Hub.Heart2Hub_Backend.service.AppointmentService;
@@ -211,5 +212,14 @@ public class AppointmentController {
     List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
             .map(appointmentMapper::toDTO).collect(Collectors.toList());
     return ResponseEntity.ok(listOfApptsDTO);
+  }
+
+  @PostMapping("/updateAppointmentDispensaryStatus")
+  public ResponseEntity<AppointmentDTO> updateAppointmentDispensaryStatus(
+          @RequestParam("appointmentId") Long appointmentId,
+          @RequestParam("dispensaryStatus") String dispensaryStatus) {
+    return ResponseEntity.ok(appointmentMapper.toDTO(
+            appointmentService.updateAppointmentDispensaryStatus(appointmentId,
+                    DispensaryStatusEnum.valueOf(dispensaryStatus.toUpperCase()))));
   }
 }

@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.DispensaryStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PriorityEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -59,6 +60,10 @@ public class Appointment {
     @NotNull
     @Enumerated(EnumType.STRING)
     private SwimlaneStatusEnum swimlaneStatusEnum = SwimlaneStatusEnum.REGISTRATION;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private DispensaryStatusEnum dispensaryStatusEnum = DispensaryStatusEnum.PREPARING;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
