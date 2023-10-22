@@ -2,6 +2,7 @@ package com.Heart2Hub.Heart2Hub_Backend.entity;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.AllergenEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,12 +23,15 @@ public class Medication extends InventoryItem {
 //    private String medicationUUID;
 
     @NotNull
+    @Min(0)
     private BigDecimal retailPricePerQuantity;
 
     @NotNull
+    @Min(0)
     private BigDecimal restockPricePerQuantity;
 
     @NotNull
+    @Min(0)
     private Integer quantityInStock;
 
     @ElementCollection(targetClass = AllergenEnum.class)
