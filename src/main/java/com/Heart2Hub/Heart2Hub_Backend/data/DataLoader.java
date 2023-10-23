@@ -690,8 +690,8 @@ public class DataLoader implements CommandLineRunner {
     Patient patient7 = patientService.getPatientByUsername("patient7");
     Patient patient8 = patientService.getPatientByUsername("patient8");
 //
-//    Staff d1 = staffService.getStaffByUsername("staff5");
-//    Staff n1 = staffService.getStaffByUsername("staff8");
+    Staff d1 = staffService.getStaffByUsername("staff5");
+    Staff p1 = staffService.getStaffByUsername("staff15");
 
     //for past appointments
 //    LocalDateTime pastDate1 = LocalDateTime.now().minusDays(14).withHour(9).withMinute(0)
@@ -801,21 +801,25 @@ public class DataLoader implements CommandLineRunner {
         "Cardiology");
 
     LocalDateTime date3 = LocalDateTime.now().withHour(19).withMinute(0).withSecond(0);
-    appointmentService.createNewAppointment("High blood pressure",
+    Appointment a1 = appointmentService.createNewAppointment("High blood pressure",
         date3.toString(),
 //            LocalDateTime.now().minusDays(13).toString(),
         "LOW",
         patient7.getElectronicHealthRecord().getNric(),
         "Cardiology");
-    appointmentService.createNewAppointment("Inherited heart conditions",
+    Appointment a2 = appointmentService.createNewAppointment("Inherited heart conditions",
         date3.toString(),
 //            LocalDateTime.now().minusDays(14).toString(),
         "LOW",
         patient8.getElectronicHealthRecord().getNric(),
         "Cardiology");
-//    appointmentService.assignAppointmentToStaff(a.getAppointmentId(),d1.getStaffId(),n1.getStaffId());
-//    appointmentService.updateAppointmentSwimlaneStatus(a.getAppointmentId(),SwimlaneStatusEnum.CONSULTATION);
-//    appointmentService.updateAppointmentArrival(a.getAppointmentId(),true,d1.getStaffId());
+//    appointmentService.assignAppointmentToStaff(a1.getAppointmentId(),p1.getStaffId(),d1.getStaffId());
+    appointmentService.updateAppointmentSwimlaneStatus(a1.getAppointmentId(),SwimlaneStatusEnum.PHARMACY);
+//    appointmentService.updateAppointmentArrival(a1.getAppointmentId(),true,p1.getStaffId());
+
+//    appointmentService.assignAppointmentToStaff(a2.getAppointmentId(),p1.getStaffId(),d1.getStaffId());
+    appointmentService.updateAppointmentSwimlaneStatus(a2.getAppointmentId(),SwimlaneStatusEnum.PHARMACY);
+//    appointmentService.updateAppointmentArrival(a2.getAppointmentId(),true,p1.getStaffId());
 
     //for future dates
     LocalDateTime futureDate1 = LocalDateTime.now().plusDays(5L).withHour(19).withMinute(0)

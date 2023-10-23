@@ -204,4 +204,12 @@ public class AppointmentController {
     );
 
   }
+
+  @GetMapping("/viewPharmacyTickets")
+  public ResponseEntity<List<AppointmentDTO>> viewPharmacyTickets() {
+    List<Appointment> listOfAppts = appointmentService.getAllPharmacyTickets();
+    List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
+            .map(appointmentMapper::toDTO).collect(Collectors.toList());
+    return ResponseEntity.ok(listOfApptsDTO);
+  }
 }

@@ -370,4 +370,8 @@ public class AppointmentService {
     newAppointment.setComments(existingComments);
     return newAppointment;
   }
+
+  public List<Appointment> getAllPharmacyTickets() {
+    return appointmentRepository.findAllBySwimlaneStatusEnumEquals(SwimlaneStatusEnum.PHARMACY);
+  }
 }
