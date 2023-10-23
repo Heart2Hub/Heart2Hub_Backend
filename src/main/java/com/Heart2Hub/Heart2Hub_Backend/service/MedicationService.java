@@ -1,9 +1,12 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Medication;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.AllergenEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.AppointmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.MedicationNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateMedicationException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.MedicationRepository;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 @Service
@@ -42,6 +46,16 @@ public class MedicationService {
             }
         }
         return isAdmin;
+    }
+
+    public List<String> getAllergenEnums() {
+        List<String> allergenEnumsString = new ArrayList<>();
+        AllergenEnum[] allergenEnums = AllergenEnum.values();
+        for (AllergenEnum allergenEnum : allergenEnums) {
+            allergenEnumsString.add(allergenEnum.name());
+        }
+
+        return allergenEnumsString;
     }
 
     public Medication createMedication(Medication newMedication) throws UnableToCreateMedicationException {
@@ -100,7 +114,7 @@ public class MedicationService {
 
     public Medication updateMedication(Long inventoryItemId, Medication updatedMedication) throws MedicationNotFoundException {
         if (!isLoggedInUserAdmin()) {
-            throw new UnableToCreateMedicationException("Staff cannot update medication as he/she is not an Admin.");
+            throw new UnableToCreateMedicationException("Staff cannot update medication as he/she is not a Pharmacist.");
         }
         try {
             Optional<Medication> newMedicationOptional = medicationRepository.findById(inventoryItemId);
@@ -136,6 +150,7 @@ public class MedicationService {
                 if (updatedMedication.getQuantityInStock() != null) medication.setQuantityInStock(updatedMedication.getQuantityInStock());
                 if (updatedMedication.getRestockPricePerQuantity() != null) medication.setRestockPricePerQuantity(updatedMedication.getRestockPricePerQuantity());
                 if (updatedMedication.getRetailPricePerQuantity() != null) medication.setRetailPricePerQuantity(updatedMedication.getRetailPricePerQuantity());
+                if (updatedMedication.getAllergenEnumList() != null) medication.setAllergenEnumList(updatedMedication.getAllergenEnumList());
                 medicationRepository.save(medication);
                 return medication;
             } else {
@@ -146,13 +161,18 @@ public class MedicationService {
         }
     }
 
-    public List<Medication> getAllMedicationByName(String name) throws MedicationNotFoundException {
+    public List<Medication> getAllMedicationByName() throws MedicationNotFoundException {
         try {
-            List<Medication> medicationList = medicationRepository.findByInventoryItemNameContainingIgnoreCase(name);
+            List<Medication> medicationList = medicationRepository.findAll();
             System.out.print("get equipment");
             return medicationList;
         } catch (Exception ex) {
             throw new MedicationNotFoundException(ex.getMessage());
         }
+    }
+
+    public Medication findMedicationByInventoryItemId(Long inventoryItemId) {
+        return medicationRepository.findById(inventoryItemId)
+                .orElseThrow(() -> new MedicationNotFoundException("Medication Does not Exist"));
     }
 }

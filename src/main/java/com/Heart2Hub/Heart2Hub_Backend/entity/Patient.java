@@ -35,7 +35,7 @@ public class Patient implements UserDetails {
     @Column(unique = true)
     private String password;
 
-    @JsonManagedReference
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "patient")
     private List<Invoice> listOfInvoices;
 

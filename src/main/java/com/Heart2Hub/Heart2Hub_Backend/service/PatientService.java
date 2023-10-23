@@ -134,7 +134,7 @@ public class PatientService {
                 throw new UnableToCreatePatientException("Failed to create patient. Server returned status code: " + responseEntity.getStatusCodeValue());
             }
         } catch (Exception ex) {
-            throw new UnableToCreatePatientException("Username already exists");
+            throw new UnableToCreatePatientException(ex.getMessage());
         }
     }
 

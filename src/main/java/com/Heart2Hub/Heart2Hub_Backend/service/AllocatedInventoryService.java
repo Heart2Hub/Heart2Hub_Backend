@@ -90,6 +90,19 @@ public class AllocatedInventoryService {
         return inventory;
     }
 
+    public AllocatedInventory useAllocatedInventory(long inventoryId, Integer newQuantity) {
+        AllocatedInventory inventory = allocatedInventoryRepository.findById(inventoryId).get();
+        ConsumableEquipment item = consumableEquipmentRepository.findById(inventory.getConsumableEquipment().getInventoryItemId()).get();
+        if (newQuantity < 0) {
+            throw new InsufficientLeaveBalanceException("No more quantity, restock needed");
+        }
+        //Transaction item next time
+        inventory.setAllocatedInventoryCurrentQuantity(newQuantity);
+        consumableEquipmentRepository.save(item);
+        allocatedInventoryRepository.save(inventory);
+        return inventory;
+    }
+
     public String deleteAllocatedInventory(long inventoryId) {
 
         try {
