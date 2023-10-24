@@ -38,20 +38,20 @@ public class MedicationService {
         this.electronicHealthRecordRepository = electronicHealthRecordRepository;
     }
 
-    public boolean isLoggedInUserAdmin() {
+    public boolean isLoggedInPharmacist() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAdmin = false;
+        boolean isPharmacist = false;
         if (authentication != null) {
             User user = (User) authentication.getPrincipal();
             Optional<Staff> currStaff = staffRepository.findByUsername(user.getUsername());
             if (currStaff.isPresent()) {
                 StaffRoleEnum role = currStaff.get().getStaffRoleEnum();
-                if (role == StaffRoleEnum.ADMIN) {
-                    isAdmin = true;
+                if (role == StaffRoleEnum.PHARMACIST) {
+                    isPharmacist = true;
                 }
             }
         }
-        return isAdmin;
+        return isPharmacist;
     }
 
     public List<String> getAllergenEnums() {
@@ -65,9 +65,6 @@ public class MedicationService {
     }
 
     public Medication createMedication(Medication newMedication) throws UnableToCreateMedicationException {
-        if (!isLoggedInUserAdmin()) {
-            throw new UnableToCreateMedicationException("Staff cannot create medication as he/she is not an admin.");
-        }
         try {
             String name = newMedication.getInventoryItemName();
             if (name.trim().equals("")) {
@@ -101,9 +98,6 @@ public class MedicationService {
     }
 
     public String deleteMedication(Long inventoryItemId) throws MedicationNotFoundException {
-        if (!isLoggedInUserAdmin()) {
-            throw new UnableToCreateMedicationException("Staff cannot delete inventory as he/she is not an admin.");
-        }
         try {
             Optional<Medication> newMedicationOptional = medicationRepository.findById(inventoryItemId);
             if (newMedicationOptional.isPresent()) {
@@ -126,9 +120,6 @@ public class MedicationService {
     }
 
     public Medication updateMedication(Long inventoryItemId, Medication updatedMedication) throws MedicationNotFoundException {
-        if (!isLoggedInUserAdmin()) {
-            throw new UnableToCreateMedicationException("Staff cannot update medication as he/she is not a Pharmacist.");
-        }
         try {
             Optional<Medication> newMedicationOptional = medicationRepository.findById(inventoryItemId);
             if (newMedicationOptional.isPresent()) {
