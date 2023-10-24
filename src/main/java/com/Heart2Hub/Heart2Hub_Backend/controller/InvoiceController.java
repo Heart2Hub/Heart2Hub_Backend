@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/invoice")
@@ -52,13 +53,18 @@ public class InvoiceController {
     }
 
     @PostMapping("/createInsuranceClaim/{invoiceId}")
-    public Invoice createInsuranceClaim(@PathVariable Long invoiceId, @RequestParam BigDecimal insuranceClaimAmount,
-                                        @RequestParam String insurerName, @RequestParam Boolean isPrivateInsurer) {
+    public Invoice createInsuranceClaim(@PathVariable Long invoiceId, @RequestBody Map<String, Object> requestBody) {
+        String insurerName = requestBody.get("insurerName").toString();
+        BigDecimal insuranceClaimAmount = BigDecimal.valueOf(Double.parseDouble(requestBody.get("insuranceClaimAmount").toString()));
+        boolean isPrivateInsurer = Boolean.parseBoolean(requestBody.get("isPrivateInsurer").toString());
+
         return invoiceService.createInsuranceClaim(invoiceId, insuranceClaimAmount, insurerName, isPrivateInsurer);
     }
 
     @PostMapping("/createMedishieldClaim/{invoiceId}")
-    public Invoice createMedishieldClaim(@PathVariable Long invoiceId, @RequestParam BigDecimal insuranceClaimAmount) {
+    public Invoice createMedishieldClaim(@PathVariable Long invoiceId, @RequestBody  Map<String, Object> requestBody) {
+        BigDecimal insuranceClaimAmount = BigDecimal.valueOf(Double.parseDouble(requestBody.get("insurerName").toString()));
+
         return invoiceService.createMedishieldClaim(invoiceId, insuranceClaimAmount);
     }
 }

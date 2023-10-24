@@ -59,6 +59,10 @@ public class MedicationController {
         return ResponseEntity.ok(medicationService.findMedicationByInventoryItemId(inventoryItemId));
     }
 
+    @GetMapping("/getAllMedicationsByAllergy/{pId}")
+    public ResponseEntity<List<Medication>> getAllMedicationsByAllergy(@PathVariable Long pId) {
 
+        return ResponseEntity.ok(medicationService.getAllMedicationsByAllergy(pId));
+    }
 
 }

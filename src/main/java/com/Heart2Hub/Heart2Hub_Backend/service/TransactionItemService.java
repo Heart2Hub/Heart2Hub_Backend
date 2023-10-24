@@ -1,6 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.AllergenEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.InsufficientInventoryException;
@@ -57,9 +58,16 @@ public class TransactionItemService {
         TransactionItem transactionItem = new TransactionItem(inventoryItemName, inventoryItemDescription,
                 transactionItemQuantity, transactionItemPrice, inventoryItemRepository.findById(itemId).get());
         Patient p = patientRepository.findById(patientId).get();
-        transactionItemRepository.save(transactionItem);
-        p.getListOfTransactionItem().add(transactionItem);
-        patientRepository.save(p);
+
+
+        //Get the list of all current Meds in Patient's Cart
+        List<TransactionItem> patientCart = p.getListOfTransactionItem();
+        List<Medication> patientMedicationInCart = new ArrayList<>();
+        for (TransactionItem value : patientCart) {
+            if (value.getInventoryItem() instanceof Medication) {
+                patientMedicationInCart.add((Medication) value.getInventoryItem());
+            }
+        }
 
         InventoryItem item = inventoryItemRepository.
                 findById(transactionItem.getInventoryItem()
@@ -72,6 +80,21 @@ public class TransactionItemService {
             if (medicationItem.getQuantityInStock() - transactionItem.getTransactionItemQuantity() < 0) {
                 throw new InsufficientInventoryException("Insufficient Inventory for Medication");
             }
+
+            for (Medication medication : patientMedicationInCart) {
+                //Get the current Medication item's drug restrictions
+                List<DrugRestriction> drugRestriction = medication.getDrugRestrictions();
+
+                //Loop through that item's drug restrictions
+                for (DrugRestriction restriction : drugRestriction) {
+                    String drugType = restriction.getDrugName();
+                    String checkDrug = medicationItem.getInventoryItemName();
+                    if (checkDrug.contains(drugType)) {
+                        throw new InsufficientInventoryException("Patient can't be administered this drug due to " + drugType + "'s Drug Restrictions");
+                    }
+                }
+            }
+
             medicationItem.setQuantityInStock(
                     medicationItem.getQuantityInStock()
                             - transactionItem.getTransactionItemQuantity()
@@ -88,6 +111,9 @@ public class TransactionItemService {
             );
             inventoryItemRepository.save(consumableEquipment);
         }
+        transactionItemRepository.save(transactionItem);
+        p.getListOfTransactionItem().add(transactionItem);
+        patientRepository.save(p);
         return transactionItem;
     }
 
@@ -97,6 +123,14 @@ public class TransactionItemService {
         TransactionItem addedItem = transactionItemRepository.save(transactionItem);
         p.getListOfTransactionItem().add(addedItem);
         patientRepository.save(p);
+
+//        List<TransactionItem> patientCart = p.getListOfTransactionItem();
+//        List<Medication> patientMedicationInCart = new ArrayList<>();
+//        for (int i = 0; i < patientCart.size(); i++) {
+//            if (patientCart.get(i).getInventoryItem() instanceof Medication) {
+//                patientMedicationInCart.add((Medication) patientCart.get(i).getInventoryItem());
+//            }
+//        }
 
         InventoryItem item = inventoryItemRepository.
                 findById(addedItem.getInventoryItem()
@@ -109,6 +143,29 @@ public class TransactionItemService {
             if (medicationItem.getQuantityInStock() - transactionItem.getTransactionItemQuantity() < 0) {
                 throw new InsufficientInventoryException("Insufficient Inventory for Medication");
             }
+//
+//            for (int i = 0; i < patientMedicationInCart.size(); i++) {
+//                //Current Item
+//                Medication cartItem = patientMedicationInCart.get(i);
+//                List<DrugRestriction> drugRestriction = patientMedicationInCart.get(i).getDrugRestrictions();
+//
+//                //Loop through for restrictions
+//                for (int j = 0; j < drugRestriction.size(); j++) {
+//                    String drugType = drugRestriction.get(j).getDrugName();
+//                    String checkDrug = cartItem.getInventoryItemName();
+//                    if (checkDrug.contains(drugType)) {
+//                        throw new InsufficientInventoryException("Patient can't be administered this drug due to " + checkDrug);
+//                    }
+//                }
+//            }
+//
+////            for (int i = 0; i < patientMedicationInCart.size(); i++) {
+////                List<AllergenEnum> allergenEnumList = (List<AllergenEnum>) patientMedicationInCart.get(i).getAllergenEnumList();
+////                for (int j = 0; j < allergenEnumList.size(); j++) {
+////                    String allergyType = allergenEnumList.get(j);
+////                }
+////            }
+
             medicationItem.setQuantityInStock(
                     medicationItem.getQuantityInStock()
                             - transactionItem.getTransactionItemQuantity()
@@ -296,7 +353,7 @@ public class TransactionItemService {
         invoice = invoiceService.createNewInvoice(invoice);
 
         p.getListOfInvoices().add(invoice);
-
+        p.getListOfTransactionItem().clear();
         patientRepository.save(p);
 
         return invoice;
