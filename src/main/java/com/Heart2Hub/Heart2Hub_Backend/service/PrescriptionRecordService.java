@@ -61,7 +61,7 @@ public class PrescriptionRecordService {
         Medication medicine = (Medication) pr.getInventoryItem();
         Patient p = electronicHealthRecordRepository.findById(ehrId).get().getPatient();
 
-        TransactionItem item = transactionItemService.addToCart(p.getPatientId(), "Prescription Record " +pr.getPrescriptionRecordId() + " " + medicine.getInventoryItemName(), medicine.getInventoryItemDescription(),
+        TransactionItem item = transactionItemService.addToCart(p.getPatientId(), "(Prescription Record " +pr.getPrescriptionRecordId() + "): " + medicine.getInventoryItemName(), medicine.getInventoryItemDescription(),
                 pr.getMedicationQuantity(), medicine.getRetailPricePerQuantity(), medicine.getInventoryItemId());
 
         return item;

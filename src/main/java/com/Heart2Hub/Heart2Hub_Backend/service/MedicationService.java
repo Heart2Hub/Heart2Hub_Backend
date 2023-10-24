@@ -3,13 +3,11 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.AllergenEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.ProblemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
-import com.Heart2Hub.Heart2Hub_Backend.exception.AppointmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.MedicationNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateMedicationException;
-import com.Heart2Hub.Heart2Hub_Backend.repository.DrugRestrictionRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.MedicationRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -26,13 +24,18 @@ public class MedicationService {
     private final StaffRepository staffRepository;
     private final MedicationRepository medicationRepository;
     private final DrugRestrictionRepository drugRestrictionRepository;
+    private final PatientRepository patientRepository;
 
+    private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
 
-    public MedicationService(StaffRepository staffRepository, MedicationRepository medicationRepository, DrugRestrictionRepository drugRestrictionRepository) {
+    public MedicationService(StaffRepository staffRepository, MedicationRepository medicationRepository, DrugRestrictionRepository drugRestrictionRepository,
+                             PatientRepository patientRepository, ElectronicHealthRecordRepository electronicHealthRecordRepository) {
         this.staffRepository = staffRepository;
         this.medicationRepository = medicationRepository;
         this.drugRestrictionRepository = drugRestrictionRepository;
 
+        this.patientRepository = patientRepository;
+        this.electronicHealthRecordRepository = electronicHealthRecordRepository;
     }
 
     public boolean isLoggedInUserAdmin() {
@@ -195,5 +198,30 @@ public class MedicationService {
     public Medication findMedicationByInventoryItemId(Long inventoryItemId) {
         return medicationRepository.findById(inventoryItemId)
                 .orElseThrow(() -> new MedicationNotFoundException("Medication Does not Exist"));
+    }
+
+    public List<Medication> getAllMedicationsByAllergy(Long pId) {
+        ElectronicHealthRecord ehr = electronicHealthRecordRepository.findById(pId).get();
+        List<Medication> medicationList = medicationRepository.findAll();
+        //List<Medication> newList = new ArrayList<>();
+        List<MedicalHistoryRecord>  mhrList = ehr.getListOfMedicalHistoryRecords();
+
+        for (MedicalHistoryRecord mhr : mhrList) {
+            if (mhr.getProblemTypeEnum() == ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC) {
+                List<Medication> removalList = new ArrayList<>();
+                AllergenEnum allergy = AllergenEnum.valueOf(mhr.getDescription());
+
+                for (int j = 0; j < medicationList.size(); j++) {
+                    Medication m = medicationList.get(j);
+                    if (m.getAllergenEnumList().contains(allergy)) {
+                        removalList.add(m);
+                    }
+                }
+
+                medicationList.removeAll(removalList);
+            }
+        }
+
+        return medicationList;
     }
 }

@@ -4,10 +4,7 @@ import com.Heart2Hub.Heart2Hub_Backend.Heart2HubBackendApplication;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.LeaveTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
-import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.InventoryItemRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.PrescriptionRecordRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.SubDepartmentRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.*;
 import com.Heart2Hub.Heart2Hub_Backend.service.LeaveService;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
@@ -75,8 +72,12 @@ public class DataLoader implements CommandLineRunner {
 
   private final PrescriptionRecordRepository prescriptionRecordRepository;
   private final InvoiceService invoiceService;
+  private final DrugRestrictionService drugRestrictionService;
+  private final UnitRepository unitRepository;
 
-  public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, SubsidyService subsidyService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, MedicationService medicationService, ServiceItemService serviceItemService, TransactionItemService transactionItemService, AppointmentService appointmentService, InventoryItemRepository inventoryItemRepository, PrescriptionRecordRepository prescriptionRecordRepository, InvoiceService invoiceService) {
+
+  public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, SubsidyService subsidyService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, MedicationService medicationService, ServiceItemService serviceItemService, TransactionItemService transactionItemService, AppointmentService appointmentService, InventoryItemRepository inventoryItemRepository, PrescriptionRecordRepository prescriptionRecordRepository, InvoiceService invoiceService, DrugRestrictionService drugRestrictionService,
+                    UnitRepository unitRepository) {
     this.staffService = staffService;
     this.shiftService = shiftService;
     this.departmentService = departmentService;
@@ -104,6 +105,8 @@ public class DataLoader implements CommandLineRunner {
     this.inventoryItemRepository = inventoryItemRepository;
     this.prescriptionRecordRepository = prescriptionRecordRepository;
     this.invoiceService = invoiceService;
+    this.drugRestrictionService = drugRestrictionService;
+    this.unitRepository = unitRepository;
   }
 
   @Override
@@ -898,16 +901,25 @@ public class DataLoader implements CommandLineRunner {
 
   private void createServiceItemData() {
 
+    Unit unit1 = unitRepository.findById(1L).get();
+    Unit unit2 = unitRepository.findById(11L).get();
+    Unit unit3 = unitRepository.findById(12L).get();
+
+
     ServiceItem newServiceItem1 = serviceItemService.createServiceItem(Long.parseLong("5"),
-            new ServiceItem("General A&E Consultation", "Consultation", ItemTypeEnum.OUTPATIENT,
+            new ServiceItem("General Cardiology Consultation", "Consultation", ItemTypeEnum.OUTPATIENT,
                     BigDecimal.valueOf(400)));
+    newServiceItem1.setUnit(unit1);
+
     ServiceItem newServiceItem2 = serviceItemService.createServiceItem(Long.parseLong("11"),
             new ServiceItem("Class A Ward", "per Day", ItemTypeEnum.INPATIENT,
                     BigDecimal.valueOf(300)));
+    newServiceItem2.setUnit(unit2);
+
     ServiceItem newServiceItem3 = serviceItemService.createServiceItem(Long.parseLong("12"),
             new ServiceItem("Class B Ward", "per Day", ItemTypeEnum.INPATIENT,
                     BigDecimal.valueOf(200)));
-
+    newServiceItem3.setUnit(unit3);
   }
 
 
@@ -933,7 +945,7 @@ public class DataLoader implements CommandLineRunner {
   public void createTransactionItems() {
     ConsumableEquipment consumableEquipment = (ConsumableEquipment) inventoryItemRepository.findById(Long.parseLong("1")).get();
     Medication medication= (Medication) inventoryItemRepository.findById(Long.parseLong("6")).get();
-    ServiceItem serviceItem = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("11")).get();
+    ServiceItem serviceItem = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("14")).get();
 
     InventoryItem inventoryItem = inventoryItemRepository.findById(Long.parseLong("6")).get();
 
@@ -977,7 +989,7 @@ public class DataLoader implements CommandLineRunner {
   public void createInvoice() {
     transactionItemService.checkout(Long.parseLong("1"));
     transactionItemService.checkout(Long.parseLong("2"));
-    invoiceService.createInsuranceClaim(Long.parseLong("1"), BigDecimal.valueOf(100),
+    invoiceService.createInsuranceClaim(Long.parseLong("1"), BigDecimal.valueOf(95),
             "Great Eastern", true);
     invoiceService.createMedishieldClaim(Long.parseLong("1"), BigDecimal.valueOf(110));
   }

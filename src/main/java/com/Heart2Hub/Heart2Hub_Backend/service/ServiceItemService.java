@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -105,7 +106,7 @@ public class ServiceItemService {
         }
     }
 
-    public ServiceItem updateServiceItem (Long inventoryItemId, ServiceItem updatedServiceItem) throws ServiceItemNotFoundException {
+    public ServiceItem updateServiceItem(Long inventoryItemId, ServiceItem updatedServiceItem) throws ServiceItemNotFoundException {
         if (!isLoggedInUserAdmin()) {
             throw new UnableToCreateServiceItemException("Staff cannot update medication as he/she is not an Admin.");
         }
@@ -129,10 +130,14 @@ public class ServiceItemService {
                 if (retailPrice.equals(BigDecimal.ZERO)) {
                     throw new UnableToCreateServiceItemException("Price must be more than 0.00");
                 }
-                if (updatedServiceItem.getInventoryItemName() != null) serviceItem.setInventoryItemName(updatedServiceItem.getInventoryItemName());
-                if (updatedServiceItem.getInventoryItemDescription() != null) serviceItem.setInventoryItemDescription(updatedServiceItem.getInventoryItemDescription());
-                if (updatedServiceItem.getItemTypeEnum() != null) serviceItem.setItemTypeEnum(updatedServiceItem.getItemTypeEnum());
-                if (updatedServiceItem.getRetailPricePerQuantity() != null) serviceItem.setRetailPricePerQuantity(updatedServiceItem.getRetailPricePerQuantity());
+                if (updatedServiceItem.getInventoryItemName() != null)
+                    serviceItem.setInventoryItemName(updatedServiceItem.getInventoryItemName());
+                if (updatedServiceItem.getInventoryItemDescription() != null)
+                    serviceItem.setInventoryItemDescription(updatedServiceItem.getInventoryItemDescription());
+                if (updatedServiceItem.getItemTypeEnum() != null)
+                    serviceItem.setItemTypeEnum(updatedServiceItem.getItemTypeEnum());
+                if (updatedServiceItem.getRetailPricePerQuantity() != null)
+                    serviceItem.setRetailPricePerQuantity(updatedServiceItem.getRetailPricePerQuantity());
                 serviceItemRepository.save(serviceItem);
                 return serviceItem;
             } else {
@@ -151,6 +156,19 @@ public class ServiceItemService {
         } catch (Exception ex) {
             throw new ServiceItemNotFoundException(ex.getMessage());
         }
+    }
+
+    public List<ServiceItem> getAllServiceItemInUnit(Long unitId) {
+        List<ServiceItem> serviceItemList = serviceItemRepository.findAll();
+        List<ServiceItem> newList = new ArrayList<>();
+
+        for (int i = 0; i < serviceItemList.size(); i++) {
+            if(serviceItemList.get(i).getUnit().getUnitId() == unitId) {
+                newList.add(serviceItemList.get(i));
+            }
+        }
+
+        return newList;
     }
 }
 

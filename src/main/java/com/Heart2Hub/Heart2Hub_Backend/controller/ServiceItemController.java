@@ -23,6 +23,11 @@ public class ServiceItemController {
             return ResponseEntity.ok(serviceItemService.getAllServiceItem());
         }
 
+    @GetMapping("/getAllServiceItemByUnit/{unitId}")
+    public ResponseEntity<List<ServiceItem>> getAllServiceItemByUnit(@PathVariable Long unitId) {
+        return ResponseEntity.ok(serviceItemService.getAllServiceItemInUnit(unitId));
+    }
+
         @PostMapping("/createServiceItem")
         public ResponseEntity<ServiceItem> createServiceItem(@RequestParam Long unitId, @RequestBody ServiceItem serviceItem) {
            System.out.println("unit Id is here " + unitId);
