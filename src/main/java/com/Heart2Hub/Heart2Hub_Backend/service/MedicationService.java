@@ -173,7 +173,16 @@ public class MedicationService {
                 if (updatedMedication.getRetailPricePerQuantity() != null) medication.setRetailPricePerQuantity(updatedMedication.getRetailPricePerQuantity());
                 if (updatedMedication.getAllergenEnumList() != null) medication.setAllergenEnumList(updatedMedication.getAllergenEnumList());
                 if (updatedMedication.getComments() != null) medication.setComments(updatedMedication.getComments());
-                if (updatedMedication.getDrugRestrictions() != null) medication.setDrugRestrictions(updatedMedication.getDrugRestrictions());
+                if (updatedMedication.getDrugRestrictions() != null) {
+                    List<DrugRestriction> updatedRestrictions = updatedMedication.getDrugRestrictions();
+                    List<DrugRestriction> drugList = drugRestrictionRepository.findAll();
+                    for (DrugRestriction drug : drugList) {
+                        if ((!updatedRestrictions.contains(drug)) && (medication.getDrugRestrictions().contains(drug))) {
+                            drugRestrictionRepository.delete(drug);
+                        }
+                    }
+                    medication.setDrugRestrictions(updatedMedication.getDrugRestrictions());
+                }
 
                 medicationRepository.save(medication);
                 return medication;
