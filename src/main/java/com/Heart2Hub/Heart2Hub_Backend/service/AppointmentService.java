@@ -198,47 +198,54 @@ public class AppointmentService {
   public Appointment assignAppointmentToStaff(Long appointmentId, Long toStaffId, Long fromStaffId) {
 
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
-    Staff staff = staffService.findById(toStaffId);
+    if (toStaffId > 0) {
+      Staff staff = staffService.findById(toStaffId);
 
-    //check staff not disabled
-    if (staff.getDisabled()) {
-      throw new StaffDisabledException("Unable to assign appointment to Disabled Staff");
-    }
+      //check staff not disabled
+      if (staff.getDisabled()) {
+        throw new StaffDisabledException("Unable to assign appointment to Disabled Staff");
+      }
 
-    // If dragging to consult, check if patient has already been allocated a doctor
-    if (staff.getStaffRoleEnum().equals(StaffRoleEnum.DOCTOR)) {
-      if (!appointment.getListOfStaff().isEmpty()) {
-        for (Staff staff1 : appointment.getListOfStaff()) {
-          if (staff1.getStaffRoleEnum().equals(StaffRoleEnum.DOCTOR) && staff1.getStaffId() != toStaffId) {
-            throw new UnableToAssignAppointmentException(
-                    "Unable to assign appointment ticket as patient has already been assigned to Dr. " + staff1.getFirstname() + " " + staff1.getLastname());
+      // If dragging to consult, check if patient has already been allocated a doctor
+      if (staff.getStaffRoleEnum().equals(StaffRoleEnum.DOCTOR)) {
+        if (!appointment.getListOfStaff().isEmpty()) {
+          for (Staff staff1 : appointment.getListOfStaff()) {
+            if (staff1.getStaffRoleEnum().equals(StaffRoleEnum.DOCTOR) && staff1.getStaffId() != toStaffId) {
+              throw new UnableToAssignAppointmentException(
+                      "Unable to assign appointment ticket as patient has already been assigned to Dr. " + staff1.getFirstname() + " " + staff1.getLastname());
+            }
           }
         }
       }
-    }
 
-    //staff only can assign if the appointment is unassigned, or that assignment belongs to that staff
-    if (appointment.getCurrentAssignedStaff() == null
-        || (appointment.getCurrentAssignedStaff() != null && Objects.equals(
-        appointment.getCurrentAssignedStaff().getStaffId(), fromStaffId))) {
+      //staff only can assign if the appointment is unassigned, or that assignment belongs to that staff
+      if (appointment.getCurrentAssignedStaff() == null
+              || (appointment.getCurrentAssignedStaff() != null && Objects.equals(
+              appointment.getCurrentAssignedStaff().getStaffId(), fromStaffId))) {
 
-      //assign new staff to appointment
-      appointment.setCurrentAssignedStaff(staff);
+        //assign new staff to appointment
+        appointment.setCurrentAssignedStaff(staff);
 
-      //set arrived to false because handover to new staff
-      appointment.setArrived(false);
+        //set arrived to false because handover to new staff
+        appointment.setArrived(false);
 
-      // BIG PROBLEM HERE
+        // BIG PROBLEM HERE
 //    if (!appointment.getListOfStaff().contains(staff)) {
 //      appointment.getListOfStaff().add(staff);
 //    }
 
-      staff.getListOfAssignedAppointments().add(appointment);
-      return appointment;
+        staff.getListOfAssignedAppointments().add(appointment);
+        return appointment;
+      } else {
+        throw new UnableToAssignAppointmentException(
+                "Unable to assign an appointment ticket that is not yours");
+      }
     } else {
-      throw new UnableToAssignAppointmentException(
-          "Unable to assign an appointment ticket that is not yours");
+      appointment.setCurrentAssignedStaff(null);
+      appointment.setArrived(false);
+      return appointment;
     }
+
   }
 
   public Appointment updateAppointmentArrival(Long appointmentId, Boolean arrivalStatus,
