@@ -277,18 +277,31 @@ public class TreatmentPlanRecordService {
     if (!checkStaffIsPrimary(treatmentPlanRecordId,staffId)) {
       throw new UnableToUpdateTreatmentPlanRecordException("Cannot invite other staff if you are not the primary of this treatment plan");
     }
+    try {
+      System.out.println("CALLING ADD INVITATION");
+      TreatmentPlanRecord treatmentPlanRecord = getTreatmentPlanById(treatmentPlanRecordId);
+      Staff invitedStaff = staffService.getStaffById(invitedStaffId);
+      Staff staff = staffService.getStaffById(staffId);
+      String signature = staff.getFirstname() + " " + staff.getLastname() + " (" + staff.getStaffRoleEnum() + ")";
 
-    TreatmentPlanRecord treatmentPlanRecord = getTreatmentPlanById(treatmentPlanRecordId);
-    Staff invitedStaff = staffService.getStaffById(invitedStaffId);
-    Staff staff = staffService.getStaffById(staffId);
-    String signature = staff.getFirstname() + " " + staff.getLastname() + " (" + staff.getStaffRoleEnum() + ")";
+      Invitation invitation = new Invitation(signature, false );
+      invitation.setStaff(invitedStaff);
+      invitation.setTreatmentPlanRecord(treatmentPlanRecord);
+      invitationRepository.save(invitation);
+      System.out.println(invitation.getInvitedBy());
+      System.out.println(invitation.getCreatedDate());
+      System.out.println(invitation.getIsPrimary());
+      System.out.println(invitation.getInvitationId());
+      System.out.println(invitation.getStaff().getUsername());
+      System.out.println(invitation.getTreatmentPlanRecord().getTreatmentPlanRecordId());
+      invitedStaff.getListOfInvitations().add(invitation);
+      return treatmentPlanRecord;
+    } catch (Exception ex) {
 
-    Invitation invitation = new Invitation(signature, false );
-    invitation.setStaff(invitedStaff);
-    invitation.setTreatmentPlanRecord(treatmentPlanRecord);
-    invitationRepository.save(invitation);
-    invitedStaff.getListOfInvitations().add(invitation);
-    return treatmentPlanRecord;
+      System.out.println("ERROR GETTING THROWN IN SERVICE");
+      System.out.println(ex.getMessage());
+      throw new UnableToUpdateTreatmentPlanRecordException(ex.getMessage());
+    }
   }
 
   //delete invitation

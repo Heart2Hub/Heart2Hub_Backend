@@ -1,8 +1,10 @@
 package com.Heart2Hub.Heart2Hub_Backend.controller;
 
+import com.Heart2Hub.Heart2Hub_Backend.dto.InvitationDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Invitation;
 import com.Heart2Hub.Heart2Hub_Backend.entity.TreatmentPlanRecord;
+import com.Heart2Hub.Heart2Hub_Backend.mapper.InvitationMapper;
 import com.Heart2Hub.Heart2Hub_Backend.service.TreatmentPlanRecordService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class TreatmentPlanRecordController {
 
   private final TreatmentPlanRecordService treatmentPlanRecordService;
+
+  private final InvitationMapper invitationMapper;
 
   @PostMapping("/createTreatmentPlanRecord")
   public ResponseEntity<TreatmentPlanRecord> createTreatmentPlanRecord(
@@ -98,6 +102,8 @@ public class TreatmentPlanRecordController {
   public ResponseEntity<TreatmentPlanRecord> addInvitationToTreatmentPlanRecord(
       @RequestParam Long treatmentPlanRecordId, @RequestParam Long staffId,
       @RequestParam Long invitedStaffId) {
+
+    System.out.println("CALLING CONTROLLER");
     return ResponseEntity.ok(
         treatmentPlanRecordService.addInvitationToTreatmentPlanRecord(treatmentPlanRecordId,
             staffId, invitedStaffId)
@@ -123,10 +129,10 @@ public class TreatmentPlanRecordController {
   }
 
   @GetMapping("/getListOfInvitationsInTreatmentPlanRecord")
-  public ResponseEntity<List<Invitation>> getListOfInvitationsInTreatmentPlanRecord(
+  public ResponseEntity<List<InvitationDTO>> getListOfInvitationsInTreatmentPlanRecord(
       @RequestParam Long treatmentPlanRecordId) {
-    return ResponseEntity.ok(
-        treatmentPlanRecordService.getListOfInvitationsInTreatmentPlanRecord(treatmentPlanRecordId)
+    return ResponseEntity.ok(invitationMapper.toDTOList(
+        treatmentPlanRecordService.getListOfInvitationsInTreatmentPlanRecord(treatmentPlanRecordId))
     );
   }
 }

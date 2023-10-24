@@ -129,6 +129,12 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
   }
 
+  @ExceptionHandler(UnableToUpdateTreatmentPlanRecordException.class)
+  public ResponseEntity<Object> handleUnableToUpdateTreatmentPlanRecordException(
+      UnableToUpdateTreatmentPlanRecordException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
     List<String> errorList = ex

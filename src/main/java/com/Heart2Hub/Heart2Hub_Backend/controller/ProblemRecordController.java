@@ -27,6 +27,15 @@ public class ProblemRecordController {
         );
     }
 
+    @PostMapping("/createAllergyRecord")
+    public ResponseEntity<MedicalHistoryRecord> createAllergyRecord(
+        @RequestParam Long electronicHealthRecordId,
+        @RequestBody ProblemRecord newProblemRecord) {
+        return ResponseEntity.ok(
+            problemRecordService.createAllergyRecord(electronicHealthRecordId,newProblemRecord)
+        );
+    }
+
     @GetMapping("/getAllProblemRecordsByElectronicHealthRecordId")
     public ResponseEntity<List<ProblemRecord>> getAllProblemRecordsByElectronicHealthRecordId(
             @RequestParam("electronicHealthRecordId") Long electronicHealthRecordId) {
