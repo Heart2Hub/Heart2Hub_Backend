@@ -70,6 +70,7 @@ public class AdmissionService {
 
         Ward ward = wardAvailability.getWard();
         ward.getListOfAdmissions().add(admission);
+        admission.setWard(ward);
 
         if (admissionDateTime.getDayOfMonth() == LocalDateTime.now().getDayOfMonth()) {
             List<Admission> beds = ward.getListOfCurrentDayAdmissions();

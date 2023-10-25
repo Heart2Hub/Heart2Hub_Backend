@@ -83,6 +83,11 @@ public class Admission {
     @JoinColumn(name = "admission_id")
     private List<PatientRequest> listOfPatientRequests;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ward_id")
+    private Ward ward;
+
     public Admission(){
         this.listOfMedicationOrders = new ArrayList<>();
         this.listOfPatientRequests = new ArrayList<>();

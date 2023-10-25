@@ -76,6 +76,10 @@ public class AppointmentMapper {
         dto.setAdmissionDate(admissionToSchedule.getAdmissionDateTime());
         dto.setDischargeDate(admissionToSchedule.getDischargeDateTime());
 
+        if (admissionToSchedule.getWard() != null) {
+          dto.setWard(admissionToSchedule.getWard().getName());
+        }
+
       }
     } else {
 
