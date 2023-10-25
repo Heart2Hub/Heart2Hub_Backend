@@ -26,9 +26,9 @@ public class TransactionItemService {
     private final AppointmentRepository appointmentRepository;
     private final InvoiceService invoiceService;
     private final InvoiceRepository invoiceRepository;
+    private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
 
-    public TransactionItemService(TransactionItemRepository transactionItemRepository, PatientService patientService, PatientRepository patientRepository, InventoryItemRepository inventoryItemRepository, AppointmentRepository appointmentRepository, InvoiceService invoiceService,
-                                  InvoiceRepository invoiceRepository) {
+    public TransactionItemService(TransactionItemRepository transactionItemRepository, PatientService patientService, PatientRepository patientRepository, InventoryItemRepository inventoryItemRepository, AppointmentRepository appointmentRepository, InvoiceService invoiceService, InvoiceRepository invoiceRepository, ElectronicHealthRecordRepository electronicHealthRecordRepository) {
         this.transactionItemRepository = transactionItemRepository;
         this.patientService = patientService;
         this.patientRepository = patientRepository;
@@ -36,6 +36,7 @@ public class TransactionItemService {
         this.appointmentRepository = appointmentRepository;
         this.invoiceService = invoiceService;
         this.invoiceRepository = invoiceRepository;
+        this.electronicHealthRecordRepository = electronicHealthRecordRepository;
     }
 
     public List<TransactionItem> getAllItems() {
@@ -362,6 +363,14 @@ public class TransactionItemService {
     public void dischargePatient(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId).get();
         appointment.setSwimlaneStatusEnum(SwimlaneStatusEnum.DONE);
+
+        //ASSOCIATION --> SHOULD REFACTOR TO BE IN APPOINTMENT SERVICE
+        appointment.getCurrentAssignedStaff().getListOfAssignedAppointments().remove(appointment);
+        appointment.setCurrentAssignedStaff(null);
+        Patient patient = appointment.getPatient();
+        patient.getListOfCurrentAppointments().remove(appointment);
+        patient.getElectronicHealthRecord().getListOfPastAppointments().add(appointment);
+
         appointmentRepository.save(appointment);
     }
 
