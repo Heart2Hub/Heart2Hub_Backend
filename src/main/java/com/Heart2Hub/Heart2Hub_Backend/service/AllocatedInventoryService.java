@@ -6,6 +6,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Facility;
 import com.Heart2Hub.Heart2Hub_Backend.exception.FacilityNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.InsufficientLeaveBalanceException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.InsufficientQuantityException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateFacilityException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.AllocatedInventoryRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ConsumableEquipmentRepository;
@@ -50,7 +51,7 @@ public class AllocatedInventoryService {
         item.setConsumableEquipment(equipment);
 
         if (equipment.getQuantityInStock() < quantity) {
-            throw new InsufficientLeaveBalanceException("Not enough quantity");
+            throw new InsufficientQuantityException("Not enough quantity");
         } else {
             equipment.setQuantityInStock(equipment.getQuantityInStock()-quantity);
             // Transaction item here
@@ -85,6 +86,19 @@ public class AllocatedInventoryService {
         //Transaction item next time
         inventory.setAllocatedInventoryCurrentQuantity(newQuantity);
         inventory.setMinimumQuantityBeforeRestock(minQuantity);
+        consumableEquipmentRepository.save(item);
+        allocatedInventoryRepository.save(inventory);
+        return inventory;
+    }
+
+    public AllocatedInventory useAllocatedInventory(long inventoryId, Integer newQuantity) {
+        AllocatedInventory inventory = allocatedInventoryRepository.findById(inventoryId).get();
+        ConsumableEquipment item = consumableEquipmentRepository.findById(inventory.getConsumableEquipment().getInventoryItemId()).get();
+        if (newQuantity < 0) {
+            throw new InsufficientLeaveBalanceException("No more quantity, restock needed");
+        }
+        //Transaction item next time
+        inventory.setAllocatedInventoryCurrentQuantity(newQuantity);
         consumableEquipmentRepository.save(item);
         allocatedInventoryRepository.save(inventory);
         return inventory;

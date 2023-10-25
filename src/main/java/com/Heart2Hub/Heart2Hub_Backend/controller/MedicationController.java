@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.controller;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ConsumableEquipment;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Medication;
 import com.Heart2Hub.Heart2Hub_Backend.service.ConsumableEquipmentService;
@@ -20,8 +21,8 @@ public class MedicationController {
 
     // As an admin, I can view all consumable equipments
     @GetMapping("/getAllMedication")
-    public ResponseEntity<List<Medication>> getAllMedication(@RequestParam("name") String name) {
-        return ResponseEntity.ok(medicationService.getAllMedicationByName(name));
+    public ResponseEntity<List<Medication>> getAllMedication() {
+        return ResponseEntity.ok(medicationService.getAllMedicationByName());
     }
 
     @PostMapping("/createMedication")
@@ -44,6 +45,24 @@ public class MedicationController {
             @RequestBody Medication updatedMedication) {
         return ResponseEntity.ok(medicationService.updateMedication(inventoryItemId,updatedMedication)
         );
+    }
+
+    @GetMapping("/getAllergenEnums")
+    public ResponseEntity<List<String>> getAllergenEnums() {
+        return ResponseEntity.ok(medicationService.getAllergenEnums());
+    }
+
+    @GetMapping("/findMedicationByInventoryItemId")
+    public ResponseEntity<Medication> findMedicationByInventoryItemId(
+            @RequestParam("inventoryItemId") Long inventoryItemId) {
+
+        return ResponseEntity.ok(medicationService.findMedicationByInventoryItemId(inventoryItemId));
+    }
+
+    @GetMapping("/getAllMedicationsByAllergy/{pId}")
+    public ResponseEntity<List<Medication>> getAllMedicationsByAllergy(@PathVariable Long pId) {
+
+        return ResponseEntity.ok(medicationService.getAllMedicationsByAllergy(pId));
     }
 
 }

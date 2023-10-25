@@ -121,4 +121,9 @@ public class PatientController {
         return ResponseEntity.ok(patientService.findAllPatients());
     }
 
+    @GetMapping("/getPatientByUsername")
+    public ResponseEntity<Patient> getPatientByUsername(@RequestParam String username) {
+        return ResponseEntity.ok(patientService.getPatientByUsername(username));
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.dto;
 
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.DispensaryStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PriorityEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import java.sql.Time;
@@ -38,4 +39,11 @@ public class AppointmentDTO {
   private LocalDateTime dateOfBirth;
   private String departmentName;
   private String patientProfilePicture;
+  private DispensaryStatusEnum dispensaryStatusEnum;
+
+  //For displaying admission information
+  private Long admissionId;
+  private Integer admissionDuration;
+  private String admissionReason;
+  //private Boolean admissionScheduled = false;
 }

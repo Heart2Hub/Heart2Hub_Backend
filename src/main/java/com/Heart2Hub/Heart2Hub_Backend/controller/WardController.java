@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.controller;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.Admission;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Ward;
 import com.Heart2Hub.Heart2Hub_Backend.service.DepartmentService;
@@ -32,6 +33,16 @@ public class WardController {
                 wardService.getAllWardsByName(name)
         );
     }
+
+    @GetMapping("/getAllWardsByWardClass")
+    public ResponseEntity<List<Ward>> getAllWardsByWardClass(@RequestParam("wardClass") String wardClass) {
+        return ResponseEntity.ok(wardService.getAllWardsByWardClass(wardClass));
+    }
+
+//    @GetMapping("/getCurrentDayAdmissions")
+//    public ResponseEntity<Admission> getCurrentDayAdmissions(@RequestParam("ward") String ward) {
+//        return ResponseEntity.ok(wardService.getCurrentDayAdmissionsForWard(ward));
+//    }
 
 
 }
