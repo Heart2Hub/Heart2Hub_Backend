@@ -40,4 +40,10 @@ public class AppointmentDTO {
   private String departmentName;
   private String patientProfilePicture;
   private DispensaryStatusEnum dispensaryStatusEnum;
+
+  //For displaying admission information
+  private Long admissionId;
+  private Integer admissionDuration;
+  private String admissionReason;
+  //private Boolean admissionScheduled = false;
 }

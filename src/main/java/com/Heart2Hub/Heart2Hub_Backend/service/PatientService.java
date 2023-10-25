@@ -92,7 +92,9 @@ public class PatientService {
             return newPatient;
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
-            throw new UnableToCreatePatientException("Username already exists");
+            throw new UnableToCreatePatientException(ex.getMessage());
+            //DUPLICATE USERNAME
+            //throw new UnableToCreatePatientException("Username already exists");
         }
     }
 
@@ -135,6 +137,8 @@ public class PatientService {
             }
         } catch (Exception ex) {
             throw new UnableToCreatePatientException(ex.getMessage());
+            //DUPLICATE USERNAME
+            //throw new UnableToCreatePatientException("Username already exists");
         }
     }
 

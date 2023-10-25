@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.controller;
 
+import com.Heart2Hub.Heart2Hub_Backend.dto.InpatientStaffDTO;
 import com.Heart2Hub.Heart2Hub_Backend.dto.OutpatientStaffDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
 import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
@@ -7,6 +8,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.SubDepartmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.AppointmentMapper;
+import com.Heart2Hub.Heart2Hub_Backend.mapper.InpatientStaffMapper;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.OutpatientStaffMapper;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,6 +39,8 @@ public class StaffController {
   private final StaffService staffService;
 
   private final OutpatientStaffMapper outpatientStaffMapper;
+
+  private final InpatientStaffMapper inpatientStaffMapper;
 
 
 //  @PostMapping("/createStaff")
@@ -160,6 +164,15 @@ public class StaffController {
     List<OutpatientStaffDTO> listOfOutpatientStaff = staffService.getStaffsWorkingInCurrentShiftAndDepartment(
         departmentName).stream().map(outpatientStaffMapper::convertToDto).toList();
     return ResponseEntity.ok(listOfOutpatientStaff);
+  }
+
+  @GetMapping("/getStaffsWorkingInCurrentShiftAndWard")
+  public ResponseEntity<List<InpatientStaffDTO>> getNurses(
+          @RequestParam("wardName") String wardName) {
+
+    List<InpatientStaffDTO> listOfNurses = staffService.getStaffsWorkingInCurrentShiftAndDepartment(
+            wardName).stream().map(inpatientStaffMapper::convertToDto).toList();
+    return ResponseEntity.ok(listOfNurses);
   }
 
   @GetMapping("/getStaffById")

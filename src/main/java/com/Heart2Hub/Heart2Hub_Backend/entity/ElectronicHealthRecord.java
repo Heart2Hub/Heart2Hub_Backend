@@ -70,6 +70,7 @@ public class ElectronicHealthRecord {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "EHR_Id")
     private List<Admission> listOfPastAdmissions;
+
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "EHR_Id")
