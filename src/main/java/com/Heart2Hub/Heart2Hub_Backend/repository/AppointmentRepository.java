@@ -3,6 +3,8 @@ package com.Heart2Hub.Heart2Hub_Backend.repository;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
@@ -15,4 +17,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
   List<Appointment> findAllByPatientUsername(String username);
   List<Appointment> findAllByActualDateTimeBetweenAndCurrentAssignedStaffUsername(LocalDateTime start, LocalDateTime end, String username);
+
+  List<Appointment> findAllBySwimlaneStatusEnumEquals(SwimlaneStatusEnum swimlane);
 }

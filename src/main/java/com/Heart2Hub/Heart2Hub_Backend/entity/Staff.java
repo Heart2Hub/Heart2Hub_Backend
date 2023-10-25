@@ -105,6 +105,13 @@ public class Staff implements UserDetails {
   @NotNull
   private Boolean disabled = false;
 
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "currentAssignedNurse")
+  private List<Admission> listOfNurseAdmissions;
+
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "currentAssignedDoctor")
+  private List<Admission> listOfDoctorAdmissions;
+
+
   public Staff() {
     this.listOfLeaves = new ArrayList<>();
     this.listOfManagedLeaves = new ArrayList<>();
@@ -113,6 +120,8 @@ public class Staff implements UserDetails {
     this.listOfInvitations = new ArrayList<>();
     this.listOfPosts = new ArrayList<>();
     this.listOfFacilityBookings = new ArrayList<>();
+    this.listOfNurseAdmissions = new ArrayList<>();
+    this.listOfDoctorAdmissions = new ArrayList<>();
   }
 
   public Staff(String username, String password, String firstname, String lastname,
