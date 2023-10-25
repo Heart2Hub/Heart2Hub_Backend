@@ -306,28 +306,39 @@ public class TreatmentPlanRecordService {
 
   //delete invitation
   public TreatmentPlanRecord deleteInvitationToTreatmentPlanRecord(Long treatmentPlanRecordId,  Long staffId, Long invitationId) {
+    System.out.println("INSIDE DELETE");
     if (!checkStaffIsPrimary(treatmentPlanRecordId,staffId)) {
       throw new UnableToUpdateTreatmentPlanRecordException("Cannot delete invitation to treatment plan if you are not the primary of this treatment plan");
     }
+    System.out.println("INSIDE HERE 1");
 
     Optional<Invitation> invitationOptional = invitationRepository.findById(invitationId);
     if (invitationOptional.isEmpty()) {
+      System.out.println("INSIDE HERE 2");
       throw new UnableToUpdateTreatmentPlanRecordException("Invitation does not exist");
     }
+    System.out.println("INSIDE HERE 3");
     Invitation invitation = invitationOptional.get();
 
     //check if caller is primary
     if (!checkStaffIsPrimary(treatmentPlanRecordId,staffId)){
+      System.out.println("INSIDE HERE 4");
       throw new UnableToUpdateTreatmentPlanRecordException("You cannot delete invitation as you are not the primary of this treatment plan record");
     };
+    System.out.println("INSIDE HERE 5");
 
     //Cannot remove self, unless is delete treatment plan use case
     if (invitation.getIsPrimary()) {
+      System.out.println("INSIDE HERE 6");
+
       throw new UnableToUpdateTreatmentPlanRecordException("Cannot delete own invitation");
     }
 
+    System.out.println("INSIDE HERE 7");
     Staff invitedStaffToRemove = invitation.getStaff();
     invitedStaffToRemove.getListOfInvitations().remove(invitation);
+    System.out.println("INSIDE HERE 8");
+
     invitationRepository.delete(invitation);
 
     return getTreatmentPlanById(treatmentPlanRecordId);
