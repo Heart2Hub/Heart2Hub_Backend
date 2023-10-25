@@ -38,4 +38,10 @@ public class AppointmentDTO {
   private LocalDateTime dateOfBirth;
   private String departmentName;
   private String patientProfilePicture;
+
+  //For displaying admission information
+  private Long admissionId;
+  private Integer admissionDuration;
+  private String admissionReason;
+  //private Boolean admissionScheduled = false;
 }

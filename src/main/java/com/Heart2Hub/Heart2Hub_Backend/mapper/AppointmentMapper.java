@@ -1,6 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.mapper;
 
 import com.Heart2Hub.Heart2Hub_Backend.dto.AppointmentDTO;
+import com.Heart2Hub.Heart2Hub_Backend.entity.Admission;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
@@ -60,6 +61,18 @@ public class AppointmentMapper {
         dto.setNationality(appointment.getPatient().getElectronicHealthRecord().getNationality());
         dto.setDateOfBirth(appointment.getPatient().getElectronicHealthRecord().getDateOfBirth());
       }
+
+      // Admission fields
+      Admission admissionToSchedule = appointment.getPatient().getAdmission();
+      if (admissionToSchedule != null) {
+        dto.setAdmissionId(admissionToSchedule.getAdmissionId());
+        dto.setAdmissionDuration(admissionToSchedule.getDuration());
+        dto.setAdmissionReason(admissionToSchedule.getReason());
+
+//        if (admissionToSchedule.getAdmissionDateTime() == null) {
+//          dto.setAdmissionScheduled(true);
+//        }
+      }
     }
 
     //departmentName
@@ -75,6 +88,8 @@ public class AppointmentMapper {
       }
       dto.setListOfImageDocumentsImageLinks(imageLinks);
     }
+
+
 
     // Add other complex mappings if needed...
 
