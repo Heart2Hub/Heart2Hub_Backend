@@ -13,6 +13,7 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateAppointmentCommen
 import com.Heart2Hub.Heart2Hub_Backend.repository.AppointmentRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -332,5 +333,20 @@ public class AppointmentService {
   public List<ImageDocument> viewAppointmentAttachments(Long appointmentId) {
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     return appointment.getListOfImageDocuments();
+  }
+
+  public Integer findAppointmentTimeDiff(Long appointmentId) {
+    Appointment appointment = findAppointmentByAppointmentId(appointmentId);
+    LocalDateTime localDateTime = appointment.getActualDateTime();
+
+    if (localDateTime != null) {
+      LocalDateTime currentDateTime = LocalDateTime.now();
+      long diffInMinutes = ChronoUnit.MINUTES.between(currentDateTime, localDateTime);
+
+      return Math.toIntExact(diffInMinutes * -1);
+    } else {
+      return 0;
+    }
+    //return 0;
   }
 }

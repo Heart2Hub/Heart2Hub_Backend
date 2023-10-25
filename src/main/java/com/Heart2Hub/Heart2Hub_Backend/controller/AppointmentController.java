@@ -190,4 +190,10 @@ public class AppointmentController {
     return ResponseEntity.ok(appointmentService.viewAppointmentAttachments(appointmentId));
 
   }
+
+  @GetMapping("/findAppointmentTimeDiff/{apppointmentId}")
+  public ResponseEntity<Integer> findAppointmentTimeDiff(
+          @PathVariable("apppointmentId") long apppointmentId) {
+    return ResponseEntity.ok(appointmentService.findAppointmentTimeDiff(apppointmentId));
+  }
 }
