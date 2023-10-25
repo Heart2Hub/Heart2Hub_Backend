@@ -73,10 +73,9 @@ public class AppointmentMapper {
         dto.setAdmissionId(admissionToSchedule.getAdmissionId());
         dto.setAdmissionDuration(admissionToSchedule.getDuration());
         dto.setAdmissionReason(admissionToSchedule.getReason());
+        dto.setAdmissionDate(admissionToSchedule.getAdmissionDateTime());
+        dto.setDischargeDate(admissionToSchedule.getDischargeDateTime());
 
-//        if (admissionToSchedule.getAdmissionDateTime() == null) {
-//          dto.setAdmissionScheduled(true);
-//        }
       }
     } else {
 
