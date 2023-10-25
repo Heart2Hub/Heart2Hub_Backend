@@ -28,6 +28,7 @@ public class AppointmentMapper {
     dto.setArrived(appointment.getArrived());
     dto.setPriorityEnum(appointment.getPriorityEnum());
     dto.setSwimlaneStatusEnum(appointment.getSwimlaneStatusEnum());
+    dto.setDispensaryStatusEnum(appointment.getDispensaryStatusEnum());
     //current assigned staff
     if (appointment.getCurrentAssignedStaff() != null) {
       dto.setCurrentAssignedStaffId(appointment.getCurrentAssignedStaff().getStaffId());
