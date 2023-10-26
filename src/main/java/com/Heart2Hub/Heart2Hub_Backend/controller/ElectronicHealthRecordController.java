@@ -28,6 +28,14 @@ public class ElectronicHealthRecordController {
         );
     }
 
+    @GetMapping("/getElectronicHealthRecordById")
+    public ResponseEntity<ElectronicHealthRecord> getElectronicHealthRecordById(
+        @RequestParam("electronicHealthRecordId") Long electronicHealthRecordId) {
+        return ResponseEntity.ok(
+            electronicHealthRecordService.getElectronicHealthRecordById(electronicHealthRecordId)
+        );
+    }
+
     @GetMapping("/getElectronicHealthRecordByNric")
     public ResponseEntity<ElectronicHealthRecord> getElectronicHealthRecordByNric(
             @RequestParam("nric") String nric) {

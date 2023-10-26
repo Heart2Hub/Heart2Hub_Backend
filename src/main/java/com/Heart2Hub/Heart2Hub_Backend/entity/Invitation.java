@@ -29,6 +29,12 @@ public class Invitation {
     @NotNull
     private Boolean isPrimary;
 
+    @NotNull
+    private Boolean isRead;
+
+    @NotNull
+    private Boolean isApproved;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "treatmentPlanRecordId",nullable = false)
@@ -40,6 +46,8 @@ public class Invitation {
     private Staff staff;
 
     public Invitation() {
+        this.isRead = false;
+        this.isApproved = false;
     }
 
     public Invitation(String invitedBy, Boolean isPrimary) {

@@ -1,16 +1,20 @@
 package com.Heart2Hub.Heart2Hub_Backend.mapper;
 
-import com.Heart2Hub.Heart2Hub_Backend.dto.AppointmentDTO;
 import com.Heart2Hub.Heart2Hub_Backend.dto.InvitationDTO;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Invitation;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
+import com.Heart2Hub.Heart2Hub_Backend.service.ElectronicHealthRecordService;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
 public class InvitationMapper {
+
+  private final ElectronicHealthRecordService electronicHealthRecordService;
+
+  public InvitationMapper(ElectronicHealthRecordService electronicHealthRecordService) {
+    this.electronicHealthRecordService = electronicHealthRecordService;
+  }
 
   public InvitationDTO toDTO(Invitation invitation) {
 
@@ -23,6 +27,8 @@ public class InvitationMapper {
     dto.setCreatedDate(invitation.getCreatedDate());
     dto.setInvitedBy(invitation.getInvitedBy());
     dto.setIsPrimary(invitation.getIsPrimary());
+    dto.setIsRead(invitation.getIsRead());
+    dto.setIsApproved(invitation.getIsApproved());
     dto.setTreatmentPlanRecordId(invitation.getTreatmentPlanRecord().getTreatmentPlanRecordId());
     dto.setStaffId(invitation.getStaff().getStaffId());
     dto.setUsername(invitation.getStaff().getUsername());
@@ -32,6 +38,11 @@ public class InvitationMapper {
     dto.setIsHead(invitation.getStaff().getIsHead());
     dto.setStaffRoleEnum(invitation.getStaff().getStaffRoleEnum());
 
+    Long ehrId = electronicHealthRecordService.findEHRByTreatmentPlanId(
+        invitation.getTreatmentPlanRecord().getTreatmentPlanRecordId())
+            .getElectronicHealthRecordId();
+
+    dto.setElectronicHealthRecordId(ehrId);
     return dto;
   }
 

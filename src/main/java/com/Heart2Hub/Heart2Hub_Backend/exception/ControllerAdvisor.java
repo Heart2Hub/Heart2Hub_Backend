@@ -135,6 +135,12 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
   }
 
+  @ExceptionHandler(UnableToUpdateInvitationException.class)
+  public ResponseEntity<Object> handleUnableToUpdateInvitationException(
+      UnableToUpdateInvitationException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
     List<String> errorList = ex

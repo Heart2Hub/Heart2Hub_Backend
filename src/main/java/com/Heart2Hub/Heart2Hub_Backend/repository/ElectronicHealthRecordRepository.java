@@ -15,4 +15,7 @@ public interface ElectronicHealthRecordRepository extends JpaRepository<Electron
     List<ElectronicHealthRecord> findByLastNameContainsIgnoreCase(String lastName);
 
     Optional<ElectronicHealthRecord> findByPatientUsername(String username);
+
+    Optional<ElectronicHealthRecord> findByListOfTreatmentPlanRecords_TreatmentPlanRecordId(Long treatmentPlanRecordId);
+
 }

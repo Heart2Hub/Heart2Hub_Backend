@@ -135,4 +135,26 @@ public class TreatmentPlanRecordController {
         treatmentPlanRecordService.getListOfInvitationsInTreatmentPlanRecord(treatmentPlanRecordId))
     );
   }
+
+  @GetMapping("/getListOfInvitationsByStaffId")
+  public ResponseEntity<List<InvitationDTO>> getListOfInvitationsByStaffId(
+      @RequestParam Long staffId) {
+    return ResponseEntity.ok(invitationMapper.toDTOList(
+        treatmentPlanRecordService.getListOfInvitationsByStaffId(staffId))
+    );
+  }
+
+  @PutMapping("/setInvitationToRead")
+  public ResponseEntity<InvitationDTO> setInvitationToRead(
+      @RequestParam Long invitationId,@RequestParam Long staffId) {
+    return ResponseEntity.ok(invitationMapper.toDTO(
+        treatmentPlanRecordService.setInvitationToRead(invitationId,staffId)));
+  }
+
+  @PutMapping("/setInvitationToApproved")
+  public ResponseEntity<InvitationDTO> setInvitationToApproved(
+      @RequestParam Long invitationId,@RequestParam Long staffId) {
+    return ResponseEntity.ok(invitationMapper.toDTO(
+        treatmentPlanRecordService.setInvitationToApproved(invitationId,staffId)));
+  }
 }

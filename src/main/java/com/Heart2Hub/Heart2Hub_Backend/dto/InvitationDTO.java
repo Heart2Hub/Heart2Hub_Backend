@@ -13,9 +13,13 @@ public class InvitationDTO {
   private LocalDateTime createdDate;
   private String invitedBy;
   private Boolean isPrimary;
+  private Boolean isRead;
+  private Boolean isApproved;
 
   //TreatmentPlanRecord
   private Long treatmentPlanRecordId;
+  //EHR
+  private Long electronicHealthRecordId;
   //Staff
   private Long staffId;
   private String username;

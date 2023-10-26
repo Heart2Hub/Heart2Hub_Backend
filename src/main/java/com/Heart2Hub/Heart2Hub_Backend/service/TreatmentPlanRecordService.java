@@ -12,6 +12,7 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToAddImageAttachmentToApp
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateTreatmentPlanRecordException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateNextOfKinRecordException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToDeleteTreatmentPlanException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateInvitationException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateTreatmentPlanRecordException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.InvitationRepository;
@@ -39,7 +40,6 @@ public class TreatmentPlanRecordService {
   private final InvitationRepository invitationRepository;
 
   private final StaffService staffService;
-
   public TreatmentPlanRecordService(TreatmentPlanRecordRepository treatmentPlanRecordRepository,
       ElectronicHealthRecordRepository electronicHealthRecordRepository,
       InvitationRepository invitationRepository,
@@ -65,6 +65,9 @@ public class TreatmentPlanRecordService {
       Invitation newInvitation = new Invitation("self", true);
       newInvitation.setTreatmentPlanRecord(newTreatmentPlanRecord);
       newInvitation.setStaff(staff);
+      newInvitation.setIsApproved(true);
+      newInvitation.setIsRead(true);
+
       invitationRepository.save(newInvitation);
       staff.getListOfInvitations().add(newInvitation);
 
@@ -95,9 +98,10 @@ public class TreatmentPlanRecordService {
         }
 
         System.out.println("CHECKING IF STAFF HAS ACCESS");
-        System.out.println(checkStaffHasInvitationToTreatmentPlanRecord(treatmentPlanRecordId,staffId));
+        System.out.println(
+            checkStaffHasInvitationToTreatmentPlanRecord(treatmentPlanRecordId, staffId));
 
-        if (!checkStaffHasInvitationToTreatmentPlanRecord(treatmentPlanRecordId,staffId)) {
+        if (!checkStaffHasInvitationToTreatmentPlanRecord(treatmentPlanRecordId, staffId)) {
           throw new UnableToUpdateTreatmentPlanRecordException(
               "Unable to update without access");
         }
@@ -109,7 +113,8 @@ public class TreatmentPlanRecordService {
           currentTreatmentPlanRecord.setStartDate(treatmentPlanRecord.getStartDate());
           currentTreatmentPlanRecord.setEndDate(treatmentPlanRecord.getEndDate());
         } else {
-          throw new UnableToUpdateTreatmentPlanRecordException("Cannot set End Date before Start Date");
+          throw new UnableToUpdateTreatmentPlanRecordException(
+              "Cannot set End Date before Start Date");
         }
         return currentTreatmentPlanRecord;
       }
@@ -118,7 +123,7 @@ public class TreatmentPlanRecordService {
     }
   }
 
-  public TreatmentPlanRecord completeTreatmentPlanRecord (Long electronicHealthRecordId,
+  public TreatmentPlanRecord completeTreatmentPlanRecord(Long electronicHealthRecordId,
       Long treatmentPlanRecordId, Long staffId)
       throws UnableToUpdateTreatmentPlanRecordException {
     try {
@@ -139,15 +144,17 @@ public class TreatmentPlanRecordService {
         }
 
         System.out.println("CHECKING IF STAFF HAS ACCESS");
-        System.out.println(checkStaffHasInvitationToTreatmentPlanRecord(treatmentPlanRecordId,staffId));
+        System.out.println(
+            checkStaffHasInvitationToTreatmentPlanRecord(treatmentPlanRecordId, staffId));
 
-        if (!checkStaffHasInvitationToTreatmentPlanRecord(treatmentPlanRecordId,staffId)) {
+        if (!checkStaffHasInvitationToTreatmentPlanRecord(treatmentPlanRecordId, staffId)) {
           throw new UnableToUpdateTreatmentPlanRecordException(
               "Unable to update without access");
         }
 
         if (currentTreatmentPlanRecord.getIsCompleted()) {
-          throw new UnableToUpdateTreatmentPlanRecordException("Treatment Plan is already Completed!");
+          throw new UnableToUpdateTreatmentPlanRecordException(
+              "Treatment Plan is already Completed!");
         }
 
         currentTreatmentPlanRecord.setIsCompleted(true);
@@ -225,11 +232,11 @@ public class TreatmentPlanRecordService {
       System.out.println("treatment " + treatmentPlanRecordId);
       System.out.println("staff " + staffId);
 
-
       System.out.println("CHECKING IF STAFF HAS ACCESS");
-      System.out.println(checkStaffHasInvitationToTreatmentPlanRecord(treatmentPlanRecordId,staffId));
+      System.out.println(
+          checkStaffHasInvitationToTreatmentPlanRecord(treatmentPlanRecordId, staffId));
 
-      if (!checkStaffHasInvitationToTreatmentPlanRecord(treatmentPlanRecordId,staffId)) {
+      if (!checkStaffHasInvitationToTreatmentPlanRecord(treatmentPlanRecordId, staffId)) {
         throw new UnableToUpdateTreatmentPlanRecordException(
             "Cannot add images to a treatment plan that you have no access to");
       }
@@ -251,7 +258,7 @@ public class TreatmentPlanRecordService {
       String imageLink,
       Long staffId) {
 
-    if (!checkStaffHasInvitationToTreatmentPlanRecord(treatmentPlanRecordId,staffId)) {
+    if (!checkStaffHasInvitationToTreatmentPlanRecord(treatmentPlanRecordId, staffId)) {
       throw new UnableToUpdateTreatmentPlanRecordException(
           "Cannot remove images to a treatment plan that you have no access to");
     }
@@ -273,18 +280,21 @@ public class TreatmentPlanRecordService {
   }
 
   //add invitation
-  public TreatmentPlanRecord addInvitationToTreatmentPlanRecord(Long treatmentPlanRecordId,  Long staffId, Long invitedStaffId) {
-    if (!checkStaffIsPrimary(treatmentPlanRecordId,staffId)) {
-      throw new UnableToUpdateTreatmentPlanRecordException("Cannot invite other staff if you are not the primary of this treatment plan");
+  public TreatmentPlanRecord addInvitationToTreatmentPlanRecord(Long treatmentPlanRecordId,
+      Long staffId, Long invitedStaffId) {
+    if (!checkStaffIsPrimary(treatmentPlanRecordId, staffId)) {
+      throw new UnableToUpdateTreatmentPlanRecordException(
+          "Cannot invite other staff if you are not the primary of this treatment plan");
     }
     try {
       System.out.println("CALLING ADD INVITATION");
       TreatmentPlanRecord treatmentPlanRecord = getTreatmentPlanById(treatmentPlanRecordId);
       Staff invitedStaff = staffService.getStaffById(invitedStaffId);
       Staff staff = staffService.getStaffById(staffId);
-      String signature = staff.getFirstname() + " " + staff.getLastname() + " (" + staff.getStaffRoleEnum() + ")";
+      String signature =
+          staff.getFirstname() + " " + staff.getLastname() + " (" + staff.getStaffRoleEnum() + ")";
 
-      Invitation invitation = new Invitation(signature, false );
+      Invitation invitation = new Invitation(signature, false);
       invitation.setStaff(invitedStaff);
       invitation.setTreatmentPlanRecord(treatmentPlanRecord);
       invitationRepository.save(invitation);
@@ -305,10 +315,12 @@ public class TreatmentPlanRecordService {
   }
 
   //delete invitation
-  public TreatmentPlanRecord deleteInvitationToTreatmentPlanRecord(Long treatmentPlanRecordId,  Long staffId, Long invitationId) {
+  public TreatmentPlanRecord deleteInvitationToTreatmentPlanRecord(Long treatmentPlanRecordId,
+      Long staffId, Long invitationId) {
     System.out.println("INSIDE DELETE");
-    if (!checkStaffIsPrimary(treatmentPlanRecordId,staffId)) {
-      throw new UnableToUpdateTreatmentPlanRecordException("Cannot delete invitation to treatment plan if you are not the primary of this treatment plan");
+    if (!checkStaffIsPrimary(treatmentPlanRecordId, staffId)) {
+      throw new UnableToUpdateTreatmentPlanRecordException(
+          "Cannot delete invitation to treatment plan if you are not the primary of this treatment plan");
     }
     System.out.println("INSIDE HERE 1");
 
@@ -321,10 +333,12 @@ public class TreatmentPlanRecordService {
     Invitation invitation = invitationOptional.get();
 
     //check if caller is primary
-    if (!checkStaffIsPrimary(treatmentPlanRecordId,staffId)){
+    if (!checkStaffIsPrimary(treatmentPlanRecordId, staffId)) {
       System.out.println("INSIDE HERE 4");
-      throw new UnableToUpdateTreatmentPlanRecordException("You cannot delete invitation as you are not the primary of this treatment plan record");
-    };
+      throw new UnableToUpdateTreatmentPlanRecordException(
+          "You cannot delete invitation as you are not the primary of this treatment plan record");
+    }
+    ;
     System.out.println("INSIDE HERE 5");
 
     //Cannot remove self, unless is delete treatment plan use case
@@ -361,19 +375,62 @@ public class TreatmentPlanRecordService {
         treatmentPlanRecordId);
   }
 
-  public Boolean checkStaffHasInvitationToTreatmentPlanRecord(Long treatmentPlanRecordId, Long staffId) {
+  //get invitations for a staff
+  public List<Invitation> getListOfInvitationsByStaffId(Long staffId) {
+    return invitationRepository.findAllByStaffStaffId(
+        staffId);
+  }
+
+  //update invitation to read
+  public Invitation setInvitationToRead(Long invitationId, Long staffId) {
+    Optional<Invitation> invitationOptional =  invitationRepository.findById(invitationId);
+    if (invitationOptional.isPresent()) {
+      Invitation invitation = invitationOptional.get();
+
+      if (invitation.getStaff().getStaffId().equals(staffId)) {
+        invitation.setIsRead(true);
+      } else {
+        throw new UnableToUpdateInvitationException("Unable to Read without invitation");
+      }
+      return invitation;
+    }
+    else {
+      throw new UnableToUpdateInvitationException("Invitation does not exist");
+    }
+  }
+
+  public Invitation setInvitationToApproved(Long invitationId, Long staffId) {
+    Optional<Invitation> invitationOptional =  invitationRepository.findById(invitationId);
+    if (invitationOptional.isPresent()) {
+      Invitation invitation = invitationOptional.get();
+
+      if (invitation.getStaff().getStaffId().equals(staffId)) {
+        invitation.setIsApproved(true);
+      } else {
+        throw new UnableToUpdateInvitationException("Unable to approve without invitation");
+      }
+      return invitation;
+    }
+    else {
+      throw new UnableToUpdateInvitationException("Invitation does not exist");
+    }
+  }
+
+  public Boolean checkStaffHasInvitationToTreatmentPlanRecord(Long treatmentPlanRecordId,
+      Long staffId) {
     return invitationRepository.findByTreatmentPlanRecord_TreatmentPlanRecordIdAndStaff_StaffId(
         treatmentPlanRecordId, staffId).isPresent();
   }
 
   public Boolean checkStaffIsPrimary(Long treatmentPlanRecordId, Long staffId) {
-     Optional<Invitation> invitationOptional = invitationRepository.findByTreatmentPlanRecord_TreatmentPlanRecordIdAndStaff_StaffId(
+    Optional<Invitation> invitationOptional = invitationRepository.findByTreatmentPlanRecord_TreatmentPlanRecordIdAndStaff_StaffId(
         treatmentPlanRecordId, staffId);
-     if (invitationOptional.isEmpty()) {
-       throw new UnableToUpdateTreatmentPlanRecordException("Staff has no access to this treatment plan record");
-     }
+    if (invitationOptional.isEmpty()) {
+      throw new UnableToUpdateTreatmentPlanRecordException(
+          "Staff has no access to this treatment plan record");
+    }
 
-     Invitation invitation = invitationOptional.get();
-     return invitation.getIsPrimary();
+    Invitation invitation = invitationOptional.get();
+    return invitation.getIsPrimary();
   }
 }
