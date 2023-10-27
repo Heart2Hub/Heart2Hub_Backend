@@ -43,6 +43,9 @@ public class PrescriptionRecord {
     @Enumerated(EnumType.STRING)
     private PrescriptionStatusEnum prescriptionStatusEnum;
 
+    //@NotNull
+    private LocalDateTime expirationDate;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "inventoryItem_id", nullable = true)
     private InventoryItem inventoryItem;

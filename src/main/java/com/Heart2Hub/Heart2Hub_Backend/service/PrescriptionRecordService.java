@@ -2,6 +2,7 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PrescriptionStatusEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.OverlappingBookingException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreatePrescriptionRecordException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.InventoryItemRepository;
@@ -10,6 +11,8 @@ import com.Heart2Hub.Heart2Hub_Backend.repository.PrescriptionRecordRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -52,7 +55,18 @@ public class PrescriptionRecordService {
     }
 
     public List<PrescriptionRecord> getPrescriptionRecordsByEHRId(Long id) {
-        return electronicHealthRecordRepository.findById(id).get().getListOfPrescriptionRecords();
+        List<PrescriptionRecord> prescriptionRecords = electronicHealthRecordRepository.findById(id).get().getListOfPrescriptionRecords();
+
+        // Iterate through the list of prescription records
+        for (PrescriptionRecord prescriptionRecord : prescriptionRecords) {
+            LocalDateTime expirationDate = prescriptionRecord.getExpirationDate();
+            LocalDateTime currentDate = LocalDateTime.now();;
+            if (expirationDate.isBefore(currentDate)) {
+                // Update the enum for the expired prescription record
+                prescriptionRecord.setPrescriptionStatusEnum(PrescriptionStatusEnum.EXPIRED);
+            }
+        }
+        return prescriptionRecords;
     }
 
     public TransactionItem checkOutPrescription(Long prescriptionId, Long ehrId) {
@@ -61,24 +75,33 @@ public class PrescriptionRecordService {
         Medication medicine = (Medication) pr.getInventoryItem();
         Patient p = electronicHealthRecordRepository.findById(ehrId).get().getPatient();
 
-        TransactionItem item = transactionItemService.addToCart(p.getPatientId(), "(Prescription Record " +pr.getPrescriptionRecordId() + "): " + medicine.getInventoryItemName(), medicine.getInventoryItemDescription(),
-                pr.getMedicationQuantity(), medicine.getRetailPricePerQuantity(), medicine.getInventoryItemId());
+        TransactionItem item = transactionItemService.addToCart(p.getPatientId(), "(Prescription Record " + pr.getPrescriptionRecordId() + "): " + medicine.getInventoryItemName(), medicine.getInventoryItemDescription(),
+                pr.getDosage(), medicine.getRetailPricePerQuantity(), medicine.getInventoryItemId());
 
         return item;
     }
 
     public PrescriptionRecord doctorCreateNewPrescription(PrescriptionRecord pr, Long itemId, Long ehrId) {
-        pr.setInventoryItem(inventoryItemRepository.findById(itemId).get());
-        pr.setMedicationName(inventoryItemRepository.findById(itemId).get().getInventoryItemName());
+        Medication m = (Medication) inventoryItemRepository.findById(itemId).get();
+        LocalDateTime expirationDate = pr.getExpirationDate();
+        LocalDateTime currentDate = LocalDateTime.now();
+        if(expirationDate.isBefore(currentDate)) {
+            throw new OverlappingBookingException("Expiry Date must be later than today");
+        }
+
+        pr.setInventoryItem(m);
+        pr.setMedicationName(m.getInventoryItemName());
+        pr.setMedicationQuantity(m.getQuantityInStock());
         return createPrescriptionRecord(ehrId, pr);
     }
 
-    public PrescriptionRecord updatePrescriptionRecord(Long id,  Integer medicationQuantity,
-                                                       Integer dosage, String description, String comments, PrescriptionStatusEnum prescriptionStatusEnum) {
+    public PrescriptionRecord updatePrescriptionRecord(Long id, Integer dosage, String description, String comments,
+                                                       PrescriptionStatusEnum prescriptionStatusEnum, LocalDateTime expirationDate) {
         PrescriptionRecord prescriptionRecord = prescriptionRecordRepository.findById(id).get();
         // Update the necessary fields with the new values from updatedRecord
         prescriptionRecord.setPrescriptionStatusEnum(prescriptionStatusEnum);
-        prescriptionRecord.setMedicationQuantity(medicationQuantity);
+        prescriptionRecord.setExpirationDate(expirationDate);
+        //prescriptionRecord.setMedicationQuantity(medicationQuantity);
         prescriptionRecord.setDosage(dosage);
         prescriptionRecord.setDescription(description);
         prescriptionRecord.setComments(comments);
