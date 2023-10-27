@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -49,12 +50,12 @@ public class PrescriptionRecordController {
 
         //Integer medicationQuantity = Integer.parseInt(requestBody.get("medicationQuantity").toString());
         Integer dosage = Integer.parseInt(requestBody.get("dosage").toString());
-        PrescriptionStatusEnum prescriptionStatusEnum = PrescriptionStatusEnum.valueOf(requestBody.get("prescriptionStatusEnum").toString());
+        //PrescriptionStatusEnum prescriptionStatusEnum = PrescriptionStatusEnum.valueOf(requestBody.get("prescriptionStatusEnum").toString());
         LocalDate date = LocalDate.parse(requestBody.get("expirationDate").toString());
         LocalDateTime expirationDate = date.atTime(0,0,0);
 
         PrescriptionRecord updatedPrescriptionRecord = prescriptionRecordService.updatePrescriptionRecord(prescriptionRecordId,
-                dosage, description, comments, prescriptionStatusEnum, expirationDate);
+                dosage, description, comments, expirationDate);
         return ResponseEntity.ok(updatedPrescriptionRecord);
     }
 
@@ -66,9 +67,9 @@ public class PrescriptionRecordController {
     ) {
         DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy, HH:mm:ss", Locale.ENGLISH);
         LocalDateTime createdDate = LocalDateTime.parse(requestBody.get("createdDate").toString(), inputFormatter);
+        LocalDateTime expirationDate = LocalDateTime.parse(requestBody.get("expirationDate").toString(), inputFormatter);
 
-        LocalDate date = LocalDate.parse(requestBody.get("expirationDate").toString());
-        LocalDateTime expirationDate = date.atTime(0,0,0);
+
         String medicationName = "";
         //Integer medicationQuantity = Integer.parseInt(requestBody.get("medicationQuantity").toString());
         Integer dosage = Integer.parseInt(requestBody.get("dosage").toString());
