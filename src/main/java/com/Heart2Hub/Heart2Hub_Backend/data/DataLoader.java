@@ -654,16 +654,16 @@ public class DataLoader implements CommandLineRunner {
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
     shiftService.createShift("nurseB101", null, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-    shiftService.createShift("nurseB201", null, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
-            LocalDateTime.of(year, month, day, 23, 0, 0), "Staff is working shift 2"));
-    shiftService.createShift("nurseB202", null, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
-            LocalDateTime.of(year, month, day, 23, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("nurseB201", null, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("nurseB202", null, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
     shiftService.createShift("nurseC11", null, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Inpatient admin shifts - Working hours (8am - 4pm)
-    shiftService.createShift("adminB201", null, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
-            LocalDateTime.of(year, month, day, 23, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("adminB201", null, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Pharmacy shifts - Working hours(8am - 4pm)
     shiftService.createShift("staff15", 93L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
