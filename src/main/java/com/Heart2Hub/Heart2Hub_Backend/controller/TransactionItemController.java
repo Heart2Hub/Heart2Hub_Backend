@@ -65,4 +65,10 @@ public class TransactionItemController {
         return i;
     }
 
+    @PutMapping("/updateTransactionItem")
+    public ResponseEntity<TransactionItem> updateTransactionItem(@RequestParam("transactionItemId") Long transactionItemId,
+                                                 @RequestParam("quantity") Integer quantity) {
+        return ResponseEntity.ok(transactionItemService.updateTransactionItem(transactionItemId,quantity));
+    }
+
 }

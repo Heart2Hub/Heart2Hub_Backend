@@ -364,5 +364,12 @@ public class TransactionItemService {
         appointment.setSwimlaneStatusEnum(SwimlaneStatusEnum.DONE);
         appointmentRepository.save(appointment);
     }
+
+    public TransactionItem updateTransactionItem(Long transactionItemId, Integer transactionItemQuantity) {
+        TransactionItem transactionItem = transactionItemRepository.findById(transactionItemId).get();
+
+        transactionItem.setTransactionItemQuantity(transactionItemQuantity);
+        return transactionItemRepository.save(transactionItem);
+    }
 }
 
