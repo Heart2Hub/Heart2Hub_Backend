@@ -1228,29 +1228,29 @@ public class DataLoader implements CommandLineRunner {
 
 
     Medication newMedication1 = medicationService.createMedication(
-            new Medication("Paracetamol 500 mg Tablets", "500mg per piece", ItemTypeEnum.MEDICINE, 100,
+            new Medication("Paracetamol 500 mg Tablets (12 pieces)", "500mg per piece", ItemTypeEnum.MEDICINE, 100,
                     BigDecimal.TEN, BigDecimal.TEN, allergenList1, "", drugList2));
     Medication newMedication2 = medicationService.createMedication(
-            new Medication("Cetirizine 10mg Tablets", "10mg per piece", ItemTypeEnum.MEDICINE, 100,
+            new Medication("Cetirizine 10mg Tablets (12 pieces)", "10mg per piece", ItemTypeEnum.MEDICINE, 100,
                     BigDecimal.valueOf(5), BigDecimal.TEN, allergenList1, "Do not take with alcohol", drugList1));
     Medication newMedication3 = medicationService.createMedication(
-            new Medication("Augmentin 625mg Tablets ", "625mg per piece", ItemTypeEnum.MEDICINE, 50,
+            new Medication("Augmentin 625mg Tablets (12 pieces)", "625mg per piece", ItemTypeEnum.MEDICINE, 50,
                     BigDecimal.valueOf(4), BigDecimal.TEN, allergenList2, "", drugList1));
     Medication newMedication4 = medicationService.createMedication(
-            new Medication("Metformin 500mg Tablets", "500mg per piece", ItemTypeEnum.MEDICINE, 1000,
+            new Medication("Metformin 500mg Tablets (12 pieces)", "500mg per piece", ItemTypeEnum.MEDICINE, 1000,
                     BigDecimal.valueOf(2), BigDecimal.TEN, allergenList1, "Do not take with alcohol", drugList1));
     Medication newMedication5 = medicationService.createMedication(
-            new Medication("Augmentin 228mg Suspension", "5ml per bottle", ItemTypeEnum.MEDICINE, 100,
+            new Medication("Augmentin 228mg Suspension (1 bottle)", "5ml per bottle", ItemTypeEnum.MEDICINE, 100,
                     BigDecimal.valueOf(3), BigDecimal.TEN, allergenList2, "", drugList1));
     Medication newMedication6 = medicationService.createMedication(
-            new Medication("Warfarin 1mg Tablet", "1mg per piece", ItemTypeEnum.MEDICINE, 10000,
-                    BigDecimal.valueOf(3), BigDecimal.TEN, allergenList1, "", drugList3));
+            new Medication("Warfarin 1mg Tablet (1 piece)", "1mg per piece", ItemTypeEnum.MEDICINE, 10000,
+                    BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList3));
     Medication newMedication7 = medicationService.createMedication(
-            new Medication("Warfarin 3mg Tablet", "3mg per piece", ItemTypeEnum.MEDICINE, 10000,
-                    BigDecimal.valueOf(3), BigDecimal.TEN, allergenList1, "", drugList3));
+            new Medication("Warfarin 3mg Tablet (28 pieces)", "3mg per piece", ItemTypeEnum.MEDICINE, 10000,
+                    BigDecimal.valueOf(4), BigDecimal.valueOf(5), allergenList1, "", drugList3));
     Medication newMedication8 = medicationService.createMedication(
-            new Medication("Warfarin 5mg Tablet", "5mg per piece", ItemTypeEnum.MEDICINE, 10000,
-                    BigDecimal.valueOf(3), BigDecimal.TEN, allergenList1, "", drugList3));
+            new Medication("Warfarin 3mg Tablet (1 piece)", "1mg per piece", ItemTypeEnum.MEDICINE, 10000,
+                    BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList3));
   }
 
   private void createServiceItemData() {
