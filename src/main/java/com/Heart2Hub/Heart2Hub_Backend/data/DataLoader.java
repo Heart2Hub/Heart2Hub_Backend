@@ -1193,24 +1193,34 @@ public class DataLoader implements CommandLineRunner {
   private void createServiceItemData() {
 
     Unit unit1 = unitRepository.findById(1L).get();
-    Unit unit2 = unitRepository.findById(11L).get();
+    Unit unit5 = unitRepository.findById(5L).get();
     Unit unit3 = unitRepository.findById(12L).get();
 
 
-    ServiceItem newServiceItem1 = serviceItemService.createServiceItem(Long.parseLong("5"),
+    ServiceItem newServiceItem1 = serviceItemService.createServiceItem(Long.parseLong("1"),
             new ServiceItem("General Cardiology Consultation", "Consultation", ItemTypeEnum.OUTPATIENT,
                     BigDecimal.valueOf(400)));
     newServiceItem1.setUnit(unit1);
 
-    ServiceItem newServiceItem2 = serviceItemService.createServiceItem(Long.parseLong("11"),
-            new ServiceItem("Class A Ward", "per Day", ItemTypeEnum.INPATIENT,
-                    BigDecimal.valueOf(300)));
-    newServiceItem2.setUnit(unit2);
+    ServiceItem newServiceItem2 = serviceItemService.createServiceItem(Long.parseLong("1"),
+            new ServiceItem("Heart Transplant", "Surgery", ItemTypeEnum.INPATIENT,
+                    BigDecimal.valueOf(2500)));
+    newServiceItem2.setUnit(unit1);
 
-    ServiceItem newServiceItem3 = serviceItemService.createServiceItem(Long.parseLong("12"),
-            new ServiceItem("Class B Ward", "per Day", ItemTypeEnum.INPATIENT,
-                    BigDecimal.valueOf(200)));
-    newServiceItem3.setUnit(unit3);
+    ServiceItem newServiceItem3 = serviceItemService.createServiceItem(Long.parseLong("11"),
+            new ServiceItem("ECG", "ECG", ItemTypeEnum.OUTPATIENT,
+                    BigDecimal.valueOf(80)));
+    newServiceItem3.setUnit(unit1);
+
+    ServiceItem newServiceItem4 = serviceItemService.createServiceItem(Long.parseLong("5"),
+            new ServiceItem("A&E consultation", "Consultation", ItemTypeEnum.OUTPATIENT,
+                    BigDecimal.valueOf(100)));
+    newServiceItem4.setUnit(unit5);
+
+    ServiceItem newServiceItem5 = serviceItemService.createServiceItem(Long.parseLong("5"),
+            new ServiceItem("1-way Ambulance", "Ambulance", ItemTypeEnum.OUTPATIENT,
+                    BigDecimal.valueOf(90)));
+    newServiceItem5.setUnit(unit5);
   }
 
 
