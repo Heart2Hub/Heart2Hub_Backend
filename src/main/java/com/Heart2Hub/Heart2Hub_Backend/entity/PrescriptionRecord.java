@@ -39,6 +39,10 @@ public class PrescriptionRecord {
     @NotNull
     private String prescribedBy;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime lastCollectDate;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     private PrescriptionStatusEnum prescriptionStatusEnum;

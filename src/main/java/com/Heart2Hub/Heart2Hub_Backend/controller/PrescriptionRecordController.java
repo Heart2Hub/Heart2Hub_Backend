@@ -99,4 +99,10 @@ public class PrescriptionRecordController {
         prescriptionRecordService.deletePrescriptionRecord(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/getPrescriptionRecordsByNric")
+    public ResponseEntity<List<PrescriptionRecord>> getPrescriptionRecordsByEHRId(
+            @RequestParam("nric") String nric) {
+        return ResponseEntity.ok().body(prescriptionRecordService.getPrescriptionRecordByNric(nric));
+    }
 }

@@ -13,6 +13,7 @@ import com.Heart2Hub.Heart2Hub_Backend.service.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.cglib.core.Local;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -215,6 +216,12 @@ public class DataLoader implements CommandLineRunner {
     staffService.createStaff(
             new Staff("staff18", "password18", "Meeeeeeeeelvin", "Tan", 93693693l, StaffRoleEnum.DIAGNOSTIC_RADIOGRAPHERS,
                     false), "Cardiology", new ImageDocument("id17.png", lt));
+    staffService.createStaff(
+            new Staff("adminPharm1", "password", "Ross", "Geller", 93693694l, StaffRoleEnum.ADMIN,
+                    false), "Pharmacy", new ImageDocument("id18.png", lt));
+    staffService.createStaff(
+            new Staff("adminPharm2", "password", "Monica", "Geller", 93693695l, StaffRoleEnum.ADMIN,
+                    false), "Pharmacy", new ImageDocument("id19.png", lt));
 
     leaveService.createLeave(LocalDateTime.now().plusMonths(3),
         LocalDateTime.now().plusMonths(3).plusDays(2), LeaveTypeEnum.ANNUAL, staff3, staff2,
@@ -326,6 +333,12 @@ public class DataLoader implements CommandLineRunner {
     facilityService.createFacility(10L,
             new Facility("Counter 3 " + departmentRepository.findById(10L).get().getName(),
                     "Level 2", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PHARMACY_COUNTER));
+    facilityService.createFacility(10L,
+            new Facility("Registration Counter 1 " + departmentRepository.findById(10L).get().getName(),
+                    "Level 2", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.ADMINISTRATION_OFFICES));
+    facilityService.createFacility(10L,
+            new Facility("Registration Counter 2 " + departmentRepository.findById(10L).get().getName(),
+                    "Level 2", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.ADMINISTRATION_OFFICES));
   }
 
   private void createShiftData() {
@@ -394,6 +407,12 @@ public class DataLoader implements CommandLineRunner {
     shiftService.createShift("staff17", 95L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
+    // Pharmacy admin shifts - Working hours (8am - 4pm)
+    shiftService.createShift("adminPharm1", 96L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("adminPharm2", 97L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
     // Cardiology diagnostic radiographers shifts - Working hours (8am - 4pm)
     shiftService.createShift("staff18", 11L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
@@ -450,6 +469,12 @@ public class DataLoader implements CommandLineRunner {
     shiftService.createShift("staff16", 94L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
     shiftService.createShift("staff17", 95L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Pharmacy admin shifts - Working hours (8am - 4pm)
+    shiftService.createShift("adminPharm1", 96L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("adminPharm2", 97L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Cardiology diagnostic radiographers shifts - Working hours (8am - 4pm)
@@ -509,6 +534,12 @@ public class DataLoader implements CommandLineRunner {
     shiftService.createShift("staff17", 95L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
+    // Pharmacy admin shifts - Working hours (8am - 4pm)
+    shiftService.createShift("adminPharm1", 96L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("adminPharm2", 97L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
     // Cardiology diagnostic radiographers shifts - Working hours (8am - 4pm)
     shiftService.createShift("staff18", 11L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
@@ -566,6 +597,12 @@ public class DataLoader implements CommandLineRunner {
     shiftService.createShift("staff17", 95L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
+    // Pharmacy admin shifts - Working hours (8am - 4pm)
+    shiftService.createShift("adminPharm1", 96L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("adminPharm2", 97L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
     // Cardiology diagnostic radiographers shifts - Working hours (8am - 4pm)
     shiftService.createShift("staff18", 11L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
@@ -613,6 +650,12 @@ public class DataLoader implements CommandLineRunner {
     shiftService.createShift("staff16", 94L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
+    // Pharmacy admin shifts - Working hours (8am - 4pm)
+    shiftService.createShift("adminPharm1", 96L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("adminPharm2", 97L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
     // Cardiology diagnostic radiographers shifts - Working hours (8am - 4pm)
     shiftService.createShift("staff18", 11L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
@@ -649,6 +692,10 @@ public class DataLoader implements CommandLineRunner {
     shiftService.createShift("staff15", 93L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
     shiftService.createShift("staff17", 95L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
+    // Pharmacy admin shifts - Working hours (8am - 4pm)
+    shiftService.createShift("adminPharm1", 96L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Cardiology diagnostic radiographers shifts - Working hours (8am - 4pm)
@@ -693,6 +740,10 @@ public class DataLoader implements CommandLineRunner {
     shiftService.createShift("staff17", 95L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
+    // Pharmacy admin shifts - Working hours (8am - 4pm)
+    shiftService.createShift("adminPharm2", 97L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+
     // Generate cardiology doctor shifts for the next 8 weeks
     for (int i = 7; i <= 48; i++) {
       currentDateTime = monday.plusDays(i);
@@ -718,6 +769,8 @@ public class DataLoader implements CommandLineRunner {
                           LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
           shiftService.createShift("staff15", 93L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                   LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+          shiftService.createShift("adminPharm2", 97L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                  LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
         }
         if (i != 12 && i != 19 && i != 26 && i != 33 && i != 40 && i != 47) {
           shiftService.createShift("staff6", 2L,
@@ -730,6 +783,8 @@ public class DataLoader implements CommandLineRunner {
                   new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                           LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
           shiftService.createShift("staff16", 94L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                  LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+          shiftService.createShift("adminPharm1", 96L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                   LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
         }
         if (i != 13 && i != 20 && i != 27 && i != 34 && i != 41 && i != 48) {
@@ -796,24 +851,32 @@ public class DataLoader implements CommandLineRunner {
     medicalHistoryRecordService.createMedicalHistoryRecord(newPatient9.getPatientId(), new MedicalHistoryRecord("Super Aids", "Doctor Kevin Tan", LocalDateTime.of(1990, 7, 8, 9, 0, 0), LocalDateTime.of(1991, 5, 20, 14, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.RESPIRATORY));
 
     pr1.setExpirationDate(LocalDateTime.of(2025, 9, 16, 15, 30, 0));
+    pr1.setLastCollectDate(LocalDateTime.now().minusDays(7L));
     prescriptionRecordRepository.save(pr1);
     pr2.setExpirationDate(LocalDateTime.of(2025, 9, 16, 15, 30, 0));
+    pr2.setLastCollectDate(LocalDateTime.now().minusDays(7L));
     prescriptionRecordRepository.save(pr2);
     pr3.setExpirationDate(LocalDateTime.of(2025, 9, 16, 15, 30, 0));
+    pr3.setLastCollectDate(LocalDateTime.now().minusDays(7L));
     prescriptionRecordRepository.save(pr3);
     pr4.setExpirationDate(LocalDateTime.of(2025, 9, 16, 15, 30, 0));
+    pr4.setLastCollectDate(LocalDateTime.now().minusDays(7L));
     prescriptionRecordRepository.save(pr4);
     pr5.setExpirationDate(LocalDateTime.of(2025, 9, 16, 15, 30, 0));
+    pr5.setLastCollectDate(LocalDateTime.now().minusDays(7L));
     prescriptionRecordRepository.save(pr5);
     pr6.setExpirationDate(LocalDateTime.of(2025, 9, 16, 15, 30, 0));
+    pr6.setLastCollectDate(LocalDateTime.now().minusDays(7L));
     prescriptionRecordRepository.save(pr6);
 
     PrescriptionRecord pr7 = prescriptionRecordRepository.findById(Long.valueOf(1)).get();
     pr7.setExpirationDate(LocalDateTime.of(2025, 9, 16, 15, 30, 0));
+    pr7.setLastCollectDate(LocalDateTime.now().minusDays(7L));
     prescriptionRecordRepository.save(pr7);
 
     PrescriptionRecord pr8 = prescriptionRecordRepository.findById(Long.valueOf(2)).get();
     pr8.setExpirationDate(LocalDateTime.of(2025, 9, 16, 15, 30, 0));
+    pr8.setLastCollectDate(LocalDateTime.now().minusDays(7L));
     prescriptionRecordRepository.save(pr8);
 
     PrescriptionRecord pr9 = prescriptionRecordRepository.findById(Long.valueOf(3)).get();
@@ -911,13 +974,13 @@ public class DataLoader implements CommandLineRunner {
         "MEDIUM",
         patient1.getElectronicHealthRecord().getNric(),
         "Cardiology");
-    appointmentService.createNewAppointment("Heart attack",
+    Appointment a2 = appointmentService.createNewAppointment("Heart attack",
         date1.toString(),
 //            LocalDateTime.now().minusDays(8).toString(),
         "HIGH",
         patient2.getElectronicHealthRecord().getNric(),
         "Cardiology");
-    appointmentService.createNewAppointment("Heart failure",
+    Appointment a3 = appointmentService.createNewAppointment("Heart failure",
         date1.toString(),
 //            LocalDateTime.now().minusDays(9).toString(),
         "HIGH",
@@ -1043,6 +1106,11 @@ public class DataLoader implements CommandLineRunner {
         "Cardiology");
 
     appointmentService.updateAppointmentSwimlaneStatus(a1.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
+    appointmentService.assignAppointmentToStaff(a1.getAppointmentId(), 5L, -1L);
+
+    appointmentService.updateAppointmentSwimlaneStatus(a2.getAppointmentId(), SwimlaneStatusEnum.PHARMACY);
+
+    appointmentService.updateAppointmentSwimlaneStatus(a3.getAppointmentId(), SwimlaneStatusEnum.PHARMACY);
   }
 
   private void createConsumableEquipmentData() {

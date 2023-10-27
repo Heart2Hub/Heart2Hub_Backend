@@ -293,6 +293,9 @@ public class AppointmentService {
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     appointment.setSwimlaneStatusEnum(swimlaneStatusEnum);
     appointment.setArrived(false);
+    if (swimlaneStatusEnum == SwimlaneStatusEnum.PHARMACY) {
+      appointment.setActualDateTime(LocalDateTime.now());
+    }
     return appointment;
   }
 
@@ -389,6 +392,18 @@ public class AppointmentService {
                                                      DispensaryStatusEnum dispensaryStatusEnum) {
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     appointment.setDispensaryStatusEnum(dispensaryStatusEnum);
+
+    // change last dispensed date
+    Patient p = appointment.getPatient();
+    List<PrescriptionRecord> prescriptionRecordList = p.getElectronicHealthRecord().getListOfPrescriptionRecords();
+    List<TransactionItem> transactionItemList = p.getListOfTransactionItem();
+    for (PrescriptionRecord pr : prescriptionRecordList) {
+      for (TransactionItem item : transactionItemList) {
+        if (item.getTransactionItemName().contains("Prescription Record")) {
+          pr.setLastCollectDate(LocalDateTime.now());
+        }
+      }
+    }
     return appointment;
   }
 
@@ -405,5 +420,14 @@ public class AppointmentService {
       return 0;
     }
     //return 0;
+  }
+
+  public Appointment createNewPharmacyTicket(String description,
+                                               String bookedDateTimeString, String priority,
+                                               String nric, String departmentName) {
+    Appointment a = createNewAppointmentOnWeb(description, bookedDateTimeString, priority, nric, departmentName);
+    a.setSwimlaneStatusEnum(SwimlaneStatusEnum.PHARMACY);
+    a.setActualDateTime(a.getBookedDateTime());
+    return a;
   }
 }

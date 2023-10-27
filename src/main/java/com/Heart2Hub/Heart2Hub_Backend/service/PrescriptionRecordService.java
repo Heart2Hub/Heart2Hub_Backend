@@ -2,6 +2,7 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PrescriptionStatusEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.ElectronicHealthRecordNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.OverlappingBookingException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreatePrescriptionRecordException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -112,5 +114,15 @@ public class PrescriptionRecordService {
 
     public void deletePrescriptionRecord(Long id) {
         prescriptionRecordRepository.deleteById(id);
+    }
+
+    public List<PrescriptionRecord> getPrescriptionRecordByNric(String nric) {
+        Optional<ElectronicHealthRecord> ehrOptional = electronicHealthRecordRepository.findByNric(nric);
+        if (ehrOptional.isPresent()) {
+            ElectronicHealthRecord ehr = ehrOptional.get();
+            return ehr.getListOfPrescriptionRecords();
+        } else {
+            throw new ElectronicHealthRecordNotFoundException("NRIC " + nric + " not found in EHR.");
+        }
     }
 }
