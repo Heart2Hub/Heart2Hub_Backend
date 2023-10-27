@@ -1031,19 +1031,19 @@ public class DataLoader implements CommandLineRunner {
         "Cardiology");
 
     LocalDateTime date2 = LocalDateTime.now().withHour(15).withMinute(0).withSecond(0);
-    appointmentService.createNewAppointment("Valve disease",
+    Appointment a4 = appointmentService.createNewAppointment("Valve disease",
         date2.toString(),
 //            LocalDateTime.now().minusDays(10).toString(),
         "LOW",
         patient4.getElectronicHealthRecord().getNric(),
         "Cardiology");
-    appointmentService.createNewAppointment("Arrhythmia",
+    Appointment a5 = appointmentService.createNewAppointment("Arrhythmia",
         date2.toString(),
 //            LocalDateTime.now().minusDays(11).toString(),
         "MEDIUM",
         patient5.getElectronicHealthRecord().getNric(),
         "Cardiology");
-    appointmentService.createNewAppointment("Congenital heart conditions",
+    Appointment a6 = appointmentService.createNewAppointment("Congenital heart conditions",
         date2.toString(),
 //            LocalDateTime.now().minusDays(12).toString(),
         "MEDIUM",
@@ -1051,13 +1051,13 @@ public class DataLoader implements CommandLineRunner {
         "Cardiology");
 
     LocalDateTime date3 = LocalDateTime.now().withHour(19).withMinute(0).withSecond(0);
-    appointmentService.createNewAppointment("High blood pressure",
+    Appointment a7 = appointmentService.createNewAppointment("High blood pressure",
         date3.toString(),
 //            LocalDateTime.now().minusDays(13).toString(),
         "LOW",
         patient7.getElectronicHealthRecord().getNric(),
         "Cardiology");
-    appointmentService.createNewAppointment("Inherited heart conditions",
+    Appointment a8 = appointmentService.createNewAppointment("Inherited heart conditions",
         date3.toString(),
 //            LocalDateTime.now().minusDays(14).toString(),
         "LOW",
@@ -1148,15 +1148,32 @@ public class DataLoader implements CommandLineRunner {
         patient1.getElectronicHealthRecord().getNric(),
         "Cardiology");
 
+    // SR3: Set appointments to start in Consultation
     appointmentService.updateAppointmentSwimlaneStatus(a1.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
     appointmentService.assignAppointmentToStaff(a1.getAppointmentId(), 5L, -1L);
 
-    appointmentService.updateAppointmentSwimlaneStatus(a2.getAppointmentId(), SwimlaneStatusEnum.PHARMACY);
+    appointmentService.updateAppointmentSwimlaneStatus(a2.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
+    appointmentService.assignAppointmentToStaff(a2.getAppointmentId(), 5L, -1L);
 
-    appointmentService.updateAppointmentSwimlaneStatus(a3.getAppointmentId(), SwimlaneStatusEnum.PHARMACY);
-    appointmentService.updateAppointmentSwimlaneStatus(a1.getAppointmentId(), SwimlaneStatusEnum.ADMISSION);
-    appointmentService.updateAppointmentSwimlaneStatus(a2.getAppointmentId(), SwimlaneStatusEnum.ADMISSION);
-    appointmentService.updateAppointmentSwimlaneStatus(a3.getAppointmentId(), SwimlaneStatusEnum.ADMISSION);
+    appointmentService.updateAppointmentSwimlaneStatus(a3.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
+    appointmentService.assignAppointmentToStaff(a3.getAppointmentId(), 5L, -1L);
+
+    appointmentService.updateAppointmentSwimlaneStatus(a4.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
+    appointmentService.assignAppointmentToStaff(a4.getAppointmentId(), 5L, -1L);
+
+    appointmentService.updateAppointmentSwimlaneStatus(a5.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
+    appointmentService.assignAppointmentToStaff(a5.getAppointmentId(), 5L, -1L);
+
+    appointmentService.updateAppointmentSwimlaneStatus(a6.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
+    appointmentService.assignAppointmentToStaff(a6.getAppointmentId(), 5L, -1L);
+
+    appointmentService.updateAppointmentSwimlaneStatus(a7.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
+    appointmentService.assignAppointmentToStaff(a7.getAppointmentId(), 5L, -1L);
+
+    appointmentService.updateAppointmentSwimlaneStatus(a8.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
+    appointmentService.assignAppointmentToStaff(a8.getAppointmentId(), 5L, -1L);
+
+
   }
 
   private void createConsumableEquipmentData() {
