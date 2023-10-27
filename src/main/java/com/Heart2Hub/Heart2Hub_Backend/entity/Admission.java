@@ -40,6 +40,8 @@ public class Admission {
 
     private String comments;
 
+    private Boolean arrived = false;
+
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime admissionDateTime;
@@ -52,6 +54,11 @@ public class Admission {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id")
     private Patient patient;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "admin_id")
+    private Staff currentAssignedAdmin;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

@@ -27,6 +27,7 @@ public class AdmissionMapper {
         dto.setDuration(admission.getDuration());
         dto.setRoom(admission.getRoom());
         dto.setBed(admission.getBed());
+        dto.setArrived(admission.getArrived());
         dto.setAdmissionDateTime(admission.getAdmissionDateTime());
         dto.setDischargeDateTime(admission.getDischargeDateTime());
 
@@ -37,6 +38,10 @@ public class AdmissionMapper {
 
         if (admission.getCurrentAssignedNurse() != null) {
             dto.setAssignedNurseId(admission.getCurrentAssignedNurse().getStaffId());
+        }
+
+        if (admission.getCurrentAssignedAdmin() != null) {
+            dto.setAssignedAdminId(admission.getCurrentAssignedAdmin().getStaffId());
         }
 
 

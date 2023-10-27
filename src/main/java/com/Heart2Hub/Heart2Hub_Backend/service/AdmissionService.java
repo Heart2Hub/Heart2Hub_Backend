@@ -114,12 +114,81 @@ public class AdmissionService {
                 throw new UnableToAssignAdmissionException(
                         "Unable to assign an admission ticket that is not yours");
             }
+        }
+    }
 
+    public Admission assignAdmissionToAdmin(Long admissionId, Long toStaffId, Long fromStaffId) throws AdmissionNotFoundException, StaffNotFoundException, UnableToAssignAdmissionException {
+
+        Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
+
+        if (toStaffId == 0) {
+            admission.setCurrentAssignedAdmin(null);
+            return admission;
+        } else {
+            Staff toAdmin = staffRepository.findById(toStaffId).orElseThrow(() -> new StaffNotFoundException("Staff not found"));
+
+            if (toAdmin.getDisabled()) {
+                throw new StaffDisabledException("Unable to assign admission to Disabled Staff");
+            }
+
+            if (admission.getCurrentAssignedAdmin() == null
+                    || (admission.getCurrentAssignedAdmin() != null && Objects.equals(
+                    admission.getCurrentAssignedAdmin().getStaffId(), fromStaffId))) {
+
+                admission.setCurrentAssignedAdmin(toAdmin);
+                toAdmin.getListOfAdminAdmissions().add(admission);
+
+                return admission;
+            } else {
+                throw new UnableToAssignAdmissionException(
+                        "Unable to assign an admission ticket that is not yours");
+            }
+        }
+    }
+
+    public Admission updateAdmissionArrival(Long admissionId, Boolean arrivalStatus,
+                                                Long staffId) throws AdmissionNotFoundException {
+
+        Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
+        //check if appointment is assigned to you first, or else you should not be able to check arrived
+        if (admission.getCurrentAssignedAdmin() == null ||
+                (admission.getCurrentAssignedAdmin() != null && !Objects.equals(
+                        admission.getCurrentAssignedAdmin().getStaffId(), staffId))) {
+            throw new UnableToUpdateAppointmentArrival(
+                    "Unable to edit a appointment that is not assigned to you");
         }
 
-
-
+        admission.setArrived(arrivalStatus);
+        //appointment.setActualDateTime(LocalDateTime.now());
+        return admission;
     }
+
+    public String cancelAdmission(Long admissionIdToCancel, Long wardId) {
+        Admission admissionToCancel = admissionRepository.findById(admissionIdToCancel).get();
+        Ward ward = wardRepository.findById(wardId).get();
+        List<Admission> currentAdmissions = ward.getListOfCurrentDayAdmissions();
+        for (int i = 0; i < currentAdmissions.size(); i++) {
+            Admission admission = currentAdmissions.get(i);
+
+            if (admission.getAdmissionId() == admissionIdToCancel) {
+                Admission emptyAdmission = new Admission();
+                emptyAdmission.setRoom(admission.getRoom());
+                emptyAdmission.setBed(admission.getBed());
+                admissionRepository.save(emptyAdmission);
+                currentAdmissions.set(i, emptyAdmission);
+            }
+        }
+
+        //Ward Availability part
+        List<WardAvailability> wardAvailabilities = wardAvailabilityRepository.findByWardAndDateBetween(ward, admissionToCancel.getAdmissionDateTime(), admissionToCancel.getDischargeDateTime());
+        for (WardAvailability wardAvailability: wardAvailabilities) {
+            wardAvailability.setBedsAvailable(wardAvailability.getBedsAvailable() + 1);
+        }
+
+        return "Cancelled Admission";
+    }
+
+
 
     public String dischargeAdmissions(String dateString) {
         LocalDateTime date = LocalDateTime.parse(dateString);

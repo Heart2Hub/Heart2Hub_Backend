@@ -18,11 +18,13 @@ public class AdmissionDTO {
     private Integer duration;
     private Integer room;
     private Integer bed;
+    private Boolean arrived;
     private LocalDateTime admissionDateTime;
     private LocalDateTime dischargeDateTime;
 
     private Long assignedNurseId;
     private Long assignedDoctorId;
+    private Long assignedAdminId;
     //private List<Long> listOfStaffsId;
 
     private Long patientId;
