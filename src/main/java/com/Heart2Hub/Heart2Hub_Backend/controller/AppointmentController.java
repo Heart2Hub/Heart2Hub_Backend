@@ -228,4 +228,15 @@ public class AppointmentController {
           @PathVariable("apppointmentId") long apppointmentId) {
     return ResponseEntity.ok(appointmentService.findAppointmentTimeDiff(apppointmentId));
   }
+
+  @PostMapping("/createNewPharmacyTicket")
+  public ResponseEntity<Appointment> createNewPharmacyTicket(
+          @RequestParam("description") String description,
+          @RequestParam("bookedDateTime") String bookedDateTime,
+          @RequestParam("priority") String priority,
+          @RequestParam("patientUsername") String patientUsername,
+          @RequestParam("departmentName") String departmentName) {
+    return ResponseEntity.ok(appointmentService.createNewPharmacyTicket(description,
+            bookedDateTime, priority, patientUsername, departmentName));
+  }
 }

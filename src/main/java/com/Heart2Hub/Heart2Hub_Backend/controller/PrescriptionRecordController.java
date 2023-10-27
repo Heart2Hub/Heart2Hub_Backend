@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -46,13 +47,14 @@ public class PrescriptionRecordController {
         String description = requestBody.get("description").toString();
         String comments = requestBody.get("comments").toString();
 
-        Integer medicationQuantity = Integer.parseInt(requestBody.get("medicationQuantity").toString());
+        //Integer medicationQuantity = Integer.parseInt(requestBody.get("medicationQuantity").toString());
         Integer dosage = Integer.parseInt(requestBody.get("dosage").toString());
         PrescriptionStatusEnum prescriptionStatusEnum = PrescriptionStatusEnum.valueOf(requestBody.get("prescriptionStatusEnum").toString());
+        LocalDate date = LocalDate.parse(requestBody.get("expirationDate").toString());
+        LocalDateTime expirationDate = date.atTime(0,0,0);
 
-
-        PrescriptionRecord updatedPrescriptionRecord = prescriptionRecordService.updatePrescriptionRecord(prescriptionRecordId, medicationQuantity,
-                dosage, description, comments, prescriptionStatusEnum);
+        PrescriptionRecord updatedPrescriptionRecord = prescriptionRecordService.updatePrescriptionRecord(prescriptionRecordId,
+                dosage, description, comments, prescriptionStatusEnum, expirationDate);
         return ResponseEntity.ok(updatedPrescriptionRecord);
     }
 
@@ -64,16 +66,20 @@ public class PrescriptionRecordController {
     ) {
         DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy, HH:mm:ss", Locale.ENGLISH);
         LocalDateTime createdDate = LocalDateTime.parse(requestBody.get("createdDate").toString(), inputFormatter);
+
+        LocalDate date = LocalDate.parse(requestBody.get("expirationDate").toString());
+        LocalDateTime expirationDate = date.atTime(0,0,0);
         String medicationName = "";
-        Integer medicationQuantity = Integer.parseInt(requestBody.get("medicationQuantity").toString());
+        //Integer medicationQuantity = Integer.parseInt(requestBody.get("medicationQuantity").toString());
         Integer dosage = Integer.parseInt(requestBody.get("dosage").toString());
         String description = requestBody.get("description").toString();
         String comments = requestBody.get("comments").toString();
         String prescribedBy = requestBody.get("prescribedBy").toString();
         PrescriptionStatusEnum prescriptionStatusEnum = PrescriptionStatusEnum.valueOf(requestBody.get("prescriptionStatusEnum").toString());
 
-        PrescriptionRecord prescriptionRecord = new PrescriptionRecord(createdDate, medicationName, medicationQuantity, dosage, description, comments,
+        PrescriptionRecord prescriptionRecord = new PrescriptionRecord(createdDate, medicationName, 0, dosage, description, comments,
                 prescribedBy, prescriptionStatusEnum, null);
+        prescriptionRecord.setExpirationDate(expirationDate);
 
         PrescriptionRecord createdRecord = prescriptionRecordService.doctorCreateNewPrescription(prescriptionRecord, itemId, ehrId);
         return ResponseEntity.ok(createdRecord);
@@ -92,5 +98,11 @@ public class PrescriptionRecordController {
     public ResponseEntity<?> deletePrescriptionRecord(@PathVariable Long id) {
         prescriptionRecordService.deletePrescriptionRecord(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/getPrescriptionRecordsByNric")
+    public ResponseEntity<List<PrescriptionRecord>> getPrescriptionRecordsByEHRId(
+            @RequestParam("nric") String nric) {
+        return ResponseEntity.ok().body(prescriptionRecordService.getPrescriptionRecordByNric(nric));
     }
 }
