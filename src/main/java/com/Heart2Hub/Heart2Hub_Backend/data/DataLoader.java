@@ -1511,6 +1511,9 @@ public class DataLoader implements CommandLineRunner {
         appointmentService.updateAppointmentSwimlaneStatus(a8.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
         appointmentService.assignAppointmentToStaff(a8.getAppointmentId(), 5L, -1L);
 
+        a7.setActualDateTime(LocalDateTime.now().minusMinutes(50L));
+        a8.setActualDateTime(LocalDateTime.now().minusMinutes(25L));
+
 
     }
 

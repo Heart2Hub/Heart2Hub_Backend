@@ -293,9 +293,7 @@ public class AppointmentService {
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     appointment.setSwimlaneStatusEnum(swimlaneStatusEnum);
     appointment.setArrived(false);
-    if (swimlaneStatusEnum == SwimlaneStatusEnum.PHARMACY) {
-      appointment.setActualDateTime(LocalDateTime.now());
-    }
+    appointment.setActualDateTime(LocalDateTime.now());
     return appointment;
   }
 
