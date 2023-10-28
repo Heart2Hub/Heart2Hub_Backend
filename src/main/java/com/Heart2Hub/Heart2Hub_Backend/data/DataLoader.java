@@ -654,16 +654,16 @@ public class DataLoader implements CommandLineRunner {
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
     shiftService.createShift("nurseB101", null, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-    shiftService.createShift("nurseB201", null, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
-            LocalDateTime.of(year, month, day, 23, 0, 0), "Staff is working shift 2"));
-    shiftService.createShift("nurseB202", null, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
-            LocalDateTime.of(year, month, day, 23, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("nurseB201", null, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("nurseB202", null, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
     shiftService.createShift("nurseC11", null, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
             LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Inpatient admin shifts - Working hours (8am - 4pm)
-    shiftService.createShift("adminB201", null, new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
-            LocalDateTime.of(year, month, day, 23, 0, 0), "Staff is working shift 2"));
+    shiftService.createShift("adminB201", null, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+            LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
     // Pharmacy shifts - Working hours(8am - 4pm)
     shiftService.createShift("staff15", 93L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
@@ -859,34 +859,34 @@ public class DataLoader implements CommandLineRunner {
     Patient newPatient2 = patientService.createPatient(new Patient("patient2", "password2"), "S9983423D", new ImageDocument("id4.png",LocalDateTime.now()));
     Patient newPatient3 = patientService.createPatient(new Patient("patient3","password3"), new ElectronicHealthRecord("S9983424D","John","Smith", LocalDateTime.of(1990, 2, 28, 0, 0, 0), "Singapore", "Male", "Others", "Singapore Citizen", "Marina Bay Sands", "83571234"),new ImageDocument("id2.png", currentDate));
     nextOfKinRecordService.createNextOfKinRecord(newPatient3.getPatientId(),new NextOfKinRecord("Spouse", "S5882619D"));
-    PrescriptionRecord pr1 = prescriptionRecordService.createPrescriptionRecord(newPatient3.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2010, 10, 5, 13, 15, 0), "Insulin", 1, 1, "Diabetes Management", "Take before meals", "Doctor Maria Garcia", PrescriptionStatusEnum.COLLECTED, null));
+    PrescriptionRecord pr1 = prescriptionRecordService.createPrescriptionRecord(newPatient3.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2010, 10, 5, 13, 15, 0), "Insulin", 1, 1, "Diabetes Management", "Take before meals", "Doctor Maria Garcia", PrescriptionStatusEnum.ONGOING, null));
     problemRecordService.createProblemRecord(newPatient3.getPatientId(), new ProblemRecord("Type 2 Diabetes", "Doctor Maria Garcia", LocalDateTime.of(2009, 8, 12, 11, 20, 0), PriorityEnum.HIGH, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
     medicalHistoryRecordService.createMedicalHistoryRecord(newPatient3.getPatientId(), new MedicalHistoryRecord("High Blood Pressure", "Doctor Maria Garcia", LocalDateTime.of(2008, 4, 18, 14, 30, 0), LocalDateTime.of(2009, 9, 2, 9, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.CARDIOVASCULAR));
     Patient newPatient4 = patientService.createPatient(new Patient("patient4","password4"), new ElectronicHealthRecord("S9983425D","Linda","Wong", LocalDateTime.of(1973, 11, 8, 0, 0, 0), "Singapore", "Female", "Chinese", "Singapore Citizen", "Jurong West St 71", "81126543"),new ImageDocument("id5.png", currentDate));
     nextOfKinRecordService.createNextOfKinRecord(newPatient4.getPatientId(),new NextOfKinRecord("Child", "S5882620D"));
     nextOfKinRecordService.createNextOfKinRecord(newPatient4.getPatientId(),new NextOfKinRecord("Child", "S6882620D"));
-    PrescriptionRecord pr2 = prescriptionRecordService.createPrescriptionRecord(newPatient4.getPatientId(), new PrescriptionRecord(LocalDateTime.of(1995, 3, 2, 10, 30, 0), "Painkillers", 2, 1, "Pain Relief for Arthritis", "Take as needed", "Doctor Kevin Tan", PrescriptionStatusEnum.COLLECTED, null));
+    PrescriptionRecord pr2 = prescriptionRecordService.createPrescriptionRecord(newPatient4.getPatientId(), new PrescriptionRecord(LocalDateTime.of(1995, 3, 2, 10, 30, 0), "Painkillers", 2, 1, "Pain Relief for Arthritis", "Take as needed", "Doctor Kevin Tan", PrescriptionStatusEnum.ONGOING, null));
     problemRecordService.createProblemRecord(newPatient4.getPatientId(), new ProblemRecord("Arthritis", "Doctor Kevin Tan", LocalDateTime.of(1994, 12, 15, 16, 0, 0), PriorityEnum.LOW, ProblemTypeEnum.OBSTETRIC));
     medicalHistoryRecordService.createMedicalHistoryRecord(newPatient4.getPatientId(), new MedicalHistoryRecord("Asthma", "Doctor Kevin Tan", LocalDateTime.of(1990, 7, 8, 9, 0, 0), LocalDateTime.of(1991, 5, 20, 14, 45, 0), PriorityEnum.MEDIUM, ProblemTypeEnum.RESPIRATORY));
     Patient newPatient5 = patientService.createPatient(new Patient("patient5","password5"), new ElectronicHealthRecord("S9983426D","Megan","Chua", LocalDateTime.of(2000, 6, 15, 0, 0, 0), "Singapore", "Female", "Chinese", "Singapore Citizen", "Bukit Timah Rd", "87751234"), new ImageDocument("id9.png",currentDate));
     nextOfKinRecordService.createNextOfKinRecord(newPatient5.getPatientId(),new NextOfKinRecord("Father", "S5882621D"));
     nextOfKinRecordService.createNextOfKinRecord(newPatient5.getPatientId(),new NextOfKinRecord("Mother", "S6882621D"));
-    PrescriptionRecord pr3 = prescriptionRecordService.createPrescriptionRecord(newPatient5.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Vitamin D", 1, 1, "Vitamin Supplement", "Take daily", "Doctor Sarah Tan", PrescriptionStatusEnum.COLLECTED, null));
+    PrescriptionRecord pr3 = prescriptionRecordService.createPrescriptionRecord(newPatient5.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Vitamin D", 1, 1, "Vitamin Supplement", "Take daily", "Doctor Sarah Tan", PrescriptionStatusEnum.ONGOING, null));
     problemRecordService.createProblemRecord(newPatient5.getPatientId(), new ProblemRecord("Seasonal Allergies", "Doctor Sarah Tan", LocalDateTime.of(2021, 5, 3, 11, 15, 0), PriorityEnum.LOW, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
     Patient newPatient6 = patientService.createPatient(new Patient("patient6", "password6"), new ElectronicHealthRecord("S9983427D","Michael","Angelo", LocalDateTime.of(1999, 5, 22, 0, 0, 0), "Singapore", "Male", "Malay", "Singapore Citizen", "Pasir Ris St 9", "83571235"), new ImageDocument("id3.png",currentDate));
     nextOfKinRecordService.createNextOfKinRecord(newPatient6.getPatientId(),new NextOfKinRecord("Father", "S5882622D"));
     nextOfKinRecordService.createNextOfKinRecord(newPatient6.getPatientId(),new NextOfKinRecord("Mother", "S6882622D"));
-    PrescriptionRecord pr4 = prescriptionRecordService.createPrescriptionRecord(newPatient6.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Amoxicillin", 3, 1, "Chewable tabs for ear infection", "Take daily", "Doctor Ash Ketchum", PrescriptionStatusEnum.COLLECTED, null));
+    PrescriptionRecord pr4 = prescriptionRecordService.createPrescriptionRecord(newPatient6.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Amoxicillin", 3, 1, "Chewable tabs for ear infection", "Take daily", "Doctor Ash Ketchum", PrescriptionStatusEnum.ONGOING, null));
     problemRecordService.createProblemRecord(newPatient6.getPatientId(), new ProblemRecord("Ear infection", "Doctor Ash Ketchum", LocalDateTime.of(2021, 5, 3, 11, 15, 0), PriorityEnum.LOW, ProblemTypeEnum.EYE_AND_EAR));
     Patient newPatient7 = patientService.createPatient(new Patient("patient7", "password7"), new ElectronicHealthRecord("S9983428D","Tan","Ah Tok", LocalDateTime.of(1985, 2, 28, 0, 0, 0), "Singapore", "Male", "Chinese", "Singapore Citizen", "Orchard Road", "83571236"), new ImageDocument("id7.png",currentDate));
     nextOfKinRecordService.createNextOfKinRecord(newPatient7.getPatientId(),new NextOfKinRecord("Father", "S5882623D"));
     nextOfKinRecordService.createNextOfKinRecord(newPatient7.getPatientId(),new NextOfKinRecord("Mother", "S6882623D"));
-    PrescriptionRecord pr5 = prescriptionRecordService.createPrescriptionRecord(newPatient7.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Colace", 30, 1, "Stool softener", "Take as needed", "Doctor Brown Bum", PrescriptionStatusEnum.COLLECTED, null));
+    PrescriptionRecord pr5 = prescriptionRecordService.createPrescriptionRecord(newPatient7.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Colace", 30, 1, "Stool softener", "Take as needed", "Doctor Brown Bum", PrescriptionStatusEnum.ONGOING, null));
     problemRecordService.createProblemRecord(newPatient7.getPatientId(), new ProblemRecord("Explosive diarrhoea", "Doctor Brown Bum", LocalDateTime.of(2021, 5, 3, 11, 15, 0), PriorityEnum.LOW, ProblemTypeEnum.GASTROINTESTINAL));
     Patient newPatient8 = patientService.createPatient(new Patient("patient8", "password8"), new ElectronicHealthRecord("S9983429D","Parvati","Lakshmi", LocalDateTime.of(1991, 10, 2, 0, 0, 0), "Singapore", "Female", "Indian", "Singapore Citizen", "Punggol Ave 4", "83571237"), new ImageDocument("id16.png",currentDate));
     nextOfKinRecordService.createNextOfKinRecord(newPatient8.getPatientId(),new NextOfKinRecord("Father", "S5882624D"));
     nextOfKinRecordService.createNextOfKinRecord(newPatient8.getPatientId(),new NextOfKinRecord("Mother", "S6882624D"));
-    PrescriptionRecord pr6 = prescriptionRecordService.createPrescriptionRecord(newPatient8.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Metformin HCL", 10, 1, "Tablet", "Take daily", "Doctor Dia Betes", PrescriptionStatusEnum.COLLECTED, null));
+    PrescriptionRecord pr6 = prescriptionRecordService.createPrescriptionRecord(newPatient8.getPatientId(), new PrescriptionRecord(LocalDateTime.of(2021, 8, 10, 9, 45, 0), "Metformin HCL", 10, 1, "Tablet", "Take daily", "Doctor Dia Betes", PrescriptionStatusEnum.ONGOING, null));
     problemRecordService.createProblemRecord(newPatient8.getPatientId(), new ProblemRecord("Type 2 Diabetes", "Doctor Dia Betes", LocalDateTime.of(2021, 5, 3, 11, 15, 0), PriorityEnum.HIGH, ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC));
     Patient newPatient9 = patientService.createPatient(new Patient("patient9", "password9"), new ElectronicHealthRecord("S5882617D","Adamanthium","Lai", LocalDateTime.of(1965, 10, 2, 0, 0, 0), "Singapore", "Male", "Chinese", "Singapore Citizen", "Punggol Ave 23", "99971237"), new ImageDocument("id8.png",currentDate));
     nextOfKinRecordService.createNextOfKinRecord(newPatient9.getPatientId(),new NextOfKinRecord("Child", "S9983422D"));
@@ -1228,29 +1228,29 @@ public class DataLoader implements CommandLineRunner {
 
 
     Medication newMedication1 = medicationService.createMedication(
-            new Medication("Paracetamol 500 mg Tablets", "500mg per piece", ItemTypeEnum.MEDICINE, 100,
+            new Medication("Paracetamol 500 mg Tablets (12 pieces)", "500mg per piece", ItemTypeEnum.MEDICINE, 100,
                     BigDecimal.TEN, BigDecimal.TEN, allergenList1, "", drugList2));
     Medication newMedication2 = medicationService.createMedication(
-            new Medication("Cetirizine 10mg Tablets", "10mg per piece", ItemTypeEnum.MEDICINE, 100,
+            new Medication("Cetirizine 10mg Tablets (12 pieces)", "10mg per piece", ItemTypeEnum.MEDICINE, 100,
                     BigDecimal.valueOf(5), BigDecimal.TEN, allergenList1, "Do not take with alcohol", drugList1));
     Medication newMedication3 = medicationService.createMedication(
-            new Medication("Augmentin 625mg Tablets ", "625mg per piece", ItemTypeEnum.MEDICINE, 50,
+            new Medication("Augmentin 625mg Tablets (12 pieces)", "625mg per piece", ItemTypeEnum.MEDICINE, 50,
                     BigDecimal.valueOf(4), BigDecimal.TEN, allergenList2, "", drugList1));
     Medication newMedication4 = medicationService.createMedication(
-            new Medication("Metformin 500mg Tablets", "500mg per piece", ItemTypeEnum.MEDICINE, 1000,
+            new Medication("Metformin 500mg Tablets (12 pieces)", "500mg per piece", ItemTypeEnum.MEDICINE, 1000,
                     BigDecimal.valueOf(2), BigDecimal.TEN, allergenList1, "Do not take with alcohol", drugList1));
     Medication newMedication5 = medicationService.createMedication(
-            new Medication("Augmentin 228mg Suspension", "5ml per bottle", ItemTypeEnum.MEDICINE, 100,
+            new Medication("Augmentin 228mg Suspension (1 bottle)", "5ml per bottle", ItemTypeEnum.MEDICINE, 100,
                     BigDecimal.valueOf(3), BigDecimal.TEN, allergenList2, "", drugList1));
     Medication newMedication6 = medicationService.createMedication(
-            new Medication("Warfarin 1mg Tablet", "1mg per piece", ItemTypeEnum.MEDICINE, 10000,
-                    BigDecimal.valueOf(3), BigDecimal.TEN, allergenList1, "", drugList3));
+            new Medication("Warfarin 1mg Tablet (1 piece)", "1mg per piece", ItemTypeEnum.MEDICINE, 10000,
+                    BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList3));
     Medication newMedication7 = medicationService.createMedication(
-            new Medication("Warfarin 3mg Tablet", "3mg per piece", ItemTypeEnum.MEDICINE, 10000,
-                    BigDecimal.valueOf(3), BigDecimal.TEN, allergenList1, "", drugList3));
+            new Medication("Warfarin 3mg Tablet (28 pieces)", "3mg per piece", ItemTypeEnum.MEDICINE, 10000,
+                    BigDecimal.valueOf(4), BigDecimal.valueOf(5), allergenList1, "", drugList3));
     Medication newMedication8 = medicationService.createMedication(
-            new Medication("Warfarin 5mg Tablet", "5mg per piece", ItemTypeEnum.MEDICINE, 10000,
-                    BigDecimal.valueOf(3), BigDecimal.TEN, allergenList1, "", drugList3));
+            new Medication("Warfarin 3mg Tablet (1 piece)", "1mg per piece", ItemTypeEnum.MEDICINE, 10000,
+                    BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList3));
   }
 
   private void createServiceItemData() {

@@ -124,7 +124,7 @@ public class InvoiceService {
         List<TransactionItem> items = invoice.getListOfTransactionItem();
         TransactionItem deleteItem = null;
         for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).getTransactionItemDescription() == claim.getInsurerName()) {
+            if (items.get(i).getTransactionItemDescription().equals("(Insurance Claim: " + claim.getInsurerName() + ")")) {
                 deleteItem = items.get(i);
             }
         }
@@ -144,7 +144,7 @@ public class InvoiceService {
         if (claim.getApprovalStatusEnum().equals(ApprovalStatusEnum.PENDING)) {
             TransactionItem deleteItem = null;
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getTransactionItemDescription() == "Medishield") {
+                if (items.get(i).getTransactionItemDescription().equals("Medishield")) {
                     deleteItem = items.get(i);
                 }
             }

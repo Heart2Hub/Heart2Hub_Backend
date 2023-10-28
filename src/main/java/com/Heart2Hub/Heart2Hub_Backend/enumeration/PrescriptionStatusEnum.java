@@ -6,5 +6,6 @@ public enum PrescriptionStatusEnum {
     PENDING,
     INPATIENT_TAKEN,
     INPATIENT_OVERDUE,
+    ONGOING,
     EXPIRED
 }
