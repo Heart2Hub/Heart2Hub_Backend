@@ -67,13 +67,17 @@ public class PrescriptionRecordService {
                 // Update the enum for the expired prescription record
                 prescriptionRecord.setPrescriptionStatusEnum(PrescriptionStatusEnum.EXPIRED);
             }
+            if (expirationDate.isAfter(currentDate)) {
+                // Update the enum for the expired prescription record
+                prescriptionRecord.setPrescriptionStatusEnum(PrescriptionStatusEnum.ONGOING);
+            }
         }
         return prescriptionRecords;
     }
 
     public TransactionItem checkOutPrescription(Long prescriptionId, Long ehrId) {
         PrescriptionRecord pr = prescriptionRecordRepository.findById(prescriptionId).get();
-        pr.setPrescriptionStatusEnum(PrescriptionStatusEnum.PENDING);
+        //pr.setPrescriptionStatusEnum(PrescriptionStatusEnum.PENDING);
         Medication medicine = (Medication) pr.getInventoryItem();
         Patient p = electronicHealthRecordRepository.findById(ehrId).get().getPatient();
 
@@ -98,10 +102,10 @@ public class PrescriptionRecordService {
     }
 
     public PrescriptionRecord updatePrescriptionRecord(Long id, Integer dosage, String description, String comments,
-                                                       PrescriptionStatusEnum prescriptionStatusEnum, LocalDateTime expirationDate) {
+                                                        LocalDateTime expirationDate) {
         PrescriptionRecord prescriptionRecord = prescriptionRecordRepository.findById(id).get();
         // Update the necessary fields with the new values from updatedRecord
-        prescriptionRecord.setPrescriptionStatusEnum(prescriptionStatusEnum);
+        //prescriptionRecord.setPrescriptionStatusEnum(prescriptionStatusEnum);
         prescriptionRecord.setExpirationDate(expirationDate);
         //prescriptionRecord.setMedicationQuantity(medicationQuantity);
         prescriptionRecord.setDosage(dosage);

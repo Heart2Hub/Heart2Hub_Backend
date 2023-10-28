@@ -189,7 +189,7 @@ public class AppointmentService {
     if (staffUsername != null && !staffUsername.isEmpty()) {
       Staff staff = staffService.getStaffByUsername(staffUsername);
       newAppointment.setComments(
-          "To be assigned to Dr." + staff.getFirstname() + " " + staff.getLastname() + " (SYSTEM GENERATED)");
+          "To be assigned to " + staff.getStaffRoleEnum() + " " + staff.getFirstname() + " " + staff.getLastname() + " (SYSTEM GENERATED)");
       newAppointment.getListOfStaff().add(staff);
     }
 
@@ -360,26 +360,17 @@ public class AppointmentService {
     return appointment.getListOfImageDocuments();
   }
 
-  public Appointment createReferral(Long prevAppointmentId, String description, String bookedDateTimeString,
+  public Appointment createReferral(String description, String bookedDateTimeString,
+                                    String patientUsername,
                                     String departmentName, String staffUsername) {
-    Appointment prevAppointment = findAppointmentByAppointmentId(prevAppointmentId);
+//    Appointment prevAppointment = findAppointmentByAppointmentId(prevAppointmentId);
     Appointment newAppointment = createNewAppointmentWithStaff(description,
-            bookedDateTimeString, prevAppointment.getPriorityEnum().toString(),
-            prevAppointment.getPatient().getUsername(), departmentName, staffUsername);
-    String existingComments = prevAppointment.getComments();
-    String header = "APPOINTMENT ON " + prevAppointment.getBookedDateTime().toString();
+            bookedDateTimeString, "LOW",
+            patientUsername, departmentName, staffUsername);
     String mildSeparator = "------------------------------";
-    String separator = "==============================";
     String referredComment = "Referred to " + departmentName + " Department";
-    String footer = "APPOINTMENT ON " + bookedDateTimeString;
-    if (!existingComments.equals("")) {
-      existingComments = header + "\n" + mildSeparator + "\n" + existingComments + "\n" +
-              separator + "\n" +
-              referredComment + "\n" + separator + "\n"+ footer + "\n" + mildSeparator +
-              "\n" + newAppointment.getComments();
-    }  else {
-      existingComments = referredComment + "\n" + separator + "\n" + newAppointment.getComments();
-    }
+    String existingComments = referredComment + "\n" + mildSeparator + "\n" + newAppointment.getComments();
+
     newAppointment.setComments(existingComments);
     return newAppointment;
   }

@@ -181,4 +181,9 @@ public class StaffController {
     return ResponseEntity.ok(staffService.getStaffById(id));
   }
 
+  @GetMapping("/getStaffsInUnit")
+  public ResponseEntity<List<Staff>> getStaffsInUnit(
+          @RequestParam("unit") String unit) {
+    return ResponseEntity.ok(staffService.getAllStaffByUnit(unit));
+  }
 }
