@@ -76,8 +76,8 @@ public class Appointment {
     private Staff currentAssignedStaff = null;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "patient_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "patient_id", nullable = true)
     private Patient patient;
 
     @JsonIgnore
