@@ -368,101 +368,101 @@ public class DataLoader implements CommandLineRunner {
         for (long L = 1L; L <= 9L; L++) {
             facilityService.createFacility(L,
                     new Facility("Consultation Room 1 " + departmentRepository.findById(L).get().getName(),
-                            "Level 1", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.CONSULTATION_ROOM));
+                            "Level 1", "For Consultation", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.CONSULTATION_ROOM));
             facilityService.createFacility(L,
                     new Facility("Consultation Room 2 " + departmentRepository.findById(L).get().getName(),
-                            "Level 1", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.CONSULTATION_ROOM));
+                            "Level 1", "For Consultation", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.CONSULTATION_ROOM));
             facilityService.createFacility(L,
                     new Facility("Consultation Room 3 " + departmentRepository.findById(L).get().getName(),
-                            "Level 1", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.CONSULTATION_ROOM));
+                            "Level 1", "For Consultation", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.CONSULTATION_ROOM));
             facilityService.createFacility(L,
                     new Facility("Triage Room 1 " + departmentRepository.findById(L).get().getName(),
-                            "Level 2", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.TRIAGE_ROOM));
+                            "Level 2", "For Triage", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.TRIAGE_ROOM));
             facilityService.createFacility(L,
                     new Facility("Triage Room 2 " + departmentRepository.findById(L).get().getName(),
-                            "Level 2", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.TRIAGE_ROOM));
+                            "Level 2", "For Triage", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.TRIAGE_ROOM));
             facilityService.createFacility(L,
                     new Facility("Triage Room 3 " + departmentRepository.findById(L).get().getName(),
-                            "Level 2", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.TRIAGE_ROOM));
+                            "Level 2", "For Triage", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.TRIAGE_ROOM));
             facilityService.createFacility(L,
                     new Facility("Operating Room 1 " + departmentRepository.findById(L).get().getName(),
-                            "Level 2", "", 6, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.OPERATING_ROOM));
+                            "Level 2", "For Operations", 6, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.OPERATING_ROOM));
             facilityService.createFacility(L,
                     new Facility("Operating Room 2 " + departmentRepository.findById(L).get().getName(),
-                            "Level 3", "", 6, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.OPERATING_ROOM));
+                            "Level 3", "For Operations", 6, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.OPERATING_ROOM));
             facilityService.createFacility(L,
                     new Facility("Registration Counter 1 " + departmentRepository.findById(L).get().getName(),
-                            "Level 1", "", 2, FacilityStatusEnum.BOOKABLE,
+                            "Level 1", "For Registration", 2, FacilityStatusEnum.BOOKABLE,
                             FacilityTypeEnum.ADMINISTRATION_OFFICES));
             facilityService.createFacility(L,
                     new Facility("Registration Counter 2 " + departmentRepository.findById(L).get().getName(),
-                            "Level 1", "", 2, FacilityStatusEnum.BOOKABLE,
+                            "Level 1", "For Registration", 2, FacilityStatusEnum.BOOKABLE,
                             FacilityTypeEnum.ADMINISTRATION_OFFICES));
 
             if (L == 1L) {
                 facilityService.createFacility(L,
                         new Facility("X-Ray Room 1 " + departmentRepository.findById(L).get().getName(),
-                                "Level 3", "", 3, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.RADIOLOGY_AND_IMAGING_ROOM));
+                                "Level 3", "For X-Ray", 3, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.RADIOLOGY_AND_IMAGING_ROOM));
                 facilityService.createFacility(L,
                         new Facility("X-Ray Room 2 " + departmentRepository.findById(L).get().getName(),
-                                "Level 3", "", 3, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.RADIOLOGY_AND_IMAGING_ROOM));
+                                "Level 3", "For X-Ray", 3, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.RADIOLOGY_AND_IMAGING_ROOM));
                 facilityService.createFacility(L,
                         new Facility("Dietitian Room 1 " + departmentRepository.findById(L).get().getName(),
-                                "Level 4", "", 4, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.DIETITIAN_ROOM));
+                                "Level 4", "For Nutritional", 4, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.DIETITIAN_ROOM));
                 facilityService.createFacility(L,
                         new Facility("Dietitian Room 2 " + departmentRepository.findById(L).get().getName(),
-                                "Level 4", "", 4, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.DIETITIAN_ROOM));
+                                "Level 4", "For Nutritional", 4, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.DIETITIAN_ROOM));
                 facilityService.createFacility(L,
                         new Facility("Occupational Therapy Room 1 " + departmentRepository.findById(L).get().getName(),
-                                "Level 4", "", 4, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.OCCUPATIONAL_THERAPY_ROOM));
+                                "Level 4", "For Therapy", 4, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.OCCUPATIONAL_THERAPY_ROOM));
                 facilityService.createFacility(L,
                         new Facility("Occupational Therapy Room 2 " + departmentRepository.findById(L).get().getName(),
-                                "Level 4", "", 4, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.OCCUPATIONAL_THERAPY_ROOM));
+                                "Level 4", "For Therapy", 4, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.OCCUPATIONAL_THERAPY_ROOM));
             }
 
             if (L == 5L) {
                 facilityService.createFacility(L,
                         new Facility("Emergency Room 1 " + departmentRepository.findById(L).get().getName(),
-                                "Level 1", "", 4, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.EMERGENCY_ROOM));
+                                "Level 1", "For A&E", 4, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.EMERGENCY_ROOM));
                 facilityService.createFacility(L,
                         new Facility("Emergency Room 2 " + departmentRepository.findById(L).get().getName(),
-                                "Level 1", "", 4, FacilityStatusEnum.NON_BOOKABLE,
+                                "Level 1", "For A&E", 4, FacilityStatusEnum.NON_BOOKABLE,
                                 FacilityTypeEnum.EMERGENCY_ROOM));
             }
 
             if (L == 8L) {
                 facilityService.createFacility(L,
                         new Facility("Psychiatry Room 1 " + departmentRepository.findById(L).get().getName(),
-                                "Level 3", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PSYCHIATRIC_UNITS));
+                                "Level 3", "For Psychiatry", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PSYCHIATRIC_UNITS));
                 facilityService.createFacility(L,
                         new Facility("Psychiatry Room 2 " + departmentRepository.findById(L).get().getName(),
-                                "Level 3", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PSYCHIATRIC_UNITS));
+                                "Level 3", "For Psychiatry", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PSYCHIATRIC_UNITS));
                 facilityService.createFacility(L,
                         new Facility("Psychiatry Room 3 " + departmentRepository.findById(L).get().getName(),
-                                "Level 3", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PSYCHIATRIC_UNITS));
+                                "Level 3", "For Psychiatry", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PSYCHIATRIC_UNITS));
                 facilityService.createFacility(L,
                         new Facility("Psychiatry Room 4 " + departmentRepository.findById(L).get().getName(),
-                                "Level 3", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PSYCHIATRIC_UNITS));
+                                "Level 3", "For Psychiatry", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PSYCHIATRIC_UNITS));
                 facilityService.createFacility(L,
                         new Facility("Psychiatry Room 5 " + departmentRepository.findById(L).get().getName(),
-                                "Level 3", "", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PSYCHIATRIC_UNITS));
+                                "Level 3", "For Psychiatry", 2, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PSYCHIATRIC_UNITS));
             }
         }
         facilityService.createFacility(10L,
                 new Facility("Counter 1 " + departmentRepository.findById(10L).get().getName(),
-                        "Level 2", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PHARMACY_COUNTER));
+                        "Level 2", "For Pharmacy", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PHARMACY_COUNTER));
         facilityService.createFacility(10L,
                 new Facility("Counter 2 " + departmentRepository.findById(10L).get().getName(),
-                        "Level 2", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PHARMACY_COUNTER));
+                        "Level 2", "For Pharmacy", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PHARMACY_COUNTER));
         facilityService.createFacility(10L,
                 new Facility("Counter 3 " + departmentRepository.findById(10L).get().getName(),
-                        "Level 2", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PHARMACY_COUNTER));
+                        "Level 2", "For Pharmacy", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.PHARMACY_COUNTER));
         facilityService.createFacility(10L,
                 new Facility("Registration Counter 1 " + departmentRepository.findById(10L).get().getName(),
-                        "Level 2", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.ADMINISTRATION_OFFICES));
+                        "Level 2", "For Registration", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.ADMINISTRATION_OFFICES));
         facilityService.createFacility(10L,
                 new Facility("Registration Counter 2 " + departmentRepository.findById(10L).get().getName(),
-                        "Level 2", "", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.ADMINISTRATION_OFFICES));
+                        "Level 2", "For Registration", 1, FacilityStatusEnum.BOOKABLE, FacilityTypeEnum.ADMINISTRATION_OFFICES));
     }
 
     private void createShiftData() {
