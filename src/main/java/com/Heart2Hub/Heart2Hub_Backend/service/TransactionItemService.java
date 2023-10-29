@@ -5,6 +5,7 @@ import com.Heart2Hub.Heart2Hub_Backend.enumeration.AllergenEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.InsufficientInventoryException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToAssignAppointmentException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -363,6 +364,12 @@ public class TransactionItemService {
     public void dischargePatient(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId).get();
         appointment.setSwimlaneStatusEnum(SwimlaneStatusEnum.DONE);
+        if (appointment.getCurrentAssignedStaff() == null) {
+            throw new UnableToAssignAppointmentException("Please assign a staff");
+        }
+        if (!appointment.getArrived()) {
+            throw new UnableToAssignAppointmentException("Please check that patient has arrived");
+        }
 
         //ASSOCIATION --> SHOULD REFACTOR TO BE IN APPOINTMENT SERVICE
         appointment.getCurrentAssignedStaff().getListOfAssignedAppointments().remove(appointment);

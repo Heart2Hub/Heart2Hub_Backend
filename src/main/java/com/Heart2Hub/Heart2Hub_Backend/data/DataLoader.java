@@ -287,7 +287,7 @@ public class DataLoader implements CommandLineRunner {
                 new Staff("psychologistPsychiatry1", "password", "Monica", "Baey", 93694695l, StaffRoleEnum.PSYCHOLOGISTS,
                         false), "Psychiatry", new ImageDocument("id19.png", lt));
         staffService.createStaff(
-                new Staff("psychologistPsychiatry2", "password", "Monica", "Baey", 93694695l, StaffRoleEnum.PSYCHOLOGISTS,
+                new Staff("psychologistPsychiatry2", "password", "Chandler", "Baey", 93694695l, StaffRoleEnum.PSYCHOLOGISTS,
                         false), "Psychiatry", new ImageDocument("id19.png", lt));
         staffService.createStaff(
                 new Staff("psychologistPsychiatry3", "password", "David", "Johnson", 93694696L, StaffRoleEnum.PSYCHOLOGISTS, true),
@@ -1510,9 +1510,6 @@ public class DataLoader implements CommandLineRunner {
 
         appointmentService.updateAppointmentSwimlaneStatus(a8.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
         appointmentService.assignAppointmentToStaff(a8.getAppointmentId(), 5L, -1L);
-
-        a7.setActualDateTime(LocalDateTime.now().minusMinutes(50L));
-        a8.setActualDateTime(LocalDateTime.now().minusMinutes(25L));
 
 
     }
