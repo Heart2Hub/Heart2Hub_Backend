@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.controller;
 import com.Heart2Hub.Heart2Hub_Backend.dto.AppointmentDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.DispensaryStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.AppointmentMapper;
 import com.Heart2Hub.Heart2Hub_Backend.service.AppointmentService;
@@ -189,5 +190,53 @@ public class AppointmentController {
       @RequestParam("appointmentId") Long appointmentId) {
     return ResponseEntity.ok(appointmentService.viewAppointmentAttachments(appointmentId));
 
+  }
+
+  @PostMapping("/createReferral")
+  public ResponseEntity<Appointment> createReferral(
+          @RequestParam("description") String description,
+          @RequestParam("bookedDate") String bookedDate,
+          @RequestParam("patientUsername") String patientUsername,
+          @RequestParam("departmentName") String departmentName,
+          @RequestParam("staffUsername") String staffUsername
+          ) {
+    return ResponseEntity.ok(
+            appointmentService.createReferral(description, bookedDate, patientUsername, departmentName, staffUsername)
+    );
+
+  }
+
+  @GetMapping("/viewPharmacyTickets")
+  public ResponseEntity<List<AppointmentDTO>> viewPharmacyTickets() {
+    List<Appointment> listOfAppts = appointmentService.getAllPharmacyTickets();
+    List<AppointmentDTO> listOfApptsDTO = listOfAppts.stream()
+            .map(appointmentMapper::toDTO).collect(Collectors.toList());
+    return ResponseEntity.ok(listOfApptsDTO);
+  }
+
+  @PostMapping("/updateAppointmentDispensaryStatus")
+  public ResponseEntity<AppointmentDTO> updateAppointmentDispensaryStatus(
+          @RequestParam("appointmentId") Long appointmentId,
+          @RequestParam("dispensaryStatus") String dispensaryStatus) {
+    return ResponseEntity.ok(appointmentMapper.toDTO(
+            appointmentService.updateAppointmentDispensaryStatus(appointmentId,
+                    DispensaryStatusEnum.valueOf(dispensaryStatus.toUpperCase()))));
+  }
+
+  @GetMapping("/findAppointmentTimeDiff/{apppointmentId}")
+  public ResponseEntity<Integer> findAppointmentTimeDiff(
+          @PathVariable("apppointmentId") long apppointmentId) {
+    return ResponseEntity.ok(appointmentService.findAppointmentTimeDiff(apppointmentId));
+  }
+
+  @PostMapping("/createNewPharmacyTicket")
+  public ResponseEntity<Appointment> createNewPharmacyTicket(
+          @RequestParam("description") String description,
+          @RequestParam("bookedDateTime") String bookedDateTime,
+          @RequestParam("priority") String priority,
+          @RequestParam("patientUsername") String patientUsername,
+          @RequestParam("departmentName") String departmentName) {
+    return ResponseEntity.ok(appointmentService.createNewPharmacyTicket(description,
+            bookedDateTime, priority, patientUsername, departmentName));
   }
 }

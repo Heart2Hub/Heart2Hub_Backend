@@ -91,7 +91,10 @@ public class PatientService {
             patientRepository.save(newPatient);
             return newPatient;
         } catch (Exception ex) {
-            throw new UnableToCreatePatientException("Username already exists");
+            System.out.println(ex.getMessage());
+            throw new UnableToCreatePatientException(ex.getMessage());
+            //DUPLICATE USERNAME
+            //throw new UnableToCreatePatientException("Username already exists");
         }
     }
 
@@ -120,6 +123,7 @@ public class PatientService {
             RestTemplate restTemplate = new RestTemplate();
             String endpointUrl = "http://localhost:3002/records";
             HttpHeaders headers = new HttpHeaders();
+            headers.set("encoded-message", electronicHealthRecordService.encodeSecretMessage());
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<ElectronicHealthRecord> requestEntity = new HttpEntity<>(newElectronicHealthRecord, headers);
             ResponseEntity<ElectronicHealthRecord> responseEntity = restTemplate.postForEntity(endpointUrl, requestEntity, ElectronicHealthRecord.class);
@@ -132,7 +136,9 @@ public class PatientService {
                 throw new UnableToCreatePatientException("Failed to create patient. Server returned status code: " + responseEntity.getStatusCodeValue());
             }
         } catch (Exception ex) {
-            throw new UnableToCreatePatientException("Username already exists");
+            throw new UnableToCreatePatientException(ex.getMessage());
+            //DUPLICATE USERNAME
+            //throw new UnableToCreatePatientException("Username already exists");
         }
     }
 

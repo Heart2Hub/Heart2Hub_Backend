@@ -117,9 +117,27 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
   }
 
+  @ExceptionHandler(ElectronicHealthRecordNotFoundException.class)
+  public ResponseEntity<Object> handleElectronicHealthRecordNotFoundException(
+      ElectronicHealthRecordNotFoundException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
   @ExceptionHandler(UnableToAddImageAttachmentToAppointmentException.class)
   public ResponseEntity<Object> handleUnableToAddImageAttachmentToAppointmentException(
       UnableToAddImageAttachmentToAppointmentException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(UnableToUpdateTreatmentPlanRecordException.class)
+  public ResponseEntity<Object> handleUnableToUpdateTreatmentPlanRecordException(
+      UnableToUpdateTreatmentPlanRecordException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(UnableToUpdateInvitationException.class)
+  public ResponseEntity<Object> handleUnableToUpdateInvitationException(
+      UnableToUpdateInvitationException ex) {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
   }
 

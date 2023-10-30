@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.controller;
 
+import com.Heart2Hub.Heart2Hub_Backend.dto.InpatientStaffDTO;
 import com.Heart2Hub.Heart2Hub_Backend.dto.OutpatientStaffDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
 import com.Heart2Hub.Heart2Hub_Backend.entity.LeaveBalance;
@@ -7,6 +8,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.SubDepartmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.AppointmentMapper;
+import com.Heart2Hub.Heart2Hub_Backend.mapper.InpatientStaffMapper;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.OutpatientStaffMapper;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,6 +39,8 @@ public class StaffController {
   private final StaffService staffService;
 
   private final OutpatientStaffMapper outpatientStaffMapper;
+
+  private final InpatientStaffMapper inpatientStaffMapper;
 
 
 //  @PostMapping("/createStaff")
@@ -69,36 +73,36 @@ public class StaffController {
 //    }
 //  }
 
-  @PostMapping(value="/createStaff/{subDepartmentName}", consumes={"application/json"}, produces={"application/json"})
-  public ResponseEntity<Staff> createStaff(@PathVariable String subDepartmentName,@RequestBody Staff staff) {
-      return ResponseEntity.ok(staffService.createStaff(staff, subDepartmentName));
+  @PostMapping(value="/createStaff/{unitName}", consumes={"application/json"}, produces={"application/json"})
+  public ResponseEntity<Staff> createStaff(@PathVariable String unitName,@RequestBody Staff staff) {
+      return ResponseEntity.ok(staffService.createStaff(staff, unitName));
   }
 
-  @PostMapping(value = "/createStaffWithImage/{subDepartmentName}", consumes = {"application/json"}, produces = {"application/json"})
-  public ResponseEntity<Staff> createStaffWithImage(@PathVariable String subDepartmentName, @RequestBody Map<String, Object> requestBody) {
+  @PostMapping(value = "/createStaffWithImage/{unitName}", consumes = {"application/json"}, produces = {"application/json"})
+  public ResponseEntity<Staff> createStaffWithImage(@PathVariable String unitName, @RequestBody Map<String, Object> requestBody) {
     ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new ParameterNamesModule())
             .registerModule(new Jdk8Module())
             .registerModule(new JavaTimeModule());
     Staff staff = objectMapper.convertValue(requestBody.get("staff"), Staff.class);
     ImageDocument imageDocument = objectMapper.convertValue(requestBody.get("imageDocument"), ImageDocument.class);
-    return ResponseEntity.ok(staffService.createStaff(staff, subDepartmentName, imageDocument));
+    return ResponseEntity.ok(staffService.createStaff(staff, unitName, imageDocument));
   }
 
-  @PutMapping(value="/updateStaff/{subDepartmentName}", consumes={"application/json"}, produces={"application/json"})
-  public ResponseEntity<Staff> updateStaff(@PathVariable String subDepartmentName, @RequestBody Staff staff) {
-    return ResponseEntity.ok(staffService.updateStaff(staff, subDepartmentName));
+  @PutMapping(value="/updateStaff/{unitName}", consumes={"application/json"}, produces={"application/json"})
+  public ResponseEntity<Staff> updateStaff(@PathVariable String unitName, @RequestBody Staff staff) {
+    return ResponseEntity.ok(staffService.updateStaff(staff, unitName));
   }
 
-  @PutMapping(value = "/updateStaffWithImage/{subDepartmentName}", consumes = {"application/json"}, produces = {"application/json"})
-  public ResponseEntity<Staff> updateStaffWithImage(@PathVariable String subDepartmentName, @RequestBody Map<String, Object> requestBody) {
+  @PutMapping(value = "/updateStaffWithImage/{unitName}", consumes = {"application/json"}, produces = {"application/json"})
+  public ResponseEntity<Staff> updateStaffWithImage(@PathVariable String unitName, @RequestBody Map<String, Object> requestBody) {
     ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new ParameterNamesModule())
             .registerModule(new Jdk8Module())
             .registerModule(new JavaTimeModule());
     Staff staff = objectMapper.convertValue(requestBody.get("staff"), Staff.class);
     ImageDocument imageDocument = objectMapper.convertValue(requestBody.get("imageDocument"), ImageDocument.class);
-    return ResponseEntity.ok(staffService.updateStaff(staff, subDepartmentName, imageDocument));
+    return ResponseEntity.ok(staffService.updateStaff(staff, unitName, imageDocument));
   }
 
   @PutMapping("/disableStaff/{username}")
@@ -162,10 +166,24 @@ public class StaffController {
     return ResponseEntity.ok(listOfOutpatientStaff);
   }
 
+  @GetMapping("/getStaffsWorkingInCurrentShiftAndWard")
+  public ResponseEntity<List<InpatientStaffDTO>> getNurses(
+          @RequestParam("wardName") String wardName) {
+
+    List<InpatientStaffDTO> listOfNurses = staffService.getStaffsWorkingInCurrentShiftAndDepartment(
+            wardName).stream().map(inpatientStaffMapper::convertToDto).toList();
+    return ResponseEntity.ok(listOfNurses);
+  }
+
   @GetMapping("/getStaffById")
   public ResponseEntity<Staff> getStaffById(
           @RequestParam("id") Long id) {
     return ResponseEntity.ok(staffService.getStaffById(id));
   }
 
+  @GetMapping("/getStaffsInUnit")
+  public ResponseEntity<List<Staff>> getStaffsInUnit(
+          @RequestParam("unit") String unit) {
+    return ResponseEntity.ok(staffService.getAllStaffByUnit(unit));
+  }
 }

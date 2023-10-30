@@ -8,4 +8,6 @@ public enum SwimlaneStatusEnum {
   ADMISSION,
   PHARMACY,
   DISCHARGE,
+  REFERRAL,
+  DONE
 }
