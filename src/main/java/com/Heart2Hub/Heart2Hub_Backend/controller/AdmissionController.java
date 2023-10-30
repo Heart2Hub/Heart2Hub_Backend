@@ -59,12 +59,52 @@ public class AdmissionController {
     }
 
     @PutMapping("/assignAdmissionToStaff")
-    public ResponseEntity<Admission> assignAdmissionToStaff(
+    public ResponseEntity<AdmissionDTO> assignAdmissionToStaff(
             @RequestParam("admissionId") Long admissionId,
             @RequestParam("toStaffId") Long toStaffId,
             @RequestParam("fromStaffId") Long fromStaffId) {
-        return ResponseEntity.ok(admissionService.assignAdmissionToNurse(admissionId, toStaffId, fromStaffId));
+        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.assignAdmissionToStaff(admissionId, toStaffId, fromStaffId)));
     }
+
+//    @PutMapping("/assignAdmissionToNurse")
+//    public ResponseEntity<AdmissionDTO> assignAdmissionToNurse(
+//            @RequestParam("admissionId") Long admissionId,
+//            @RequestParam("toStaffId") Long toStaffId,
+//            @RequestParam("fromStaffId") Long fromStaffId) {
+//        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.assignAdmissionToNurse(admissionId, toStaffId, fromStaffId)));
+//    }
+//
+//    @PutMapping("/assignAdmissionToAdmin")
+//    public ResponseEntity<AdmissionDTO> assignAdmissionToAdmin(
+//            @RequestParam("admissionId") Long admissionId,
+//            @RequestParam("toStaffId") Long toStaffId,
+//            @RequestParam("fromStaffId") Long fromStaffId) {
+//        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.assignAdmissionToAdmin(admissionId, toStaffId, fromStaffId)));
+//    }
+
+    @PutMapping("/updateAdmissionArrival")
+    public ResponseEntity<AdmissionDTO> updateAdmissionArrival(
+            @RequestParam("admissionId") Long admissionId,
+            @RequestParam("arrivalStatus") Boolean arrivalStatus,
+            @RequestParam("staffId") Long staffId) {
+        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.updateAdmissionArrival(admissionId, arrivalStatus, staffId)));
+    }
+
+    @PutMapping("/updateAdmissionComments")
+    public ResponseEntity<AdmissionDTO> updateAdmissionComments(
+            @RequestParam("admissionId") Long admissionId,
+            @RequestParam("comments") String comments,
+            @RequestParam("staffId") Long staffId) {
+        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.updateAdmissionComments(admissionId, comments, staffId)));
+    }
+
+    @PutMapping("/cancelAdmission")
+    public ResponseEntity<String> cancelAdmission(
+            @RequestParam("admissionId") Long admissionId,
+            @RequestParam("wardId") Long wardId) {
+        return ResponseEntity.ok(admissionService.cancelAdmission(admissionId, wardId));
+    }
+
 
     @PutMapping("/handleDischarge")
     public ResponseEntity<String> handleDischarge(@RequestParam("date") String date) {

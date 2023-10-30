@@ -18,12 +18,18 @@ public class AdmissionDTO {
     private Integer duration;
     private Integer room;
     private Integer bed;
+    private Boolean arrived;
     private LocalDateTime admissionDateTime;
     private LocalDateTime dischargeDateTime;
+    private String ward;
 
-    private Long assignedNurseId;
-    private Long assignedDoctorId;
-    //private List<Long> listOfStaffsId;
+//    private Long assignedNurseId = null;
+//    private Long assignedDoctorId = null;
+//    private Long assignedAdminId = null;
+//    private String assignedNurseName = null;
+//    private String assignedDoctorName = null;
+//    private String assignedAdminName = null;
+    private List<Long> listOfStaffsId;
 
     private Long patientId;
 

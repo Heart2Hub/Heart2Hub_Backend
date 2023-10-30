@@ -194,14 +194,14 @@ public class AppointmentController {
 
   @PostMapping("/createReferral")
   public ResponseEntity<Appointment> createReferral(
-          @RequestParam("prevAppointmentId") Long prevAppointmentId,
           @RequestParam("description") String description,
           @RequestParam("bookedDate") String bookedDate,
+          @RequestParam("patientUsername") String patientUsername,
           @RequestParam("departmentName") String departmentName,
           @RequestParam("staffUsername") String staffUsername
           ) {
     return ResponseEntity.ok(
-            appointmentService.createReferral(prevAppointmentId, description, bookedDate, departmentName, staffUsername)
+            appointmentService.createReferral(description, bookedDate, patientUsername, departmentName, staffUsername)
     );
 
   }
@@ -221,5 +221,22 @@ public class AppointmentController {
     return ResponseEntity.ok(appointmentMapper.toDTO(
             appointmentService.updateAppointmentDispensaryStatus(appointmentId,
                     DispensaryStatusEnum.valueOf(dispensaryStatus.toUpperCase()))));
+  }
+
+  @GetMapping("/findAppointmentTimeDiff/{apppointmentId}")
+  public ResponseEntity<Integer> findAppointmentTimeDiff(
+          @PathVariable("apppointmentId") long apppointmentId) {
+    return ResponseEntity.ok(appointmentService.findAppointmentTimeDiff(apppointmentId));
+  }
+
+  @PostMapping("/createNewPharmacyTicket")
+  public ResponseEntity<Appointment> createNewPharmacyTicket(
+          @RequestParam("description") String description,
+          @RequestParam("bookedDateTime") String bookedDateTime,
+          @RequestParam("priority") String priority,
+          @RequestParam("patientUsername") String patientUsername,
+          @RequestParam("departmentName") String departmentName) {
+    return ResponseEntity.ok(appointmentService.createNewPharmacyTicket(description,
+            bookedDateTime, priority, patientUsername, departmentName));
   }
 }

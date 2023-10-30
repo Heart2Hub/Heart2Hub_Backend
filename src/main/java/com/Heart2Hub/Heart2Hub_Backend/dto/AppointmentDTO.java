@@ -45,5 +45,8 @@ public class AppointmentDTO {
   private Long admissionId;
   private Integer admissionDuration;
   private String admissionReason;
+  private String ward;
+  private LocalDateTime admissionDate;
+  private LocalDateTime dischargeDate;
   //private Boolean admissionScheduled = false;
 }

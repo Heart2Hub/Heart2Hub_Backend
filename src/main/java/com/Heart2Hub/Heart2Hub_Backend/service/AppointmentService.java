@@ -15,6 +15,7 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateAppointmentCommen
 import com.Heart2Hub.Heart2Hub_Backend.repository.AppointmentRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -188,7 +189,7 @@ public class AppointmentService {
     if (staffUsername != null && !staffUsername.isEmpty()) {
       Staff staff = staffService.getStaffByUsername(staffUsername);
       newAppointment.setComments(
-          "To be assigned to Dr." + staff.getFirstname() + " " + staff.getLastname() + " (SYSTEM GENERATED)");
+          "To be assigned to " + staff.getStaffRoleEnum() + " " + staff.getFirstname() + " " + staff.getLastname() + " (SYSTEM GENERATED)");
       newAppointment.getListOfStaff().add(staff);
     }
 
@@ -292,6 +293,7 @@ public class AppointmentService {
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     appointment.setSwimlaneStatusEnum(swimlaneStatusEnum);
     appointment.setArrived(false);
+    appointment.setActualDateTime(LocalDateTime.now());
     return appointment;
   }
 
@@ -356,26 +358,17 @@ public class AppointmentService {
     return appointment.getListOfImageDocuments();
   }
 
-  public Appointment createReferral(Long prevAppointmentId, String description, String bookedDateTimeString,
+  public Appointment createReferral(String description, String bookedDateTimeString,
+                                    String patientUsername,
                                     String departmentName, String staffUsername) {
-    Appointment prevAppointment = findAppointmentByAppointmentId(prevAppointmentId);
+//    Appointment prevAppointment = findAppointmentByAppointmentId(prevAppointmentId);
     Appointment newAppointment = createNewAppointmentWithStaff(description,
-            bookedDateTimeString, prevAppointment.getPriorityEnum().toString(),
-            prevAppointment.getPatient().getUsername(), departmentName, staffUsername);
-    String existingComments = prevAppointment.getComments();
-    String header = "APPOINTMENT ON " + prevAppointment.getBookedDateTime().toString();
+            bookedDateTimeString, "LOW",
+            patientUsername, departmentName, staffUsername);
     String mildSeparator = "------------------------------";
-    String separator = "==============================";
     String referredComment = "Referred to " + departmentName + " Department";
-    String footer = "APPOINTMENT ON " + bookedDateTimeString;
-    if (!existingComments.equals("")) {
-      existingComments = header + "\n" + mildSeparator + "\n" + existingComments + "\n" +
-              separator + "\n" +
-              referredComment + "\n" + separator + "\n"+ footer + "\n" + mildSeparator +
-              "\n" + newAppointment.getComments();
-    }  else {
-      existingComments = referredComment + "\n" + separator + "\n" + newAppointment.getComments();
-    }
+    String existingComments = referredComment + "\n" + mildSeparator + "\n" + newAppointment.getComments();
+
     newAppointment.setComments(existingComments);
     return newAppointment;
   }
@@ -388,6 +381,42 @@ public class AppointmentService {
                                                      DispensaryStatusEnum dispensaryStatusEnum) {
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     appointment.setDispensaryStatusEnum(dispensaryStatusEnum);
+
+    // change last dispensed date
+    Patient p = appointment.getPatient();
+    List<PrescriptionRecord> prescriptionRecordList = p.getElectronicHealthRecord().getListOfPrescriptionRecords();
+    List<TransactionItem> transactionItemList = p.getListOfTransactionItem();
+    for (PrescriptionRecord pr : prescriptionRecordList) {
+      for (TransactionItem item : transactionItemList) {
+        if (item.getTransactionItemName().contains("Prescription Record")) {
+          pr.setLastCollectDate(LocalDateTime.now());
+        }
+      }
+    }
     return appointment;
+  }
+
+  public Integer findAppointmentTimeDiff(Long appointmentId) {
+    Appointment appointment = findAppointmentByAppointmentId(appointmentId);
+    LocalDateTime localDateTime = appointment.getActualDateTime();
+
+    if (localDateTime != null) {
+      LocalDateTime currentDateTime = LocalDateTime.now();
+      long diffInMinutes = ChronoUnit.MINUTES.between(currentDateTime, localDateTime);
+
+      return Math.toIntExact(diffInMinutes * -1);
+    } else {
+      return 0;
+    }
+    //return 0;
+  }
+
+  public Appointment createNewPharmacyTicket(String description,
+                                               String bookedDateTimeString, String priority,
+                                               String nric, String departmentName) {
+    Appointment a = createNewAppointmentOnWeb(description, bookedDateTimeString, priority, nric, departmentName);
+    a.setSwimlaneStatusEnum(SwimlaneStatusEnum.PHARMACY);
+    a.setActualDateTime(a.getBookedDateTime());
+    return a;
   }
 }

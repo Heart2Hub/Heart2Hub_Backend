@@ -1,10 +1,8 @@
 package com.Heart2Hub.Heart2Hub_Backend.mapper;
 
 import com.Heart2Hub.Heart2Hub_Backend.dto.AppointmentDTO;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Admission;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
-import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.entity.*;
+import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -12,6 +10,12 @@ import java.util.List;
 
 @Component
 public class AppointmentMapper {
+
+  private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
+
+  public AppointmentMapper(ElectronicHealthRecordRepository electronicHealthRecordRepository) {
+    this.electronicHealthRecordRepository = electronicHealthRecordRepository;
+  }
 
   public AppointmentDTO toDTO(Appointment appointment) {
     if (appointment == null) {
@@ -42,8 +46,8 @@ public class AppointmentMapper {
       dto.setListOfStaffsId(staffIds);
     }
     //Patient
-    System.out.println(appointment.getPatient().getPatientId());
     if (appointment.getPatient()!=null) {
+      System.out.println("ASDSADASDASASASDASDASD" + appointment.getPatient().getPatientId());
       dto.setPatientId(appointment.getPatient().getPatientId());
       dto.setUsername(appointment.getPatient().getUsername());
 
@@ -65,6 +69,45 @@ public class AppointmentMapper {
 
       // Admission fields
       Admission admissionToSchedule = appointment.getPatient().getAdmission();
+      if (admissionToSchedule != null) {
+        dto.setAdmissionId(admissionToSchedule.getAdmissionId());
+        dto.setAdmissionDuration(admissionToSchedule.getDuration());
+        dto.setAdmissionReason(admissionToSchedule.getReason());
+        dto.setAdmissionDate(admissionToSchedule.getAdmissionDateTime());
+        dto.setDischargeDate(admissionToSchedule.getDischargeDateTime());
+
+        if (admissionToSchedule.getWard() != null) {
+          dto.setWard(admissionToSchedule.getWard().getName());
+        }
+
+      }
+    } else {
+
+      System.out.println("ASJDHJKASHDJHWDSJAHSDJHAJSHD");
+
+      ElectronicHealthRecord electronicHealthRecord = electronicHealthRecordRepository.findByListOfPastAppointments_AppointmentId(appointment.getAppointmentId()).get();
+
+      dto.setPatientId(electronicHealthRecord.getPatient().getPatientId());
+      dto.setUsername(electronicHealthRecord.getPatient().getUsername());
+
+      if (electronicHealthRecord.getPatient().getProfilePicture() != null) {
+        dto.setPatientProfilePicture(electronicHealthRecord.getPatient().getProfilePicture().getImageLink());
+      }
+
+      if (electronicHealthRecord.getPatient().getElectronicHealthRecord() != null) {
+        dto.setElectronicHealthRecordId(electronicHealthRecord.getPatient().getElectronicHealthRecord().getElectronicHealthRecordId());
+        dto.setFirstName(electronicHealthRecord.getPatient().getElectronicHealthRecord().getFirstName());
+        dto.setLastName(electronicHealthRecord.getPatient().getElectronicHealthRecord().getLastName());
+        dto.setNric(electronicHealthRecord.getPatient().getElectronicHealthRecord().getNric());
+        dto.setPlaceOfBirth(electronicHealthRecord.getPatient().getElectronicHealthRecord().getPlaceOfBirth());
+        dto.setSex(electronicHealthRecord.getPatient().getElectronicHealthRecord().getSex());
+        dto.setContactNumber(electronicHealthRecord.getPatient().getElectronicHealthRecord().getContactNumber());
+        dto.setNationality(electronicHealthRecord.getPatient().getElectronicHealthRecord().getNationality());
+        dto.setDateOfBirth(electronicHealthRecord.getPatient().getElectronicHealthRecord().getDateOfBirth());
+      }
+
+      // Admission fields
+      Admission admissionToSchedule = electronicHealthRecord.getPatient().getAdmission();
       if (admissionToSchedule != null) {
         dto.setAdmissionId(admissionToSchedule.getAdmissionId());
         dto.setAdmissionDuration(admissionToSchedule.getDuration());

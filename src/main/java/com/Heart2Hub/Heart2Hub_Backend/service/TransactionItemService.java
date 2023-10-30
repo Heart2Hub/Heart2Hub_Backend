@@ -5,6 +5,7 @@ import com.Heart2Hub.Heart2Hub_Backend.enumeration.AllergenEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.InsufficientInventoryException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToAssignAppointmentException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -26,9 +27,9 @@ public class TransactionItemService {
     private final AppointmentRepository appointmentRepository;
     private final InvoiceService invoiceService;
     private final InvoiceRepository invoiceRepository;
+    private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
 
-    public TransactionItemService(TransactionItemRepository transactionItemRepository, PatientService patientService, PatientRepository patientRepository, InventoryItemRepository inventoryItemRepository, AppointmentRepository appointmentRepository, InvoiceService invoiceService,
-                                  InvoiceRepository invoiceRepository) {
+    public TransactionItemService(TransactionItemRepository transactionItemRepository, PatientService patientService, PatientRepository patientRepository, InventoryItemRepository inventoryItemRepository, AppointmentRepository appointmentRepository, InvoiceService invoiceService, InvoiceRepository invoiceRepository, ElectronicHealthRecordRepository electronicHealthRecordRepository) {
         this.transactionItemRepository = transactionItemRepository;
         this.patientService = patientService;
         this.patientRepository = patientRepository;
@@ -36,6 +37,7 @@ public class TransactionItemService {
         this.appointmentRepository = appointmentRepository;
         this.invoiceService = invoiceService;
         this.invoiceRepository = invoiceRepository;
+        this.electronicHealthRecordRepository = electronicHealthRecordRepository;
     }
 
     public List<TransactionItem> getAllItems() {
@@ -65,6 +67,15 @@ public class TransactionItemService {
         List<Medication> patientMedicationInCart = new ArrayList<>();
         for (TransactionItem value : patientCart) {
             if (value.getInventoryItem() instanceof Medication) {
+                if (value.getInventoryItem().getInventoryItemId() == itemId) {
+                    value.setTransactionItemQuantity(value.getTransactionItemQuantity() + transactionItemQuantity);
+                    InventoryItem i = inventoryItemRepository.findById(itemId).get();
+                    Medication med = (Medication) i;
+                    transactionItem = value;
+                    if (med.getQuantityInStock() - transactionItem.getTransactionItemQuantity() < 0) {
+                        throw new InsufficientInventoryException("Insufficient Inventory for Medication");
+                    }
+                }
                 patientMedicationInCart.add((Medication) value.getInventoryItem());
             }
         }
@@ -362,7 +373,39 @@ public class TransactionItemService {
     public void dischargePatient(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId).get();
         appointment.setSwimlaneStatusEnum(SwimlaneStatusEnum.DONE);
+        if (appointment.getCurrentAssignedStaff() == null) {
+            throw new UnableToAssignAppointmentException("Please assign a staff");
+        }
+        if (!appointment.getArrived()) {
+            throw new UnableToAssignAppointmentException("Please check that patient has arrived");
+        }
+
+        //ASSOCIATION --> SHOULD REFACTOR TO BE IN APPOINTMENT SERVICE
+        appointment.getCurrentAssignedStaff().getListOfAssignedAppointments().remove(appointment);
+        appointment.setCurrentAssignedStaff(null);
+        Patient patient = appointment.getPatient();
+        patient.getListOfCurrentAppointments().remove(appointment);
+        patient.getElectronicHealthRecord().getListOfPastAppointments().add(appointment);
+
         appointmentRepository.save(appointment);
+    }
+
+    public TransactionItem updateTransactionItem(Long transactionItemId, Integer transactionItemQuantity) {
+        TransactionItem transactionItem = transactionItemRepository.findById(transactionItemId).get();
+
+        InventoryItem item = transactionItem.getInventoryItem();
+        int oldQuantity = transactionItem.getTransactionItemQuantity();
+        Medication med = (Medication) item;
+        if (transactionItemQuantity > oldQuantity) {
+            if (med.getQuantityInStock() - (transactionItemQuantity - oldQuantity) < 0) {
+                throw new InsufficientInventoryException("Insufficient Inventory for Medication");
+            }
+            med.setQuantityInStock(med.getQuantityInStock() - (transactionItemQuantity - oldQuantity));
+        } else if (transactionItemQuantity < oldQuantity){
+            med.setQuantityInStock(med.getQuantityInStock() + (oldQuantity - transactionItemQuantity));
+        }
+        transactionItem.setTransactionItemQuantity(transactionItemQuantity);
+        return transactionItemRepository.save(transactionItem);
     }
 }
 

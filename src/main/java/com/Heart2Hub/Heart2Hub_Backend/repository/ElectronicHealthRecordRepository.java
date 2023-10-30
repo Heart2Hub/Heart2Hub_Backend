@@ -18,4 +18,6 @@ public interface ElectronicHealthRecordRepository extends JpaRepository<Electron
 
     Optional<ElectronicHealthRecord> findByListOfTreatmentPlanRecords_TreatmentPlanRecordId(Long treatmentPlanRecordId);
 
+    Optional<ElectronicHealthRecord> findByListOfPastAppointments_AppointmentId(Long appointmentId);
+
 }

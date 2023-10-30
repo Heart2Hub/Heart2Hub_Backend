@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ApprovalStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.InvoiceStatusEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.ClaimErrorException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,13 @@ public class InvoiceService {
 
     public Invoice createInsuranceClaim(Long invoiceId, BigDecimal insuranceClaimAmount,
                                         String insurerName, Boolean isPrivateInsurer) {
+        if (insuranceClaimAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ClaimErrorException("Insurance claim amount must be greater than zero.");
+        }
 
+        if (insurerName == null || insurerName.isEmpty()) {
+            throw new ClaimErrorException("Insurer name must be provided.");
+        }
         InsuranceClaim claim = new InsuranceClaim(LocalDateTime.now(),insuranceClaimAmount, insurerName, isPrivateInsurer);
         insuranceClaimRepository.save(claim);
 
@@ -117,7 +124,7 @@ public class InvoiceService {
         List<TransactionItem> items = invoice.getListOfTransactionItem();
         TransactionItem deleteItem = null;
         for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).getTransactionItemDescription() == claim.getInsurerName()) {
+            if (items.get(i).getTransactionItemDescription().equals("(Insurance Claim: " + claim.getInsurerName() + ")")) {
                 deleteItem = items.get(i);
             }
         }
@@ -137,7 +144,7 @@ public class InvoiceService {
         if (claim.getApprovalStatusEnum().equals(ApprovalStatusEnum.PENDING)) {
             TransactionItem deleteItem = null;
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getTransactionItemDescription() == "Medishield") {
+                if (items.get(i).getTransactionItemDescription().equals("Medishield")) {
                     deleteItem = items.get(i);
                 }
             }
@@ -151,6 +158,10 @@ public class InvoiceService {
 
     public Invoice createMedishieldClaim(Long invoiceId, BigDecimal insuranceClaimAmount) {
         Invoice i = invoiceRepository.findById(invoiceId).get();
+
+        if (insuranceClaimAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ClaimErrorException("Insurance claim amount must be greater than zero.");
+        }
 
         MedishieldClaim claim = new MedishieldClaim(LocalDateTime.now(),insuranceClaimAmount, ApprovalStatusEnum.PENDING);
         medishieldClaimRepository.save(claim);

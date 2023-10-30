@@ -33,12 +33,8 @@ public class Ward extends Unit {
     private List<WardAvailability> listOfWardAvailabilities;
 
     @JsonManagedReference
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "ward", fetch = FetchType.LAZY)
     private List<Admission> listOfAdmissions;
-
-//    @JsonManagedReference
-//    @OneToMany(fetch = FetchType.LAZY)
-//    private List<Admission> listOfCurrentDayAdmissions;
 
     @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

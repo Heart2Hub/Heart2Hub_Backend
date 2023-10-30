@@ -38,7 +38,9 @@ public class Admission {
 
     private String reason;
 
-    private String comments;
+    private String comments = "";
+
+    private Boolean arrived = false;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
@@ -53,19 +55,24 @@ public class Admission {
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "nurse_id")
-    private Staff currentAssignedNurse;
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "doctor_id")
-    private Staff currentAssignedDoctor;
-
 //    @JsonIgnore
-//    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    private List<Staff> listOfStaff;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "admin_id")
+//    private Staff currentAssignedAdmin;
+//
+//    @JsonIgnore
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "nurse_id")
+//    private Staff currentAssignedNurse;
+//
+//    @JsonIgnore
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "doctor_id")
+//    private Staff currentAssignedDoctor;
+
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    private List<Staff> listOfAssignedStaff;
 
     @JsonIgnore
     @OneToMany(mappedBy = "admission",fetch = FetchType.LAZY)
@@ -76,17 +83,21 @@ public class Admission {
     @JoinColumn(name = "admission_id")
     private List<PatientRequest> listOfPatientRequests;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ward_id")
+    private Ward ward;
+
     public Admission(){
         this.listOfMedicationOrders = new ArrayList<>();
         this.listOfPatientRequests = new ArrayList<>();
+        this.listOfAssignedStaff = new ArrayList<>();
     }
 
-    public Admission(Integer duration, String reason, Patient patient, Staff doctor) {
+    public Admission(Integer duration, String reason) {
         this();
         this.duration = duration;
         this.reason = reason;
-        this.patient = patient;
-        this.currentAssignedDoctor = doctor;
     }
 
 //    public Admission(Integer duration, LocalDateTime admissionDateTime, LocalDateTime dischargeDateTime, String comments) {

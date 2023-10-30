@@ -6,10 +6,12 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Admission;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class AdmissionMapper {
@@ -27,17 +29,36 @@ public class AdmissionMapper {
         dto.setDuration(admission.getDuration());
         dto.setRoom(admission.getRoom());
         dto.setBed(admission.getBed());
+        dto.setArrived(admission.getArrived());
         dto.setAdmissionDateTime(admission.getAdmissionDateTime());
         dto.setDischargeDateTime(admission.getDischargeDateTime());
 
-        //Assigned doctor
-        if (admission.getCurrentAssignedDoctor() != null) {
-            dto.setAssignedDoctorId(admission.getCurrentAssignedDoctor().getStaffId());
+        //Ward
+        if (admission.getWard() != null) {
+            dto.setWard(admission.getWard().getName());
         }
 
-        if (admission.getCurrentAssignedNurse() != null) {
-            dto.setAssignedNurseId(admission.getCurrentAssignedNurse().getStaffId());
-        }
+        //Assigned staff
+        List<Staff> listOfAssignedStaff = admission.getListOfAssignedStaff();
+        List<Long> listOfStaffIds = listOfAssignedStaff
+                .stream()
+                .map(Staff::getStaffId) // Assuming you have a getStaffId method in Staff
+                .collect(Collectors.toList());
+        dto.setListOfStaffsId(listOfStaffIds);
+
+//        for (Staff staff : listOfAssignedStaff) {
+//            String fullname = staff.getFirstname() + " " + staff.getLastname();
+//            if (staff.getStaffRoleEnum().equals(StaffRoleEnum.ADMIN)) {
+//                dto.setAssignedAdminId(staff.getStaffId());
+//                dto.setAssignedAdminName(fullname);
+//            } else if (staff.getStaffRoleEnum().equals(StaffRoleEnum.NURSE)) {
+//                dto.setAssignedNurseId(staff.getStaffId());
+//                dto.setAssignedNurseName(fullname);
+//            } else if (staff.getStaffRoleEnum().equals(StaffRoleEnum.DOCTOR)) {
+//                dto.setAssignedDoctorId(staff.getStaffId());
+//                dto.setAssignedDoctorName(fullname);
+//            }
+//        }
 
 
         //Patient
