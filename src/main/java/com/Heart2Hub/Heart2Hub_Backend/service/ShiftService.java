@@ -6,11 +6,14 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.*;
 import com.Heart2Hub.Heart2Hub_Backend.repository.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -24,18 +27,19 @@ public class ShiftService {
   private final ShiftRepository shiftRepository;
   private final StaffRepository staffRepository;
   private final FacilityBookingRepository facilityBookingRepository;
-
   private final LeaveRepository leaveRepository;
   private final FacilityRepository facilityRepository;
   private final FacilityBookingService facilityBookingService;
+  private final FacilityService facilityService;
 
-  public ShiftService(ShiftRepository shiftRepository, StaffRepository staffRepository, FacilityBookingService facilityBookingService, FacilityBookingRepository facilityBookingRepository, LeaveRepository leaveRepository, FacilityRepository facilityRepository) {
+  public ShiftService(ShiftRepository shiftRepository, StaffRepository staffRepository, FacilityBookingService facilityBookingService, FacilityBookingRepository facilityBookingRepository, LeaveRepository leaveRepository, FacilityRepository facilityRepository, FacilityService facilityService) {
     this.shiftRepository = shiftRepository;
     this.staffRepository = staffRepository;
     this.facilityBookingService = facilityBookingService;
     this.facilityBookingRepository = facilityBookingRepository;
     this.leaveRepository = leaveRepository;
     this.facilityRepository = facilityRepository;
+    this.facilityService = facilityService;
   }
 
   public boolean isLoggedInUserHead() {
@@ -311,6 +315,85 @@ public class ShiftService {
         return shiftRepository.findByStaffUsernameAndStartTimeBetween(username, startDate, endDate);
     } catch (Exception ex) {
       throw new StaffRoleNotFoundException(ex.getMessage());
+    }
+  }
+
+  public void automaticallyAllocateShifts(String start, String end, String role, String department) {
+    LocalDate startDate = LocalDate.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    LocalDate endDate = LocalDate.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+    long weeks = daysBetween / 7;
+
+    LocalDate currentDate = startDate;
+
+    List<Staff> staffList = staffRepository.findByStaffRoleEnumAndUnitNameEqualsIgnoreCase(StaffRoleEnum.valueOf(role.toUpperCase()), department);
+    List<Facility> fList = facilityRepository.findByDepartmentNameContainingIgnoreCase(department);
+    boolean isWard = false;
+    if (fList.isEmpty() && role.equalsIgnoreCase("NURSE")) isWard = true;
+    Long[] range = facilityService.getFacilityIdRange(department);
+    HashMap<Long, Integer> capacityMap = new HashMap<>();
+    long s = range[0], e = range[1];
+    if (!isWard) {
+      if (role.equalsIgnoreCase("DOCTOR")) {
+        e = s + 2;
+      } else if (role.equalsIgnoreCase("NURSE")) {
+        s = s + 3;
+        e = s + 5;
+      } else if (role.equalsIgnoreCase("ADMIN")) {
+        s = s + 8;
+        e = s + 9;
+      } else if (role.equalsIgnoreCase("DIAGNOSTIC_RADIOGRAPHERS")) {
+        s = s + 10;
+        e = s + 11;
+      } else if (role.equalsIgnoreCase("DIETITIANS")) {
+        s = s + 12;
+        e = s + 13;
+      } else if (role.equalsIgnoreCase("OCCUPATIONAL_THERAPISTS")) {
+        s = s + 14;
+        e = s + 15;
+      } else if (role.equalsIgnoreCase("PSYCHOLOGISTS")) {
+        s = e - 4;
+      } else if (role.equalsIgnoreCase("PHARMACIST")) {
+        e = s + 2;
+      }
+      for (long a=s; a<=e; a++) {
+        capacityMap.put(a,0);
+      }
+    }
+
+    for (int week=0; week<weeks; week++) {
+      for (int i=0; i<7; i++) {
+        int day = currentDate.getDayOfMonth();
+        int month = currentDate.getMonthValue();
+        int year = currentDate.getYear();
+
+        for (Staff staff : staffList) {
+          long dayOff = staff.getStaffId() % 7;
+          if (i != dayOff) {
+            if (isWard) {
+              createShift(staff.getUsername(), null,
+                      new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                              LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+            } else {
+              int min = Integer.MAX_VALUE;
+              long id = 0;
+              for (Map.Entry<Long,Integer> entry : capacityMap.entrySet()) {
+                min = Math.min(min, entry.getValue());
+              }
+              for (Map.Entry<Long,Integer> entry : capacityMap.entrySet()) {
+                if (min == entry.getValue()) {
+                  id = entry.getKey();
+                }
+              }
+              createShift(staff.getUsername(), id,
+                      new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                              LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+              capacityMap.put(id, capacityMap.getOrDefault(id,0)+1);
+            }
+          }
+        }
+        currentDate = currentDate.plusDays(1);
+      }
     }
   }
 }

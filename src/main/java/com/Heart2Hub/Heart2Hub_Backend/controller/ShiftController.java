@@ -95,4 +95,17 @@ public class ShiftController {
     }
   }
 
+  @PostMapping(value="/automaticallyCreateShifts", produces={"application/json"})
+  public ResponseEntity automaticallyCreateShifts(@RequestParam("startDate") String startDate,
+                                     @RequestParam("endDate") String endDate,
+                                     @RequestParam("role") String role,
+                                     @RequestParam("department") String department) {
+    try {
+      shiftService.automaticallyAllocateShifts(startDate, endDate, role, department);
+      return ResponseEntity.ok("Shifts allocated!");
+    } catch (StaffRoleNotFoundException ex) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+  }
+
 }
