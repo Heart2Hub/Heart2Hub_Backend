@@ -236,11 +236,11 @@ public class DataLoader implements CommandLineRunner {
                 new Staff("occupationalTherapistsCardiology4", "password", "Jane", "Smith", 93693648L, StaffRoleEnum.OCCUPATIONAL_THERAPISTS, false),
                 "Cardiology", new ImageDocument("id19.png", lt));
         staffService.createStaff(
-                new Staff("occupationalTherapistsCardiology5", "password", "Jane", "Smith", 93693645L, StaffRoleEnum.OCCUPATIONAL_THERAPISTS, false),
-                "Cardiology", new ImageDocument("id19.png", lt));
+                new Staff("occupationalTherapistsCardiology5", "password", "Janet", "Tucker", 93693645L, StaffRoleEnum.OCCUPATIONAL_THERAPISTS, false),
+                "Cardiology", new ImageDocument("id15.png", lt));
         staffService.createStaff(
-                new Staff("occupationalTherapistsCardiology6", "password", "Jane", "Smith", 93693644L, StaffRoleEnum.OCCUPATIONAL_THERAPISTS, false),
-                "Cardiology", new ImageDocument("id19.png", lt));
+                new Staff("occupationalTherapistsCardiology6", "password", "Kyrie", "Irving", 93693644L, StaffRoleEnum.OCCUPATIONAL_THERAPISTS, false),
+                "Cardiology", new ImageDocument("id20.png", lt));
         staffService.createStaff(
                 new Staff("nurseA11", "password", "James", "Charles", 93420093l, StaffRoleEnum.NURSE,
                         true), "A1", new ImageDocument("id12.png", lt));
@@ -1555,9 +1555,9 @@ public class DataLoader implements CommandLineRunner {
         allergenList2.add(AllergenEnum.AMOXICILLIN);
 
         DrugRestriction newDrugRestriction1 = drugRestrictionService.createDrugRestriction(
-                new DrugRestriction("Warfarin"));
+                new DrugRestriction("Warfarin 1mg Tablet (1 piece)"));
         DrugRestriction newDrugRestriction2 = drugRestrictionService.createDrugRestriction(
-                new DrugRestriction("Paracetamol"));
+                new DrugRestriction("Paracetamol 500 mg Tablets (12 pieces)"));
         List<DrugRestriction> drugList1 = new ArrayList<>();
         List<DrugRestriction> drugList2 = new ArrayList<>();
         drugList2.add(newDrugRestriction1);
@@ -1567,7 +1567,7 @@ public class DataLoader implements CommandLineRunner {
 
         Medication newMedication1 = medicationService.createMedication(
                 new Medication("Paracetamol 500 mg Tablets (12 pieces)", "500mg per piece", ItemTypeEnum.MEDICINE, 100,
-                        BigDecimal.TEN, BigDecimal.TEN, allergenList1, "", drugList2));
+                        BigDecimal.TEN, BigDecimal.TEN, allergenList1, "", drugList1));
         Medication newMedication2 = medicationService.createMedication(
                 new Medication("Cetirizine 10mg Tablets (12 pieces)", "10mg per piece", ItemTypeEnum.MEDICINE, 100,
                         BigDecimal.valueOf(5), BigDecimal.TEN, allergenList1, "Do not take with alcohol", drugList1));
@@ -1582,13 +1582,13 @@ public class DataLoader implements CommandLineRunner {
                         BigDecimal.valueOf(3), BigDecimal.TEN, allergenList2, "", drugList1));
         Medication newMedication6 = medicationService.createMedication(
                 new Medication("Warfarin 1mg Tablet (1 piece)", "1mg per piece", ItemTypeEnum.MEDICINE, 10000,
-                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList3));
+                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList1));
         Medication newMedication7 = medicationService.createMedication(
                 new Medication("Warfarin 3mg Tablet (28 pieces)", "3mg per piece", ItemTypeEnum.MEDICINE, 10000,
-                        BigDecimal.valueOf(4), BigDecimal.valueOf(5), allergenList1, "", drugList3));
+                        BigDecimal.valueOf(4), BigDecimal.valueOf(5), allergenList1, "", drugList1));
         Medication newMedication8 = medicationService.createMedication(
                 new Medication("Warfarin 3mg Tablet (1 piece)", "1mg per piece", ItemTypeEnum.MEDICINE, 10000,
-                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList3));
+                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList1));
     }
 
     private void createServiceItemData() {
