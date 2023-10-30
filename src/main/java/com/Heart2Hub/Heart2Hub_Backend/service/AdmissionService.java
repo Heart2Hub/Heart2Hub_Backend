@@ -43,10 +43,14 @@ public class AdmissionService {
 
         Staff doctor = staffRepository.findById(doctorId).orElseThrow(() -> new StaffNotFoundException("Staff not found"));
 
-        Admission newAdmission = new Admission(duration, reason, patient, doctor);
+        Admission newAdmission = new Admission(duration, reason);
 
+        newAdmission.setPatient(patient);
         patient.setAdmission(newAdmission);
-        doctor.getListOfDoctorAdmissions().add(newAdmission);
+
+        newAdmission.getListOfAssignedStaff().add(doctor);
+        doctor.getListOfAssignedAdmissions().add(newAdmission);
+
         return admissionRepository.save(newAdmission);
     }
 
@@ -89,78 +93,83 @@ public class AdmissionService {
         return admission;
     }
 
-    public Admission assignAdmissionToNurse(Long admissionId, Long toStaffId, Long fromStaffId) throws AdmissionNotFoundException, StaffNotFoundException, UnableToAssignAdmissionException {
+    public Admission assignAdmissionToStaff(Long admissionId, Long toStaffId, Long fromStaffId) throws AdmissionNotFoundException, StaffNotFoundException, UnableToAssignAdmissionException {
 
         Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
+        Staff toStaff = staffRepository.findById(toStaffId).orElseThrow(() -> new StaffNotFoundException("Staff not found"));
 
-        if (toStaffId == 0) {
-            admission.setCurrentAssignedNurse(null);
-            return admission;
-        } else {
-            Staff toNurse = staffRepository.findById(toStaffId).orElseThrow(() -> new StaffNotFoundException("Staff not found"));
+        boolean reassigned = false;
+        List<Staff> listOfAssignedStaff = admission.getListOfAssignedStaff();
 
-            if (toNurse.getDisabled()) {
-                throw new StaffDisabledException("Unable to assign admission to Disabled Staff");
-            }
-
-            if (admission.getCurrentAssignedNurse() == null
-                    || (admission.getCurrentAssignedNurse() != null && Objects.equals(
-                    admission.getCurrentAssignedNurse().getStaffId(), fromStaffId))) {
-
-                admission.setCurrentAssignedNurse(toNurse);
-                toNurse.getListOfNurseAdmissions().add(admission);
-
-                return admission;
-            } else {
-                throw new UnableToAssignAdmissionException(
-                        "Unable to assign an admission ticket that is not yours");
+        for (int i = 0; i < listOfAssignedStaff.size(); i++) {
+            Staff assignedStaff = listOfAssignedStaff.get(i);
+            if (assignedStaff.getStaffId() == fromStaffId) {
+                listOfAssignedStaff.set(i, toStaff);
+                reassigned = true;
+                break;
             }
         }
-    }
 
-    public Admission assignAdmissionToAdmin(Long admissionId, Long toStaffId, Long fromStaffId) throws AdmissionNotFoundException, StaffNotFoundException, UnableToAssignAdmissionException {
-
-        Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
-
-        if (toStaffId == 0) {
-            admission.setCurrentAssignedAdmin(null);
-            return admission;
-        } else {
-            Staff toAdmin = staffRepository.findById(toStaffId).orElseThrow(() -> new StaffNotFoundException("Staff not found"));
-
-            if (toAdmin.getDisabled()) {
-                throw new StaffDisabledException("Unable to assign admission to Disabled Staff");
-            }
-
-            if (admission.getCurrentAssignedAdmin() == null
-                    || (admission.getCurrentAssignedAdmin() != null && Objects.equals(
-                    admission.getCurrentAssignedAdmin().getStaffId(), fromStaffId))) {
-
-                admission.setCurrentAssignedAdmin(toAdmin);
-                toAdmin.getListOfAdminAdmissions().add(admission);
-
-                return admission;
-            } else {
-                throw new UnableToAssignAdmissionException(
-                        "Unable to assign an admission ticket that is not yours");
-            }
+        if (!reassigned) {
+            listOfAssignedStaff.add(toStaff);
         }
+
+        return admission;
+
     }
+
+//    public Admission assignAdmissionToAdmin(Long admissionId, Long toStaffId, Long fromStaffId) throws AdmissionNotFoundException, StaffNotFoundException, UnableToAssignAdmissionException {
+//
+//        Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
+//
+//        if (toStaffId == 0) {
+//            admission.setCurrentAssignedAdmin(null);
+//            return admission;
+//        } else {
+//            Staff toAdmin = staffRepository.findById(toStaffId).orElseThrow(() -> new StaffNotFoundException("Staff not found"));
+//
+//            if (toAdmin.getDisabled()) {
+//                throw new StaffDisabledException("Unable to assign admission to Disabled Staff");
+//            }
+//
+//            if (admission.getCurrentAssignedAdmin() == null
+//                    || (admission.getCurrentAssignedAdmin() != null && Objects.equals(
+//                    admission.getCurrentAssignedAdmin().getStaffId(), fromStaffId))) {
+//
+//                admission.setCurrentAssignedAdmin(toAdmin);
+//                toAdmin.getListOfAdminAdmissions().add(admission);
+//
+//                return admission;
+//            } else {
+//                throw new UnableToAssignAdmissionException(
+//                        "Unable to assign an admission ticket that is not yours");
+//            }
+//        }
+//    }
 
     public Admission updateAdmissionArrival(Long admissionId, Boolean arrivalStatus,
                                                 Long staffId) throws AdmissionNotFoundException {
 
         Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
-        //check if appointment is assigned to you first, or else you should not be able to check arrived
-        if (admission.getCurrentAssignedAdmin() == null ||
-                (admission.getCurrentAssignedAdmin() != null && !Objects.equals(
-                        admission.getCurrentAssignedAdmin().getStaffId(), staffId))) {
-            throw new UnableToUpdateAppointmentArrival(
-                    "Unable to edit a appointment that is not assigned to you");
-        }
+
 
         admission.setArrived(arrivalStatus);
         //appointment.setActualDateTime(LocalDateTime.now());
+        return admission;
+    }
+
+    public Admission updateAdmissionComments(Long admissionId, String comments, Long staffId) {
+        Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
+
+        Staff staff = staffRepository.findById(staffId).orElseThrow(() -> new StaffNotFoundException("Staff not found"));
+        String newComment =
+                comments + " (" + staff.getStaffRoleEnum() + " " + staff.getFirstname() + " "
+                        + staff.getLastname() + ")";
+        if (!admission.getComments().equals("")) {
+            newComment = "\n" + newComment;
+        }
+        newComment = admission.getComments() + newComment;
+        admission.setComments(newComment);
         return admission;
     }
 
