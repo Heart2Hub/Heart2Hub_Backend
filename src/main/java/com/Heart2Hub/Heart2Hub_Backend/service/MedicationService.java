@@ -7,6 +7,7 @@ import com.Heart2Hub.Heart2Hub_Backend.enumeration.ProblemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.MedicationNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateMedicationException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToDeleteServiceException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,17 +25,16 @@ public class MedicationService {
     private final StaffRepository staffRepository;
     private final MedicationRepository medicationRepository;
     private final DrugRestrictionRepository drugRestrictionRepository;
-    private final PatientRepository patientRepository;
+    private final TransactionItemService transactionItemService;
 
     private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
 
     public MedicationService(StaffRepository staffRepository, MedicationRepository medicationRepository, DrugRestrictionRepository drugRestrictionRepository,
-                             PatientRepository patientRepository, ElectronicHealthRecordRepository electronicHealthRecordRepository) {
+                             TransactionItemService transactionItemService, ElectronicHealthRecordRepository electronicHealthRecordRepository) {
         this.staffRepository = staffRepository;
         this.medicationRepository = medicationRepository;
         this.drugRestrictionRepository = drugRestrictionRepository;
-
-        this.patientRepository = patientRepository;
+        this.transactionItemService = transactionItemService;
         this.electronicHealthRecordRepository = electronicHealthRecordRepository;
     }
 
@@ -100,8 +100,16 @@ public class MedicationService {
     public String deleteMedication(Long inventoryItemId) throws MedicationNotFoundException {
         try {
             Optional<Medication> newMedicationOptional = medicationRepository.findById(inventoryItemId);
+
+            List<TransactionItem> allTransactionItems = transactionItemService.getAllItems();
+
             if (newMedicationOptional.isPresent()) {
                 Medication medication = newMedicationOptional.get();
+                for (TransactionItem transactionItem: allTransactionItems) {
+                    if ((transactionItem.getInventoryItem() != null) && (transactionItem.getInventoryItem().getInventoryItemId().equals(medication.getInventoryItemId()))) {
+                        throw new UnableToDeleteServiceException("Cannot delete medication present in transaction item");
+                    }
+                }
                     List<DrugRestriction> drugList = drugRestrictionRepository.findAll();
                     for (DrugRestriction drug : drugList) {
                         if (drug.getDrugName().equals(medication.getInventoryItemName())) {
