@@ -1,19 +1,10 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
-import com.Heart2Hub.Heart2Hub_Backend.entity.Medication;
-import com.Heart2Hub.Heart2Hub_Backend.entity.ServiceItem;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Unit;
+import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
-import com.Heart2Hub.Heart2Hub_Backend.exception.MedicationNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.ServiceItemNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateMedicationException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateServiceItemException;
-import com.Heart2Hub.Heart2Hub_Backend.repository.MedicationRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.ServiceItemRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
-import com.Heart2Hub.Heart2Hub_Backend.repository.UnitRepository;
+import com.Heart2Hub.Heart2Hub_Backend.exception.*;
+import com.Heart2Hub.Heart2Hub_Backend.repository.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -31,12 +22,14 @@ public class ServiceItemService {
     private final StaffRepository staffRepository;
     private final ServiceItemRepository serviceItemRepository;
     private final UnitRepository unitRepository;
+    private final TransactionItemService transactionItemService;
 
 
-    public ServiceItemService(StaffRepository staffRepository, ServiceItemRepository serviceItemRepository, UnitRepository unitRepository) {
+    public ServiceItemService(StaffRepository staffRepository, ServiceItemRepository serviceItemRepository, UnitRepository unitRepository, TransactionItemService transactionItemService) {
         this.staffRepository = staffRepository;
         this.serviceItemRepository = serviceItemRepository;
         this.unitRepository = unitRepository;
+        this.transactionItemService = transactionItemService;
     }
 
     public boolean isLoggedInUserAdmin() {
@@ -94,8 +87,16 @@ public class ServiceItemService {
         }
         try {
             Optional<ServiceItem> serviceItemOptional = serviceItemRepository.findById(inventoryItemId);
+
+            List<TransactionItem> allTransactionItems = transactionItemService.getAllItems();
+
             if (serviceItemOptional.isPresent()) {
                 ServiceItem serviceItem = serviceItemOptional.get();
+                for (TransactionItem transactionItem: allTransactionItems) {
+                    if ((transactionItem.getInventoryItem() != null) && (transactionItem.getInventoryItem().getInventoryItemId().equals(serviceItem.getInventoryItemId()))) {
+                        throw new UnableToDeleteServiceException("Cannot delete service present in transaction item");
+                    }
+                }
                 serviceItemRepository.delete(serviceItem);
                 return "Service Item with inventoryItemId  " + inventoryItemId + " has been deleted successfully.";
             } else {
