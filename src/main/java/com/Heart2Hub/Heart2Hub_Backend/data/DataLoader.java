@@ -236,11 +236,11 @@ public class DataLoader implements CommandLineRunner {
                 new Staff("occupationalTherapistsCardiology4", "password", "Jane", "Smith", 93693648L, StaffRoleEnum.OCCUPATIONAL_THERAPISTS, false),
                 "Cardiology", new ImageDocument("id19.png", lt));
         staffService.createStaff(
-                new Staff("occupationalTherapistsCardiology5", "password", "Jane", "Smith", 93693645L, StaffRoleEnum.OCCUPATIONAL_THERAPISTS, false),
-                "Cardiology", new ImageDocument("id19.png", lt));
+                new Staff("occupationalTherapistsCardiology5", "password", "Janet", "Tucker", 93693645L, StaffRoleEnum.OCCUPATIONAL_THERAPISTS, false),
+                "Cardiology", new ImageDocument("id15.png", lt));
         staffService.createStaff(
-                new Staff("occupationalTherapistsCardiology6", "password", "Jane", "Smith", 93693644L, StaffRoleEnum.OCCUPATIONAL_THERAPISTS, false),
-                "Cardiology", new ImageDocument("id19.png", lt));
+                new Staff("occupationalTherapistsCardiology6", "password", "Kyrie", "Irving", 93693644L, StaffRoleEnum.OCCUPATIONAL_THERAPISTS, false),
+                "Cardiology", new ImageDocument("id20.png", lt));
         staffService.createStaff(
                 new Staff("nurseA11", "password", "James", "Charles", 93420093l, StaffRoleEnum.NURSE,
                         true), "A1", new ImageDocument("id12.png", lt));
