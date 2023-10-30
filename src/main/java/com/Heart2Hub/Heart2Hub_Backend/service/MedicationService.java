@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 @Service
@@ -90,6 +91,24 @@ public class MedicationService {
             if (retailPrice.equals(BigDecimal.ZERO)) {
                 throw new UnableToCreateMedicationException("Price must be more than 0.00");
             }
+            List<DrugRestriction> newDrugs = newMedication.getDrugRestrictions(); // current new medication list of drug restrictions
+                List<Medication> medicationList = medicationRepository.findAll(); // all the medications
+            System.out.println(newDrugs);
+
+                    for (DrugRestriction drugInMedication : newDrugs) { //for all the drugs in the current new medication
+                        for (Medication meds : medicationList) { // for all the meds present in list of medications
+                            System.out.println(meds.getInventoryItemName());
+                            System.out.println(drugInMedication.getDrugName());
+                            if (drugInMedication.getDrugName().equals(meds.getInventoryItemName())) { // check if the drug in new medication is the same as a medication
+//                                Medication restrictedMedication = medicationRepository.findByInventoryItemNameContainingIgnoreCase(name);
+                                DrugRestriction newMedicationRestriction = new DrugRestriction(name);
+                                System.out.println("check " + meds);
+                                meds.getDrugRestrictions().add(newMedicationRestriction);
+//                                medicationRepository.save(meds);
+                            }
+                        }
+                    }
+
             medicationRepository.save(newMedication);
             return newMedication;
         } catch (Exception ex) {
@@ -165,6 +184,46 @@ public class MedicationService {
                     }
                     medication.setInventoryItemName(updatedMedication.getInventoryItemName());
                 }
+
+                    List<DrugRestriction> updatedRestrictions = updatedMedication.getDrugRestrictions();
+                    List<DrugRestriction> drugList = drugRestrictionRepository.findAll();
+                    List<Medication> medicationList = medicationRepository.findAll(); // all the medications
+                    for (DrugRestriction drug : drugList) {
+                        System.out.println("list " + drug);
+                        if ((!updatedRestrictions.contains(drug)) && (medication.getDrugRestrictions().contains(drug))) {
+                            System.out.println("Updated " + updatedRestrictions);
+                            System.out.println("Med " + medication.getDrugRestrictions());
+                            Medication medication1 = medicationRepository.findByInventoryItemNameContainingIgnoreCase(drug.getDrugName());
+                            List<DrugRestriction> medication1Drugs = medication1.getDrugRestrictions();
+                            Iterator<DrugRestriction> iterator = medication1Drugs.iterator();
+                            while (iterator.hasNext()) {
+                                DrugRestriction d = iterator.next();
+                                System.out.println("How many");
+                                if (d.getDrugName().equals(updatedMedication.getInventoryItemName())) {
+                                    System.out.println("Other " + medication1);
+                                    iterator.remove(); // Using the iterator's remove method to avoid ConcurrentModificationException
+                                    drugRestrictionRepository.delete(d);
+                                    System.out.println(d);
+                                    System.out.println("New " + medication1Drugs);
+                                }
+                                System.out.println("Out");
+                            }
+                            System.out.println("drug: " + drug.getDrugRestrictionId());
+                            drugRestrictionRepository.delete(drug);
+                        }
+                        System.out.println("here");
+                    }
+
+                    for (DrugRestriction drugInMedication : updatedRestrictions) { //for all the drugs in the current new medication
+                        for (Medication meds : medicationList) { // for all the meds present in list of medications
+                            if (drugInMedication.getDrugName().equals(meds.getInventoryItemName())) { // check if the drug in new medication is the same as a medication
+                                DrugRestriction newMedicationRestriction = new DrugRestriction(updatedMedication.getInventoryItemName());
+                                System.out.println("med " + meds);
+                                meds.getDrugRestrictions().add(newMedicationRestriction);
+                            }
+                        }
+                    }
+
                 if (updatedMedication.getInventoryItemDescription() != null) medication.setInventoryItemDescription(updatedMedication.getInventoryItemDescription());
                 if (updatedMedication.getItemTypeEnum() != null) medication.setItemTypeEnum(updatedMedication.getItemTypeEnum());
                 if (updatedMedication.getQuantityInStock() != null) medication.setQuantityInStock(updatedMedication.getQuantityInStock());
@@ -172,16 +231,7 @@ public class MedicationService {
                 if (updatedMedication.getRetailPricePerQuantity() != null) medication.setRetailPricePerQuantity(updatedMedication.getRetailPricePerQuantity());
                 if (updatedMedication.getAllergenEnumList() != null) medication.setAllergenEnumList(updatedMedication.getAllergenEnumList());
                 if (updatedMedication.getComments() != null) medication.setComments(updatedMedication.getComments());
-                if (updatedMedication.getDrugRestrictions() != null) {
-                    List<DrugRestriction> updatedRestrictions = updatedMedication.getDrugRestrictions();
-                    List<DrugRestriction> drugList = drugRestrictionRepository.findAll();
-                    for (DrugRestriction drug : drugList) {
-                        if ((!updatedRestrictions.contains(drug)) && (medication.getDrugRestrictions().contains(drug))) {
-                            drugRestrictionRepository.delete(drug);
-                        }
-                    }
-                    medication.setDrugRestrictions(updatedMedication.getDrugRestrictions());
-                }
+                if (updatedMedication.getDrugRestrictions() != null) medication.setDrugRestrictions(updatedMedication.getDrugRestrictions());
 
                 medicationRepository.save(medication);
                 return medication;
