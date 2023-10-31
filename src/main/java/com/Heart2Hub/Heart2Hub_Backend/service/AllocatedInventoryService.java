@@ -4,10 +4,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.AllocatedInventory;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ConsumableEquipment;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Facility;
-import com.Heart2Hub.Heart2Hub_Backend.exception.FacilityNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.InsufficientLeaveBalanceException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.InsufficientQuantityException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateFacilityException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.*;
 import com.Heart2Hub.Heart2Hub_Backend.repository.AllocatedInventoryRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ConsumableEquipmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.FacilityRepository;
@@ -43,12 +40,18 @@ public class AllocatedInventoryService {
 //        return allocatedInventoryRepository.findAllocatedInventoriesByFacility(f);
 //    }
 
-    public AllocatedInventory createAllocatedInventory(Long facilityId, Long inventoryItemId, Integer quantity, Integer minQuantity) {
+    public AllocatedInventory createAllocatedInventory(Long facilityId, Long inventoryItemId, Integer quantity, Integer minQuantity) throws UnableToCreateConsumableEquipmentException {
         AllocatedInventory item = new AllocatedInventory(quantity, minQuantity);
         ConsumableEquipment equipment = consumableEquipmentRepository.findById(inventoryItemId).get();
         Facility facility = facilityRepository.findById(facilityId).get();
         item.setFacility(facility);
         item.setConsumableEquipment(equipment);
+        List<AllocatedInventory> facilityInventory = facility.getListOfAllocatedInventories();
+        for (AllocatedInventory inventory: facilityInventory) {
+            if (inventoryItemId == inventory.getConsumableEquipment().getInventoryItemId()) {
+                throw new UnableToCreateConsumableEquipmentException("Cannot add item already in allocated inventory");
+            }
+        }
 
         if (equipment.getQuantityInStock() < quantity) {
             throw new InsufficientQuantityException("Not enough quantity");
