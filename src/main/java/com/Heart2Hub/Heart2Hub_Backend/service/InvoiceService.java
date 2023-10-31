@@ -32,6 +32,10 @@ public class InvoiceService {
         this.transactionItemRepository = transactionItemRepository;
     }
 
+    public Invoice findInvoice(Long invoiceId) {
+        return invoiceRepository.findById(invoiceId).get();
+    }
+
     public List<Invoice> viewAllInvoices() {
         return invoiceRepository.findAll();
     }
@@ -77,6 +81,10 @@ public class InvoiceService {
 
         Invoice i = invoiceRepository.findById(invoiceId).get();
 
+        if (insuranceClaimAmount.compareTo(i.getInvoiceAmount()) > 0) {
+            throw new ClaimErrorException("Insurance claim cannot exceed Invoice Amount!");
+        }
+
         TransactionItem item = new TransactionItem("(Insurance Claim: " + insurerName + ")", insurerName, 1,
                 insuranceClaimAmount.multiply(BigDecimal.valueOf(-1)), null);
 
@@ -117,6 +125,14 @@ public class InvoiceService {
         return claim;
     }
 
+    public MedishieldClaim rejectMedishieldClaim(Long medishieldId) {
+        MedishieldClaim claim = medishieldClaimRepository.findById(medishieldId).get();
+//        Invoice invoice = invoiceRepository.findById(invoiceId).get();
+        claim.setApprovalStatusEnum(ApprovalStatusEnum.REJECTED);
+        medishieldClaimRepository.save(claim);
+        return claim;
+    }
+
     public void deleteInsuranceClaim(Long claimId, Long invoiceId) {
         InsuranceClaim claim = insuranceClaimRepository.findById(claimId).get();
         Invoice invoice = invoiceRepository.findById(invoiceId).get();
@@ -124,14 +140,24 @@ public class InvoiceService {
         List<TransactionItem> items = invoice.getListOfTransactionItem();
         TransactionItem deleteItem = null;
         for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).getTransactionItemDescription().equals("(Insurance Claim: " + claim.getInsurerName() + ")")) {
+            String description = items.get(i).getTransactionItemDescription();
+            if (description.contains(claim.getInsurerName())) {
                 deleteItem = items.get(i);
             }
         }
-
         invoice.getListOfTransactionItem().remove(deleteItem);
+        invoice.setInsuranceClaim(null);
+        if (deleteItem != null) {
+            transactionItemRepository.delete(deleteItem);
+        }
+        if (invoice.getInvoiceAmount().compareTo(BigDecimal.ZERO) > 0) {
+            invoice.setInvoiceStatusEnum(InvoiceStatusEnum.UNPAID);
+        }
+
+        BigDecimal newAmount = invoice.getInvoiceAmount().add(claim.getInsuranceClaimAmount());
+        invoice.setInvoiceAmount(newAmount);
         invoiceRepository.save(invoice);
-        transactionItemRepository.delete(deleteItem);
+        insuranceClaimRepository.delete(claim);
 
     }
 
@@ -140,19 +166,33 @@ public class InvoiceService {
         Invoice invoice = invoiceRepository.findById(invoiceId).get();
 
         List<TransactionItem> items = invoice.getListOfTransactionItem();
+        TransactionItem deleteItem = null;
 
-        if (claim.getApprovalStatusEnum().equals(ApprovalStatusEnum.PENDING)) {
-            TransactionItem deleteItem = null;
+        if (claim.getApprovalStatusEnum().equals(ApprovalStatusEnum.APPROVED)) {
             for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getTransactionItemDescription().equals("Medishield")) {
+                String description = items.get(i).getTransactionItemDescription();
+                if (description.contains("Medishield")) {
                     deleteItem = items.get(i);
                 }
             }
-            invoice.getListOfTransactionItem().remove(deleteItem);
+        }
+        invoice.getListOfTransactionItem().remove(deleteItem);
+        invoice.setMedishieldClaim(null);
+        if (deleteItem != null) {
             transactionItemRepository.delete(deleteItem);
+        }
 
+        if (claim.getApprovalStatusEnum().equals(ApprovalStatusEnum.APPROVED)) {
+            BigDecimal newAmount = invoice.getInvoiceAmount().add(claim.getMedishieldClaimAmount());
+            invoice.setInvoiceAmount(newAmount);
+        }
+
+        if (invoice.getInvoiceAmount().compareTo(BigDecimal.ZERO) > 0) {
+            invoice.setInvoiceStatusEnum(InvoiceStatusEnum.UNPAID);
         }
         invoiceRepository.save(invoice);
+        medishieldClaimRepository.delete(claim);
+
     }
 
 
@@ -161,6 +201,10 @@ public class InvoiceService {
 
         if (insuranceClaimAmount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ClaimErrorException("Insurance claim amount must be greater than zero.");
+        }
+
+        if (insuranceClaimAmount.compareTo(i.getInvoiceAmount()) > 0) {
+            throw new ClaimErrorException("Medishield claim cannot exceed Invoice Amount! ");
         }
 
         MedishieldClaim claim = new MedishieldClaim(LocalDateTime.now(),insuranceClaimAmount, ApprovalStatusEnum.PENDING);

@@ -26,6 +26,10 @@ public class InvoiceController {
     public ResponseEntity<List<Invoice>> getAllInvoices() {
         return ResponseEntity.ok(invoiceService.viewAllInvoices());
     }
+    @GetMapping("/findInvoice/{id}")
+    public ResponseEntity<Invoice> findInvoice(@PathVariable Long id) {
+        return ResponseEntity.ok(invoiceService.findInvoice(id));
+    }
 
     @GetMapping("/findPatientOfInvoice/{id}")
     public ResponseEntity<String> findPatientOfInvoice(@PathVariable Long id) {
@@ -65,7 +69,7 @@ public class InvoiceController {
 
     @PostMapping("/createMedishieldClaim/{invoiceId}")
     public ResponseEntity<Invoice> createMedishieldClaim(@PathVariable Long invoiceId, @RequestBody  Map<String, Object> requestBody) {
-        BigDecimal insuranceClaimAmount = BigDecimal.valueOf(Double.parseDouble(requestBody.get("insurerName").toString()));
+        BigDecimal insuranceClaimAmount = BigDecimal.valueOf(Double.parseDouble(requestBody.get("medishieldClaimAmount").toString()));
 
         return ResponseEntity.ok(invoiceService.createMedishieldClaim(invoiceId, insuranceClaimAmount));
     }
@@ -77,12 +81,17 @@ public class InvoiceController {
 
     @DeleteMapping("/deleteMedishieldClaim/{claimId}/{invoiceId}")
     public void deleteMedishieldClaim(@PathVariable Long claimId, @PathVariable Long invoiceId) {
-        invoiceService.deleteInsuranceClaim(claimId, invoiceId);
+        invoiceService.deleteMedishieldClaim(claimId, invoiceId);
     }
 
-    @PutMapping("/approveMedishieldClaim/{invoiceId}")
+    @PutMapping("/approveMedishieldClaim/{medishieldId}/{invoiceId}")
     public ResponseEntity<MedishieldClaim> approveMedishieldClaim(@PathVariable Long medishieldId, @PathVariable Long invoiceId) {
         return ResponseEntity.ok(invoiceService.approveMedishieldClaim(medishieldId, invoiceId));
+    }
+
+    @PutMapping("/rejectMedishieldClaim/{medishieldId}")
+    public ResponseEntity<MedishieldClaim> rejectMedishieldClaim(@PathVariable Long medishieldId) {
+        return ResponseEntity.ok(invoiceService.rejectMedishieldClaim(medishieldId));
     }
 
 }
