@@ -1,6 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
@@ -23,48 +24,51 @@ public class MedicationOrder {
     private String title;
 
     @NotNull
-    private Integer dosage;
+    private Integer quantity;
 
     @NotNull
     private String comments;
 
     @NotNull
-    private Integer frequency;
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime startDate;
 
     @NotNull
-    private Boolean isActive;
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime endDate;
+
+    @NotNull
+    private Boolean isCompleted = false;
 
     @OneToOne(fetch = FetchType.LAZY,optional = false)
     @JoinColumn(name = "medication_id", nullable = false)
     private Medication medication;
 
-    @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "admission_id",nullable = true)
-    private Admission admission;
-
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "prescription_record_id", nullable = false)
-    private PrescriptionRecord prescriptionRecord;
-
-    @JsonManagedReference
-    @OneToMany(mappedBy = "medicationOrder", fetch = FetchType.LAZY)
-    private List<MedicationOrderEvent> listOfMedicationOrderEvents;
+//    @JsonBackReference
+//    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+//    @JoinColumn(name = "admission_id",nullable = true)
+//    private Admission admission;
+//
+//    @OneToOne(fetch = FetchType.LAZY, optional = false)
+//    @JoinColumn(name = "prescription_record_id", nullable = false)
+//    private PrescriptionRecord prescriptionRecord;
+//
+//    @JsonManagedReference
+//    @OneToMany(mappedBy = "medicationOrder", fetch = FetchType.LAZY)
+//    private List<MedicationOrderEvent> listOfMedicationOrderEvents;
 
 
     public MedicationOrder() {
-        this.isActive = true;
-        this.listOfMedicationOrderEvents = List.of();
     }
 
-    public MedicationOrder(String title, Medication medication, Integer dosage, String comments, Integer frequency, Admission admission, PrescriptionRecord prescriptionRecord) {
+    public MedicationOrder(String title, Integer quantity, String comments, LocalDateTime startDate, LocalDateTime endDate) {
         this();
         this.title = title;
-        this.medication = medication;
-        this.dosage = dosage;
+        this.quantity = quantity;
         this.comments = comments;
-        this.frequency = frequency;
-        this.admission = admission;
-        this.prescriptionRecord = prescriptionRecord;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 }

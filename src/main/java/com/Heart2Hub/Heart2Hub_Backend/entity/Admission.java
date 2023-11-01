@@ -75,7 +75,8 @@ public class Admission {
     private List<Staff> listOfAssignedStaff;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "admission",fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "admission_id")
     private List<MedicationOrder> listOfMedicationOrders;
 
     @JsonIgnore
