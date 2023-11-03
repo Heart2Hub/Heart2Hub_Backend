@@ -82,13 +82,20 @@ public class WardService {
                 int month = firstDate.getMonthValue();
                 int year = firstDate.getYear();
                 int hour = firstDate.getHour();
-                if (hour >= 12) {
-                    day = day + 1;
-                }
                 firstDate = LocalDateTime.of(year, month, day, 12, 00, 00);
+                if (hour >= 12) {
+                    firstDate = firstDate.plusDays(1);
+                }
 
                 for (int i = 0; i < 7; i++) {
-                    WardAvailability wardAvailability = new WardAvailability(firstDate, newWard.getCapacity(), newWard);
+                    WardAvailability wardAvailability;
+
+                    if (wc.getWardClassName().equals("A") && i == 1) {
+                        wardAvailability = new WardAvailability(firstDate, 0, newWard);
+                    } else {
+                        wardAvailability = new WardAvailability(firstDate, newWard.getCapacity(), newWard);
+                    }
+
                     newWard.getListOfWardAvailabilities().add(wardAvailability);
                     firstDate = firstDate.plusDays(1);
                 }

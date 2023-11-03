@@ -67,6 +67,15 @@ public class TransactionItemService {
         List<Medication> patientMedicationInCart = new ArrayList<>();
         for (TransactionItem value : patientCart) {
             if (value.getInventoryItem() instanceof Medication) {
+                if (value.getInventoryItem().getInventoryItemId() == itemId) {
+                    value.setTransactionItemQuantity(value.getTransactionItemQuantity() + transactionItemQuantity);
+                    InventoryItem i = inventoryItemRepository.findById(itemId).get();
+                    Medication med = (Medication) i;
+                    transactionItem = value;
+                    if (med.getQuantityInStock() - transactionItem.getTransactionItemQuantity() < 0) {
+                        throw new InsufficientInventoryException("Insufficient Inventory for Medication");
+                    }
+                }
                 patientMedicationInCart.add((Medication) value.getInventoryItem());
             }
         }
@@ -384,6 +393,17 @@ public class TransactionItemService {
     public TransactionItem updateTransactionItem(Long transactionItemId, Integer transactionItemQuantity) {
         TransactionItem transactionItem = transactionItemRepository.findById(transactionItemId).get();
 
+        InventoryItem item = transactionItem.getInventoryItem();
+        int oldQuantity = transactionItem.getTransactionItemQuantity();
+        Medication med = (Medication) item;
+        if (transactionItemQuantity > oldQuantity) {
+            if (med.getQuantityInStock() - (transactionItemQuantity - oldQuantity) < 0) {
+                throw new InsufficientInventoryException("Insufficient Inventory for Medication");
+            }
+            med.setQuantityInStock(med.getQuantityInStock() - (transactionItemQuantity - oldQuantity));
+        } else if (transactionItemQuantity < oldQuantity){
+            med.setQuantityInStock(med.getQuantityInStock() + (oldQuantity - transactionItemQuantity));
+        }
         transactionItem.setTransactionItemQuantity(transactionItemQuantity);
         return transactionItemRepository.save(transactionItem);
     }
