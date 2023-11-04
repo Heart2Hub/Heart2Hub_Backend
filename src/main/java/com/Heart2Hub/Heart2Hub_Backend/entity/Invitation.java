@@ -1,6 +1,8 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.TreatmentPlanTypeEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -22,31 +24,41 @@ public class Invitation {
     private UUID invitationNehrId = UUID.randomUUID();
 
     @NotNull
-    private String createdDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdDate;
 
     @NotNull
     private String invitedBy;
 
     @NotNull
-    private Boolean isAccepted;
+    private Boolean isPrimary;
 
     @NotNull
     private Boolean isRead;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @NotNull
+    private Boolean isApproved;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "treatmentPlanRecordId",nullable = false)
     private TreatmentPlanRecord treatmentPlanRecord;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "staff_id", nullable = false)
     private Staff staff;
 
     public Invitation() {
+        this.isRead = false;
+        this.isApproved = false;
     }
 
-    public Invitation(String createdDate, String invitedBy, Boolean isAccepted, Boolean isRead) {
-        this.createdDate = createdDate;
+    public Invitation(String invitedBy, Boolean isPrimary) {
+        this();
+        this.createdDate = LocalDateTime.now();
         this.invitedBy = invitedBy;
-        this.isAccepted = isAccepted;
-        this.isRead = isRead;
+        this.isPrimary = isPrimary;
     }
 }

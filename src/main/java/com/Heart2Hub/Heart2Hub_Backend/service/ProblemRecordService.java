@@ -18,99 +18,153 @@ import java.util.Optional;
 @Transactional
 public class ProblemRecordService {
 
-    private final ProblemRecordRepository problemRecordRepository;
+  private final ProblemRecordRepository problemRecordRepository;
 
-    private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
+  private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
 
-    private final MedicalHistoryRecordService medicalHistoryRecordService;
+  private final MedicalHistoryRecordService medicalHistoryRecordService;
 
-    public ProblemRecordService(ProblemRecordRepository problemRecordRepository, ElectronicHealthRecordRepository electronicHealthRecordRepository, MedicalHistoryRecordService medicalHistoryRecordService) {
-        this.problemRecordRepository = problemRecordRepository;
-        this.electronicHealthRecordRepository = electronicHealthRecordRepository;
-        this.medicalHistoryRecordService = medicalHistoryRecordService;
+  public ProblemRecordService(ProblemRecordRepository problemRecordRepository,
+      ElectronicHealthRecordRepository electronicHealthRecordRepository,
+      MedicalHistoryRecordService medicalHistoryRecordService) {
+    this.problemRecordRepository = problemRecordRepository;
+    this.electronicHealthRecordRepository = electronicHealthRecordRepository;
+    this.medicalHistoryRecordService = medicalHistoryRecordService;
+  }
+
+  public ProblemRecord createProblemRecord(Long electronicHealthRecordId,
+      ProblemRecord newProblemRecord) throws UnableToCreateProblemRecordException {
+    try {
+      ElectronicHealthRecord assignedElectronicHealthRecord = electronicHealthRecordRepository.findById(
+          electronicHealthRecordId).get();
+      assignedElectronicHealthRecord.getListOfProblemRecords().add(newProblemRecord);
+      ProblemRecord problemRecord = problemRecordRepository.save(newProblemRecord);
+      electronicHealthRecordRepository.save(assignedElectronicHealthRecord);
+
+//      System.out.println(problemRecord.getProblemTypeEnum());
+//      System.out.println(
+//          problemRecord.getProblemTypeEnum().toString().equals("ALLERGIES_AND_IMMUNOLOGIC");
+//      if (problemRecord.getProblemTypeEnum().toString().equals("ALLERGIES_AND_IMMUNOLOGIC")) {
+//        resolveProblemRecord(electronicHealthRecordId, newProblemRecord.getProblemRecordId());
+//      }
+      return newProblemRecord;
+    } catch (Exception ex) {
+      throw new UnableToCreateProblemRecordException(ex.getMessage());
     }
+  }
 
-    public ProblemRecord createProblemRecord(Long electronicHealthRecordId, ProblemRecord newProblemRecord) throws UnableToCreateProblemRecordException {
-        try {
-            ElectronicHealthRecord assignedElectronicHealthRecord =  electronicHealthRecordRepository.findById(electronicHealthRecordId).get();
-            assignedElectronicHealthRecord.getListOfProblemRecords().add(newProblemRecord);
-            problemRecordRepository.save(newProblemRecord);
-            electronicHealthRecordRepository.save(assignedElectronicHealthRecord);
-            return newProblemRecord;
-        } catch (Exception ex) {
-            throw new UnableToCreateProblemRecordException(ex.getMessage());
+  public MedicalHistoryRecord createAllergyRecord(Long electronicHealthRecordId,
+      ProblemRecord newProblemRecord) throws UnableToCreateProblemRecordException {
+    try {
+//      ElectronicHealthRecord electronicHealthRecord = electronicHealthRecordRepository.findById(
+//          electronicHealthRecordId).get();
+      MedicalHistoryRecord newMedicalHistoryRecord = new MedicalHistoryRecord(
+          newProblemRecord.getDescription(),
+          newProblemRecord.getCreatedBy(),
+          LocalDateTime.now(),
+          LocalDateTime.now(),
+          newProblemRecord.getPriorityEnum(),
+          newProblemRecord.getProblemTypeEnum()
+      );
+      medicalHistoryRecordService.createMedicalHistoryRecord(electronicHealthRecordId,
+          newMedicalHistoryRecord);
+      return newMedicalHistoryRecord;
+    } catch (
+        Exception ex) {
+      throw new ProblemRecordNotFoundException(ex.getMessage());
+    }
+  }
+
+  public String deleteProblemRecord(Long electronicHealthRecordId, Long problemRecordId)
+      throws ProblemRecordNotFoundException {
+    try {
+      Optional<ProblemRecord> problemRecordOptional = problemRecordRepository.findById(
+          problemRecordId);
+      if (problemRecordOptional.isPresent()) {
+        ProblemRecord problemRecord = problemRecordOptional.get();
+        ElectronicHealthRecord electronicHealthRecord = electronicHealthRecordRepository.findById(
+            electronicHealthRecordId).get();
+        electronicHealthRecord.getListOfProblemRecords().remove(problemRecord);
+        problemRecordRepository.delete(problemRecord);
+        return "ProblemRecord with ProblemRecordId " + problemRecordId
+            + " has been deleted successfully.";
+      } else {
+        throw new ProblemRecordNotFoundException(
+            "ProblemRecord with ID: " + problemRecordId + " is not found");
+      }
+    } catch (Exception ex) {
+      throw new ProblemRecordNotFoundException(ex.getMessage());
+    }
+  }
+
+  public ProblemRecord updateProblemRecord(Long problemRecordId, ProblemRecord updatedProblemRecord)
+      throws ProblemRecordNotFoundException {
+    try {
+      Optional<ProblemRecord> problemRecordOptional = problemRecordRepository.findById(
+          problemRecordId);
+      if (problemRecordOptional.isPresent()) {
+        ProblemRecord problemRecord = problemRecordOptional.get();
+        if (updatedProblemRecord.getDescription() != null) {
+          problemRecord.setDescription(updatedProblemRecord.getDescription());
         }
-    }
-
-    public String deleteProblemRecord(Long electronicHealthRecordId, Long problemRecordId) throws ProblemRecordNotFoundException {
-        try {
-            Optional<ProblemRecord> problemRecordOptional = problemRecordRepository.findById(problemRecordId);
-            if (problemRecordOptional.isPresent()) {
-                ProblemRecord problemRecord = problemRecordOptional.get();
-                ElectronicHealthRecord electronicHealthRecord = electronicHealthRecordRepository.findById(electronicHealthRecordId).get();
-                electronicHealthRecord.getListOfProblemRecords().remove(problemRecord);
-                problemRecordRepository.delete(problemRecord);
-                return "ProblemRecord with ProblemRecordId " + problemRecordId + " has been deleted successfully.";
-            } else {
-                throw new ProblemRecordNotFoundException("ProblemRecord with ID: " + problemRecordId + " is not found");
-            }
-        } catch (Exception ex) {
-            throw new ProblemRecordNotFoundException(ex.getMessage());
+        if (updatedProblemRecord.getPriorityEnum() != null) {
+          problemRecord.setPriorityEnum(updatedProblemRecord.getPriorityEnum());
         }
-    }
-
-    public ProblemRecord updateProblemRecord(Long problemRecordId, ProblemRecord updatedProblemRecord) throws ProblemRecordNotFoundException {
-        try {
-            Optional<ProblemRecord> problemRecordOptional = problemRecordRepository.findById(problemRecordId);
-            if (problemRecordOptional.isPresent()) {
-                ProblemRecord problemRecord = problemRecordOptional.get();
-                if (updatedProblemRecord.getDescription() != null) problemRecord.setDescription(updatedProblemRecord.getDescription());
-                if (updatedProblemRecord.getPriorityEnum() != null) problemRecord.setPriorityEnum(updatedProblemRecord.getPriorityEnum());
-                if (updatedProblemRecord.getProblemTypeEnum() != null) problemRecord.setProblemTypeEnum(updatedProblemRecord.getProblemTypeEnum());
-                problemRecordRepository.save(problemRecord);
-                return problemRecord;
-            } else {
-                throw new ProblemRecordNotFoundException("ProblemRecord with ID: " + problemRecordId + " is not found");
-            }
-        } catch (Exception ex) {
-            throw new ProblemRecordNotFoundException(ex.getMessage());
+        if (updatedProblemRecord.getProblemTypeEnum() != null) {
+          problemRecord.setProblemTypeEnum(updatedProblemRecord.getProblemTypeEnum());
         }
+        problemRecordRepository.save(problemRecord);
+        return problemRecord;
+      } else {
+        throw new ProblemRecordNotFoundException(
+            "ProblemRecord with ID: " + problemRecordId + " is not found");
+      }
+    } catch (Exception ex) {
+      throw new ProblemRecordNotFoundException(ex.getMessage());
     }
+  }
 
-    public List<ProblemRecord> getAllProblemRecordsByElectronicHealthRecordId(Long electronicHealthRecordId) throws ProblemRecordNotFoundException {
-        try {
-            List<ProblemRecord> problemRecordList = electronicHealthRecordRepository.findById(electronicHealthRecordId).get().getListOfProblemRecords();
-            return problemRecordList;
-        } catch (Exception ex) {
-            throw new ProblemRecordNotFoundException(ex.getMessage());
-        }
+  public List<ProblemRecord> getAllProblemRecordsByElectronicHealthRecordId(
+      Long electronicHealthRecordId) throws ProblemRecordNotFoundException {
+    try {
+      List<ProblemRecord> problemRecordList = electronicHealthRecordRepository.findById(
+          electronicHealthRecordId).get().getListOfProblemRecords();
+      return problemRecordList;
+    } catch (Exception ex) {
+      throw new ProblemRecordNotFoundException(ex.getMessage());
     }
+  }
 
-    public MedicalHistoryRecord resolveProblemRecord(Long electronicHealthRecordId, Long problemRecordId) throws ProblemRecordNotFoundException {
-        try {
-            Optional<ProblemRecord> problemRecordOptional = problemRecordRepository.findById(problemRecordId);
-            if (problemRecordOptional.isPresent()) {
-                ProblemRecord problemRecord = problemRecordOptional.get();
-                ElectronicHealthRecord electronicHealthRecord = electronicHealthRecordRepository.findById(electronicHealthRecordId).get();
-                electronicHealthRecord.getListOfProblemRecords().remove(problemRecord);
-                MedicalHistoryRecord newMedicalHistoryRecord = new MedicalHistoryRecord(
-                        problemRecord.getDescription(),
-                        problemRecord.getCreatedBy(),
-                        problemRecord.getCreatedDate(),
-                        LocalDateTime.now(),
-                        problemRecord.getPriorityEnum(),
-                        problemRecord.getProblemTypeEnum()
-                );
-                problemRecordRepository.delete(problemRecord);
-                medicalHistoryRecordService.createMedicalHistoryRecord(electronicHealthRecordId, newMedicalHistoryRecord);
-                return newMedicalHistoryRecord;
-            } else {
-                throw new ProblemRecordNotFoundException("ProblemRecord with ID: " + problemRecordId + " is not found");
-            }
-        } catch (Exception ex) {
-            throw new ProblemRecordNotFoundException(ex.getMessage());
-        }
+  public MedicalHistoryRecord resolveProblemRecord(Long electronicHealthRecordId,
+      Long problemRecordId) throws ProblemRecordNotFoundException {
+    try {
+      Optional<ProblemRecord> problemRecordOptional = problemRecordRepository.findById(
+          problemRecordId);
+      if (problemRecordOptional.isPresent()) {
+        ProblemRecord problemRecord = problemRecordOptional.get();
+        ElectronicHealthRecord electronicHealthRecord = electronicHealthRecordRepository.findById(
+            electronicHealthRecordId).get();
+        electronicHealthRecord.getListOfProblemRecords().remove(problemRecord);
+        MedicalHistoryRecord newMedicalHistoryRecord = new MedicalHistoryRecord(
+            problemRecord.getDescription(),
+            problemRecord.getCreatedBy(),
+            problemRecord.getCreatedDate(),
+            LocalDateTime.now(),
+            problemRecord.getPriorityEnum(),
+            problemRecord.getProblemTypeEnum()
+        );
+        problemRecordRepository.delete(problemRecord);
+        medicalHistoryRecordService.createMedicalHistoryRecord(electronicHealthRecordId,
+            newMedicalHistoryRecord);
+        return newMedicalHistoryRecord;
+      } else {
+        throw new ProblemRecordNotFoundException(
+            "ProblemRecord with ID: " + problemRecordId + " is not found");
+      }
+    } catch (Exception ex) {
+      throw new ProblemRecordNotFoundException(ex.getMessage());
     }
+  }
 
     public ElectronicHealthRecord deleteAllProblemRecordsFromElectronicHealthRecord(Long electronicHealthRecordId) throws ElectronicHealthRecordNotFoundException {
         try {

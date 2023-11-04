@@ -19,14 +19,20 @@ public class ServiceItemController {
 
         // As an admin, I can view all consumable equipments
         @GetMapping("/getAllServiceItem")
-        public ResponseEntity<List<ServiceItem>> getAllServiceItem(@RequestParam("name") String name) {
-            return ResponseEntity.ok(serviceItemService.getAllServiceItemByName(name));
+        public ResponseEntity<List<ServiceItem>> getAllServiceItem() {
+            return ResponseEntity.ok(serviceItemService.getAllServiceItem());
         }
 
+    @GetMapping("/getAllServiceItemByUnit/{unitId}")
+    public ResponseEntity<List<ServiceItem>> getAllServiceItemByUnit(@PathVariable Long unitId) {
+        return ResponseEntity.ok(serviceItemService.getAllServiceItemInUnit(unitId));
+    }
+
         @PostMapping("/createServiceItem")
-        public ResponseEntity<ServiceItem> createServiceItem(@RequestBody ServiceItem serviceItem) {
+        public ResponseEntity<ServiceItem> createServiceItem(@RequestParam Long unitId, @RequestBody ServiceItem serviceItem) {
+           System.out.println("unit Id is here " + unitId);
             return ResponseEntity.ok(
-                    serviceItemService.createServiceItem(serviceItem)
+                    serviceItemService.createServiceItem(unitId,serviceItem)
             );
         }
 

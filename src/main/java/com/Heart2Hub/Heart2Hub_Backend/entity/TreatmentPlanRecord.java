@@ -3,7 +3,9 @@ package com.Heart2Hub.Heart2Hub_Backend.entity;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.TreatmentPlanTypeEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -24,6 +26,8 @@ public class TreatmentPlanRecord {
     private UUID treatmentPlanRecordNehrId = UUID.randomUUID();
 
     @NotNull
+    @NotBlank
+    @Size(max = 5000, message = "Description too long")
     private String description;
 
     @NotNull
@@ -43,6 +47,9 @@ public class TreatmentPlanRecord {
     private LocalDateTime endDate;
 
     @NotNull
+    private Boolean isCompleted;
+
+    @NotNull
     @Enumerated(EnumType.STRING)
     private TreatmentPlanTypeEnum treatmentPlanTypeEnum;
 
@@ -51,14 +58,14 @@ public class TreatmentPlanRecord {
 
     public TreatmentPlanRecord() {
         this.listOfImageDocuments = new ArrayList<>();
+        this.endDate = null;
+        this.isCompleted=false;
     }
 
-    public TreatmentPlanRecord(String description, String primaryDoctor, List<String> secondaryDoctors, LocalDateTime startDate, LocalDateTime endDate, TreatmentPlanTypeEnum treatmentPlanTypeEnum) {
+    public TreatmentPlanRecord(String description, LocalDateTime startDate, TreatmentPlanTypeEnum treatmentPlanTypeEnum) {
+        this();
         this.description = description;
-        this.primaryDoctor = primaryDoctor;
-        this.secondaryDoctors = secondaryDoctors;
         this.startDate = startDate;
-        this.endDate = endDate;
         this.treatmentPlanTypeEnum = treatmentPlanTypeEnum;
     }
 }

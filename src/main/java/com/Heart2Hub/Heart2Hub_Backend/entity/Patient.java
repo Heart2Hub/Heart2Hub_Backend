@@ -40,7 +40,7 @@ public class Patient implements UserDetails {
     @Column(unique = true)
     private String password;
 
-    @JsonManagedReference
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "patient")
     private List<Invoice> listOfInvoices;
 
@@ -64,11 +64,12 @@ public class Patient implements UserDetails {
     private ElectronicHealthRecord electronicHealthRecord;
 
     @JsonIgnore
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "patient", fetch = FetchType.LAZY, optional = true)
+    @OneToOne(mappedBy = "patient", fetch = FetchType.LAZY)
     private Admission admission;
 
     @OneToOne(cascade = CascadeType.ALL, optional = true)
     private ImageDocument profilePicture;
+
 
     public Patient() {
         this.listOfInvoices = new ArrayList<>();

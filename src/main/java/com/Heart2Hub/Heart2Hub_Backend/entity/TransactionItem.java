@@ -34,7 +34,7 @@ public class TransactionItem {
     private BigDecimal transactionItemPrice;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "iventory_item_id", nullable = false)
+    @JoinColumn(name = "iventory_item_id", nullable = true)
     private InventoryItem inventoryItem;
 
 

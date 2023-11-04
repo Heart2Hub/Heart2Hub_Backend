@@ -44,14 +44,26 @@ public class PrescriptionRecord {
     @NotNull
     private String prescribedBy;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime lastCollectDate;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     private PrescriptionStatusEnum prescriptionStatusEnum;
 
+    //@NotNull
+    private LocalDateTime expirationDate;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "inventoryItem_id", nullable = true)
+    private InventoryItem inventoryItem;
+
     public PrescriptionRecord() {
     }
 
-    public PrescriptionRecord(LocalDateTime createdDate, String medicationName, Integer medicationQuantity, Integer dosage, String description, String comments, String prescribedBy, PrescriptionStatusEnum prescriptionStatusEnum) {
+    public PrescriptionRecord(LocalDateTime createdDate, String medicationName, Integer medicationQuantity, Integer dosage, String description, String comments,
+                              String prescribedBy, PrescriptionStatusEnum prescriptionStatusEnum, InventoryItem inventoryItem) {
         this.createdDate = createdDate;
         this.medicationName = medicationName;
         this.medicationQuantity = medicationQuantity;
@@ -60,5 +72,6 @@ public class PrescriptionRecord {
         this.comments = comments;
         this.prescribedBy = prescribedBy;
         this.prescriptionStatusEnum = prescriptionStatusEnum;
+        this.inventoryItem = inventoryItem;
     }
 }

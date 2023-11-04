@@ -1,9 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
-import com.Heart2Hub.Heart2Hub_Backend.entity.Department;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Ward;
-import com.Heart2Hub.Heart2Hub_Backend.entity.WardClass;
+import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.DepartmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.SubDepartmentNotFoundException;
@@ -12,12 +9,16 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateWardException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.WardClassRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.WardRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,7 +76,43 @@ public class WardService {
             } else {
                 WardClass wc = wardClassList.get(0);
                 newWard.setWardClass(wc);
+
+                LocalDateTime firstDate = LocalDateTime.now();
+                int day = firstDate.getDayOfMonth();
+                int month = firstDate.getMonthValue();
+                int year = firstDate.getYear();
+                int hour = firstDate.getHour();
+                firstDate = LocalDateTime.of(year, month, day, 12, 00, 00);
+                if (hour >= 12) {
+                    firstDate = firstDate.plusDays(1);
+                }
+
+                for (int i = 0; i < 7; i++) {
+                    WardAvailability wardAvailability;
+
+                    if (wc.getWardClassName().equals("A") && i == 1) {
+                        wardAvailability = new WardAvailability(firstDate, 0, newWard);
+                    } else {
+                        wardAvailability = new WardAvailability(firstDate, newWard.getCapacity(), newWard);
+                    }
+
+                    newWard.getListOfWardAvailabilities().add(wardAvailability);
+                    firstDate = firstDate.plusDays(1);
+                }
+
+                int bedsPerRoom = wc.getBedsPerRoom();
+                int numOfRooms = capacity / bedsPerRoom;
+                for (int i = 1; i <= numOfRooms; i++) {
+                    for (int j = 1; j <= bedsPerRoom; j++) {
+                        Admission admission = new Admission();
+                        admission.setRoom(i);
+                        admission.setBed(j);
+                        newWard.getListOfCurrentDayAdmissions().add(admission);
+                    }
+                }
+
                 wardRepository.save(newWard);
+
                 return newWard;
             }
         } catch (Exception ex) {
@@ -91,6 +128,16 @@ public class WardService {
             throw new SubDepartmentNotFoundException(ex.getMessage());
         }
     }
+
+    public List<Ward> getAllWardsByWardClass(String wardClassName) {
+        WardClass wardClass = wardClassRepository.findByWardClassNameContainingIgnoreCase(wardClassName).get(0);
+        return wardRepository.findByWardClass(wardClass);
+    }
+
+//    public Admission getCurrentDayAdmissionsForWard(String name) {
+//        Ward ward = wardRepository.findByNameContainingIgnoreCase(name).get(0);
+//        return ward.getListOfCurrentDayAdmissions()[0];
+//    }
 
 
 }

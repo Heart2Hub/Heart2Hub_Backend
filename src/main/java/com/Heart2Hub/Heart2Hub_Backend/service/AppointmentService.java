@@ -1,12 +1,15 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.DispensaryStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PriorityEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.*;
 import com.Heart2Hub.Heart2Hub_Backend.repository.AppointmentRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -182,7 +185,7 @@ public class AppointmentService {
     if (staffUsername != null && !staffUsername.isEmpty()) {
       Staff staff = staffService.getStaffByUsername(staffUsername);
       newAppointment.setComments(
-          "To be assigned to Dr." + staff.getFirstname() + " " + staff.getLastname() + " (SYSTEM GENERATED)");
+          "To be assigned to " + staff.getStaffRoleEnum() + " " + staff.getFirstname() + " " + staff.getLastname() + " (SYSTEM GENERATED)");
       newAppointment.getListOfStaff().add(staff);
     }
 
@@ -192,35 +195,54 @@ public class AppointmentService {
   public Appointment assignAppointmentToStaff(Long appointmentId, Long toStaffId, Long fromStaffId) {
 
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
-    Staff staff = staffService.findById(toStaffId);
+    if (toStaffId > 0) {
+      Staff staff = staffService.findById(toStaffId);
 
-    //check staff not disabled
-    if (staff.getDisabled()) {
-      throw new StaffDisabledException("Unable to assign appointment to Disabled Staff");
-    }
+      //check staff not disabled
+      if (staff.getDisabled()) {
+        throw new StaffDisabledException("Unable to assign appointment to Disabled Staff");
+      }
 
-    //staff only can assign if the appointment is unassigned, or that assignment belongs to that staff
-    if (appointment.getCurrentAssignedStaff() == null
-        || (appointment.getCurrentAssignedStaff() != null && Objects.equals(
-        appointment.getCurrentAssignedStaff().getStaffId(), fromStaffId))) {
+      // If dragging to consult, check if patient has already been allocated a doctor
+      if (staff.getStaffRoleEnum().equals(StaffRoleEnum.DOCTOR)) {
+        if (!appointment.getListOfStaff().isEmpty()) {
+          for (Staff staff1 : appointment.getListOfStaff()) {
+            if (staff1.getStaffRoleEnum().equals(StaffRoleEnum.DOCTOR) && staff1.getStaffId() != toStaffId) {
+              throw new UnableToAssignAppointmentException(
+                      "Unable to assign appointment ticket as patient has already been assigned to Dr. " + staff1.getFirstname() + " " + staff1.getLastname());
+            }
+          }
+        }
+      }
 
-      //assign new staff to appointment
-      appointment.setCurrentAssignedStaff(staff);
+      //staff only can assign if the appointment is unassigned, or that assignment belongs to that staff
+      if (appointment.getCurrentAssignedStaff() == null
+              || (appointment.getCurrentAssignedStaff() != null && Objects.equals(
+              appointment.getCurrentAssignedStaff().getStaffId(), fromStaffId))) {
 
-      //set arrived to false because handover to new staff
-      appointment.setArrived(false);
+        //assign new staff to appointment
+        appointment.setCurrentAssignedStaff(staff);
 
-      // BIG PROBLEM HERE
+        //set arrived to false because handover to new staff
+        appointment.setArrived(false);
+
+        // BIG PROBLEM HERE
 //    if (!appointment.getListOfStaff().contains(staff)) {
 //      appointment.getListOfStaff().add(staff);
 //    }
 
-      staff.getListOfAssignedAppointments().add(appointment);
-      return appointment;
+        staff.getListOfAssignedAppointments().add(appointment);
+        return appointment;
+      } else {
+        throw new UnableToAssignAppointmentException(
+                "Unable to assign an appointment ticket that is not yours");
+      }
     } else {
-      throw new UnableToAssignAppointmentException(
-          "Unable to assign an appointment ticket that is not yours");
+      appointment.setCurrentAssignedStaff(null);
+      appointment.setArrived(false);
+      return appointment;
     }
+
   }
 
   public Appointment updateAppointmentArrival(Long appointmentId, Boolean arrivalStatus,
@@ -228,8 +250,9 @@ public class AppointmentService {
 
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     //check if appointment is assigned to you first, or else you should not be able to check arrived
-    if (appointment.getCurrentAssignedStaff() != null && !Objects.equals(
-        appointment.getCurrentAssignedStaff().getStaffId(), staffId)) {
+    if (appointment.getCurrentAssignedStaff() == null ||
+        (appointment.getCurrentAssignedStaff() != null && !Objects.equals(
+        appointment.getCurrentAssignedStaff().getStaffId(), staffId))) {
       throw new UnableToUpdateAppointmentArrival(
           "Unable to edit a appointment that is not assigned to you");
     }
@@ -266,6 +289,7 @@ public class AppointmentService {
     Appointment appointment = findAppointmentByAppointmentId(appointmentId);
     appointment.setSwimlaneStatusEnum(swimlaneStatusEnum);
     appointment.setArrived(false);
+    appointment.setActualDateTime(LocalDateTime.now());
     return appointment;
   }
 
@@ -330,20 +354,65 @@ public class AppointmentService {
     return appointment.getListOfImageDocuments();
   }
 
-  public ElectronicHealthRecord deleteAllPastAppointmentsFromElectronicHealthRecord(Long electronicHealthRecordId) throws ElectronicHealthRecordNotFoundException {
-    try {
-      Optional<ElectronicHealthRecord> electronicHealthRecordOptional = electronicHealthRecordRepository.findById(electronicHealthRecordId);
+  public Appointment createReferral(String description, String bookedDateTimeString,
+                                    String patientUsername,
+                                    String departmentName, String staffUsername) {
+//    Appointment prevAppointment = findAppointmentByAppointmentId(prevAppointmentId);
+    Appointment newAppointment = createNewAppointmentWithStaff(description,
+            bookedDateTimeString, "LOW",
+            patientUsername, departmentName, staffUsername);
+    String mildSeparator = "------------------------------";
+    String referredComment = "Referred to " + departmentName + " Department";
+    String existingComments = referredComment + "\n" + mildSeparator + "\n" + newAppointment.getComments();
 
-      if (electronicHealthRecordOptional.isPresent()) {
-        ElectronicHealthRecord existingElectronicHealthRecord = electronicHealthRecordOptional.get();
-        existingElectronicHealthRecord.getListOfPastAppointments().clear();
-        electronicHealthRecordRepository.save(existingElectronicHealthRecord);
-        return existingElectronicHealthRecord;
-      } else {
-        throw new ElectronicHealthRecordNotFoundException("Electronic Health Record with Id: " + electronicHealthRecordId + " is not found");
+    newAppointment.setComments(existingComments);
+    return newAppointment;
+  }
+
+  public List<Appointment> getAllPharmacyTickets() {
+    return appointmentRepository.findAllBySwimlaneStatusEnumEquals(SwimlaneStatusEnum.PHARMACY);
+  }
+
+  public Appointment updateAppointmentDispensaryStatus(Long appointmentId,
+                                                     DispensaryStatusEnum dispensaryStatusEnum) {
+    Appointment appointment = findAppointmentByAppointmentId(appointmentId);
+    appointment.setDispensaryStatusEnum(dispensaryStatusEnum);
+
+    // change last dispensed date
+    Patient p = appointment.getPatient();
+    List<PrescriptionRecord> prescriptionRecordList = p.getElectronicHealthRecord().getListOfPrescriptionRecords();
+    List<TransactionItem> transactionItemList = p.getListOfTransactionItem();
+    for (PrescriptionRecord pr : prescriptionRecordList) {
+      for (TransactionItem item : transactionItemList) {
+        if (item.getTransactionItemName().contains("Prescription Record")) {
+          pr.setLastCollectDate(LocalDateTime.now());
+        }
       }
-    } catch (Exception ex) {
-      throw new ElectronicHealthRecordNotFoundException(ex.getMessage());
     }
+    return appointment;
+  }
+
+  public Integer findAppointmentTimeDiff(Long appointmentId) {
+    Appointment appointment = findAppointmentByAppointmentId(appointmentId);
+    LocalDateTime localDateTime = appointment.getActualDateTime();
+
+    if (localDateTime != null) {
+      LocalDateTime currentDateTime = LocalDateTime.now();
+      long diffInMinutes = ChronoUnit.MINUTES.between(currentDateTime, localDateTime);
+
+      return Math.toIntExact(diffInMinutes * -1);
+    } else {
+      return 0;
+    }
+    //return 0;
+  }
+
+  public Appointment createNewPharmacyTicket(String description,
+                                               String bookedDateTimeString, String priority,
+                                               String nric, String departmentName) {
+    Appointment a = createNewAppointmentOnWeb(description, bookedDateTimeString, priority, nric, departmentName);
+    a.setSwimlaneStatusEnum(SwimlaneStatusEnum.PHARMACY);
+    a.setActualDateTime(a.getBookedDateTime());
+    return a;
   }
 }

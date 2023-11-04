@@ -32,16 +32,16 @@ public class MedishieldClaim {
     @NotNull
     private ApprovalStatusEnum approvalStatusEnum;
 
-    @JsonBackReference
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
-    private Invoice invoice;
+//    @JsonBackReference
+//    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+//    private Invoice invoice;
 
 
-    public MedishieldClaim(LocalDateTime medishieldClaimDateApplied, BigDecimal medishieldClaimAmount, ApprovalStatusEnum approvalStatusEnum, Invoice invoice) {
+    public MedishieldClaim(LocalDateTime medishieldClaimDateApplied, BigDecimal medishieldClaimAmount, ApprovalStatusEnum approvalStatusEnum) {
         this.medishieldClaimDateApplied = medishieldClaimDateApplied;
         this.medishieldClaimAmount = medishieldClaimAmount;
         this.approvalStatusEnum = approvalStatusEnum;
-        this.invoice = invoice;
+//        this.invoice = invoice;
     }
 
     public MedishieldClaim() {

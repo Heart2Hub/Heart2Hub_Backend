@@ -124,6 +124,7 @@ public class PatientService {
             RestTemplate restTemplate = new RestTemplate();
             String endpointUrl = "http://localhost:3002/records";
             HttpHeaders headers = new HttpHeaders();
+            headers.set("encoded-message", electronicHealthRecordService.encodeSecretMessage());
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<NehrDTO> requestEntity = new HttpEntity<>(newNehrDTO, headers);
             ResponseEntity<NehrDTO> responseEntity = restTemplate.postForEntity(endpointUrl, requestEntity, NehrDTO.class);

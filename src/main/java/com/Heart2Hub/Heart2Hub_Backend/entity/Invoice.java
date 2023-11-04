@@ -41,27 +41,23 @@ public class Invoice {
     private String invoiceBreakdown;
 
     //Can be Null. An unpaid Invoice has zero Transaction
-    @OneToOne(cascade = CascadeType.ALL, optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "transaction_id", nullable = true)
+    @OneToOne(cascade = CascadeType.ALL, optional = true, fetch = FetchType.EAGER)
     private Transaction transaction;
 
     //Can be Null. An Invoice can have no Insurance Claim
-    @OneToOne(cascade = CascadeType.ALL, optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "insuranceClaim_id", nullable = true)
+    @OneToOne(cascade = CascadeType.ALL, optional = true, fetch = FetchType.EAGER)
     private InsuranceClaim insuranceClaim;
 
-    @JsonManagedReference
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "invoice", fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "insuranceClaim_id", nullable = true)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = true)
     private MedishieldClaim medishieldClaim;
 
-    @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "invoice_id")
     private List<TransactionItem> listOfTransactionItem;
 
