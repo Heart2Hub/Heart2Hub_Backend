@@ -15,4 +15,6 @@ public interface FacilityRepository extends JpaRepository<Facility, Long> {
     List<Facility> findByNameContainingIgnoreCase(String name);
 
     List<Facility> findByDepartmentNameContainingIgnoreCase(String name);
+
+    Facility findByName(String name);
 }
