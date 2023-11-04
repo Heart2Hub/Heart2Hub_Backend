@@ -42,7 +42,7 @@ public class MedicationOrder {
     @NotNull
     private Boolean isCompleted = false;
 
-    @OneToOne(fetch = FetchType.LAZY,optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "medication_id", nullable = false)
     private Medication medication;
 

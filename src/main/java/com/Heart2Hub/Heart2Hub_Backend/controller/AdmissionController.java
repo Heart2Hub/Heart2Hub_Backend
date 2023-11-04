@@ -4,9 +4,11 @@ import com.Heart2Hub.Heart2Hub_Backend.dto.AdmissionDTO;
 import com.Heart2Hub.Heart2Hub_Backend.dto.AppointmentDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Admission;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
+import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Ward;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.AdmissionMapper;
 import com.Heart2Hub.Heart2Hub_Backend.service.AdmissionService;
+import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
 import com.Heart2Hub.Heart2Hub_Backend.service.WardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,8 @@ public class AdmissionController {
 
     private final WardService wardService;
 
+    private final StaffService staffService;
+
     @GetMapping("/getAllAdmissions")
     public ResponseEntity<List<Admission>> getAllAdmissions() {
         return ResponseEntity.ok(admissionService.getAllAdmissions());
@@ -34,8 +38,19 @@ public class AdmissionController {
     @GetMapping("/getAdmissionsForWard")
     public ResponseEntity<List<AdmissionDTO>> getAdmissionsForWard(@RequestParam("wardName") String wardName) {
         Ward ward = wardService.getAllWardsByName(wardName).get(0);
-        List<Admission> currentAdmissions = ward.getListOfCurrentDayAdmissions();
+        List<Admission> currentAdmissions = ward.getListOfCurrentDayAdmissions().stream()
+                .filter(admission -> admission.getAdmissionDateTime() != null)
+                .collect(Collectors.toList());;
         List<AdmissionDTO> admissionDTOS = currentAdmissions.stream().map(admission -> admissionMapper.toDTO(admission)).collect(
+                Collectors.toList());
+        return ResponseEntity.ok(admissionDTOS);
+    }
+
+    @GetMapping("/getAdmissionsForStaff")
+    public ResponseEntity<List<AdmissionDTO>> getAdmissionsForStaff(@RequestParam("staffId") Long staffId) {
+        Staff staff = staffService.getStaffById(staffId);
+        List<Admission> staffAdmissions = staff.getListOfAssignedAdmissions();
+        List<AdmissionDTO> admissionDTOS = staffAdmissions.stream().map(admission -> admissionMapper.toDTO(admission)).collect(
                 Collectors.toList());
         return ResponseEntity.ok(admissionDTOS);
     }
