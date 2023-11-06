@@ -50,4 +50,10 @@ public class MedicationOrderController {
         );
     }
 
+    @GetMapping("/getMedicationOrderById")
+    public ResponseEntity<MedicationOrder> getMedicationOrderById(@RequestParam("medicationOrderId") Long medicationOrderId) {
+        //System.out.println("Checking Order");
+        return ResponseEntity.ok(medicationOrderService.getMedicationOrderById(medicationOrderId));
+    }
+
 }

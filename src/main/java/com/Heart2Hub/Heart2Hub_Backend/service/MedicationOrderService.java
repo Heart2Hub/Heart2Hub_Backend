@@ -79,4 +79,8 @@ List<MedicationOrder> medicationOrderList = admissionRepository.findById(admissi
     public List<MedicationOrder> getAllMedicationOrders() {
         return medicationOrderRepository.findAll();
     }
+
+    public MedicationOrder getMedicationOrderById(Long medicationOrderId) {
+        return medicationOrderRepository.findById(medicationOrderId).get();
+    }
 }

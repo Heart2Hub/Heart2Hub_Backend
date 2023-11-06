@@ -30,6 +30,7 @@ public class AdmissionDTO {
 //    private String assignedDoctorName = null;
 //    private String assignedAdminName = null;
     private List<Long> listOfStaffsId;
+    private List<Long> listOfMedicationOrderIds;
 
     private Long patientId;
 
