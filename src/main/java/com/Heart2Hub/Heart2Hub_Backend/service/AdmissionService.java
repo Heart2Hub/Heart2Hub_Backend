@@ -93,17 +93,47 @@ public class AdmissionService {
         return admission;
     }
 
-    public Admission assignAdmissionToStaff(Long admissionId, Long toStaffId, Long fromStaffId) throws AdmissionNotFoundException, StaffNotFoundException, UnableToAssignAdmissionException {
+    public Admission updateDischargeDate(Long admissionId, String newDischargeString) {
+        Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
 
+        LocalDateTime originalDischargeDate = admission.getDischargeDateTime();
+        LocalDateTime newDischargeDate = LocalDateTime.parse(newDischargeString);
+
+        admission.setDischargeDateTime(newDischargeDate);
+
+        List<WardAvailability> wardAvailabilitiesToUpdate;
+
+        if (newDischargeDate.isBefore(originalDischargeDate)) {
+            newDischargeDate = newDischargeDate.plusDays(1);
+            wardAvailabilitiesToUpdate = wardAvailabilityRepository.findByWardAndDateBetween(admission.getWard(), newDischargeDate, originalDischargeDate);
+            for (WardAvailability wardAvailability: wardAvailabilitiesToUpdate) {
+                wardAvailability.setBedsAvailable(wardAvailability.getBedsAvailable() + 1);
+            }
+        } else if (newDischargeDate.isAfter(originalDischargeDate)) {
+            originalDischargeDate = originalDischargeDate.plusDays(1);
+            wardAvailabilitiesToUpdate = wardAvailabilityRepository.findByWardAndDateBetween(admission.getWard(), originalDischargeDate, newDischargeDate);
+            for (WardAvailability wardAvailability: wardAvailabilitiesToUpdate) {
+                wardAvailability.setBedsAvailable(wardAvailability.getBedsAvailable() - 1);
+            }
+        }
+
+        return admission;
+    }
+
+
+
+    public Admission assignAdmissionToStaff(Long admissionId, Long toStaffId) {
         Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
         Staff toStaff = staffRepository.findById(toStaffId).orElseThrow(() -> new StaffNotFoundException("Staff not found"));
+
+        toStaff.getListOfAssignedAdmissions().add(admission);
 
         boolean reassigned = false;
         List<Staff> listOfAssignedStaff = admission.getListOfAssignedStaff();
 
         for (int i = 0; i < listOfAssignedStaff.size(); i++) {
             Staff assignedStaff = listOfAssignedStaff.get(i);
-            if (assignedStaff.getStaffId() == fromStaffId) {
+            if (assignedStaff.getStaffRoleEnum() == toStaff.getStaffRoleEnum()) {
                 listOfAssignedStaff.set(i, toStaff);
                 reassigned = true;
                 break;
@@ -115,7 +145,6 @@ public class AdmissionService {
         }
 
         return admission;
-
     }
 
 //    public Admission assignAdmissionToAdmin(Long admissionId, Long toStaffId, Long fromStaffId) throws AdmissionNotFoundException, StaffNotFoundException, UnableToAssignAdmissionException {
