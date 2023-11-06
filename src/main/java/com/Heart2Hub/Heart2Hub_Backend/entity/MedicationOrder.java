@@ -1,8 +1,8 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
@@ -42,8 +42,9 @@ public class MedicationOrder {
     @NotNull
     private Boolean isCompleted = false;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "medication_id", nullable = false)
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "medication_id", nullable = true)
     private Medication medication;
 
 //    @JsonBackReference
