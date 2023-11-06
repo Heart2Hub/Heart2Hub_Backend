@@ -2,10 +2,7 @@ package com.Heart2Hub.Heart2Hub_Backend.controller;
 
 import com.Heart2Hub.Heart2Hub_Backend.dto.AdmissionDTO;
 import com.Heart2Hub.Heart2Hub_Backend.dto.AppointmentDTO;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Admission;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Ward;
+import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.AdmissionMapper;
 import com.Heart2Hub.Heart2Hub_Backend.service.AdmissionService;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
@@ -73,12 +70,19 @@ public class AdmissionController {
         return ResponseEntity.ok(admissionService.scheduleAdmission(admissionId, wardAvailabilityId, admission, discharge));
     }
 
+//    @PutMapping("/assignAdmissionToStaff")
+//    public ResponseEntity<AdmissionDTO> assignAdmissionToStaff(
+//            @RequestParam("admissionId") Long admissionId,
+//            @RequestParam("toStaffId") Long toStaffId,
+//            @RequestParam("fromStaffId") Long fromStaffId) {
+//        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.assignAdmissionToStaff(admissionId, toStaffId, fromStaffId)));
+//    }
+
     @PutMapping("/assignAdmissionToStaff")
     public ResponseEntity<AdmissionDTO> assignAdmissionToStaff(
             @RequestParam("admissionId") Long admissionId,
-            @RequestParam("toStaffId") Long toStaffId,
-            @RequestParam("fromStaffId") Long fromStaffId) {
-        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.assignAdmissionToStaff(admissionId, toStaffId, fromStaffId)));
+            @RequestParam("toStaffId") Long toStaffId) {
+        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.assignAdmissionToStaff(admissionId, toStaffId)));
     }
 
 //    @PutMapping("/assignAdmissionToNurse")
@@ -129,6 +133,13 @@ public class AdmissionController {
     @PutMapping("/handleAllocateIncoming")
     public ResponseEntity<String> handleAllocateIncoming(@RequestParam("date") String date) {
         return ResponseEntity.ok(admissionService.allocateScheduledAdmissions(date));
+    }
+
+    @PutMapping("/updateDischargeDate")
+    public ResponseEntity<AdmissionDTO> updateDischargeDate(
+            @RequestParam("admissionId") Long admissionId,
+            @RequestParam("dischargeDate") String dischargeDate) {
+        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.updateDischargeDate(admissionId, dischargeDate)));
     }
 
 }
