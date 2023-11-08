@@ -36,7 +36,6 @@ public class Admission {
     @Column(unique = true)
     private UUID admissionNehrId = UUID.randomUUID();
 
-    @NotNull
     private Integer duration;
 
     private Integer room;

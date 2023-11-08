@@ -27,7 +27,6 @@ public class WardClass {
     @NotNull
     private String wardClassName;
 
-    @NotNull
     @DecimalMin(value = "0", inclusive = false)
     private BigDecimal wardClassRate;
 

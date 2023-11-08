@@ -18,5 +18,9 @@ public class NehrPrescriptionRecordDTO {
     private String description;
     private String comments;
     private String prescribedBy;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime lastCollectedDate;
     private PrescriptionStatusEnum prescriptionStatusEnum;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime expirationDate;
 }

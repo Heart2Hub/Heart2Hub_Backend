@@ -35,8 +35,8 @@ public class WardAvailability {
     private Integer bedsAvailable;
 
     @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "ward_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "ward_id", nullable = true)
     private Ward ward;
 
     public WardAvailability() {

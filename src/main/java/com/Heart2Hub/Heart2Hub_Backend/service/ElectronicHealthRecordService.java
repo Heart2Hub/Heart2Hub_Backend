@@ -4,27 +4,23 @@ import com.Heart2Hub.Heart2Hub_Backend.dto.NehrDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.configuration.Heart2HubConfig;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ElectronicHealthRecord;
-import com.Heart2Hub.Heart2Hub_Backend.exception.ElectronicHealthRecordNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateAppointmentException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateNextOfKinRecordException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreatePrescriptionRecordException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.*;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.NehrMapper;
 import com.Heart2Hub.Heart2Hub_Backend.repository.*;
+import org.springframework.http.*;
 import org.springframework.security.core.parameters.P;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import org.springframework.http.MediaType;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,201 +37,159 @@ public class ElectronicHealthRecordService {
     private final PrescriptionRecordRepository prescriptionRecordRepository;
     private final ProblemRecordRepository problemRecordRepository;
     private final MedicalHistoryRecordRepository medicalHistoryRecordRepository;
+    private final SubsidyRepository subsidyRepository;
+    private final TreatmentPlanRecordRepository treatmentPlanRecordRepository;
+    private final AdmissionRepository admissionRepository;
+    private final WardRepository wardRepository;
+    private final WardClassRepository wardClassRepository;
     private final PatientRepository patientRepository;
     private final StaffRepository staffRepository;
     private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
-  private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+    private final Heart2HubConfig heart2HubConfig;
 
-  private final Heart2HubConfig heart2HubConfig;
-
-  private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
-
-  public ElectronicHealthRecordService(PasswordEncoder passwordEncoder,
-      Heart2HubConfig heart2HubConfig,
-      ElectronicHealthRecordRepository electronicHealthRecordRepository) {
-    this.passwordEncoder = passwordEncoder;
-    this.heart2HubConfig = heart2HubConfig;
-    this.electronicHealthRecordRepository = electronicHealthRecordRepository;
-  }
-    public ElectronicHealthRecordService(AppointmentRepository appointmentRepository, DepartmentRepository departmentRepository, NextOfKinRecordRepository nextOfKinRecordRepository, PrescriptionRecordRepository prescriptionRecordRepository, ProblemRecordRepository problemRecordRepository, MedicalHistoryRecordRepository medicalHistoryRecordRepository, PatientRepository patientRepository, StaffRepository staffRepository, ElectronicHealthRecordRepository electronicHealthRecordRepository) {
+    public ElectronicHealthRecordService(AppointmentRepository appointmentRepository, DepartmentRepository departmentRepository, NextOfKinRecordRepository nextOfKinRecordRepository, PrescriptionRecordRepository prescriptionRecordRepository, ProblemRecordRepository problemRecordRepository, MedicalHistoryRecordRepository medicalHistoryRecordRepository, SubsidyRepository subsidyRepository, TreatmentPlanRecordRepository treatmentPlanRecordRepository, AdmissionRepository admissionRepository, WardRepository wardRepository, WardClassRepository wardClassRepository, PatientRepository patientRepository, StaffRepository staffRepository, ElectronicHealthRecordRepository electronicHealthRecordRepository, PasswordEncoder passwordEncoder, Heart2HubConfig heart2HubConfig) {
         this.appointmentRepository = appointmentRepository;
         this.departmentRepository = departmentRepository;
         this.nextOfKinRecordRepository = nextOfKinRecordRepository;
         this.prescriptionRecordRepository = prescriptionRecordRepository;
         this.problemRecordRepository = problemRecordRepository;
         this.medicalHistoryRecordRepository = medicalHistoryRecordRepository;
+        this.subsidyRepository = subsidyRepository;
+        this.treatmentPlanRecordRepository = treatmentPlanRecordRepository;
+        this.admissionRepository = admissionRepository;
+        this.wardRepository = wardRepository;
+        this.wardClassRepository = wardClassRepository;
         this.patientRepository = patientRepository;
         this.staffRepository = staffRepository;
         this.electronicHealthRecordRepository = electronicHealthRecordRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.heart2HubConfig = heart2HubConfig;
     }
 
-  public ElectronicHealthRecord getElectronicHealthRecordByIdAndDateOfBirth(
-      Long electronicHealthRecordId, LocalDateTime dateOfBirth)
-      throws ElectronicHealthRecordNotFoundException {
-    try {
-      Optional<ElectronicHealthRecord> electronicHealthRecordOptional = electronicHealthRecordRepository.findById(
-          electronicHealthRecordId);
+    public ElectronicHealthRecord getElectronicHealthRecordByIdAndDateOfBirth(
+            Long electronicHealthRecordId, LocalDateTime dateOfBirth)
+            throws ElectronicHealthRecordNotFoundException {
+        try {
+            Optional<ElectronicHealthRecord> electronicHealthRecordOptional = electronicHealthRecordRepository.findById(
+                    electronicHealthRecordId);
 
-      if (electronicHealthRecordOptional.isPresent()) {
-        ElectronicHealthRecord electronicHealthRecord = electronicHealthRecordOptional.get();
-        if (!dateOfBirth.equals(electronicHealthRecord.getDateOfBirth())) {
-          throw new ElectronicHealthRecordNotFoundException("Date of Birth is invalid");
-        } else {
-          return electronicHealthRecord;
+            if (electronicHealthRecordOptional.isPresent()) {
+                ElectronicHealthRecord electronicHealthRecord = electronicHealthRecordOptional.get();
+                if (!dateOfBirth.equals(electronicHealthRecord.getDateOfBirth())) {
+                    throw new ElectronicHealthRecordNotFoundException("Date of Birth is invalid");
+                } else {
+                    return electronicHealthRecord;
+                }
+            } else {
+                throw new ElectronicHealthRecordNotFoundException(
+                        "Electronic Health Record with Id: " + electronicHealthRecordId + " is not found");
+            }
+        } catch (Exception ex) {
+            throw new ElectronicHealthRecordNotFoundException(ex.getMessage());
         }
-      } else {
-        throw new ElectronicHealthRecordNotFoundException(
-            "Electronic Health Record with Id: " + electronicHealthRecordId + " is not found");
-      }
-    } catch (Exception ex) {
-      throw new ElectronicHealthRecordNotFoundException(ex.getMessage());
     }
-  }
 
-  public ElectronicHealthRecord getElectronicHealthRecordById(
-      Long electronicHealthRecordId) {
-    Optional<ElectronicHealthRecord> electronicHealthRecordOptional = electronicHealthRecordRepository.findById(
-        electronicHealthRecordId);
-    if (electronicHealthRecordOptional.isPresent()) {
-      return electronicHealthRecordOptional.get();
-    } else {
-      throw new ElectronicHealthRecordNotFoundException(
-          "Electronic Health Record with Id: " + electronicHealthRecordId + " is not found");
+    public ElectronicHealthRecord getElectronicHealthRecordById(
+            Long electronicHealthRecordId) {
+        Optional<ElectronicHealthRecord> electronicHealthRecordOptional = electronicHealthRecordRepository.findById(
+                electronicHealthRecordId);
+        if (electronicHealthRecordOptional.isPresent()) {
+            return electronicHealthRecordOptional.get();
+        } else {
+            throw new ElectronicHealthRecordNotFoundException(
+                    "Electronic Health Record with Id: " + electronicHealthRecordId + " is not found");
+        }
     }
-  }
 
-  public List<ElectronicHealthRecord> getAllElectronicHealthRecords() {
-    return electronicHealthRecordRepository.findAll();
-  }
-
-  public ElectronicHealthRecord getElectronicHealthRecordByUsername(String username)
-      throws ElectronicHealthRecordNotFoundException {
-    return electronicHealthRecordRepository.findByPatientUsername(username).orElseThrow(
-        () -> new ElectronicHealthRecordNotFoundException(
-            "Electronic Health Record does not exist for " + username));
-  }
-
-  public ElectronicHealthRecord getNehrRecordByNric(String nric) {
-    try {
-      final String uri = "http://localhost:3002/records/" + nric;
-      HttpHeaders headers = new HttpHeaders();
-      headers.set("encoded-message", encodeSecretMessage());
-      headers.setContentType(MediaType.APPLICATION_JSON);
-      HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-      RestTemplate restTemplate = new RestTemplate();
-      ElectronicHealthRecord result = restTemplate.exchange(uri, HttpMethod.GET, entity,
-          ElectronicHealthRecord.class).getBody();
-      return result;
-    } catch (Exception ex) {
-      System.out.println(ex.getMessage());
-      return null;
+    public List<ElectronicHealthRecord> getAllElectronicHealthRecords() {
+        return electronicHealthRecordRepository.findAll();
     }
-  }
-    public ElectronicHealthRecord getNehrRecordByNric(String nric){
+
+    public ElectronicHealthRecord getElectronicHealthRecordByUsername(String username)
+            throws ElectronicHealthRecordNotFoundException {
+        return electronicHealthRecordRepository.findByPatientUsername(username).orElseThrow(
+                () -> new ElectronicHealthRecordNotFoundException(
+                        "Electronic Health Record does not exist for " + username));
+    }
+
+//    public ElectronicHealthRecord getNehrRecordByNric(String nric) {
+//        try {
+//            final String uri = "http://localhost:3002/records/" + nric;
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.set("encoded-message", encodeSecretMessage());
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//            HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+//            RestTemplate restTemplate = new RestTemplate();
+//            ElectronicHealthRecord result = restTemplate.exchange(uri, HttpMethod.GET, entity,
+//                    ElectronicHealthRecord.class).getBody();
+//            return result;
+//        } catch (Exception ex) {
+//            System.out.println(ex.getMessage());
+//            return null;
+//        }
+//    }
+
+    public ElectronicHealthRecord getNehrRecordByNric(String nric) {
         try {
             final String uri = "http://localhost:3002/records/" + nric;
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("encoded-message", encodeSecretMessage());
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
             RestTemplate restTemplate = new RestTemplate();
-            NehrDTO result = restTemplate.getForObject(uri, NehrDTO.class);
+            System.out.println("ASDHBASDH");
+            ResponseEntity<NehrDTO> response = restTemplate.exchange(
+                    uri, HttpMethod.GET, entity, NehrDTO.class);
+            // NehrDTO result = restTemplate.getForObject(uri, NehrDTO.class);
+            System.out.println("ASDHBASDH" + response);
+            NehrDTO result = response.getBody();
             NehrMapper nehrMapper = new NehrMapper();
             ElectronicHealthRecord toReturn = nehrMapper.convertToEntity(result);
             return toReturn;
         } catch (Exception ex) {
-            System.out.print(ex.getMessage());
+            System.out.print("error ajkshdajkhsd" + ex.getMessage());
             return null;
         }
     }
 
-  public String encodeSecretMessage() {
-    try {
-      String SECRET_MESSAGE = heart2HubConfig.getJwt().getSecretMessage();
-      String SECRET_KEY = heart2HubConfig.getJwt().getSecretKey();
+    public String encodeSecretMessage() {
+        try {
+            String SECRET_MESSAGE = heart2HubConfig.getJwt().getSecretMessage();
+            String SECRET_KEY = heart2HubConfig.getJwt().getSecretKey();
 
-      Mac hmac = Mac.getInstance("HmacSHA256");
-      SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8),
-          "HmacSHA256");
-      hmac.init(secretKeySpec);
+            Mac hmac = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8),
+                    "HmacSHA256");
+            hmac.init(secretKeySpec);
 
-      byte[] hash = hmac.doFinal(SECRET_MESSAGE.getBytes(StandardCharsets.UTF_8));
-      return Base64.getEncoder().encodeToString(hash);
+            byte[] hash = hmac.doFinal(SECRET_MESSAGE.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(hash);
 
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to compute HMAC", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to compute HMAC", e);
+        }
     }
-  }
 
-  public ElectronicHealthRecord updateElectronicHealthRecord(Long electronicHealthRecordId,
-      ElectronicHealthRecord newElectronicHealthRecord)
-      throws ElectronicHealthRecordNotFoundException {
-    try {
-      Optional<ElectronicHealthRecord> electronicHealthRecordOptional = electronicHealthRecordRepository.findById(
-          electronicHealthRecordId);
+    public ElectronicHealthRecord updateElectronicHealthRecord(Long electronicHealthRecordId,
+                                                               ElectronicHealthRecord newElectronicHealthRecord)
+            throws ElectronicHealthRecordNotFoundException {
+        try {
+            Optional<ElectronicHealthRecord> electronicHealthRecordOptional = electronicHealthRecordRepository.findById(
+                    electronicHealthRecordId);
 
-      if (electronicHealthRecordOptional.isPresent()) {
-        ElectronicHealthRecord existingElectronicHealthRecord = electronicHealthRecordOptional.get();
-        existingElectronicHealthRecord.setFirstName(newElectronicHealthRecord.getFirstName());
-        existingElectronicHealthRecord.setLastName(newElectronicHealthRecord.getLastName());
-        existingElectronicHealthRecord.setSex(newElectronicHealthRecord.getSex());
-        existingElectronicHealthRecord.setDateOfBirth(newElectronicHealthRecord.getDateOfBirth());
-        existingElectronicHealthRecord.setPlaceOfBirth(newElectronicHealthRecord.getPlaceOfBirth());
-        existingElectronicHealthRecord.setNationality(newElectronicHealthRecord.getNationality());
-        existingElectronicHealthRecord.setRace(newElectronicHealthRecord.getRace());
-        existingElectronicHealthRecord.setAddress(newElectronicHealthRecord.getAddress());
-        existingElectronicHealthRecord.setContactNumber(
-            newElectronicHealthRecord.getContactNumber());
-
-                // Subsidies
-                // TO-DO: Do the same for subsidies.
-
-                // Past Admissions
-                // TO-DO: Do the same for past admissions.
-
-                // Past Appointments
-//                if (newElectronicHealthRecord.getListOfPastAppointments() != null) {
-//                    appointmentService.deleteAllPastAppointmentsFromElectronicHealthRecord(existingElectronicHealthRecord.getElectronicHealthRecordId());
-//                    for (Appointment appointment : newElectronicHealthRecord.getListOfPastAppointments()) {
-//                        appointmentService.createNewAppointment(appointment.getDescription(), String.valueOf(appointment.getBookedDateTime()),appointment.getPriorityEnum().toString(), newElectronicHealthRecord.getNric(),appointment.getDepartment().getName());
-//                    }
-//                }
-
-                // Next of Kin Records
-//                if (newElectronicHealthRecord.getListOfNextOfKinRecords() != null) {
-//                    nextOfKinRecordService.deleteAllNextOfKinRecordsFromElectronicHealthRecord(existingElectronicHealthRecord.getElectronicHealthRecordId());
-//                    for (NextOfKinRecord nextOfKinRecord : newElectronicHealthRecord.getListOfNextOfKinRecords()) {
-//                        nextOfKinRecordService.createNextOfKinRecord(newElectronicHealthRecord.getElectronicHealthRecordId(),nextOfKinRecord);
-//                    }
-//                }
-
-                // Prescription Records
-//                if (newElectronicHealthRecord.getListOfPrescriptionRecords() != null) {
-//                    prescriptionRecordService.deleteAllPrescriptionRecordsFromElectronicHealthRecord(existingElectronicHealthRecord.getElectronicHealthRecordId());
-//                    for (PrescriptionRecord prescriptionRecord : newElectronicHealthRecord.getListOfPrescriptionRecords()) {
-//                        prescriptionRecordService.createPrescriptionRecord(newElectronicHealthRecord.getElectronicHealthRecordId(),prescriptionRecord);
-//                    }
-//                }
-
-                // Problem Records
-//                if (newElectronicHealthRecord.getListOfProblemRecords() != null) {
-//                    problemRecordService.deleteAllProblemRecordsFromElectronicHealthRecord(existingElectronicHealthRecord.getElectronicHealthRecordId());
-//                    for (ProblemRecord problemRecord : newElectronicHealthRecord.getListOfProblemRecords()) {
-//                        problemRecordService.createProblemRecord(newElectronicHealthRecord.getElectronicHealthRecordId(),problemRecord);
-//                    }
-//                }
-
-                // Medical History Records
-//                if (newElectronicHealthRecord.getListOfMedicalHistoryRecords() != null) {
-//                    medicalHistoryRecordService.deleteAllMedicalHistoryRecordsFromElectronicHealthRecord(existingElectronicHealthRecord.getElectronicHealthRecordId());
-//                    for (MedicalHistoryRecord medicalHistoryRecord : newElectronicHealthRecord.getListOfMedicalHistoryRecords()) {
-//                        medicalHistoryRecordService.createMedicalHistoryRecord(newElectronicHealthRecord.getElectronicHealthRecordId(), medicalHistoryRecord);
-//                    }
-//                }
-
-                // Treatment Plan Records
-//                if (newElectronicHealthRecord.getListOfTreatmentPlanRecords() != null) {
-//                    treatmentPlanRecordService.deleteAllTreatmentPlanRecordsFromElectronicHealthRecord(existingElectronicHealthRecord.getElectronicHealthRecordId());
-//                    for (TreatmentPlanRecord treatmentPlanRecord : newElectronicHealthRecord.getListOfTreatmentPlanRecords()) {
-//                        treatmentPlanRecordService.createTreatmentPlanRecord(newElectronicHealthRecord.getElectronicHealthRecordId(), treatmentPlanRecord);
-//                    }
-//                }
+            if (electronicHealthRecordOptional.isPresent()) {
+                ElectronicHealthRecord existingElectronicHealthRecord = electronicHealthRecordOptional.get();
+                existingElectronicHealthRecord.setFirstName(newElectronicHealthRecord.getFirstName());
+                existingElectronicHealthRecord.setLastName(newElectronicHealthRecord.getLastName());
+                existingElectronicHealthRecord.setSex(newElectronicHealthRecord.getSex());
+                existingElectronicHealthRecord.setDateOfBirth(newElectronicHealthRecord.getDateOfBirth());
+                existingElectronicHealthRecord.setPlaceOfBirth(newElectronicHealthRecord.getPlaceOfBirth());
+                existingElectronicHealthRecord.setNationality(newElectronicHealthRecord.getNationality());
+                existingElectronicHealthRecord.setRace(newElectronicHealthRecord.getRace());
+                existingElectronicHealthRecord.setAddress(newElectronicHealthRecord.getAddress());
+                existingElectronicHealthRecord.setContactNumber(
+                        newElectronicHealthRecord.getContactNumber());
 
                 electronicHealthRecordRepository.save(existingElectronicHealthRecord);
                 return existingElectronicHealthRecord;
@@ -267,10 +221,104 @@ public class ElectronicHealthRecordService {
                 existingElectronicHealthRecord.setContactNumber(newElectronicHealthRecord.getContactNumber());
 
                 // Subsidies
-                // TO-DO: Do the same for subsidies.
+                for (Subsidy subsidy : newElectronicHealthRecord.getListOfSubsidies()) {
+                    try {
+                        // For update (only DTO fields)
+                        Optional<Subsidy> subsidyToUpdateOptional = subsidyRepository.findBySubsidyNehrId(subsidy.getSubsidyNehrId());
+                        if (subsidyToUpdateOptional.isPresent()) {
+                            Subsidy subsidyToUpdate = subsidyToUpdateOptional.get();
+
+                            subsidyToUpdate.setSubsidyRate(subsidy.getSubsidyRate());
+                            subsidyToUpdate.setItemTypeEnum(subsidy.getItemTypeEnum());
+                            subsidyToUpdate.setMinDOB(subsidy.getMinDOB());
+                            subsidyToUpdate.setSex(subsidy.getSex());
+                            subsidyToUpdate.setRace(subsidy.getRace());
+                            subsidyToUpdate.setNationality(subsidy.getNationality());
+                            subsidyToUpdate.setSubsidyName(subsidy.getSubsidyName());
+                            subsidyToUpdate.setSubsidyDescription(subsidy.getSubsidyDescription());
+
+                            subsidyRepository.save(subsidyToUpdate);
+                        } else {
+                            // For create (only DTO fields)
+                            existingElectronicHealthRecord.getListOfSubsidies().add(subsidy);
+                            subsidyRepository.save(subsidy);
+                        }
+                    } catch (Exception ex) {
+                        throw new UnableToCreateElectronicHealthRecordException(ex.getMessage());
+                    }
+                }
+                // For delete
+                for (Subsidy existingSubsidy : existingElectronicHealthRecord.getListOfSubsidies()) {
+                    if (!newElectronicHealthRecord.getListOfSubsidies().stream()
+                            .anyMatch(subsidy ->
+                                    subsidy.getSubsidyNehrId().equals(existingSubsidy.getSubsidyNehrId()))) {
+                        subsidyRepository.delete(existingSubsidy);
+                        existingElectronicHealthRecord.getListOfSubsidies().remove(existingSubsidy);
+                    }
+                }
 
                 // Past Admissions
-                // TO-DO: Do the same for past admissions.
+                for (Admission pastAdmission : newElectronicHealthRecord.getListOfPastAdmissions()) {
+                    try {
+                        // For update (only DTO fields)
+                        Optional<Admission> pastAdmissionToUpdateOptional = admissionRepository.findByAdmissionNehrId(pastAdmission.getAdmissionNehrId());
+                        if (pastAdmissionToUpdateOptional.isPresent()) {
+                            Admission pastAdmissionToUpdate = pastAdmissionToUpdateOptional.get();
+
+                            pastAdmissionToUpdate.setDuration(pastAdmission.getDuration());
+                            pastAdmissionToUpdate.setAdmissionDateTime(pastAdmission.getAdmissionDateTime());
+                            pastAdmissionToUpdate.setDischargeDateTime(pastAdmission.getDischargeDateTime());
+                            pastAdmissionToUpdate.setComments(pastAdmission.getComments());
+
+                            // Ward
+                            Optional<Ward> wardToUpdateOptional = wardRepository.findByUnitNehrId(pastAdmission.getWard().getUnitNehrId());
+                            if (wardToUpdateOptional.isPresent()) {
+                                // For update ward? (only DTO fields)
+                                Ward wardToUpdate = wardToUpdateOptional.get();
+
+                                wardToUpdate.setName(pastAdmission.getWard().getName());
+                                wardToUpdate.setLocation(pastAdmission.getWard().getLocation());
+
+                                Optional<WardClass> wardClassToUpdateOptional = wardClassRepository.findByWardClassNehrId(wardToUpdate.getWardClass().getWardClassNehrId());
+                                if (wardClassToUpdateOptional.isPresent()) {
+                                    // For update ward class? (only DTO fields)
+                                    WardClass wardClassToUpdate = wardClassToUpdateOptional.get();
+
+                                    wardClassToUpdate.setWardClassName(pastAdmission.getWard().getWardClass().getWardClassName());
+
+                                    wardClassRepository.save(wardClassToUpdate);
+                                } else {
+                                    // For create ward class? (only DTO fields)
+                                    wardToUpdate.setWardClass(wardToUpdate.getWardClass());
+                                    wardClassRepository.save(wardToUpdate.getWardClass());
+                                }
+
+                                wardRepository.save(wardToUpdate);
+                            } else {
+                                // For create ward? (only DTO fields)
+                                pastAdmissionToUpdate.setWard(pastAdmission.getWard());
+                                wardRepository.save(pastAdmission.getWard());
+                            }
+
+                            admissionRepository.save(pastAdmissionToUpdate);
+                        } else {
+                            // For create
+                            existingElectronicHealthRecord.getListOfPastAdmissions().add(pastAdmission);
+                            admissionRepository.save(pastAdmission);
+                        }
+                    } catch (Exception ex) {
+                        throw new UnableToCreateElectronicHealthRecordException(ex.getMessage());
+                    }
+                }
+                // For delete
+                for (Admission existingAdmission : existingElectronicHealthRecord.getListOfPastAdmissions()) {
+                    if (!newElectronicHealthRecord.getListOfPastAdmissions().stream()
+                            .anyMatch(admission ->
+                                    admission.getAdmissionNehrId().equals(existingAdmission.getAdmissionNehrId()))) {
+                        admissionRepository.delete(existingAdmission);
+                        existingElectronicHealthRecord.getListOfPastAdmissions().remove(existingAdmission);
+                    }
+                }
 
                 // Past Appointments
                 for (Appointment pastAppointment : newElectronicHealthRecord.getListOfPastAppointments()) {
@@ -293,7 +341,7 @@ public class ElectronicHealthRecordService {
 
                                 departmentToUpdate.setName(pastAppointment.getDepartment().getName());
 
-                                pastAppointmentToUpdate.setDepartment(departmentToUpdate);
+                                departmentRepository.save(departmentToUpdate);
                             } else {
                                 // For create department? (only DTO fields)
                                 pastAppointmentToUpdate.setDepartment(pastAppointment.getDepartment());
@@ -320,9 +368,9 @@ public class ElectronicHealthRecordService {
                             }
                             // For delete staff
                             for (Staff existingStaff : pastAppointmentToUpdate.getListOfStaff()) {
-                                if (!newElectronicHealthRecord.getListOfMedicalHistoryRecords().stream()
-                                        .anyMatch(medicalHistoryRecord ->
-                                                medicalHistoryRecord.getMedicalHistoryRecordNehrId().equals(existingStaff.getStaffNehrId()))) {
+                                if (!pastAppointment.getListOfStaff().stream()
+                                        .anyMatch(staff ->
+                                                staff.getStaffNehrId().equals(existingStaff.getStaffNehrId()))) {
                                     pastAppointmentToUpdate.getListOfStaff().remove(existingStaff);
                                 }
                             }
@@ -339,9 +387,9 @@ public class ElectronicHealthRecordService {
                 }
                 // For delete
                 for (Appointment existingAppointment : existingElectronicHealthRecord.getListOfPastAppointments()) {
-                    if (!newElectronicHealthRecord.getListOfMedicalHistoryRecords().stream()
-                            .anyMatch(medicalHistoryRecord ->
-                                    medicalHistoryRecord.getMedicalHistoryRecordNehrId().equals(existingAppointment.getAppointmentNehrId()))) {
+                    if (!newElectronicHealthRecord.getListOfPastAppointments().stream()
+                            .anyMatch(pastAppointment ->
+                                    pastAppointment.getAppointmentNehrId().equals(existingAppointment.getAppointmentNehrId()))) {
                         appointmentRepository.delete(existingAppointment);
                         existingElectronicHealthRecord.getListOfPastAppointments().remove(existingAppointment);
                     }
@@ -370,9 +418,9 @@ public class ElectronicHealthRecordService {
                 }
                 // For delete
                 for (NextOfKinRecord existingNextOfKinRecord : existingElectronicHealthRecord.getListOfNextOfKinRecords()) {
-                    if (!newElectronicHealthRecord.getListOfMedicalHistoryRecords().stream()
-                            .anyMatch(medicalHistoryRecord ->
-                                    medicalHistoryRecord.getMedicalHistoryRecordNehrId().equals(existingNextOfKinRecord.getNextOfKinRecordNehrId()))) {
+                    if (!newElectronicHealthRecord.getListOfNextOfKinRecords().stream()
+                            .anyMatch(nextOfKinRecord ->
+                                    nextOfKinRecord.getNextOfKinRecordNehrId().equals(existingNextOfKinRecord.getNextOfKinRecordNehrId()))) {
                         nextOfKinRecordRepository.delete(existingNextOfKinRecord);
                         existingElectronicHealthRecord.getListOfNextOfKinRecords().remove(existingNextOfKinRecord);
                     }
@@ -407,9 +455,9 @@ public class ElectronicHealthRecordService {
                 }
                 // For delete
                 for (PrescriptionRecord existingPrescriptionRecord : existingElectronicHealthRecord.getListOfPrescriptionRecords()) {
-                    if (!newElectronicHealthRecord.getListOfMedicalHistoryRecords().stream()
-                            .anyMatch(medicalHistoryRecord ->
-                                    medicalHistoryRecord.getMedicalHistoryRecordNehrId().equals(existingPrescriptionRecord.getPrescriptionRecordNehrId()))) {
+                    if (!newElectronicHealthRecord.getListOfPrescriptionRecords().stream()
+                            .anyMatch(prescriptionRecord ->
+                                    prescriptionRecord.getPrescriptionRecordNehrId().equals(existingPrescriptionRecord.getPrescriptionRecordNehrId()))) {
                         prescriptionRecordRepository.delete(existingPrescriptionRecord);
                         existingElectronicHealthRecord.getListOfPrescriptionRecords().remove(existingPrescriptionRecord);
                     }
@@ -436,14 +484,14 @@ public class ElectronicHealthRecordService {
                             problemRecordRepository.save(problemRecord);
                         }
                     } catch (Exception ex) {
-                        throw new UnableToCreateAppointmentException(ex.getMessage());
+                        throw new UnableToCreateElectronicHealthRecordException(ex.getMessage());
                     }
                 }
                 // For delete
                 for (ProblemRecord existingProblemRecord : existingElectronicHealthRecord.getListOfProblemRecords()) {
-                    if (!newElectronicHealthRecord.getListOfMedicalHistoryRecords().stream()
-                            .anyMatch(medicalHistoryRecord ->
-                                    medicalHistoryRecord.getMedicalHistoryRecordNehrId().equals(existingProblemRecord.getProblemRecordNehrId()))) {
+                    if (!newElectronicHealthRecord.getListOfProblemRecords().stream()
+                            .anyMatch(problemRecord ->
+                                    problemRecord.getProblemRecordNehrId().equals(existingProblemRecord.getProblemRecordNehrId()))) {
                         problemRecordRepository.delete(existingProblemRecord);
                         existingElectronicHealthRecord.getListOfProblemRecords().remove(existingProblemRecord);
                     }
@@ -471,7 +519,7 @@ public class ElectronicHealthRecordService {
                             medicalHistoryRecordRepository.save(medicalHistoryRecord);
                         }
                     } catch (Exception ex) {
-                        throw new UnableToCreateAppointmentException(ex.getMessage());
+                        throw new UnableToCreateElectronicHealthRecordException(ex.getMessage());
                     }
                 }
                 // For delete
@@ -484,7 +532,38 @@ public class ElectronicHealthRecordService {
                 }
 
                 // Treatment Plan Records
-                // TO-DO: Do the same for treatment plan records.
+                for (TreatmentPlanRecord treatmentPlanRecord : newElectronicHealthRecord.getListOfTreatmentPlanRecords()) {
+                    try {
+                        // For update (only DTO fields)
+                        Optional<TreatmentPlanRecord> treatmentPlanRecordToUpdateOptional = treatmentPlanRecordRepository.findByTreatmentPlanRecordNehrId(treatmentPlanRecord.getTreatmentPlanRecordNehrId());
+                        if (treatmentPlanRecordToUpdateOptional.isPresent()) {
+                            TreatmentPlanRecord treatmentPlanRecordToUpdate = treatmentPlanRecordToUpdateOptional.get();
+
+                            treatmentPlanRecordToUpdate.setDescription(treatmentPlanRecord.getDescription());
+                            treatmentPlanRecordToUpdate.setPrimaryDoctor(treatmentPlanRecord.getPrimaryDoctor());
+                            treatmentPlanRecordToUpdate.setSecondaryDoctors(treatmentPlanRecord.getSecondaryDoctors());
+                            treatmentPlanRecordToUpdate.setStartDate(treatmentPlanRecord.getStartDate());
+                            treatmentPlanRecordToUpdate.setEndDate(treatmentPlanRecord.getEndDate());
+                            treatmentPlanRecordToUpdate.setTreatmentPlanTypeEnum(treatmentPlanRecord.getTreatmentPlanTypeEnum());
+
+                            treatmentPlanRecordRepository.save(treatmentPlanRecordToUpdate);
+                        } else {
+                            // For create (only DTO fields)
+                            existingElectronicHealthRecord.getListOfTreatmentPlanRecords().add(treatmentPlanRecord);
+                            treatmentPlanRecordRepository.save(treatmentPlanRecord);
+                        }
+                    } catch (Exception ex) {
+                        throw new UnableToCreateElectronicHealthRecordException(ex.getMessage());
+                    }
+                }
+                // For delete
+                for (TreatmentPlanRecord existingTreatmentPlanRecord : existingElectronicHealthRecord.getListOfTreatmentPlanRecords()) {
+                    if (!newElectronicHealthRecord.getListOfTreatmentPlanRecords().stream()
+                            .anyMatch(treatmentPlanRecord -> treatmentPlanRecord.getTreatmentPlanRecordNehrId().equals(existingTreatmentPlanRecord.getTreatmentPlanRecordNehrId()))) {
+                        treatmentPlanRecordRepository.delete(existingTreatmentPlanRecord);
+                        existingElectronicHealthRecord.getListOfTreatmentPlanRecords().remove(existingTreatmentPlanRecord);
+                    }
+                }
 
                 electronicHealthRecordRepository.save(existingElectronicHealthRecord);
                 return existingElectronicHealthRecord;
@@ -495,28 +574,18 @@ public class ElectronicHealthRecordService {
             throw new ElectronicHealthRecordNotFoundException(ex.getMessage());
         }
     }
-        electronicHealthRecordRepository.save(existingElectronicHealthRecord);
-        return existingElectronicHealthRecord;
-      } else {
-        throw new ElectronicHealthRecordNotFoundException(
-            "Electronic Health Record with Id: " + electronicHealthRecordId + " is not found");
-      }
-    } catch (Exception ex) {
-      throw new ElectronicHealthRecordNotFoundException(ex.getMessage());
-    }
-  }
 
-  public ElectronicHealthRecord findByNric(String nric) {
-    try {
-      return electronicHealthRecordRepository.findByNricIgnoreCase(nric).get();
-    } catch (Exception ex) {
-      throw new ElectronicHealthRecordNotFoundException("Invalid NRIC");
+    public ElectronicHealthRecord findByNric(String nric) {
+        try {
+            return electronicHealthRecordRepository.findByNricIgnoreCase(nric).get();
+        } catch (Exception ex) {
+            throw new ElectronicHealthRecordNotFoundException("Invalid NRIC");
+        }
     }
-  }
 
-  public ElectronicHealthRecord findEHRByTreatmentPlanId(Long treatmentPlanId) {
-    return electronicHealthRecordRepository.findByListOfTreatmentPlanRecords_TreatmentPlanRecordId(
-        treatmentPlanId).orElseThrow(
-        () -> new ElectronicHealthRecordNotFoundException("No such EHR found for treatment plan"));
-  }
+    public ElectronicHealthRecord findEHRByTreatmentPlanId(Long treatmentPlanId) {
+        return electronicHealthRecordRepository.findByListOfTreatmentPlanRecords_TreatmentPlanRecordId(
+                treatmentPlanId).orElseThrow(
+                () -> new ElectronicHealthRecordNotFoundException("No such EHR found for treatment plan"));
+    }
 }
