@@ -56,4 +56,9 @@ public class MedicationOrderController {
         return ResponseEntity.ok(medicationOrderService.getMedicationOrderById(medicationOrderId));
     }
 
+    @PutMapping("/updateComplete")
+    public ResponseEntity<MedicationOrder> updateComplete(@RequestParam("medicationOrderId") Long medicationOrderId, @RequestParam("admissionId") Long admissionId, @RequestParam("isCompleted") Boolean isCompleted) {
+        return ResponseEntity.ok(medicationOrderService.updateComplete(medicationOrderId, admissionId, isCompleted));
+    }
+
 }

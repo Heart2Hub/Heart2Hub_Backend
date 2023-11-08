@@ -282,4 +282,8 @@ public class AdmissionService {
         return "Allocation done";
     }
 
+    public Admission getAdmissionByAdmissionId(Long admissionId) {
+        return admissionRepository.findById(admissionId).get();
+    }
+
 }

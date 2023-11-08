@@ -52,6 +52,11 @@ public class AdmissionController {
         return ResponseEntity.ok(admissionDTOS);
     }
 
+    @GetMapping("/getAdmissionByAdmissionId")
+    public ResponseEntity<AdmissionDTO> getAdmissionByAdmissionId(@RequestParam("admissionId") Long admissionId) {
+        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.getAdmissionByAdmissionId(admissionId)));
+    }
+
     @PostMapping("/createAdmission")
     public ResponseEntity<Admission> createAdmission(
             @RequestParam("duration") Integer duration,
