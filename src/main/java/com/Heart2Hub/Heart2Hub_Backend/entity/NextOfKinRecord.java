@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Entity
 @Data
 @Table(name = "nextOfKinRecord")
@@ -12,6 +14,10 @@ public class NextOfKinRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long nextOfKinRecordId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID nextOfKinRecordNehrId = UUID.randomUUID();
 
     @NotBlank
     private String relationship;

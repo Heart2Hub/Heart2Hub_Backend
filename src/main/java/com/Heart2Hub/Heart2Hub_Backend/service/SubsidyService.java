@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ElectronicHealthRecord;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Subsidy;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.ElectronicHealthRecordNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.SubsidyRepository;
 import jakarta.transaction.Transactional;
@@ -151,6 +152,23 @@ public class SubsidyService {
         boolean meetsRace = "All".equals(subsidy.getRace()) || Objects.equals(subsidy.getRace(), ehr.getRace());
         boolean meetsNationality = "All".equals(subsidy.getNationality()) || Objects.equals(subsidy.getNationality(), ehr.getNationality());
         return meetsMinDOB && meetsSex && meetsRace && meetsNationality;
+    }
+
+    public ElectronicHealthRecord deleteAllSubsidiesFromElectronicHealthRecord(Long electronicHealthRecordId) throws ElectronicHealthRecordNotFoundException {
+        try {
+            Optional<ElectronicHealthRecord> electronicHealthRecordOptional = electronicHealthRecordRepository.findById(electronicHealthRecordId);
+
+            if (electronicHealthRecordOptional.isPresent()) {
+                ElectronicHealthRecord existingElectronicHealthRecord = electronicHealthRecordOptional.get();
+                existingElectronicHealthRecord.getListOfSubsidies().clear();
+                electronicHealthRecordRepository.save(existingElectronicHealthRecord);
+                return existingElectronicHealthRecord;
+            } else {
+                throw new ElectronicHealthRecordNotFoundException("Electronic Health Record with Id: " + electronicHealthRecordId + " is not found");
+            }
+        } catch (Exception ex) {
+            throw new ElectronicHealthRecordNotFoundException(ex.getMessage());
+        }
     }
 
 }

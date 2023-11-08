@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -15,6 +16,10 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID postNehrId = UUID.randomUUID();
 
     @NotNull
     private String title;

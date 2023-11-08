@@ -21,6 +21,8 @@ import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
+
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,22 +37,21 @@ public class Staff implements UserDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long staffId;
   @NotNull
+  @Column(unique = true)
+  private UUID staffNehrId = UUID.randomUUID();
   @Size(min = 6)
   @Column(unique = true)
   private String username;
-  @NotNull
   @Column(unique = true)
   private String password;
   @NotNull
   private String firstname;
   @NotNull
   private String lastname;
-  @NotNull
   @DecimalMin("79999999")
   @DecimalMax("100000000")
   private Long mobileNumber;
 
-  @NotNull
   private Boolean isHead = false;
 
   @NotNull
@@ -72,11 +73,11 @@ public class Staff implements UserDetails {
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "currentAssignedStaff")
   private List<Appointment> listOfAssignedAppointments;
 
-  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = false)
-  @JoinColumn(name = "leave_balance_id", nullable = false)
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @JoinColumn(name = "leave_balance_id")
   private LeaveBalance leaveBalance = new LeaveBalance();
 
-  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = true)
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private ShiftPreference shiftPreference;
 
   @JsonIgnore

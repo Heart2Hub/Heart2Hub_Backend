@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -18,6 +19,10 @@ public class WardAvailability {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long wardAvailabilityId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID wardAvailabilityNehrId = UUID.randomUUID();
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
@@ -30,8 +35,8 @@ public class WardAvailability {
     private Integer bedsAvailable;
 
     @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "ward_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "ward_id", nullable = true)
     private Ward ward;
 
     public WardAvailability() {

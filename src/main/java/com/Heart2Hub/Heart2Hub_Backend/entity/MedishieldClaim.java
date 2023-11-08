@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
+
 import lombok.Data;
 
 @Entity
@@ -16,6 +18,10 @@ public class MedishieldClaim {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long medishieldClaimId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID medishieldClaimNehrId = UUID.randomUUID();
 
     @NotNull
     private LocalDateTime medishieldClaimDateApplied;

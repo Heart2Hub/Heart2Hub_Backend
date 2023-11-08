@@ -11,6 +11,7 @@ import lombok.Data;
 import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -20,6 +21,10 @@ public class ShiftPreference {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long shiftPreferenceId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID ShiftPreferenceNehrId = UUID.randomUUID();
 
     @NotNull
     @JsonFormat(pattern="HH:mm:ss")
