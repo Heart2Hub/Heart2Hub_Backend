@@ -21,7 +21,7 @@ public class Transaction {
     private Long transactionId;
 
     @NotNull
-    @CreationTimestamp
+    //@CreationTimestamp
     private LocalDateTime transactionDate;
 
     @NotNull
@@ -31,8 +31,10 @@ public class Transaction {
     private ApprovalStatusEnum approvalStatusEnum;
 
     public Transaction(BigDecimal transactionAmount, ApprovalStatusEnum approvalStatusEnum) {
+        this.transactionDate = LocalDateTime.now();
         this.transactionAmount = transactionAmount;
         this.approvalStatusEnum = approvalStatusEnum;
+        this.transactionDate = LocalDateTime.now();
     }
 
     public Transaction(){}

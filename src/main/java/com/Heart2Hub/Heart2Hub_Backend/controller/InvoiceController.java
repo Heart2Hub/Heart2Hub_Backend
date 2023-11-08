@@ -1,13 +1,12 @@
 package com.Heart2Hub.Heart2Hub_Backend.controller;
 
-import com.Heart2Hub.Heart2Hub_Backend.entity.ElectronicHealthRecord;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Invoice;
-import com.Heart2Hub.Heart2Hub_Backend.entity.MedishieldClaim;
-import com.Heart2Hub.Heart2Hub_Backend.entity.TransactionItem;
+import com.Heart2Hub.Heart2Hub_Backend.dto.InventoryItemProfitDTO;
+import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.InvoiceStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.service.InvoiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +20,58 @@ import java.util.Map;
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
+
+    @GetMapping("/findInvoiceUsingTransaction/{id}")
+    public ResponseEntity<Long> findInvoiceUsingTransaction(@PathVariable Long id) {
+        Long invoice = invoiceService.findInvoiceUsingTransaction(id);
+        return new ResponseEntity<>(invoice, HttpStatus.OK);
+    }
+
+    @GetMapping("/findProfitByServiceItem")
+    public ResponseEntity<List<InventoryItemProfitDTO>> findProfitByServiceItem() {
+        List<InventoryItemProfitDTO> list = invoiceService.findProfitByServiceItem();
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/findProfitByMedication")
+    public ResponseEntity<List<InventoryItemProfitDTO>> findProfitByMedication() {
+        List<InventoryItemProfitDTO> list = invoiceService.findProfitByMedication();
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/findProfitByInventoryItem")
+    public ResponseEntity<List<InventoryItemProfitDTO>> findProfitByInventoryItem() {
+        List<InventoryItemProfitDTO> list = invoiceService.findProfitByInventoryItem();
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/findMedishieldClaimOfInvoice/{id}")
+    public ResponseEntity<MedishieldClaim> findMedishieldClaimOfInvoice(@PathVariable Long id) {
+        MedishieldClaim medishieldClaim = invoiceService.findMedishieldClaimOfInvoice(id);
+        return new ResponseEntity<>(medishieldClaim, HttpStatus.OK);
+    }
+
+    @GetMapping("/findInsuranceClaimOfInvoice/{id}")
+    public ResponseEntity<InsuranceClaim> findInsuranceClaimOfInvoice(@PathVariable Long id) {
+        InsuranceClaim insuranceClaim = invoiceService.findInsuranceClaimOfInvoice(id);
+        return new ResponseEntity<>(insuranceClaim, HttpStatus.OK);
+    }
+
+    @GetMapping("/findTransactionItemOfInvoice/{id}")
+    public ResponseEntity<List<TransactionItem>> findTransactionItemOfInvoice(@PathVariable Long id) {
+        List<TransactionItem> transactionItems = invoiceService.findTransactionItemOfInvoice(id);
+        return new ResponseEntity<>(transactionItems, HttpStatus.OK);
+    }
+
+    @GetMapping("/findInvoicesOfAPatient/{username}")
+    public ResponseEntity<List<Invoice>> findInvoicesOfAPatient(@PathVariable String username) {
+        return ResponseEntity.ok(invoiceService.findInvoicesOfAPatient(username));
+    }
+
+    @GetMapping("/findInvoicesOfAPatientEarliest/{username}")
+    public ResponseEntity<List<Invoice>> findInvoicesOfAPatientEarliest(@PathVariable String username) {
+        return ResponseEntity.ok(invoiceService.findInvoicesOfAPatientEarliest(username));
+    }
 
     @GetMapping("/getAllInvoices")
     public ResponseEntity<List<Invoice>> getAllInvoices() {
