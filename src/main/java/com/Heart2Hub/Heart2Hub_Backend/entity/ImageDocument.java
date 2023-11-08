@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -13,6 +14,10 @@ public class ImageDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long imageDocumentId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID imageDocumentNehrId = UUID.randomUUID();
 
     @NotNull
     private String imageLink;

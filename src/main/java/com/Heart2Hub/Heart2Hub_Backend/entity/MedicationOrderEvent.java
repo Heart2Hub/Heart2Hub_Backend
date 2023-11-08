@@ -8,6 +8,7 @@ import lombok.Data;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -16,6 +17,10 @@ public class MedicationOrderEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long medicationOrderEventId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID medicationOrderEventNehrId = UUID.randomUUID();
 
     @NotNull
     @Future

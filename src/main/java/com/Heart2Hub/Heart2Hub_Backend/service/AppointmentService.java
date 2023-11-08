@@ -5,20 +5,17 @@ import com.Heart2Hub.Heart2Hub_Backend.enumeration.DispensaryStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PriorityEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
-import com.Heart2Hub.Heart2Hub_Backend.exception.AppointmentNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.StaffDisabledException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToAddImageAttachmentToAppointmentException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToAssignAppointmentException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateAppointmentException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateAppointmentArrival;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateAppointmentComments;
+import com.Heart2Hub.Heart2Hub_Backend.exception.*;
 import com.Heart2Hub.Heart2Hub_Backend.repository.AppointmentRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,16 +30,15 @@ public class AppointmentService {
   private final DepartmentService departmentService;
   private final ElectronicHealthRecordService electronicHealthRecordService;
   private final StaffService staffService;
+  private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
 
-
-  public AppointmentService(AppointmentRepository appointmentRepository,
-      PatientService patientService, DepartmentService departmentService,
-      ElectronicHealthRecordService electronicHealthRecordService, StaffService staffService) {
+  public AppointmentService(AppointmentRepository appointmentRepository, PatientService patientService, DepartmentService departmentService, ElectronicHealthRecordService electronicHealthRecordService, StaffService staffService, ElectronicHealthRecordRepository electronicHealthRecordRepository) {
     this.appointmentRepository = appointmentRepository;
     this.patientService = patientService;
     this.departmentService = departmentService;
     this.electronicHealthRecordService = electronicHealthRecordService;
     this.staffService = staffService;
+    this.electronicHealthRecordRepository = electronicHealthRecordRepository;
   }
 
   public Appointment findAppointmentByAppointmentId(Long appointmentId) {

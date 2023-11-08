@@ -21,7 +21,6 @@ public class Ward extends Unit {
 
     @Min(1)
     @Max(200)
-    @NotNull
     private Integer capacity;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL,optional = false)

@@ -7,6 +7,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Invitation;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.entity.TreatmentPlanRecord;
 import com.Heart2Hub.Heart2Hub_Backend.entity.NextOfKinRecord;
+import com.Heart2Hub.Heart2Hub_Backend.exception.ElectronicHealthRecordNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.TreatmentPlanRecordNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToAddImageAttachmentToAppointmentException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateTreatmentPlanRecordException;
@@ -28,6 +29,8 @@ import org.springframework.cglib.core.Local;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -76,6 +79,23 @@ public class TreatmentPlanRecordService {
       throw new UnableToCreateTreatmentPlanRecordException(ex.getMessage());
     }
   }
+
+    public ElectronicHealthRecord deleteAllTreatmentPlanRecordsFromElectronicHealthRecord(Long electronicHealthRecordId) throws ElectronicHealthRecordNotFoundException {
+        try {
+            Optional<ElectronicHealthRecord> electronicHealthRecordOptional = electronicHealthRecordRepository.findById(electronicHealthRecordId);
+
+            if (electronicHealthRecordOptional.isPresent()) {
+                ElectronicHealthRecord existingElectronicHealthRecord = electronicHealthRecordOptional.get();
+                existingElectronicHealthRecord.getListOfTreatmentPlanRecords().clear();
+                electronicHealthRecordRepository.save(existingElectronicHealthRecord);
+                return existingElectronicHealthRecord;
+            } else {
+                throw new ElectronicHealthRecordNotFoundException("Electronic Health Record with Id: " + electronicHealthRecordId + " is not found");
+            }
+        } catch (Exception ex) {
+            throw new ElectronicHealthRecordNotFoundException(ex.getMessage());
+        }
+    }
 
   public TreatmentPlanRecord updateTreatmentPlanRecord(Long electronicHealthRecordId,
       Long treatmentPlanRecordId, Long staffId, TreatmentPlanRecord treatmentPlanRecord)

@@ -11,6 +11,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -19,6 +20,10 @@ public class MedicationOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long medicationOrderId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID medicationOrderNehrId = UUID.randomUUID();
 
     @NotNull
     private String title;

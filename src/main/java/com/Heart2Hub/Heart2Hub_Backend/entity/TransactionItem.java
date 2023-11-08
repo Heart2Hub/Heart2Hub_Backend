@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
+import java.util.UUID;
+
 import lombok.Data;
 
 @Entity
@@ -14,6 +16,10 @@ public class TransactionItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transactionItemId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID transactionItemNehrId = UUID.randomUUID();
 
     @NotNull
     private String transactionItemName;
