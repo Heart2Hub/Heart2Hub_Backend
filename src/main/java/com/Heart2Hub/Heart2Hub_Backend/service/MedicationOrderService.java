@@ -42,10 +42,10 @@ public class MedicationOrderService {
             throw new InsufficientInventoryException("Insufficient Inventory for Medication");
         }
 // This is an issue here I comment out first later I fix
-//        String comments = medication.getComments();
-//        if (comments.trim().equals("")) {
-//            throw new UnableToCreateMedicationOrderException("Comments must be present.");
-//        }
+//        String comments = medicationOrder.getComments();
+        if (medicationOrder.getComments() == null) {
+            throw new UnableToCreateMedicationOrderException("Comments must be present.");
+        }
 
         for (MedicationOrder order : admission.getListOfMedicationOrders()) {
             Medication currentMedication = order.getMedication();
