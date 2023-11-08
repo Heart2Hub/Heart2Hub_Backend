@@ -77,8 +77,30 @@ public class DataLoader implements CommandLineRunner {
     private final UnitRepository unitRepository;
     private final AdmissionService admissionService;
 
-    public DataLoader(StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, SubsidyService subsidyService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, MedicationService medicationService, ServiceItemService serviceItemService, TransactionItemService transactionItemService, AppointmentService appointmentService, InventoryItemRepository inventoryItemRepository, PrescriptionRecordRepository prescriptionRecordRepository, InvoiceService invoiceService, DrugRestrictionService drugRestrictionService,
-                      UnitRepository unitRepository, AdmissionService admissionService) {
+    private final ConversationService conversationService;
+
+    private final ChatMessageService chatMessageService;
+
+    public DataLoader(StaffService staffService, ShiftService shiftService,
+        DepartmentService departmentService, AuthenticationManager authenticationManager,
+        FacilityService facilityService, PatientService patientService,
+        NextOfKinRecordService nextOfKinRecordService,
+        PrescriptionRecordService prescriptionRecordService,
+        ProblemRecordService problemRecordService,
+        MedicalHistoryRecordService medicalHistoryRecordService,
+        TreatmentPlanRecordService treatmentPlanRecordService, SubsidyService subsidyService,
+        LeaveService leaveService, ShiftConstraintsService shiftConstraintsService,
+        ConsumableEquipmentService consumableEquipmentService,
+        AllocatedInventoryService allocatedInventoryService,
+        SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository,
+        WardService wardService, WardClassService wardClassService,
+        MedicationService medicationService,
+        ServiceItemService serviceItemService, TransactionItemService transactionItemService,
+        AppointmentService appointmentService, InventoryItemRepository inventoryItemRepository,
+        PrescriptionRecordRepository prescriptionRecordRepository, InvoiceService invoiceService,
+        DrugRestrictionService drugRestrictionService, UnitRepository unitRepository,
+        AdmissionService admissionService, ConversationService conversationService,
+        ChatMessageService chatMessageService) {
         this.staffService = staffService;
         this.shiftService = shiftService;
         this.departmentService = departmentService;
@@ -109,6 +131,8 @@ public class DataLoader implements CommandLineRunner {
         this.drugRestrictionService = drugRestrictionService;
         this.unitRepository = unitRepository;
         this.admissionService = admissionService;
+        this.conversationService = conversationService;
+        this.chatMessageService = chatMessageService;
     }
 
     @Override
@@ -149,6 +173,8 @@ public class DataLoader implements CommandLineRunner {
         createTransactionItems();
         createInvoice();
         createAdmissionData();
+
+        createConversationData();
         //code ends here
 
         long endTime = System.currentTimeMillis();
@@ -1697,5 +1723,18 @@ public class DataLoader implements CommandLineRunner {
 
     private void createAdmissionData() {
         //admissionService.createAdmission(2,"Cancer", 1L, 5L);
+    }
+
+    private void createConversationData() {
+        Conversation convo1 = conversationService.createNewStaffConversation(5L, 11L);
+        Conversation convo2 = conversationService.createNewStaffConversation(12L, 11L);
+
+        ChatMessage msg1 = new ChatMessage("You dumbdumb", MessageTypeEnum.CHAT, 5L);
+        ChatMessage msg2 = new ChatMessage("No, You dumbdumb", MessageTypeEnum.CHAT, 11L);
+        chatMessageService.saveChatMessage(msg1);
+        chatMessageService.saveChatMessage(msg2);
+
+        convo1.getListOfChatMessages().add(msg1);
+        convo1.getListOfChatMessages().add(msg2);
     }
 }
