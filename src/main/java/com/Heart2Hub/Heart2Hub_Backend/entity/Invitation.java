@@ -9,6 +9,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -17,6 +18,10 @@ public class Invitation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long invitationId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID invitationNehrId = UUID.randomUUID();
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)

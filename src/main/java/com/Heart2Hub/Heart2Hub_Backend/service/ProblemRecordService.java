@@ -2,6 +2,7 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ProblemRecord;
+import com.Heart2Hub.Heart2Hub_Backend.exception.ElectronicHealthRecordNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.ProblemRecordNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateProblemRecordException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
@@ -164,5 +165,22 @@ public class ProblemRecordService {
       throw new ProblemRecordNotFoundException(ex.getMessage());
     }
   }
+
+    public ElectronicHealthRecord deleteAllProblemRecordsFromElectronicHealthRecord(Long electronicHealthRecordId) throws ElectronicHealthRecordNotFoundException {
+        try {
+            Optional<ElectronicHealthRecord> electronicHealthRecordOptional = electronicHealthRecordRepository.findById(electronicHealthRecordId);
+
+            if (electronicHealthRecordOptional.isPresent()) {
+                ElectronicHealthRecord existingElectronicHealthRecord = electronicHealthRecordOptional.get();
+                existingElectronicHealthRecord.getListOfProblemRecords().clear();
+                electronicHealthRecordRepository.save(existingElectronicHealthRecord);
+                return existingElectronicHealthRecord;
+            } else {
+                throw new ElectronicHealthRecordNotFoundException("Electronic Health Record with Id: " + electronicHealthRecordId + " is not found");
+            }
+        } catch (Exception ex) {
+            throw new ElectronicHealthRecordNotFoundException(ex.getMessage());
+        }
+    }
 
 }

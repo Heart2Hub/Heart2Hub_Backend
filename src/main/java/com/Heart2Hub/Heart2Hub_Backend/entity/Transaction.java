@@ -1,14 +1,12 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ApprovalStatusEnum;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
+
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -21,6 +19,10 @@ public class Transaction {
     private Long transactionId;
 
     @NotNull
+    @Column(unique = true)
+    private UUID transactionNehrId = UUID.randomUUID();
+
+    @NotNull
     //@CreationTimestamp
     private LocalDateTime transactionDate;
 
@@ -31,7 +33,7 @@ public class Transaction {
     private ApprovalStatusEnum approvalStatusEnum;
 
     public Transaction(BigDecimal transactionAmount, ApprovalStatusEnum approvalStatusEnum) {
-        this.transactionDate = LocalDateTime.now();
+//        this.transactionDate = LocalDateTime.now();
         this.transactionAmount = transactionAmount;
         this.approvalStatusEnum = approvalStatusEnum;
         this.transactionDate = LocalDateTime.now();

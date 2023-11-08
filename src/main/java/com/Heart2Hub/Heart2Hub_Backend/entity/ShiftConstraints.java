@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.sql.Time;
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -17,6 +18,10 @@ public class ShiftConstraints {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long shiftConstraintsId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID shiftConstraintsNehrId = UUID.randomUUID();
 
     @NotNull
     @JsonFormat(pattern="HH:mm:ss")
