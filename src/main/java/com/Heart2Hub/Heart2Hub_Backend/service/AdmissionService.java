@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -232,6 +233,7 @@ public class AdmissionService {
     public String dischargeAdmissions(String dateString) {
         LocalDateTime date = LocalDateTime.parse(dateString);
         List<Ward> allWards = wardRepository.findAll();
+        List<Admission> dischargedAdmissions = new ArrayList<>();
 
         for (Ward ward : allWards) {
             List<Admission> currentAdmissions = ward.getListOfCurrentDayAdmissions();
@@ -245,6 +247,7 @@ public class AdmissionService {
                     admissionRepository.save(emptyAdmission);
 
                     currentAdmissions.set(i, emptyAdmission);
+
                 }
             }
         }
