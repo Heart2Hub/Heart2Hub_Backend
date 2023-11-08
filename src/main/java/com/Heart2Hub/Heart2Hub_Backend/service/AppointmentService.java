@@ -34,7 +34,6 @@ public class AppointmentService {
   private final ElectronicHealthRecordService electronicHealthRecordService;
   private final StaffService staffService;
 
-
   public AppointmentService(AppointmentRepository appointmentRepository,
       PatientService patientService, DepartmentService departmentService,
       ElectronicHealthRecordService electronicHealthRecordService, StaffService staffService) {
@@ -231,9 +230,9 @@ public class AppointmentService {
         appointment.setArrived(false);
 
         // BIG PROBLEM HERE
-//    if (!appointment.getListOfStaff().contains(staff)) {
-//      appointment.getListOfStaff().add(staff);
-//    }
+    if (!appointment.getListOfStaff().contains(staff)) {
+      appointment.getListOfStaff().add(staff);
+    }
 
         staff.getListOfAssignedAppointments().add(appointment);
         return appointment;

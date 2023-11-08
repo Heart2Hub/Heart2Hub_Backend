@@ -1487,11 +1487,14 @@ public class DataLoader implements CommandLineRunner {
                 "Cardiology");
 
         // SR3: Set appointments to start in Consultation
+        appointmentService.assignAppointmentToStaff(a1.getAppointmentId(), 11L, -1L);
+        appointmentService.updateAppointmentSwimlaneStatus(a1.getAppointmentId(), SwimlaneStatusEnum.TRIAGE);
+        appointmentService.assignAppointmentToStaff(a1.getAppointmentId(), 8L, 11L);
         appointmentService.updateAppointmentSwimlaneStatus(a1.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
-        appointmentService.assignAppointmentToStaff(a1.getAppointmentId(), 5L, -1L);
+        appointmentService.assignAppointmentToStaff(a1.getAppointmentId(), 5L, 8L);
 
-        appointmentService.updateAppointmentSwimlaneStatus(a2.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
-        appointmentService.assignAppointmentToStaff(a2.getAppointmentId(), 5L, -1L);
+//        appointmentService.updateAppointmentSwimlaneStatus(a2.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
+//        appointmentService.assignAppointmentToStaff(a2.getAppointmentId(), 5L, -1L);
 
         appointmentService.updateAppointmentSwimlaneStatus(a3.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
         appointmentService.assignAppointmentToStaff(a3.getAppointmentId(), 5L, -1L);
