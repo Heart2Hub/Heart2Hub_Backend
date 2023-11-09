@@ -205,6 +205,11 @@ public class AdmissionService {
 
     public String cancelAdmission(Long admissionIdToCancel, Long wardId) {
         Admission admissionToCancel = admissionRepository.findById(admissionIdToCancel).get();
+        Patient patient = admissionToCancel.getPatient();
+        patient.setAdmission(null);
+        patient.getElectronicHealthRecord().getListOfPastAdmissions().add(admissionToCancel);
+
+
         Ward ward = wardRepository.findById(wardId).get();
         List<Admission> currentAdmissions = ward.getListOfCurrentDayAdmissions();
         for (int i = 0; i < currentAdmissions.size(); i++) {
@@ -233,20 +238,26 @@ public class AdmissionService {
     public String dischargeAdmissions(String dateString) {
         LocalDateTime date = LocalDateTime.parse(dateString);
         List<Ward> allWards = wardRepository.findAll();
-        List<Admission> dischargedAdmissions = new ArrayList<>();
 
         for (Ward ward : allWards) {
             List<Admission> currentAdmissions = ward.getListOfCurrentDayAdmissions();
 
             for (int i = 0; i < currentAdmissions.size(); i++) {
                 Admission currentAdmission = currentAdmissions.get(i);
+                Patient patient = currentAdmission.getPatient();
+
                 if (currentAdmission.getDischargeDateTime() != null && currentAdmission.getDischargeDateTime().isEqual(date)) {
+
                     Admission emptyAdmission = new Admission();
                     emptyAdmission.setRoom(currentAdmission.getRoom());
                     emptyAdmission.setBed(currentAdmission.getBed());
                     admissionRepository.save(emptyAdmission);
 
                     currentAdmissions.set(i, emptyAdmission);
+
+                    //Add current admission to list of past admissions in EHR
+                    patient.setAdmission(null);
+                    patient.getElectronicHealthRecord().getListOfPastAdmissions().add(currentAdmission);
 
                 }
             }
