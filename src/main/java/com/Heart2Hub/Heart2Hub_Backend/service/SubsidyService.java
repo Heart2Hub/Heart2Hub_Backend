@@ -1,16 +1,19 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.ElectronicHealthRecord;
+import com.Heart2Hub.Heart2Hub_Backend.entity.Patient;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Subsidy;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.ElectronicHealthRecordNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
+import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.SubsidyRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,11 +26,33 @@ public class SubsidyService {
     private final SubsidyRepository subsidyRepository;
     private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
     private final ElectronicHealthRecordService electronicHealthRecordService;
+    private final PatientRepository patientRepository;
 
-    public SubsidyService(SubsidyRepository subsidyRepository, ElectronicHealthRecordRepository electronicHealthRecordRepository, ElectronicHealthRecordService electronicHealthRecordService) {
+    public SubsidyService(SubsidyRepository subsidyRepository, ElectronicHealthRecordRepository electronicHealthRecordRepository, ElectronicHealthRecordService electronicHealthRecordService,
+                          PatientRepository patientRepository) {
         this.subsidyRepository = subsidyRepository;
         this.electronicHealthRecordRepository = electronicHealthRecordRepository;
         this.electronicHealthRecordService = electronicHealthRecordService;
+        this.patientRepository = patientRepository;
+    }
+
+    public List<Subsidy> findAllSubsidyOfEhr(Long id) {
+        return electronicHealthRecordRepository.findById(id).get().getListOfSubsidies();
+    }
+
+    public List<Subsidy> findAllSubsidiesOfPatient(String username) {
+        List<ElectronicHealthRecord> ehr = electronicHealthRecordRepository.findAll();
+        Patient p = patientRepository.findByUsername(username).get();
+
+        ElectronicHealthRecord patientEHR = p.getElectronicHealthRecord();
+
+        ElectronicHealthRecord foundEHR = ehr.stream()
+                .filter(e -> e.getElectronicHealthRecordNehrId() == patientEHR.getElectronicHealthRecordNehrId()) // Assuming getId() provides the EHR ID
+                .findFirst()
+                .orElse(null);
+
+        assert foundEHR != null;
+        return foundEHR.getListOfSubsidies();
     }
 
     public List<Subsidy> findAllSubsidies() {
@@ -53,6 +78,7 @@ public class SubsidyService {
         }
 
         subsidyRepository.save(s);
+        electronicHealthRecordRepository.saveAll(listOfEHR);
 
         return s;
     }

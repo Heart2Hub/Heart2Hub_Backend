@@ -77,9 +77,11 @@ public class DataLoader implements CommandLineRunner {
     private final DrugRestrictionService drugRestrictionService;
     private final UnitRepository unitRepository;
     private final AdmissionService admissionService;
+    private final InvoiceRepository invoiceRepository;
 
     public DataLoader(TransactionService transactionService, StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, SubsidyService subsidyService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, MedicationService medicationService, ServiceItemService serviceItemService, TransactionItemService transactionItemService, AppointmentService appointmentService, InventoryItemRepository inventoryItemRepository, PrescriptionRecordRepository prescriptionRecordRepository, InvoiceService invoiceService, DrugRestrictionService drugRestrictionService,
-                      UnitRepository unitRepository, AdmissionService admissionService) {
+                      UnitRepository unitRepository, AdmissionService admissionService,
+                      InvoiceRepository invoiceRepository) {
         this.transactionService = transactionService;
         this.staffService = staffService;
         this.shiftService = shiftService;
@@ -111,6 +113,7 @@ public class DataLoader implements CommandLineRunner {
         this.drugRestrictionService = drugRestrictionService;
         this.unitRepository = unitRepository;
         this.admissionService = admissionService;
+        this.invoiceRepository = invoiceRepository;
     }
 
     @Override
@@ -1677,40 +1680,40 @@ public class DataLoader implements CommandLineRunner {
         }
 
         transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem(medication.getInventoryItemName(),
-                "Medication", 1,
-                medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                "Medication", 2,
+                medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(2)),
                 medication));
         transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem(serviceItem.getInventoryItemName(),
-                "Service", 1,
-                serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                "Service", 2,
+                serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(2)),
                 serviceItem));
 
 
         transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem(medication2.getInventoryItemName(),
-                "Medication", 1,
-                medication2.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                "Medication", 2,
+                medication2.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(2)),
                 medication2));
         transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem(serviceItem2.getInventoryItemName(),
-                "Service", 1,
-                serviceItem2.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                "Service", 2,
+                serviceItem2.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(2)),
                 serviceItem2));
 
         transactionItemService.addToCartDataLoader(Long.parseLong("3"), new TransactionItem(medication3.getInventoryItemName(),
-                "Medication", 1,
-                medication3.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                "Medication", 2,
+                medication3.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(2)),
                 medication3));
         transactionItemService.addToCartDataLoader(Long.parseLong("3"), new TransactionItem(serviceItem3.getInventoryItemName(),
-                "Service", 1,
-                serviceItem3.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                "Service", 2,
+                serviceItem3.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(2)),
                 serviceItem3));
 
         transactionItemService.addToCartDataLoader(Long.parseLong("4"), new TransactionItem(medication4.getInventoryItemName(),
-                "Medication", 1,
-                medication4.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                "Medication", 2,
+                medication4.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(2)),
                 medication4));
         transactionItemService.addToCartDataLoader(Long.parseLong("4"), new TransactionItem(serviceItem4.getInventoryItemName(),
-                "Service", 1,
-                serviceItem4.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                "Service", 2,
+                serviceItem4.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(2)),
                 serviceItem4));
 
         transactionItemService.addToCartDataLoader(Long.parseLong("5"), new TransactionItem(medication5.getInventoryItemName(),
@@ -1770,6 +1773,9 @@ public class DataLoader implements CommandLineRunner {
         Invoice i8 = transactionItemService.checkout(Long.parseLong("8"));
         Invoice i9 = transactionItemService.checkout(Long.parseLong("9"));
 
+        i4.setInvoiceDueDate(LocalDateTime.now().minusDays(30));
+        invoiceRepository.save(i4);
+
 
         invoiceService.createInsuranceClaim(Long.parseLong("1"), BigDecimal.valueOf(95),
                 "Great Eastern", true);
@@ -1777,8 +1783,8 @@ public class DataLoader implements CommandLineRunner {
 
         Invoice i = invoiceService.findInvoice(Long.parseLong("2"));
         transactionService.createTransaction(i.getInvoiceId(), i.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
-        transactionService.createTransaction(i3.getInvoiceId(), i3.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
-        transactionService.createTransaction(i4.getInvoiceId(), i4.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
+        //transactionService.createTransaction(i3.getInvoiceId(), i3.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
+        //transactionService.createTransaction(i4.getInvoiceId(), i4.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
         transactionService.createTransaction(i5.getInvoiceId(), i5.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
         transactionService.createTransaction(i6.getInvoiceId(), i6.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
         transactionService.createTransaction(i7.getInvoiceId(), i7.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
@@ -1790,24 +1796,6 @@ public class DataLoader implements CommandLineRunner {
 
 
     private void createTransactionAnalysisData() {
-//        ServiceItem serviceItem = serviceItemService.createServiceItem(Long.parseLong("11"),
-//                new ServiceItem("Dummy Service", "For Data Loader", ItemTypeEnum.OUTPATIENT,
-//                        BigDecimal.valueOf(90)));
-//        Medication medication = (Medication) inventoryItemRepository.findById(Long.parseLong("6")).get();
-//        Medication medication2 = (Medication) inventoryItemRepository.findById(Long.parseLong("7")).get();
-//        Medication medication3 = (Medication) inventoryItemRepository.findById(Long.parseLong("8")).get();
-//        Medication medication4 = (Medication) inventoryItemRepository.findById(Long.parseLong("9")).get();
-//        Medication medication5 = (Medication) inventoryItemRepository.findById(Long.parseLong("10")).get();
-//        Medication medication6 = (Medication) inventoryItemRepository.findById(Long.parseLong("11")).get();
-//        Medication medication7 = (Medication) inventoryItemRepository.findById(Long.parseLong("12")).get();
-//        Medication medication8 = (Medication) inventoryItemRepository.findById(Long.parseLong("13")).get();
-//
-//
-//        ServiceItem serviceItem = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("14")).get();
-//        ServiceItem serviceItem2 = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("15")).get();
-//        ServiceItem serviceItem3 = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("16")).get();
-//        ServiceItem serviceItem4 = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("17")).get();
-//        ServiceItem serviceItem5 = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("18")).get();
 
         List<InventoryItem> itemList = new ArrayList<>();
 
@@ -1849,104 +1837,6 @@ public class DataLoader implements CommandLineRunner {
         }
     }
 
-//        Invoice i = null;
-//        transactionItemService.addToCartDataLoader(Long.parseLong("5"), new TransactionItem("Dummy Transaction",
-//                "Dummy Transaction", 450,
-//                serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(450)),
-//                serviceItem));
-//         i = transactionItemService.checkout(Long.parseLong("5"));
-//        transactionService.createTransactionDataLoaderMonths(i.getInvoiceId(), i.getInvoiceAmount(), ApprovalStatusEnum.APPROVED, 1);Random random = new Random();
-//
-//    for (int month = 1; month <= 10; month++) {
-//        int randomQuantity = random.nextInt(1000) + 1; // Generates a random quantity between 1 and 1000
-//
-//        // Add a random inventory item to the cart for each month
-//        switch (month) {
-//            case 1:
-//                transactionItemService.addToCartDataLoader(Long.parseLong("5"), new TransactionItem(
-//                        "Dummy Transaction",
-//                        "Dummy Transaction",
-//                        randomQuantity,
-//                        serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(randomQuantity)),
-//                        serviceItem
-//                ));
-//                break;
-//            case 2:
-//                // Add logic for the second month
-//                // ...
-//                break;
-//            // Add cases for other months and inventory items here
-//            default:
-//                break;
-//        }
-//
-//        // Perform the checkout and create the transaction for the current month
-//        Invoice invoice = transactionItemService.checkout(Long.parseLong("5"));
-//        transactionService.createTransactionDataLoaderMonths(invoice.getInvoiceId(), invoice.getInvoiceAmount(), ApprovalStatusEnum.APPROVED, month);
-//    }
-//
-//        transactionItemService.addToCartDataLoader(Long.parseLong("5"), new TransactionItem("Dummy Transaction",
-//                "Dummy Transaction", 500,
-//                serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(500)),
-//                serviceItem));
-//         i = transactionItemService.checkout(Long.parseLong("5"));
-//        transactionService.createTransactionDataLoaderMonths(i.getInvoiceId(), i.getInvoiceAmount(), ApprovalStatusEnum.APPROVED, 2);
-//
-//        transactionItemService.addToCartDataLoader(Long.parseLong("5"), new TransactionItem("Dummy Transaction",
-//                "Dummy Transaction", 475,
-//                serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(475)),
-//                serviceItem));
-//         i = transactionItemService.checkout(Long.parseLong("5"));
-//        transactionService.createTransactionDataLoaderMonths(i.getInvoiceId(), i.getInvoiceAmount(), ApprovalStatusEnum.APPROVED, 3);
-//
-//        transactionItemService.addToCartDataLoader(Long.parseLong("5"), new TransactionItem("Dummy Transaction",
-//                "Dummy Transaction", 523,
-//                serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(523)),
-//                serviceItem));
-//         i = transactionItemService.checkout(Long.parseLong("5"));
-//        transactionService.createTransactionDataLoaderMonths(i.getInvoiceId(), i.getInvoiceAmount(), ApprovalStatusEnum.APPROVED, 4);
-//
-//        transactionItemService.addToCartDataLoader(Long.parseLong("5"), new TransactionItem("Dummy Transaction",
-//                "Dummy Transaction", 423,
-//                serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(423)),
-//                serviceItem));
-//         i = transactionItemService.checkout(Long.parseLong("5"));
-//        transactionService.createTransactionDataLoaderMonths(i.getInvoiceId(), i.getInvoiceAmount(), ApprovalStatusEnum.APPROVED, 5);
-//
-//        transactionItemService.addToCartDataLoader(Long.parseLong("5"), new TransactionItem("Dummy Transaction",
-//                "Dummy Transaction", 600,
-//                serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(600)),
-//                serviceItem));
-//         i = transactionItemService.checkout(Long.parseLong("5"));
-//        transactionService.createTransactionDataLoaderMonths(i.getInvoiceId(), i.getInvoiceAmount(), ApprovalStatusEnum.APPROVED, 6);
-//
-//        transactionItemService.addToCartDataLoader(Long.parseLong("5"), new TransactionItem("Dummy Transaction",
-//                "Dummy Transaction", 564,
-//                serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(564)),
-//                serviceItem));
-//         i = transactionItemService.checkout(Long.parseLong("5"));
-//        transactionService.createTransactionDataLoaderMonths(i.getInvoiceId(), i.getInvoiceAmount(), ApprovalStatusEnum.APPROVED, 7);
-//
-//        transactionItemService.addToCartDataLoader(Long.parseLong("5"), new TransactionItem("Dummy Transaction",
-//                "Dummy Transaction", 511,
-//                serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(511)),
-//                serviceItem));
-//         i = transactionItemService.checkout(Long.parseLong("5"));
-//        transactionService.createTransactionDataLoaderMonths(i.getInvoiceId(), i.getInvoiceAmount(), ApprovalStatusEnum.APPROVED, 8);
-//
-//        transactionItemService.addToCartDataLoader(Long.parseLong("5"), new TransactionItem("Dummy Transaction",
-//                "Dummy Transaction", 488,
-//                serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(488)),
-//                serviceItem));
-//         i = transactionItemService.checkout(Long.parseLong("5"));
-//        transactionService.createTransactionDataLoaderMonths(i.getInvoiceId(), i.getInvoiceAmount(), ApprovalStatusEnum.APPROVED, 9);
-//
-//        transactionItemService.addToCartDataLoader(Long.parseLong("5"), new TransactionItem("Dummy Transaction",
-//                "Dummy Transaction", 571,
-//                serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(571)),
-//                serviceItem));
-//         i = transactionItemService.checkout(Long.parseLong("5"));
-//        transactionService.createTransactionDataLoaderMonths(i.getInvoiceId(), i.getInvoiceAmount(), ApprovalStatusEnum.APPROVED, 10);
 
 
 
