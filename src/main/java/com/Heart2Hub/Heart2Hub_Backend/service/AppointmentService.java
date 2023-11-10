@@ -227,9 +227,9 @@ public class AppointmentService {
         appointment.setArrived(false);
 
         // BIG PROBLEM HERE
-//    if (!appointment.getListOfStaff().contains(staff)) {
-//      appointment.getListOfStaff().add(staff);
-//    }
+    if (!appointment.getListOfStaff().contains(staff)) {
+      appointment.getListOfStaff().add(staff);
+    }
 
         staff.getListOfAssignedAppointments().add(appointment);
         return appointment;

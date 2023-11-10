@@ -9,6 +9,7 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.*;
 import com.Heart2Hub.Heart2Hub_Backend.repository.FacilityRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ShiftConstraintsRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.WardRepository;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
