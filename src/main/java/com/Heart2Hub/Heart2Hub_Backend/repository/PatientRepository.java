@@ -12,4 +12,6 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     List<Patient> findByUsernameContainsIgnoreCase(String username);
 
     Optional<Patient> findByUsername(String username);
+
+    Patient getPatientByPatientId(Long patientId);
 }
