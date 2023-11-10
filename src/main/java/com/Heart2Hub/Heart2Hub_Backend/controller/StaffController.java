@@ -166,6 +166,8 @@ public class StaffController {
     return ResponseEntity.ok(listOfOutpatientStaff);
   }
 
+
+
   @GetMapping("/getStaffsWorkingInCurrentShiftAndWard")
   public ResponseEntity<List<InpatientStaffDTO>> getNurses(
           @RequestParam("wardName") String wardName) {

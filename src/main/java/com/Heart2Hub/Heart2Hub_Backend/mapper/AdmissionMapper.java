@@ -51,6 +51,14 @@ public class AdmissionMapper {
                 .collect(Collectors.toList());
         dto.setListOfMedicationOrderIds(listOfMedicationOrderIds);
 
+        //Inpatient treatment
+        List<InpatientTreatment> listOfInpatientTreatments = admission.getListOfInpatientTreatments();
+        List<Long> listOfInpatientTreatmentIds = listOfInpatientTreatments
+                .stream()
+                .map(InpatientTreatment::getInpatientTreatmentId)
+                .collect(Collectors.toList());
+        dto.setListOfInpatientTreatmentIds(listOfInpatientTreatmentIds);
+
 //        for (Staff staff : listOfAssignedStaff) {
 //            String fullname = staff.getFirstname() + " " + staff.getLastname();
 //            if (staff.getStaffRoleEnum().equals(StaffRoleEnum.ADMIN)) {

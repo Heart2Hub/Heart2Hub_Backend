@@ -47,6 +47,8 @@ public class MedicationOrder {
     @NotNull
     private Boolean isCompleted = false;
 
+    private String createdBy;
+
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "medication_id", nullable = true)
@@ -69,12 +71,13 @@ public class MedicationOrder {
     public MedicationOrder() {
     }
 
-    public MedicationOrder(String title, Integer quantity, String comments, LocalDateTime startDate, LocalDateTime endDate) {
+    public MedicationOrder(String title, Integer quantity, String comments, LocalDateTime startDate, LocalDateTime endDate, String createdBy) {
         this();
         this.title = title;
         this.quantity = quantity;
         this.comments = comments;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.createdBy = createdBy;
     }
 }

@@ -41,8 +41,7 @@ public class MedicationOrderService {
         if (medication.getQuantityInStock() - medicationOrder.getQuantity() < 0) {
             throw new InsufficientInventoryException("Insufficient Inventory for Medication");
         }
-// This is an issue here I comment out first later I fix
-//        String comments = medicationOrder.getComments();
+
         if (medicationOrder.getComments() == null) {
             throw new UnableToCreateMedicationOrderException("Comments must be present.");
         }
@@ -118,4 +117,6 @@ List<MedicationOrder> medicationOrderList = admissionRepository.findById(admissi
     public MedicationOrder getMedicationOrderById(Long medicationOrderId) {
         return medicationOrderRepository.findById(medicationOrderId).get();
     }
+
+
 }

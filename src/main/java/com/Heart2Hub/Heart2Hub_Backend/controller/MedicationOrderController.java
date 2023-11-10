@@ -26,6 +26,7 @@ public class MedicationOrderController {
         );
     }
 
+
     @GetMapping("/getAllMedicationOrdersOfAdmission")
     public ResponseEntity<List<MedicationOrder>> getAllMedicationOrdersOfAdmission(
             @RequestParam Long admissionId) {

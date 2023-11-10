@@ -61,21 +61,6 @@ public class Admission {
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
-//    @JsonIgnore
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "admin_id")
-//    private Staff currentAssignedAdmin;
-//
-//    @JsonIgnore
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "nurse_id")
-//    private Staff currentAssignedNurse;
-//
-//    @JsonIgnore
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "doctor_id")
-//    private Staff currentAssignedDoctor;
-
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     private List<Staff> listOfAssignedStaff;
@@ -83,6 +68,10 @@ public class Admission {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "admission_id")
     private List<MedicationOrder> listOfMedicationOrders;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "admission_id")
+    private List<InpatientTreatment> listOfInpatientTreatments;
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -94,10 +83,17 @@ public class Admission {
     @JoinColumn(name = "ward_id")
     private Ward ward;
 
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "admission_id")
+    private List<ImageDocument> listOfImageDocuments;
+
     public Admission(){
         this.listOfMedicationOrders = new ArrayList<>();
         this.listOfPatientRequests = new ArrayList<>();
         this.listOfAssignedStaff = new ArrayList<>();
+        this.listOfInpatientTreatments = new ArrayList<>();
+        this.listOfImageDocuments = new ArrayList<>();
     }
 
     public Admission(Integer duration, String reason) {
