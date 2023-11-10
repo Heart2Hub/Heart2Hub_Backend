@@ -101,7 +101,12 @@
 			<artifactId>shedlock-provider-jdbc-template</artifactId>
 			<version>5.8.0</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>
