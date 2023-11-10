@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.controller;
 import com.Heart2Hub.Heart2Hub_Backend.dto.StaffChatDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ChatMessage;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Conversation;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.MessageTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.service.ConversationService;
 import java.util.HashMap;
 import java.util.List;
@@ -12,12 +13,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/conversation")
@@ -48,6 +44,15 @@ public class ConversationController {
   @GetMapping("/getStaffChatDTO")
   public ResponseEntity<StaffChatDTO> getStaffChatDTO(@RequestParam("staffId") Long staffId) {
     return ResponseEntity.status(HttpStatus.OK).body(conversationService.getStaffChatDTO(staffId));
+  }
+
+  @PostMapping("/addChatMessage")
+  public ResponseEntity<String> addChatMessage(@RequestParam("conversationId") Long conversationId,
+                                         @RequestParam("senderId") Long senderId,
+                                         @RequestParam("content") String content) {
+    ChatMessage chatMessage = new ChatMessage(content, MessageTypeEnum.CHAT, senderId);
+    conversationService.addChatMessage(conversationId, chatMessage);
+    return ResponseEntity.status(HttpStatus.OK).body("yay");
   }
 
 //  // Endpoint for sending a chat message within a conversation

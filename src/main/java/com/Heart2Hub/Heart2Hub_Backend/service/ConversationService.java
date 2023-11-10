@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 import com.Heart2Hub.Heart2Hub_Backend.dto.StaffChatDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ChatMessage;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Conversation;
+import com.Heart2Hub.Heart2Hub_Backend.entity.Patient;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateConversationException;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.StaffChatMapper;
@@ -22,14 +23,16 @@ public class ConversationService {
   private final ConversationRepository conversationRepository;
   private final StaffService staffService;
   private final StaffChatMapper staffChatMapper;
+  private final PatientService patientService;
 
   public ConversationService(ChatMessageService chatMessageService,
       ConversationRepository conversationRepository,
-      StaffService staffService, StaffChatMapper staffChatMapper) {
+      StaffService staffService, StaffChatMapper staffChatMapper, PatientService patientService) {
     this.chatMessageService = chatMessageService;
     this.conversationRepository = conversationRepository;
     this.staffChatMapper = staffChatMapper;
     this.staffService = staffService;
+    this.patientService = patientService;
   }
 
   public Conversation createNewStaffConversation(Long staffId1, Long staffId2) {
@@ -98,5 +101,24 @@ public class ConversationService {
 
   public StaffChatDTO getStaffChatDTO(Long staffId) {
     return staffChatMapper.toDTO(staffService.getStaffById(staffId));
+  }
+
+  public Conversation createNewPatientConversation(Long patientId1, Long staffId1) {
+
+    List<Conversation> convo1 = conversationRepository.findFirstByPatient_PatientIdAndFirstStaff_StaffId(
+            patientId1, staffId1);
+    List<Conversation> convo2 = conversationRepository.findFirstByFirstStaff_StaffIdAndPatient_PatientId(
+            staffId1, patientId1);
+
+    if (convo1.size() > 0 || convo2.size() > 0) {
+      throw new UnableToCreateConversationException("Conversation already exist");
+    }
+
+    Staff staff1 = staffService.getStaffById(staffId1);
+    Patient patient1 = patientService.getPatientById(patientId1);
+
+    Conversation conversation = new Conversation(patient1, staff1, null);
+
+    return conversationRepository.save(conversation);
   }
 }
