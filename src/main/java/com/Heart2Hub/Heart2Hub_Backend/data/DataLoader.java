@@ -85,68 +85,64 @@ public class DataLoader implements CommandLineRunner {
     private final ChatMessageService chatMessageService;
 
     public DataLoader(StaffService staffService, ShiftService shiftService,
-        DepartmentService departmentService, AuthenticationManager authenticationManager,
-        FacilityService facilityService, PatientService patientService,
-        NextOfKinRecordService nextOfKinRecordService,
-        PrescriptionRecordService prescriptionRecordService,
-        ProblemRecordService problemRecordService,
-        MedicalHistoryRecordService medicalHistoryRecordService,
-        TreatmentPlanRecordService treatmentPlanRecordService, SubsidyService subsidyService,
-        LeaveService leaveService, ShiftConstraintsService shiftConstraintsService,
-        ConsumableEquipmentService consumableEquipmentService,
-        AllocatedInventoryService allocatedInventoryService,
-        SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository,
-        WardService wardService, WardClassService wardClassService,
-        MedicationService medicationService,
-        ServiceItemService serviceItemService, TransactionItemService transactionItemService,
-        AppointmentService appointmentService, InventoryItemRepository inventoryItemRepository,
-        PrescriptionRecordRepository prescriptionRecordRepository, InvoiceService invoiceService,
-        DrugRestrictionService drugRestrictionService, UnitRepository unitRepository,
-        AdmissionService admissionService, ConversationService conversationService,
-        ChatMessageService chatMessageService) {
-    private final PostService postService;
-
-    public DataLoader(TransactionService transactionService, StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, SubsidyService subsidyService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, MedicationService medicationService, ServiceItemService serviceItemService, TransactionItemService transactionItemService, AppointmentService appointmentService, InventoryItemRepository inventoryItemRepository, PrescriptionRecordRepository prescriptionRecordRepository, InvoiceService invoiceService, DrugRestrictionService drugRestrictionService,
-                      UnitRepository unitRepository, AdmissionService admissionService,
-                      InvoiceRepository invoiceRepository,
-                      StaffRepository staffRepository, PostService postService) {
+                      DepartmentService departmentService, AuthenticationManager authenticationManager,
+                      FacilityService facilityService, PatientService patientService,
+                      NextOfKinRecordService nextOfKinRecordService,
+                      PrescriptionRecordService prescriptionRecordService,
+                      ProblemRecordService problemRecordService,
+                      MedicalHistoryRecordService medicalHistoryRecordService,
+                      TreatmentPlanRecordService treatmentPlanRecordService, SubsidyService subsidyService,
+                      LeaveService leaveService, ShiftConstraintsService shiftConstraintsService,
+                      ConsumableEquipmentService consumableEquipmentService,
+                      AllocatedInventoryService allocatedInventoryService,
+                      SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository,
+                      WardService wardService, WardClassService wardClassService,
+                      MedicationService medicationService,
+                      ServiceItemService serviceItemService, TransactionItemService transactionItemService,
+                      AppointmentService appointmentService, InventoryItemRepository inventoryItemRepository,
+                      PrescriptionRecordRepository prescriptionRecordRepository, InvoiceService invoiceService,
+                      DrugRestrictionService drugRestrictionService, UnitRepository unitRepository,
+                      AdmissionService admissionService, ConversationService conversationService,
+                      ChatMessageService chatMessageService, TransactionService transactionService, StaffService staffService1, ShiftService shiftService1, DepartmentService departmentService1, AuthenticationManager authenticationManager1, FacilityService facilityService1, PatientService patientService1, NextOfKinRecordService nextOfKinRecordService1, PrescriptionRecordService prescriptionRecordService1, ProblemRecordService problemRecordService1, MedicalHistoryRecordService medicalHistoryRecordService1, TreatmentPlanRecordService treatmentPlanRecordService1, SubsidyService subsidyService1, LeaveService leaveService1, ShiftConstraintsService shiftConstraintsService1, ConsumableEquipmentService consumableEquipmentService1, AllocatedInventoryService allocatedInventoryService1, SubDepartmentRepository subDepartmentRepository1, DepartmentRepository departmentRepository1, WardService wardService1, WardClassService wardClassService1, MedicationService medicationService1, ServiceItemService serviceItemService1, TransactionItemService transactionItemService1, AppointmentService appointmentService1, InventoryItemRepository inventoryItemRepository1, PrescriptionRecordRepository prescriptionRecordRepository1, InvoiceService invoiceService1, DrugRestrictionService drugRestrictionService1, UnitRepository unitRepository1, AdmissionService admissionService1, InvoiceRepository invoiceRepository, StaffRepository staffRepository, PostService postService, ConversationService conversationService1, ChatMessageService chatMessageService1) {
         this.transactionService = transactionService;
-        this.staffService = staffService;
-        this.shiftService = shiftService;
-        this.departmentService = departmentService;
-        this.authenticationManager = authenticationManager;
-        this.facilityService = facilityService;
-        this.patientService = patientService;
-        this.nextOfKinRecordService = nextOfKinRecordService;
-        this.prescriptionRecordService = prescriptionRecordService;
-        this.problemRecordService = problemRecordService;
-        this.medicalHistoryRecordService = medicalHistoryRecordService;
-        this.treatmentPlanRecordService = treatmentPlanRecordService;
-        this.subsidyService = subsidyService;
-        this.leaveService = leaveService;
-        this.shiftConstraintsService = shiftConstraintsService;
-        this.consumableEquipmentService = consumableEquipmentService;
-        this.allocatedInventoryService = allocatedInventoryService;
-        this.subDepartmentRepository = subDepartmentRepository;
-        this.departmentRepository = departmentRepository;
-        this.wardService = wardService;
-        this.wardClassService = wardClassService;
-        this.medicationService = medicationService;
-        this.serviceItemService = serviceItemService;
-        this.transactionItemService = transactionItemService;
-        this.appointmentService = appointmentService;
-        this.inventoryItemRepository = inventoryItemRepository;
-        this.prescriptionRecordRepository = prescriptionRecordRepository;
-        this.invoiceService = invoiceService;
-        this.drugRestrictionService = drugRestrictionService;
-        this.unitRepository = unitRepository;
-        this.admissionService = admissionService;
+        this.staffService = staffService1;
+        this.shiftService = shiftService1;
+        this.departmentService = departmentService1;
+        this.authenticationManager = authenticationManager1;
+        this.facilityService = facilityService1;
+        this.patientService = patientService1;
+        this.nextOfKinRecordService = nextOfKinRecordService1;
+        this.prescriptionRecordService = prescriptionRecordService1;
+        this.problemRecordService = problemRecordService1;
+        this.medicalHistoryRecordService = medicalHistoryRecordService1;
+        this.treatmentPlanRecordService = treatmentPlanRecordService1;
+        this.subsidyService = subsidyService1;
+        this.leaveService = leaveService1;
+        this.shiftConstraintsService = shiftConstraintsService1;
+        this.consumableEquipmentService = consumableEquipmentService1;
+        this.allocatedInventoryService = allocatedInventoryService1;
+        this.subDepartmentRepository = subDepartmentRepository1;
+        this.departmentRepository = departmentRepository1;
+        this.wardService = wardService1;
+        this.wardClassService = wardClassService1;
+        this.medicationService = medicationService1;
+        this.serviceItemService = serviceItemService1;
+        this.transactionItemService = transactionItemService1;
+        this.appointmentService = appointmentService1;
+        this.inventoryItemRepository = inventoryItemRepository1;
+        this.prescriptionRecordRepository = prescriptionRecordRepository1;
+        this.invoiceService = invoiceService1;
+        this.drugRestrictionService = drugRestrictionService1;
+        this.unitRepository = unitRepository1;
+        this.admissionService = admissionService1;
         this.invoiceRepository = invoiceRepository;
         this.staffRepository = staffRepository;
         this.postService = postService;
-        this.conversationService = conversationService;
-        this.chatMessageService = chatMessageService;
+        this.conversationService = conversationService1;
+        this.chatMessageService = chatMessageService1;
     }
+
+
 
     @Override
     public void run(String... args) {
@@ -1836,7 +1832,7 @@ public class DataLoader implements CommandLineRunner {
         Invoice i9 = transactionItemService.checkout(Long.parseLong("9"));
 
         i4.setInvoiceDueDate(LocalDateTime.now().minusDays(30));
-        invoiceRepository.save(i4);
+        this.invoiceRepository.save(i4);
 
 
         invoiceService.createInsuranceClaim(Long.parseLong("1"), BigDecimal.valueOf(95),
@@ -1844,14 +1840,14 @@ public class DataLoader implements CommandLineRunner {
         invoiceService.createMedishieldClaim(Long.parseLong("1"), BigDecimal.valueOf(110));
 
         Invoice i = invoiceService.findInvoice(Long.parseLong("2"));
-        transactionService.createTransaction(i.getInvoiceId(), i.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
+        this.transactionService.createTransaction(i.getInvoiceId(), i.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
         //transactionService.createTransaction(i3.getInvoiceId(), i3.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
         //transactionService.createTransaction(i4.getInvoiceId(), i4.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
-        transactionService.createTransaction(i5.getInvoiceId(), i5.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
-        transactionService.createTransaction(i6.getInvoiceId(), i6.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
-        transactionService.createTransaction(i7.getInvoiceId(), i7.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
-        transactionService.createTransaction(i8.getInvoiceId(), i8.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
-        transactionService.createTransaction(i9.getInvoiceId(), i9.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
+        this.transactionService.createTransaction(i5.getInvoiceId(), i5.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
+        this.transactionService.createTransaction(i6.getInvoiceId(), i6.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
+        this.transactionService.createTransaction(i7.getInvoiceId(), i7.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
+        this.transactionService.createTransaction(i8.getInvoiceId(), i8.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
+        this.transactionService.createTransaction(i9.getInvoiceId(), i9.getInvoiceAmount(), ApprovalStatusEnum.APPROVED);
 
 
     }
@@ -1894,14 +1890,14 @@ public class DataLoader implements CommandLineRunner {
                     ));
                 }
                 Invoice invoice = transactionItemService.checkout(Long.parseLong("5"));
-                transactionService.createTransactionDataLoaderMonths(invoice.getInvoiceId(), invoice.getInvoiceAmount(), ApprovalStatusEnum.APPROVED, month);
+                this.transactionService.createTransactionDataLoaderMonths(invoice.getInvoiceId(), invoice.getInvoiceAmount(), ApprovalStatusEnum.APPROVED, month);
             }
         }
     }
 
 
     private void createPosts() {
-        Staff staff = staffRepository.findById(Long.valueOf(11)).get();
+        Staff staff = this.staffRepository.findById(Long.valueOf(11)).get();
         LocalDateTime lt = LocalDateTime.now();
 
         Post p1 = new Post("Announcement to All Staffs", "Merry Christmas!", PostTypeEnum.ADMINISTRATIVE);
