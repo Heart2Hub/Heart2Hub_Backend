@@ -79,7 +79,31 @@ public class DataLoader implements CommandLineRunner {
     private final AdmissionService admissionService;
     private final InvoiceRepository invoiceRepository;
     private final StaffRepository staffRepository;
+    private final PostService postService;
+    private final ConversationService conversationService;
 
+    private final ChatMessageService chatMessageService;
+
+    public DataLoader(StaffService staffService, ShiftService shiftService,
+        DepartmentService departmentService, AuthenticationManager authenticationManager,
+        FacilityService facilityService, PatientService patientService,
+        NextOfKinRecordService nextOfKinRecordService,
+        PrescriptionRecordService prescriptionRecordService,
+        ProblemRecordService problemRecordService,
+        MedicalHistoryRecordService medicalHistoryRecordService,
+        TreatmentPlanRecordService treatmentPlanRecordService, SubsidyService subsidyService,
+        LeaveService leaveService, ShiftConstraintsService shiftConstraintsService,
+        ConsumableEquipmentService consumableEquipmentService,
+        AllocatedInventoryService allocatedInventoryService,
+        SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository,
+        WardService wardService, WardClassService wardClassService,
+        MedicationService medicationService,
+        ServiceItemService serviceItemService, TransactionItemService transactionItemService,
+        AppointmentService appointmentService, InventoryItemRepository inventoryItemRepository,
+        PrescriptionRecordRepository prescriptionRecordRepository, InvoiceService invoiceService,
+        DrugRestrictionService drugRestrictionService, UnitRepository unitRepository,
+        AdmissionService admissionService, ConversationService conversationService,
+        ChatMessageService chatMessageService) {
     private final PostService postService;
 
     public DataLoader(TransactionService transactionService, StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, SubsidyService subsidyService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, MedicationService medicationService, ServiceItemService serviceItemService, TransactionItemService transactionItemService, AppointmentService appointmentService, InventoryItemRepository inventoryItemRepository, PrescriptionRecordRepository prescriptionRecordRepository, InvoiceService invoiceService, DrugRestrictionService drugRestrictionService,
@@ -120,6 +144,8 @@ public class DataLoader implements CommandLineRunner {
         this.invoiceRepository = invoiceRepository;
         this.staffRepository = staffRepository;
         this.postService = postService;
+        this.conversationService = conversationService;
+        this.chatMessageService = chatMessageService;
     }
 
     @Override
@@ -160,6 +186,8 @@ public class DataLoader implements CommandLineRunner {
         createTransactionItems();
         createInvoice();
         createAdmissionData();
+
+        createConversationData();
         createTransactionAnalysisData();
         //code ends here
 
@@ -1508,11 +1536,14 @@ public class DataLoader implements CommandLineRunner {
                 "Cardiology");
 
         // SR3: Set appointments to start in Consultation
+        appointmentService.assignAppointmentToStaff(a1.getAppointmentId(), 11L, -1L);
+        appointmentService.updateAppointmentSwimlaneStatus(a1.getAppointmentId(), SwimlaneStatusEnum.TRIAGE);
+        appointmentService.assignAppointmentToStaff(a1.getAppointmentId(), 8L, 11L);
         appointmentService.updateAppointmentSwimlaneStatus(a1.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
-        appointmentService.assignAppointmentToStaff(a1.getAppointmentId(), 5L, -1L);
+        appointmentService.assignAppointmentToStaff(a1.getAppointmentId(), 5L, 8L);
 
-        appointmentService.updateAppointmentSwimlaneStatus(a2.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
-        appointmentService.assignAppointmentToStaff(a2.getAppointmentId(), 5L, -1L);
+//        appointmentService.updateAppointmentSwimlaneStatus(a2.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
+//        appointmentService.assignAppointmentToStaff(a2.getAppointmentId(), 5L, -1L);
 
         appointmentService.updateAppointmentSwimlaneStatus(a3.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
         appointmentService.assignAppointmentToStaff(a3.getAppointmentId(), 5L, -1L);
@@ -1576,18 +1607,22 @@ public class DataLoader implements CommandLineRunner {
     private void createMedicationData() {
         Collection<AllergenEnum> allergenList1 = new ArrayList<>();
         Collection<AllergenEnum> allergenList2 = new ArrayList<>();
-        allergenList2.add(AllergenEnum.PENICILLIN_V);
+        allergenList2.add(AllergenEnum.EGG);
         allergenList2.add(AllergenEnum.AMOXICILLIN);
 
         DrugRestriction newDrugRestriction1 = drugRestrictionService.createDrugRestriction(
                 new DrugRestriction("Warfarin 1mg Tablet (1 piece)"));
         DrugRestriction newDrugRestriction2 = drugRestrictionService.createDrugRestriction(
                 new DrugRestriction("Paracetamol 500 mg Tablets (12 pieces)"));
+        DrugRestriction newDrugRestriction3 = drugRestrictionService.createDrugRestriction(
+                new DrugRestriction("Warfarin 3mg Tablet (1 piece)"));
         List<DrugRestriction> drugList1 = new ArrayList<>();
         List<DrugRestriction> drugList2 = new ArrayList<>();
         drugList2.add(newDrugRestriction1);
         List<DrugRestriction> drugList3 = new ArrayList<>();
         drugList3.add(newDrugRestriction2);
+        List<DrugRestriction> drugList4 = new ArrayList<>();
+        drugList3.add(newDrugRestriction3);
 
 
         Medication newMedication1 = medicationService.createMedication(
@@ -1606,16 +1641,18 @@ public class DataLoader implements CommandLineRunner {
                 new Medication("Augmentin 228mg Suspension (1 bottle)", "5ml per bottle", ItemTypeEnum.MEDICINE, 100,
                         BigDecimal.valueOf(3), BigDecimal.TEN, allergenList2, "", drugList1));
         Medication newMedication6 = medicationService.createMedication(
-                new Medication("Warfarin 1mg Tablet (1 piece)", "1mg per piece", ItemTypeEnum.MEDICINE, 10000,
-                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList1));
+                new Medication("Warfarin 1mg Tablet (1 piece)", "1mg per piece", ItemTypeEnum.MEDICINE_INPATIENT, 10000,
+                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList4));
         Medication newMedication7 = medicationService.createMedication(
                 new Medication("Warfarin 3mg Tablet (28 pieces)", "3mg per piece", ItemTypeEnum.MEDICINE, 10000,
                         BigDecimal.valueOf(4), BigDecimal.valueOf(5), allergenList1, "", drugList1));
         Medication newMedication8 = medicationService.createMedication(
-                new Medication("Warfarin 3mg Tablet (1 piece)", "1mg per piece", ItemTypeEnum.MEDICINE, 10000,
-                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList1));
+                new Medication("Warfarin 3mg Tablet (1 piece)", "1mg per piece", ItemTypeEnum.MEDICINE_INPATIENT, 10000,
+                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList2));
+        Medication newMedication9 = medicationService.createMedication(
+                new Medication("Augmentin 625mg Tablets (1 piece)", "625mg per piece", ItemTypeEnum.MEDICINE_INPATIENT, 50,
+                        BigDecimal.valueOf(4), BigDecimal.TEN, allergenList2, "", drugList1));
     }
-
     private void createServiceItemData() {
 
         Unit unit1 = unitRepository.findById(1L).get();
@@ -1680,13 +1717,14 @@ public class DataLoader implements CommandLineRunner {
         Medication medication8 = (Medication) inventoryItemRepository.findById(Long.parseLong("13")).get();
 
 
-        ServiceItem serviceItem = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("14")).get();
+//        ServiceItem serviceItem = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("14")).get();
         ServiceItem serviceItem2 = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("15")).get();
         ServiceItem serviceItem3 = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("16")).get();
         ServiceItem serviceItem4 = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("17")).get();
         ServiceItem serviceItem5 = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("18")).get();
 
 
+        ServiceItem serviceItem = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("15")).get();
 
         InventoryItem inventoryItem = inventoryItemRepository.findById(Long.parseLong("6")).get();
 
@@ -1698,6 +1736,11 @@ public class DataLoader implements CommandLineRunner {
             prescriptionRecordRepository.save(pr);
         }
 
+        //For patient 1
+//    transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem("Consumable",
+//            "Consumable", 1,
+//            consumableEquipment.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+//            consumableEquipment));
         transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem(medication.getInventoryItemName(),
                 "Medication", 2,
                 medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(2)),
@@ -1873,5 +1916,18 @@ public class DataLoader implements CommandLineRunner {
 
     private void createAdmissionData() {
         //admissionService.createAdmission(2,"Cancer", 1L, 5L);
+    }
+
+    private void createConversationData() {
+        Conversation convo1 = conversationService.createNewStaffConversation(5L, 11L);
+        Conversation convo2 = conversationService.createNewStaffConversation(12L, 11L);
+
+        ChatMessage msg1 = new ChatMessage("You dumbdumb", MessageTypeEnum.CHAT, 5L);
+        ChatMessage msg2 = new ChatMessage("No, You dumbdumb", MessageTypeEnum.CHAT, 11L);
+        chatMessageService.saveChatMessage(msg1);
+        chatMessageService.saveChatMessage(msg2);
+
+        convo1.getListOfChatMessages().add(msg1);
+        convo1.getListOfChatMessages().add(msg2);
     }
 }

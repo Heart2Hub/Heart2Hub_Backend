@@ -211,4 +211,8 @@ public class PatientService {
     public List<Patient> findAllPatients() {
         return patientRepository.findAll();
     }
+
+    public Patient getPatientById(Long id) {
+        return patientRepository.getPatientByPatientId(id);
+    }
 }

@@ -282,4 +282,38 @@ public class MedicationService {
 
         return medicationList;
     }
+
+    public List<Medication> getAllInpatientMedicationsByAllergy(Long pId) {
+        ElectronicHealthRecord ehr = electronicHealthRecordRepository.findById(pId).get();
+        List<Medication> medicationList = medicationRepository.findByItemTypeEnum(ItemTypeEnum.MEDICINE_INPATIENT);
+        //List<Medication> newList = new ArrayList<>();
+        List<MedicalHistoryRecord>  mhrList = ehr.getListOfMedicalHistoryRecords();
+
+        for (MedicalHistoryRecord mhr : mhrList) {
+            if (mhr.getProblemTypeEnum() == ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC) {
+                List<Medication> removalList = new ArrayList<>();
+                AllergenEnum allergy = AllergenEnum.valueOf(mhr.getDescription());
+
+                for (int j = 0; j < medicationList.size(); j++) {
+                    Medication m = medicationList.get(j);
+                    if (m.getAllergenEnumList().contains(allergy)) {
+                        removalList.add(m);
+                    }
+                }
+
+                medicationList.removeAll(removalList);
+            }
+        }
+
+        return medicationList;
+    }
+
+   public List<Medication> getAllInpatientMedication() throws MedicationNotFoundException{
+       try {
+        List<Medication> medications = medicationRepository.findByItemTypeEnum(ItemTypeEnum.MEDICINE_INPATIENT);
+        return medications;
+       } catch (Exception ex) {
+           throw new MedicationNotFoundException(ex.getMessage());
+       }
+   }
 }

@@ -13,6 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 @RestController
 @RequestMapping("/shift")
 @RequiredArgsConstructor
@@ -91,6 +94,23 @@ public class ShiftController {
     try {
       return ResponseEntity.ok(shiftService.getAllShiftsForStaffFromDates(username, startDate, endDate));
     } catch (StaffRoleNotFoundException ex) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+  }
+
+  @PostMapping(value="/automaticallyCreateShifts", produces={"application/json"})
+  public ResponseEntity automaticallyCreateShifts(@RequestParam("startDate") String startDate,
+                                     @RequestParam("endDate") String endDate,
+                                     @RequestParam("role") String role,
+                                     @RequestParam("department") String department,
+                                      @RequestParam("shift1") Integer shift1,
+                                      @RequestParam("shift2") Integer shift2,
+                                      @RequestParam("shift3") Integer shift3) {
+    try {
+      shiftService.automaticallyAllocateShifts(startDate, endDate, role, department, shift1, shift2, shift3);
+
+      return ResponseEntity.ok("Shifts allocated!");
+    } catch (StaffRoleNotFoundException | InterruptedException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
   }

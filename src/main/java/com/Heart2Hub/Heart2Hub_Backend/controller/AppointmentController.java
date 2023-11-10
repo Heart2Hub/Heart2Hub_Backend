@@ -7,11 +7,25 @@ import com.Heart2Hub.Heart2Hub_Backend.enumeration.DispensaryStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.AppointmentMapper;
 import com.Heart2Hub.Heart2Hub_Backend.service.AppointmentService;
-import java.util.List;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/appointment")
@@ -21,7 +35,7 @@ public class AppointmentController {
   private final AppointmentService appointmentService;
 
   private final AppointmentMapper appointmentMapper;
-
+  private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
   @GetMapping("/findAppointmentByAppointmentId")
   public ResponseEntity<Appointment> findAppointmentByAppointmentId(
       @RequestParam("appointmentId") Long appointmentId) {
@@ -73,7 +87,9 @@ public class AppointmentController {
       @RequestParam("appointmentId") Long appointmentId,
       @RequestParam("toStaffId") Long toStaffId,
       @RequestParam("fromStaffId") Long fromStaffId) {
-    return ResponseEntity.ok(appointmentService.assignAppointmentToStaff(appointmentId, toStaffId, fromStaffId));
+    Appointment appointment = appointmentService.assignAppointmentToStaff(appointmentId, toStaffId, fromStaffId);
+    sendUpdateToClients("assign");
+    return ResponseEntity.ok(appointment);
   }
 
   @GetMapping("/viewAllAppointmentsByRange")
@@ -111,8 +127,10 @@ public class AppointmentController {
       @RequestParam("appointmentId") Long appointmentId,
       @RequestParam("arrivalStatus") Boolean arrivalStatus,
       @RequestParam("staffId") Long staffId) {
-    return ResponseEntity.ok(appointmentMapper.toDTO(
-        appointmentService.updateAppointmentArrival(appointmentId, arrivalStatus, staffId)));
+    AppointmentDTO appointmentDTO = appointmentMapper.toDTO(
+            appointmentService.updateAppointmentArrival(appointmentId, arrivalStatus, staffId));
+    sendUpdateToClients("arrive");
+    return ResponseEntity.ok(appointmentDTO);
 //    return ResponseEntity.ok(appointmentMapper.convertToDto(
 //        appointmentService.updateAppointmentArrival(appointmentId, arrivalStatus, staffId)));
   }
@@ -136,9 +154,11 @@ public class AppointmentController {
 //    return ResponseEntity.ok(appointmentMapper.convertToDto(
 //        appointmentService.updateAppointmentSwimlaneStatus(appointmentId,
 //            SwimlaneStatusEnum.valueOf(swimlaneStatus.toUpperCase()))));
-    return ResponseEntity.ok(appointmentMapper.toDTO(
-        appointmentService.updateAppointmentSwimlaneStatus(appointmentId,
-            SwimlaneStatusEnum.valueOf(swimlaneStatus.toUpperCase()))));
+    AppointmentDTO appointmentDTO = appointmentMapper.toDTO(
+            appointmentService.updateAppointmentSwimlaneStatus(appointmentId,
+                    SwimlaneStatusEnum.valueOf(swimlaneStatus.toUpperCase())));
+    sendUpdateToClients("swimlane");
+    return ResponseEntity.ok(appointmentDTO);
   }
 
   @PostMapping("/createNewAppointmentWithStaff")
@@ -218,9 +238,11 @@ public class AppointmentController {
   public ResponseEntity<AppointmentDTO> updateAppointmentDispensaryStatus(
           @RequestParam("appointmentId") Long appointmentId,
           @RequestParam("dispensaryStatus") String dispensaryStatus) {
-    return ResponseEntity.ok(appointmentMapper.toDTO(
+    AppointmentDTO appointmentDTO = appointmentMapper.toDTO(
             appointmentService.updateAppointmentDispensaryStatus(appointmentId,
-                    DispensaryStatusEnum.valueOf(dispensaryStatus.toUpperCase()))));
+                    DispensaryStatusEnum.valueOf(dispensaryStatus.toUpperCase())));
+    sendUpdateToClients("dispensary");
+    return ResponseEntity.ok(appointmentDTO);
   }
 
   @GetMapping("/findAppointmentTimeDiff/{apppointmentId}")
@@ -239,4 +261,25 @@ public class AppointmentController {
     return ResponseEntity.ok(appointmentService.createNewPharmacyTicket(description,
             bookedDateTime, priority, patientUsername, departmentName));
   }
+
+  @GetMapping("/sse")
+  public SseEmitter eventEmitter() {
+    SseEmitter emitter = new SseEmitter();
+    String key = UUID.randomUUID().toString();
+    emitters.put(key, emitter);
+    emitter.onCompletion(() -> emitters.remove(key));
+    emitter.onTimeout(() -> emitters.remove(key));
+    return emitter;
+  }
+
+  public void sendUpdateToClients(String message) {
+    emitters.values().forEach(emitter -> {
+      try {
+        emitter.send(SseEmitter.event().data(message));
+      } catch (IOException e) {
+        emitter.complete();
+      }
+    });
+  }
+
 }
