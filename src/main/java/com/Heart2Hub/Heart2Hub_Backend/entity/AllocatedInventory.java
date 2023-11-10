@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -17,6 +18,10 @@ public class AllocatedInventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long allocatedInventoryId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID allocatedInventoryNehrId = UUID.randomUUID();
 
     @NotNull
     private Integer allocatedInventoryCurrentQuantity;

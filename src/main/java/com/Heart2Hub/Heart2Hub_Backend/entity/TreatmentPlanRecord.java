@@ -11,6 +11,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -21,9 +22,19 @@ public class TreatmentPlanRecord {
     private Long treatmentPlanRecordId;
 
     @NotNull
+    @Column(unique = true)
+    private UUID treatmentPlanRecordNehrId = UUID.randomUUID();
+
+    @NotNull
     @NotBlank
     @Size(max = 5000, message = "Description too long")
     private String description;
+
+    @NotNull
+    private String primaryDoctor;
+
+    @ElementCollection
+    private List<String> secondaryDoctors;
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)

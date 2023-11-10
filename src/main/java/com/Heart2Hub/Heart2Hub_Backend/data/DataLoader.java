@@ -1580,18 +1580,22 @@ public class DataLoader implements CommandLineRunner {
     private void createMedicationData() {
         Collection<AllergenEnum> allergenList1 = new ArrayList<>();
         Collection<AllergenEnum> allergenList2 = new ArrayList<>();
-        allergenList2.add(AllergenEnum.PENICILLIN_V);
+        allergenList2.add(AllergenEnum.EGG);
         allergenList2.add(AllergenEnum.AMOXICILLIN);
 
         DrugRestriction newDrugRestriction1 = drugRestrictionService.createDrugRestriction(
                 new DrugRestriction("Warfarin 1mg Tablet (1 piece)"));
         DrugRestriction newDrugRestriction2 = drugRestrictionService.createDrugRestriction(
                 new DrugRestriction("Paracetamol 500 mg Tablets (12 pieces)"));
+        DrugRestriction newDrugRestriction3 = drugRestrictionService.createDrugRestriction(
+                new DrugRestriction("Warfarin 3mg Tablet (1 piece)"));
         List<DrugRestriction> drugList1 = new ArrayList<>();
         List<DrugRestriction> drugList2 = new ArrayList<>();
         drugList2.add(newDrugRestriction1);
         List<DrugRestriction> drugList3 = new ArrayList<>();
         drugList3.add(newDrugRestriction2);
+        List<DrugRestriction> drugList4 = new ArrayList<>();
+        drugList3.add(newDrugRestriction3);
 
 
         Medication newMedication1 = medicationService.createMedication(
@@ -1610,16 +1614,18 @@ public class DataLoader implements CommandLineRunner {
                 new Medication("Augmentin 228mg Suspension (1 bottle)", "5ml per bottle", ItemTypeEnum.MEDICINE, 100,
                         BigDecimal.valueOf(3), BigDecimal.TEN, allergenList2, "", drugList1));
         Medication newMedication6 = medicationService.createMedication(
-                new Medication("Warfarin 1mg Tablet (1 piece)", "1mg per piece", ItemTypeEnum.MEDICINE, 10000,
-                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList1));
+                new Medication("Warfarin 1mg Tablet (1 piece)", "1mg per piece", ItemTypeEnum.MEDICINE_INPATIENT, 10000,
+                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList4));
         Medication newMedication7 = medicationService.createMedication(
                 new Medication("Warfarin 3mg Tablet (28 pieces)", "3mg per piece", ItemTypeEnum.MEDICINE, 10000,
                         BigDecimal.valueOf(4), BigDecimal.valueOf(5), allergenList1, "", drugList1));
         Medication newMedication8 = medicationService.createMedication(
-                new Medication("Warfarin 3mg Tablet (1 piece)", "1mg per piece", ItemTypeEnum.MEDICINE, 10000,
-                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList1));
+                new Medication("Warfarin 3mg Tablet (1 piece)", "1mg per piece", ItemTypeEnum.MEDICINE_INPATIENT, 10000,
+                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList2));
+        Medication newMedication9 = medicationService.createMedication(
+                new Medication("Augmentin 625mg Tablets (1 piece)", "625mg per piece", ItemTypeEnum.MEDICINE_INPATIENT, 50,
+                        BigDecimal.valueOf(4), BigDecimal.TEN, allergenList2, "", drugList1));
     }
-
     private void createServiceItemData() {
 
         Unit unit1 = unitRepository.findById(1L).get();
@@ -1675,7 +1681,7 @@ public class DataLoader implements CommandLineRunner {
     public void createTransactionItems() {
         ConsumableEquipment consumableEquipment = (ConsumableEquipment) inventoryItemRepository.findById(Long.parseLong("1")).get();
         Medication medication = (Medication) inventoryItemRepository.findById(Long.parseLong("6")).get();
-        ServiceItem serviceItem = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("14")).get();
+        ServiceItem serviceItem = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("15")).get();
 
         InventoryItem inventoryItem = inventoryItemRepository.findById(Long.parseLong("6")).get();
 

@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
+
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,6 +31,10 @@ public class Admission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long admissionId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID admissionNehrId = UUID.randomUUID();
 
     private Integer duration;
 
@@ -55,28 +61,17 @@ public class Admission {
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
-//    @JsonIgnore
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "admin_id")
-//    private Staff currentAssignedAdmin;
-//
-//    @JsonIgnore
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "nurse_id")
-//    private Staff currentAssignedNurse;
-//
-//    @JsonIgnore
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "doctor_id")
-//    private Staff currentAssignedDoctor;
-
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     private List<Staff> listOfAssignedStaff;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "admission",fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "admission_id")
     private List<MedicationOrder> listOfMedicationOrders;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "admission_id")
+    private List<InpatientTreatment> listOfInpatientTreatments;
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -88,10 +83,17 @@ public class Admission {
     @JoinColumn(name = "ward_id")
     private Ward ward;
 
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "admission_id")
+    private List<ImageDocument> listOfImageDocuments;
+
     public Admission(){
         this.listOfMedicationOrders = new ArrayList<>();
         this.listOfPatientRequests = new ArrayList<>();
         this.listOfAssignedStaff = new ArrayList<>();
+        this.listOfInpatientTreatments = new ArrayList<>();
+        this.listOfImageDocuments = new ArrayList<>();
     }
 
     public Admission(Integer duration, String reason) {

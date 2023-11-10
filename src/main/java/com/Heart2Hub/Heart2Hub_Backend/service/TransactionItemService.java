@@ -407,5 +407,16 @@ public class TransactionItemService {
         transactionItem.setTransactionItemQuantity(transactionItemQuantity);
         return transactionItemRepository.save(transactionItem);
     }
+
+    public void inpatientAddToCart(Long patientId, String inventoryItemName, String inventoryItemDescription,
+                                     Integer transactionItemQuantity, BigDecimal transactionItemPrice, Long itemId) {
+        TransactionItem transactionItem = new TransactionItem(inventoryItemName, inventoryItemDescription,
+                transactionItemQuantity, transactionItemPrice, inventoryItemRepository.findById(itemId).get());
+        Patient p = patientRepository.findById(patientId).get();
+
+        transactionItemRepository.save(transactionItem);
+        p.getListOfTransactionItem().add(transactionItem);
+        patientRepository.save(p);
+    }
 }
 
