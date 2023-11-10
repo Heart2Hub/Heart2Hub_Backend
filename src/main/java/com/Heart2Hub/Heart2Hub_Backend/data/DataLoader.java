@@ -78,10 +78,14 @@ public class DataLoader implements CommandLineRunner {
     private final UnitRepository unitRepository;
     private final AdmissionService admissionService;
     private final InvoiceRepository invoiceRepository;
+    private final StaffRepository staffRepository;
+
+    private final PostService postService;
 
     public DataLoader(TransactionService transactionService, StaffService staffService, ShiftService shiftService, DepartmentService departmentService, AuthenticationManager authenticationManager, FacilityService facilityService, PatientService patientService, NextOfKinRecordService nextOfKinRecordService, PrescriptionRecordService prescriptionRecordService, ProblemRecordService problemRecordService, MedicalHistoryRecordService medicalHistoryRecordService, TreatmentPlanRecordService treatmentPlanRecordService, SubsidyService subsidyService, LeaveService leaveService, ShiftConstraintsService shiftConstraintsService, ConsumableEquipmentService consumableEquipmentService, AllocatedInventoryService allocatedInventoryService, SubDepartmentRepository subDepartmentRepository, DepartmentRepository departmentRepository, WardService wardService, WardClassService wardClassService, MedicationService medicationService, ServiceItemService serviceItemService, TransactionItemService transactionItemService, AppointmentService appointmentService, InventoryItemRepository inventoryItemRepository, PrescriptionRecordRepository prescriptionRecordRepository, InvoiceService invoiceService, DrugRestrictionService drugRestrictionService,
                       UnitRepository unitRepository, AdmissionService admissionService,
-                      InvoiceRepository invoiceRepository) {
+                      InvoiceRepository invoiceRepository,
+                      StaffRepository staffRepository, PostService postService) {
         this.transactionService = transactionService;
         this.staffService = staffService;
         this.shiftService = shiftService;
@@ -114,6 +118,8 @@ public class DataLoader implements CommandLineRunner {
         this.unitRepository = unitRepository;
         this.admissionService = admissionService;
         this.invoiceRepository = invoiceRepository;
+        this.staffRepository = staffRepository;
+        this.postService = postService;
     }
 
     @Override
@@ -149,7 +155,7 @@ public class DataLoader implements CommandLineRunner {
         createServiceItemData();
         createPatientData();
         createAppointmentData();
-
+        createPosts();
         createSubsidyData();
         createTransactionItems();
         createInvoice();
@@ -1283,6 +1289,8 @@ public class DataLoader implements CommandLineRunner {
         Patient patient6 = patientService.getPatientByUsername("patient6");
         Patient patient7 = patientService.getPatientByUsername("patient7");
         Patient patient8 = patientService.getPatientByUsername("patient8");
+        Patient patient9 = patientService.getPatientByUsername("patient9");
+
 //
         Staff d1 = staffService.getStaffByUsername("doctorCardiology1");
         Staff p1 = staffService.getStaffByUsername("pharmacistPharmacy1");
@@ -1407,6 +1415,13 @@ public class DataLoader implements CommandLineRunner {
                 "LOW",
                 patient8.getElectronicHealthRecord().getNric(),
                 "Cardiology");
+
+        Appointment a9 = appointmentService.createNewAppointment("Hear Pulpitations",
+                date3.toString(),
+//            LocalDateTime.now().minusDays(14).toString(),
+                "LOW",
+                patient9.getElectronicHealthRecord().getNric(),
+                "Cardiology");
 //    appointmentService.assignAppointmentToStaff(a1.getAppointmentId(),p1.getStaffId(),d1.getStaffId());
 //    appointmentService.updateAppointmentSwimlaneStatus(a1.getAppointmentId(),SwimlaneStatusEnum.PHARMACY);
 //    appointmentService.updateAppointmentArrival(a1.getAppointmentId(),true,p1.getStaffId());
@@ -1516,6 +1531,10 @@ public class DataLoader implements CommandLineRunner {
 
         appointmentService.updateAppointmentSwimlaneStatus(a8.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
         appointmentService.assignAppointmentToStaff(a8.getAppointmentId(), 5L, -1L);
+
+        //For SR4 Finance Use Cases
+        appointmentService.updateAppointmentSwimlaneStatus(a9.getAppointmentId(), SwimlaneStatusEnum.DISCHARGE);
+        appointmentService.assignAppointmentToStaff(a9.getAppointmentId(), 5L, -1L);
 
 
     }
@@ -1838,6 +1857,18 @@ public class DataLoader implements CommandLineRunner {
     }
 
 
+    private void createPosts() {
+        Staff staff = staffRepository.findById(Long.valueOf(11)).get();
+        LocalDateTime lt = LocalDateTime.now();
+
+        Post p1 = new Post("Announcement to All Staffs", "Merry Christmas!", PostTypeEnum.ADMINISTRATIVE);
+        Post p2 = new Post("BREAKING NEWS: Cancer is cured", "Heart2Hub found the cure for Cancer", PostTypeEnum.RESEARCH);
+        Post p3 = new Post("Latest Updates on the COVID-19 Variant", "Much more dangerous!", PostTypeEnum.ENRICHMENT);
+
+        postService.createPost(p1, staff.getStaffId(), new ImageDocument("post1.jpg", lt));
+        postService.createPost(p2, staff.getStaffId(), new ImageDocument("post2.jpg", lt));
+        postService.createPost(p3, staff.getStaffId(), new ImageDocument("post3.jpg", lt));
+    }
 
 
     private void createAdmissionData() {
