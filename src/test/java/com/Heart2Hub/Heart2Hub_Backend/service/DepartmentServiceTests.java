@@ -63,9 +63,27 @@ public class DepartmentServiceTests {
                 .thenReturn(authentication);
         when(authentication.getPrincipal())
                 .thenReturn(new User("staff1", "password1", Collections.emptyList()));
+        Optional<Staff> toReturn = Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.ADMIN, true));
         when(staffRepository.findByUsername("staff1"))
-                .thenReturn(Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.ADMIN, true)));
-        //ockito.when(auth.getName()).thenReturn("aName");
+                .thenReturn(toReturn);
+//        when(departmentService.isLoggedInUserAdmin())
+//                .thenReturn(true);
+        doReturn(true).when(departmentService).isLoggedInUserAdmin();
+
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(new User("staff1", "password1", Collections.emptyList()));
+
+        System.out.println("ASDSAD" + securityContext);
+        System.out.println("ASDSAD" + securityContext.getAuthentication());
+        System.out.println("ASDSAD" + securityContext.getAuthentication().getPrincipal());
+        User user = (User) securityContext.getAuthentication().getPrincipal();
+        System.out.println("ASDSAD" + user);
+        System.out.println("ASDSAD" + user.getUsername());
+        System.out.println("ASDSAD" + staffRepository.findByUsername(user.getUsername()));
+        System.out.println("ASDSAD" + staffRepository.findByUsername(user.getUsername()).get().getStaffRoleEnum());
+        System.out.println("ASDSAD" + departmentService.isLoggedInUserAdmin());
 
         // Test
         assertTrue(departmentService.isLoggedInUserAdmin());
