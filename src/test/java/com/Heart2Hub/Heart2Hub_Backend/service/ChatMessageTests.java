@@ -42,4 +42,22 @@ public class ChatMessageTests {
         assertEquals(chatMessage, result);
     }
 
+    @Test
+    void testSaveChatMessage_Failure() {
+        ChatMessage chatMessage = new ChatMessage();
+
+        // Mocking the repository to return null, simulating a failure to save
+        when(chatMessageRepository.save(chatMessage)).thenReturn(null);
+
+        // Performing the test
+        ChatMessage result = chatMessageService.saveChatMessage(chatMessage);
+
+        assertNull(result);
+
+        // Verify that the repository save method was called
+        verify(chatMessageRepository, times(1)).save(chatMessage);
+        // Verify that no other interactions occurred with the repository
+        verifyNoMoreInteractions(chatMessageRepository);
+    }
+
 }

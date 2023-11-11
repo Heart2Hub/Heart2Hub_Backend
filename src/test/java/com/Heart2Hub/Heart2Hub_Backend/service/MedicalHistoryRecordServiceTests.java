@@ -64,6 +64,21 @@ public class MedicalHistoryRecordServiceTests {
     }
 
     @Test
+    void testCreateMedicalHistoryRecord_EHRNotFound() {
+        // Mocking
+        Long electronicHealthRecordId = 1L;
+        MedicalHistoryRecord newMedicalHistoryRecord = new MedicalHistoryRecord();
+        when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> medicalHistoryRecordService.createMedicalHistoryRecord(electronicHealthRecordId, newMedicalHistoryRecord));
+
+        // Verify
+        verify(electronicHealthRecordRepository, times(1)).findById(electronicHealthRecordId);
+    }
+
+
+    @Test
     void testDeleteMedicalHistoryRecord() {
         // Mock data
         Long electronicHealthRecordId = 1L;
@@ -86,6 +101,21 @@ public class MedicalHistoryRecordServiceTests {
         } catch (MedicalHistoryRecordNotFoundException e) {
             fail("Exception not expected");
         }
+    }
+
+
+    @Test
+    void testDeleteMedicalHistoryRecord_MedicalHistoryRecordNotFound() {
+        // Mocking
+        Long electronicHealthRecordId = 1L;
+        Long medicalHistoryRecordId = 2L;
+        when(medicalHistoryRecordRepository.findById(medicalHistoryRecordId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(MedicalHistoryRecordNotFoundException.class, () -> medicalHistoryRecordService.deleteMedicalHistoryRecord(electronicHealthRecordId, medicalHistoryRecordId));
+
+        // Verify
+        verify(medicalHistoryRecordRepository, times(1)).findById(medicalHistoryRecordId);
     }
 
     @Test
@@ -115,6 +145,20 @@ public class MedicalHistoryRecordServiceTests {
     }
 
     @Test
+    void testUpdateMedicalHistoryRecord_MedicalHistoryRecordNotFound() {
+        // Mocking
+        Long medicalHistoryRecordId = 1L;
+        MedicalHistoryRecord updatedMedicalHistoryRecord = new MedicalHistoryRecord();
+        when(medicalHistoryRecordRepository.findById(medicalHistoryRecordId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(MedicalHistoryRecordNotFoundException.class, () -> medicalHistoryRecordService.updateMedicalHistoryRecord(medicalHistoryRecordId, updatedMedicalHistoryRecord));
+
+        // Verify
+        verify(medicalHistoryRecordRepository, times(1)).findById(medicalHistoryRecordId);
+    }
+
+    @Test
     void testGetAllMedicalHistoryRecordsByElectronicHealthRecordId() {
         // Mock data
         Long electronicHealthRecordId = 1L;
@@ -130,6 +174,19 @@ public class MedicalHistoryRecordServiceTests {
         } catch (MedicalHistoryRecordNotFoundException e) {
             fail("Exception not expected");
         }
+    }
+
+    @Test
+    void testGetAllMedicalHistoryRecordsByElectronicHealthRecordId_EHRNotFound() {
+        // Mocking
+        Long electronicHealthRecordId = 1L;
+        when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> medicalHistoryRecordService.getAllMedicalHistoryRecordsByElectronicHealthRecordId(electronicHealthRecordId));
+
+        // Verify
+        verify(electronicHealthRecordRepository, times(1)).findById(electronicHealthRecordId);
     }
 
     @Test
@@ -150,6 +207,19 @@ public class MedicalHistoryRecordServiceTests {
         } catch (ElectronicHealthRecordNotFoundException e) {
             fail("Exception not expected");
         }
+    }
+
+    @Test
+    void testDeleteAllMedicalHistoryRecordsFromElectronicHealthRecord_EHRNotFound() {
+        // Mocking
+        Long electronicHealthRecordId = 1L;
+        when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> medicalHistoryRecordService.deleteAllMedicalHistoryRecordsFromElectronicHealthRecord(electronicHealthRecordId));
+
+        // Verify
+        verify(electronicHealthRecordRepository, times(1)).findById(electronicHealthRecordId);
     }
 
 }

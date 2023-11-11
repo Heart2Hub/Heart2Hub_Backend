@@ -81,6 +81,21 @@ public class ProblemRecordServiceTests {
     }
 
     @Test
+    void testCreateProblemRecord_ElectronicHealthRecordNotFound() {
+        // Mock data
+        Long electronicHealthRecordId = 1L;
+        ProblemRecord newProblemRecord = new ProblemRecord();
+        when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> problemRecordService.createProblemRecord(electronicHealthRecordId, newProblemRecord));
+
+        // Verify
+        verify(electronicHealthRecordRepository).findById(electronicHealthRecordId);
+        verify(problemRecordRepository, times(0)).save(newProblemRecord);
+    }
+
+    @Test
     void testCreateAllergyRecord() {
         // Mock data
         Long electronicHealthRecordId = 1L;
@@ -117,6 +132,29 @@ public class ProblemRecordServiceTests {
     }
 
     @Test
+    void testCreateAllergyRecord_MedicalHistoryRecordCreationFailure() {
+        // Mock data
+        Long electronicHealthRecordId = 1L;
+        ProblemRecord newProblemRecord = new ProblemRecord();
+        newProblemRecord.setDescription("New Allergy");
+        newProblemRecord.setCreatedBy("User456");
+        newProblemRecord.setPriorityEnum(PriorityEnum.LOW);
+        newProblemRecord.setProblemTypeEnum(ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC);
+
+        when(medicalHistoryRecordService.createMedicalHistoryRecord(eq(electronicHealthRecordId), any()))
+                .thenThrow(UnableToCreateProblemRecordException.class);
+
+        // Test
+        assertThrows(UnableToCreateProblemRecordException.class, () ->
+                problemRecordService.createAllergyRecord(electronicHealthRecordId, newProblemRecord));
+
+        // Verify
+        verify(medicalHistoryRecordService).createMedicalHistoryRecord(electronicHealthRecordId, new MedicalHistoryRecord());
+        verifyNoMoreInteractions(medicalHistoryRecordService);
+    }
+
+
+    @Test
     void testDeleteProblemRecord() {
         // Mock data
         Long electronicHealthRecordId = 1L;
@@ -140,6 +178,24 @@ public class ProblemRecordServiceTests {
         } catch (ProblemRecordNotFoundException e) {
             fail("Exception not expected");
         }
+    }
+
+    @Test
+    void testDeleteProblemRecord_ElectronicHealthRecordNotFound() {
+        // Mock data
+        Long electronicHealthRecordId = 1L;
+        Long problemRecordId = 2L;
+        when(problemRecordRepository.findById(problemRecordId)).thenReturn(Optional.of(new ProblemRecord()));
+        when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> problemRecordService.deleteProblemRecord(electronicHealthRecordId, problemRecordId));
+
+        // Verify
+        verify(problemRecordRepository).findById(problemRecordId);
+        verify(electronicHealthRecordRepository).findById(electronicHealthRecordId);
+        verify(problemRecordRepository, times(0)).delete(any());
+        verify(electronicHealthRecordRepository, times(0)).save(any());
     }
 
     @Test
@@ -170,6 +226,26 @@ public class ProblemRecordServiceTests {
     }
 
     @Test
+    void testUpdateProblemRecord_ProblemRecordNotFound() {
+        // Mock data
+        Long problemRecordId = 1L;
+        ProblemRecord updatedProblemRecord = new ProblemRecord();
+        updatedProblemRecord.setDescription("Updated Problem");
+        updatedProblemRecord.setPriorityEnum(PriorityEnum.LOW);
+        updatedProblemRecord.setProblemTypeEnum(ProblemTypeEnum.OPTHALMOLOGIC);
+
+        when(problemRecordRepository.findById(problemRecordId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(ProblemRecordNotFoundException.class, () -> problemRecordService.updateProblemRecord(problemRecordId, updatedProblemRecord));
+
+        // Verify
+        verify(problemRecordRepository).findById(problemRecordId);
+        verifyNoMoreInteractions(problemRecordRepository);
+    }
+
+
+    @Test
     void testGetAllProblemRecordsByElectronicHealthRecordId() {
         // Mock data
         Long electronicHealthRecordId = 1L;
@@ -187,6 +263,20 @@ public class ProblemRecordServiceTests {
             fail("Exception not expected");
         }
     }
+
+    @Test
+    void testGetAllProblemRecordsByElectronicHealthRecordId_ElectronicHealthRecordNotFound() {
+        // Mock data
+        Long electronicHealthRecordId = 1L;
+        when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> problemRecordService.getAllProblemRecordsByElectronicHealthRecordId(electronicHealthRecordId));
+
+        // Verify
+        verify(electronicHealthRecordRepository).findById(electronicHealthRecordId);
+    }
+
 
     @Test
     void testResolveProblemRecord() {
@@ -219,6 +309,24 @@ public class ProblemRecordServiceTests {
     }
 
     @Test
+    void testResolveProblemRecord_ElectronicHealthRecordNotFound() {
+        // Mock data
+        Long electronicHealthRecordId = 1L;
+        Long problemRecordId = 2L;
+        when(problemRecordRepository.findById(problemRecordId)).thenReturn(Optional.of(new ProblemRecord()));
+        when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> problemRecordService.resolveProblemRecord(electronicHealthRecordId, problemRecordId));
+
+        // Verify
+        verify(problemRecordRepository).findById(problemRecordId);
+        verify(electronicHealthRecordRepository).findById(electronicHealthRecordId);
+        verify(problemRecordRepository, times(0)).delete(any());
+        verify(medicalHistoryRecordService, times(0)).createMedicalHistoryRecord(eq(electronicHealthRecordId), any());
+    }
+
+    @Test
     void testDeleteAllProblemRecordsFromElectronicHealthRecord() {
         // Mock data
         Long electronicHealthRecordId = 1L;
@@ -237,5 +345,19 @@ public class ProblemRecordServiceTests {
         } catch (ElectronicHealthRecordNotFoundException e) {
             fail("Exception not expected");
         }
+    }
+
+    @Test
+    void testDeleteAllProblemRecordsFromElectronicHealthRecord_ElectronicHealthRecordNotFound() {
+        // Mock data
+        Long electronicHealthRecordId = 1L;
+        when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> problemRecordService.deleteAllProblemRecordsFromElectronicHealthRecord(electronicHealthRecordId));
+
+        // Verify
+        verify(electronicHealthRecordRepository).findById(electronicHealthRecordId);
+        verify(electronicHealthRecordRepository, times(0)).save(any());
     }
 }

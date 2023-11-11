@@ -49,6 +49,22 @@ public class NextOfKinRecordServiceTests {
     }
 
     @Test
+    void testCreateNextOfKinRecord_RecordNotFound() throws UnableToCreateNextOfKinRecordException {
+        // Arrange
+        Long electronicHealthRecordId = 1L;
+        NextOfKinRecord newNextOfKinRecord = new NextOfKinRecord();
+        when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
+
+        // Act and Assert
+        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> {
+            nextOfKinRecordService.createNextOfKinRecord(electronicHealthRecordId, newNextOfKinRecord);
+        });
+
+        // Verify
+        verifyNoMoreInteractions(nextOfKinRecordRepository, electronicHealthRecordRepository);
+    }
+
+    @Test
     void testGetNextOfKinRecordsByEHRId() throws ElectronicHealthRecordNotFoundException {
         // Arrange
         Long electronicHealthRecordId = 1L;
@@ -60,6 +76,21 @@ public class NextOfKinRecordServiceTests {
 
         // Assert
         verify(electronicHealthRecordRepository).findById(electronicHealthRecordId);
+    }
+
+    @Test
+    void testGetNextOfKinRecordsByEHRId_RecordNotFound() throws ElectronicHealthRecordNotFoundException {
+        // Arrange
+        Long electronicHealthRecordId = 1L;
+        when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
+
+        // Act and Assert
+        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> {
+            nextOfKinRecordService.getNextOfKinRecordsByEHRId(electronicHealthRecordId);
+        });
+
+        // Verify
+        verifyNoMoreInteractions(nextOfKinRecordRepository);
     }
 
     @Test
@@ -77,6 +108,21 @@ public class NextOfKinRecordServiceTests {
     }
 
     @Test
+    void testDeleteNextOfKinRecord_RecordNotFound() throws NextOfKinRecordNotFoundException {
+        // Arrange
+        Long nextOfKinRecordId = 1L;
+        when(nextOfKinRecordRepository.findById(nextOfKinRecordId)).thenReturn(Optional.empty());
+
+        // Act and Assert
+        assertThrows(NextOfKinRecordNotFoundException.class, () -> {
+            nextOfKinRecordService.deleteNextOfKinRecord(nextOfKinRecordId);
+        });
+
+        // Verify
+        verifyNoMoreInteractions(nextOfKinRecordRepository);
+    }
+
+    @Test
     void testDeleteAllNextOfKinRecordsFromElectronicHealthRecord() throws ElectronicHealthRecordNotFoundException {
         // Arrange
         Long electronicHealthRecordId = 1L;
@@ -90,5 +136,20 @@ public class NextOfKinRecordServiceTests {
         assertTrue(result.getListOfNextOfKinRecords().isEmpty());
         verify(electronicHealthRecordRepository).findById(electronicHealthRecordId);
         verify(electronicHealthRecordRepository).save(mockElectronicHealthRecord);
+    }
+
+    @Test
+    void testDeleteAllNextOfKinRecordsFromElectronicHealthRecord_RecordNotFound() throws ElectronicHealthRecordNotFoundException {
+        // Arrange
+        Long electronicHealthRecordId = 1L;
+        when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
+
+        // Act and Assert
+        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> {
+            nextOfKinRecordService.deleteAllNextOfKinRecordsFromElectronicHealthRecord(electronicHealthRecordId);
+        });
+
+        // Verify
+        verifyNoMoreInteractions(nextOfKinRecordRepository, electronicHealthRecordRepository);
     }
 }
