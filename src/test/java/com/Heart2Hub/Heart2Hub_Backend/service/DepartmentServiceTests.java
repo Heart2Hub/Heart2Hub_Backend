@@ -46,6 +46,7 @@ public class DepartmentServiceTests {
     private StaffService staffService;
     @Mock
     private FacilityService facilityService;
+
     @InjectMocks
     private DepartmentService departmentService;
 
@@ -55,30 +56,33 @@ public class DepartmentServiceTests {
     }
 
     @Test
-    //@WithMockUser(username = "staff1", password = "password1", roles="ADMIN")
+//    @WithMockUser(username = "staff1", password = "password1", roles="ADMIN")
     void testIsLoggedInUserAdmin() {
         // Mocking
-        Authentication authentication = mock(Authentication.class);
-        when(authenticationManager.authenticate(any()))
-                .thenReturn(authentication);
+//        Authentication authentication = mock(Authentication.class);
+        UsernamePasswordAuthenticationToken authentication = mock(UsernamePasswordAuthenticationToken.class);
+//        when(authenticationManager.authenticate(any()))
+//                .thenReturn(authentication);
+        User user = new User("staff1", "password1", Collections.emptyList());
         when(authentication.getPrincipal())
-                .thenReturn(new User("staff1", "password1", Collections.emptyList()));
+                .thenReturn(user);
         Optional<Staff> toReturn = Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.ADMIN, true));
-        when(staffRepository.findByUsername("staff1"))
+        when(staffRepository.findByUsername(user.getUsername()))
                 .thenReturn(toReturn);
 //        when(departmentService.isLoggedInUserAdmin())
 //                .thenReturn(true);
-        doReturn(true).when(departmentService).isLoggedInUserAdmin();
+//        doReturn(true).when(departmentService).isLoggedInUserAdmin();
 
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
-        when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(new User("staff1", "password1", Collections.emptyList()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        //when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(new User("staff1", "password1", Collections.emptyList()));
 
         System.out.println("ASDSAD" + securityContext);
         System.out.println("ASDSAD" + securityContext.getAuthentication());
         System.out.println("ASDSAD" + securityContext.getAuthentication().getPrincipal());
-        User user = (User) securityContext.getAuthentication().getPrincipal();
+        //User user = (User) securityContext.getAuthentication().getPrincipal();
         System.out.println("ASDSAD" + user);
         System.out.println("ASDSAD" + user.getUsername());
         System.out.println("ASDSAD" + staffRepository.findByUsername(user.getUsername()));
