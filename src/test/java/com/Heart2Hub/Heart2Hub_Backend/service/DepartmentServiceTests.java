@@ -99,6 +99,30 @@ public class DepartmentServiceTests {
     }
 
     @Test
+    void testIsLoggedInUserAdmin_NotAdmin() {
+        // Mocking
+        UsernamePasswordAuthenticationToken authentication = mock(UsernamePasswordAuthenticationToken.class);
+        User user = new User("staff1", "password1", Collections.emptyList());
+        when(authentication.getPrincipal())
+                .thenReturn(user);
+        Optional<Staff> toReturn = Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.DOCTOR, true));
+        when(staffRepository.findByUsername(user.getUsername()))
+                .thenReturn(toReturn);
+
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // Test
+        assertFalse(departmentService.isLoggedInUserAdmin());
+
+        // Verify
+        verify(authentication, times(1)).getPrincipal();
+        verify(staffRepository, times(1)).findByUsername("staff1");
+    }
+
+    @Test
     void testCreateDepartment() {
         // Mocking
         when(departmentRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
@@ -116,6 +140,22 @@ public class DepartmentServiceTests {
     }
 
     @Test
+    void testCreateDepartment_NotAdmin() {
+        // Mocking
+        when(departmentService.isLoggedInUserAdmin()).thenReturn(false);
+
+        // Test
+        Department department = new Department();
+        department.setName("Test Department");
+
+        assertThrows(Exception.class, () -> departmentService.createDepartment(department));
+
+        // Verify
+        verify(departmentRepository, never()).save(department);
+    }
+
+
+    @Test
     void testDeleteDepartment() {
         // Mocking
         Long departmentId = 1L;
@@ -130,6 +170,20 @@ public class DepartmentServiceTests {
         // Verify
         verify(facilityService, times(1)).deleteFacility(anyLong());
         verify(departmentRepository, times(1)).delete(department);
+    }
+
+    @Test
+    void testDeleteDepartment_DepartmentNotFound() {
+        // Mocking
+        Long departmentId = 1L;
+        when(departmentRepository.findById(departmentId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(DepartmentNotFoundException.class, () -> departmentService.deleteDepartment(departmentId));
+
+        // Verify
+        verify(facilityService, never()).deleteFacility(anyLong());
+        verify(departmentRepository, never()).delete(any(Department.class));
     }
 
     @Test
@@ -154,6 +208,20 @@ public class DepartmentServiceTests {
     }
 
     @Test
+    void testUpdateDepartment_DepartmentNotFound() {
+        // Mocking
+        Long departmentId = 1L;
+        when(departmentRepository.findById(departmentId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(DepartmentNotFoundException.class, () -> departmentService.updateDepartment(departmentId, new Department()));
+
+        // Verify
+        verify(departmentRepository, never()).save(any(Department.class));
+    }
+
+
+    @Test
     void testGetAllDepartmentsByName() {
         // Mocking
         String name = "Test";
@@ -167,7 +235,32 @@ public class DepartmentServiceTests {
     }
 
     @Test
+    void testGetAllDepartmentsByName_DepartmentNotFound() {
+        // Mocking
+        String name = null;
+
+        // Test
+        assertThrows(IllegalArgumentException.class, () -> departmentService.getAllDepartmentsByName(name));
+
+        // Verify - No interaction with departmentRepository
+        verifyNoInteractions(departmentRepository);
+    }
+
+    @Test
     void testGetDepartmentByName() {
+        // Mocking
+        String name = "Test";
+        when(departmentRepository.findByName(name)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(DepartmentNotFoundException.class, () -> departmentService.getDepartmentByName(name));
+
+        // Verify
+        verify(departmentRepository, times(1)).findByName(name);
+    }
+
+    @Test
+    void testGetDepartmentByName_DepartmentNotFound() {
         // Mocking
         String name = "Test";
         when(departmentRepository.findByName(name)).thenReturn(Optional.empty());
@@ -186,6 +279,18 @@ public class DepartmentServiceTests {
 
         // Test
         assertNotNull(departmentService.getAllDepartments());
+
+        // Verify
+        verify(departmentRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testGetAllDepartments_DepartmentNotFoundException() {
+        // Mocking
+        when(departmentRepository.findAll()).thenReturn(Collections.emptyList());
+
+        // Test
+        assertThrows(DepartmentNotFoundException.class, () -> departmentService.getAllDepartments());
 
         // Verify
         verify(departmentRepository, times(1)).findAll();

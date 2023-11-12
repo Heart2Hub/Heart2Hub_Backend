@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,6 +74,28 @@ public class ConsumableEquipmentServiceTests {
     }
 
     @Test
+    void testIsLoggedInUserAdmin_UserNotFound() {
+        // Mock data
+        Authentication authentication = mock(Authentication.class);
+        SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
+        User user = new User("username", "password", new ArrayList<>());
+        when(authentication.getPrincipal()).thenReturn(user);
+
+        // Mocking staff not found
+        when(staffRepository.findByUsername(user.getUsername())).thenReturn(Optional.empty());
+
+        // Test
+        boolean result = consumableEquipmentService.isLoggedInUserAdmin();
+        assertFalse(result);
+
+        // Verify
+        verify(authentication).getPrincipal();
+        verify(staffRepository).findByUsername(user.getUsername());
+        verifyNoMoreInteractions(authentication, staffRepository);
+    }
+
+
+    @Test
     void testCreateConsumableEquipment() {
         // Mock data
         ConsumableEquipment newConsumableEquipment = new ConsumableEquipment();
@@ -98,6 +121,31 @@ public class ConsumableEquipmentServiceTests {
     }
 
     @Test
+    void testCreateConsumableEquipment_Failure() {
+        // Mock data
+        ConsumableEquipment newConsumableEquipment = new ConsumableEquipment();
+        newConsumableEquipment.setInventoryItemName("New Consumable Equipment");
+        newConsumableEquipment.setInventoryItemDescription("Description");
+        newConsumableEquipment.setItemTypeEnum(ItemTypeEnum.CONSUMABLE);
+        newConsumableEquipment.setQuantityInStock(10);
+        newConsumableEquipment.setRestockPricePerQuantity(BigDecimal.valueOf(25.0));
+
+        // Mocking the repository to return null, simulating a failure to create
+        when(consumableEquipmentRepository.save(newConsumableEquipment)).thenReturn(null);
+
+        // Test
+        assertThrows(UnableToCreateConsumableEquipmentException.class, () -> {
+            consumableEquipmentService.createConsumableEquipment(newConsumableEquipment);
+        });
+
+        // Verify that the repository save method was called
+        verify(consumableEquipmentRepository).save(newConsumableEquipment);
+        // Verify that no other interactions occurred with the repository
+        verifyNoMoreInteractions(consumableEquipmentRepository);
+    }
+
+
+    @Test
     void testDeleteConsumableEquipment() {
         // Mock data
         Long inventoryItemId = 1L;
@@ -121,6 +169,25 @@ public class ConsumableEquipmentServiceTests {
             fail("Exception not expected");
         }
     }
+
+    @Test
+    void testDeleteConsumableEquipment_ConsumableEquipmentNotFound() {
+        // Mock data
+        Long inventoryItemId = 1L;
+
+        // Mocking consumable equipment not found
+        when(consumableEquipmentRepository.findById(inventoryItemId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(ConsumableEquipmentNotFoundException.class, () -> {
+            consumableEquipmentService.deleteConsumableEquipment(inventoryItemId);
+        });
+
+        // Verify
+        verify(consumableEquipmentRepository).findById(inventoryItemId);
+        verifyNoMoreInteractions(consumableEquipmentRepository, allocatedInventoryRepository);
+    }
+
 
     @Test
     void testUpdateConsumableEquipment() {
@@ -161,6 +228,26 @@ public class ConsumableEquipmentServiceTests {
     }
 
     @Test
+    void testUpdateConsumableEquipment_ConsumableEquipmentNotFound() {
+        // Mock data
+        Long inventoryItemId = 1L;
+        ConsumableEquipment updatedConsumableEquipment = new ConsumableEquipment();
+
+        // Mocking consumable equipment not found
+        when(consumableEquipmentRepository.findById(inventoryItemId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(ConsumableEquipmentNotFoundException.class, () -> {
+            consumableEquipmentService.updateConsumableEquipment(inventoryItemId, updatedConsumableEquipment);
+        });
+
+        // Verify
+        verify(consumableEquipmentRepository).findById(inventoryItemId);
+        verifyNoMoreInteractions(consumableEquipmentRepository);
+    }
+
+
+    @Test
     void testGetAllConsumableEquipmentByName() {
         // Mock data
         List<ConsumableEquipment> consumableEquipmentList = new ArrayList<>();
@@ -176,5 +263,21 @@ public class ConsumableEquipmentServiceTests {
             fail("Exception not expected");
         }
     }
+
+    @Test
+    void testGetAllConsumableEquipmentByName_ConsumableEquipmentNotFound() {
+        // Mocking no consumable equipment found
+        when(consumableEquipmentRepository.findAll()).thenReturn(Collections.emptyList());
+
+        // Test
+        assertThrows(ConsumableEquipmentNotFoundException.class, () -> {
+            consumableEquipmentService.getAllConsumableEquipmentByName();
+        });
+
+        // Verify
+        verify(consumableEquipmentRepository).findAll();
+        verifyNoMoreInteractions(consumableEquipmentRepository);
+    }
+
 
 }

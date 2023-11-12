@@ -80,23 +80,6 @@ public class TreatmentPlanRecordService {
     }
   }
 
-    public ElectronicHealthRecord deleteAllTreatmentPlanRecordsFromElectronicHealthRecord(Long electronicHealthRecordId) throws ElectronicHealthRecordNotFoundException {
-        try {
-            Optional<ElectronicHealthRecord> electronicHealthRecordOptional = electronicHealthRecordRepository.findById(electronicHealthRecordId);
-
-            if (electronicHealthRecordOptional.isPresent()) {
-                ElectronicHealthRecord existingElectronicHealthRecord = electronicHealthRecordOptional.get();
-                existingElectronicHealthRecord.getListOfTreatmentPlanRecords().clear();
-                electronicHealthRecordRepository.save(existingElectronicHealthRecord);
-                return existingElectronicHealthRecord;
-            } else {
-                throw new ElectronicHealthRecordNotFoundException("Electronic Health Record with Id: " + electronicHealthRecordId + " is not found");
-            }
-        } catch (Exception ex) {
-            throw new ElectronicHealthRecordNotFoundException(ex.getMessage());
-        }
-    }
-
   public TreatmentPlanRecord updateTreatmentPlanRecord(Long electronicHealthRecordId,
       Long treatmentPlanRecordId, Long staffId, TreatmentPlanRecord treatmentPlanRecord)
       throws UnableToUpdateTreatmentPlanRecordException {

@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Post;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateImageDocumentException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateTreatmentPlanRecordException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.PostRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;

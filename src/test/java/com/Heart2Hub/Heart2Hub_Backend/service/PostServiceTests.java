@@ -56,6 +56,20 @@ public class PostServiceTests {
     }
 
     @Test
+    void testFindPostAuthor_PostNotFound() {
+        // Mock data
+        Long postId = 1L;
+        when(postRepository.findById(postId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(AssertionError.class, () -> assertNull(postService.findPostAuthor(postId)));
+
+        // Verify
+        verify(postRepository).findById(postId);
+        verify(staffRepository, times(0)).findById(any());
+    }
+
+    @Test
     void testGetAllPosts() {
         List<Post> posts = new ArrayList<>();
         when(postRepository.findAll()).thenReturn(posts);
@@ -77,6 +91,19 @@ public class PostServiceTests {
     }
 
     @Test
+    void testGetPostById_PostNotFound() {
+        // Mock data
+        Long postId = 1L;
+        when(postRepository.findById(postId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(AssertionError.class, () -> assertNull(postService.getPostById(postId)));
+
+        // Verify
+        verify(postRepository).findById(postId);
+    }
+
+    @Test
     void testCreatePost() {
         Long staffId = 1L;
         Long postId = 1L;
@@ -95,6 +122,23 @@ public class PostServiceTests {
     }
 
     @Test
+    void testCreatePost_StaffNotFound() {
+        // Mock data
+        Long staffId = 1L;
+        Post post = new Post();
+        ImageDocument imageDocument = new ImageDocument();
+        when(staffRepository.findById(staffId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(AssertionError.class, () -> postService.createPost(post, staffId, imageDocument));
+
+        // Verify
+        verify(staffRepository).findById(staffId);
+        verify(imageDocumentService, times(0)).createImageDocument(any());
+        verify(postRepository, times(0)).save(any());
+    }
+
+    @Test
     void testAddImageToPost() {
         Long postId = 1L;
         ImageDocument imageDocument = new ImageDocument();
@@ -110,6 +154,22 @@ public class PostServiceTests {
     }
 
     @Test
+    void testAddImageToPost_PostNotFound() {
+        // Mock data
+        Long postId = 1L;
+        ImageDocument imageDocument = new ImageDocument();
+        when(postRepository.findById(postId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(AssertionError.class, () -> postService.addImageToPost(imageDocument, postId));
+
+        // Verify
+        verify(postRepository).findById(postId);
+        verify(imageDocumentService, times(0)).createImageDocument(any());
+        verify(postRepository, times(0)).save(any());
+    }
+
+    @Test
     void testRemoveImageFromPost() {
         Long postId = 1L;
         String imageLink = "link";
@@ -121,6 +181,20 @@ public class PostServiceTests {
         Post result = postService.removeImageFromPost(imageLink, postId);
 
         assertTrue(result.getListOfImageDocuments().isEmpty());
+    }
+
+    @Test
+    void testRemoveImageFromPost_PostNotFound() {
+        // Mock data
+        Long postId = 1L;
+        String imageLink = "link";
+        when(postRepository.findById(postId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(AssertionError.class, () -> postService.removeImageFromPost(imageLink, postId));
+
+        // Verify
+        verify(postRepository).findById(postId);
     }
 
     @Test
@@ -147,6 +221,21 @@ public class PostServiceTests {
     }
 
     @Test
+    void testUpdatePost_PostNotFound() {
+        // Mock data
+        Long postId = 1L;
+        Post post = new Post();
+        when(postRepository.findById(postId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(AssertionError.class, () -> postService.updatePost(postId, post));
+
+        // Verify
+        verify(postRepository).findById(postId);
+        verify(postRepository, times(0)).save(any());
+    }
+
+    @Test
     void testDeletePost() {
         Long postId = 1L;
         Post post = new Post();
@@ -160,5 +249,20 @@ public class PostServiceTests {
 
         assertTrue(author.getListOfPosts().isEmpty());
         verify(postRepository, times(1)).delete(post);
+    }
+
+    @Test
+    void testDeletePost_PostNotFound() {
+        // Mock data
+        Long postId = 1L;
+        when(postRepository.findById(postId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(AssertionError.class, () -> postService.deletePost(postId));
+
+        // Verify
+        verify(postRepository).findById(postId);
+        verify(staffRepository, times(0)).findById(any());
+        verify(postRepository, times(0)).delete(any());
     }
 }

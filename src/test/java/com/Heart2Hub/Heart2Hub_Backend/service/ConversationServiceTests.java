@@ -8,6 +8,8 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.ChatMessage;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Conversation;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Patient;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.exception.PatientNotFoundException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateConversationException;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.StaffChatMapper;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ConversationRepository;
@@ -74,11 +76,40 @@ public class ConversationServiceTests {
     }
 
     @Test
+    void testCreateNewStaffConversation_StaffNotFound() {
+        Long staffId1 = 1L;
+        Long staffId2 = 2L;
+
+        when(staffService.getStaffById(staffId1)).thenReturn(null);
+        when(staffService.getStaffById(staffId2)).thenReturn(null);
+
+        assertThrows(StaffNotFoundException.class,
+                () -> conversationService.createNewStaffConversation(staffId1, staffId2));
+
+        // Verify
+        verify(staffService).getStaffById(staffId1);
+        verify(staffService).getStaffById(staffId2);
+        verifyNoMoreInteractions(staffService, conversationRepository);
+    }
+
+
+    @Test
     void testCreateNewStaffConversationSelf() {
         Long staffId1 = 1L;
 
         assertThrows(UnableToCreateConversationException.class,
                 () -> conversationService.createNewStaffConversation(staffId1, staffId1));
+    }
+
+    @Test
+    void testCreateNewStaffConversationSelf_UnableToCreateConversationException() {
+        Long staffId1 = 1L;
+
+        assertThrows(UnableToCreateConversationException.class,
+                () -> conversationService.createNewStaffConversation(staffId1, staffId1));
+
+        // Verify
+        verifyNoInteractions(staffService, conversationRepository);
     }
 
     @Test
@@ -91,6 +122,22 @@ public class ConversationServiceTests {
 
         assertThrows(UnableToCreateConversationException.class,
                 () -> conversationService.createNewStaffConversation(staffId1, staffId2));
+    }
+
+    @Test
+    void testCreateNewStaffConversationExisting_UnableToCreateConversationException() {
+        Long staffId1 = 1L;
+        Long staffId2 = 2L;
+
+        when(conversationRepository.findFirstByFirstStaff_StaffIdAndSecondStaff_StaffId(
+                staffId1, staffId2)).thenReturn(List.of(new Conversation()));
+
+        assertThrows(UnableToCreateConversationException.class,
+                () -> conversationService.createNewStaffConversation(staffId1, staffId2));
+
+        // Verify
+        verify(conversationRepository).findFirstByFirstStaff_StaffIdAndSecondStaff_StaffId(staffId1, staffId2);
+        verifyNoMoreInteractions(staffService, conversationRepository);
     }
 
     @Test
@@ -110,7 +157,7 @@ public class ConversationServiceTests {
     }
 
     @Test
-    void testAddChatMessageConversationNotFound() {
+    void testAddChatMessage_ConversationNotFound() {
         Long conversationId = 1L;
         ChatMessage chatMessage = new ChatMessage();
 
@@ -134,6 +181,23 @@ public class ConversationServiceTests {
     }
 
     @Test
+    void testGetStaffConversations_NoConversationsFound() {
+        Long staffId = 1L;
+
+        when(conversationRepository.findAllByFirstStaff_StaffId(staffId)).thenReturn(new ArrayList<>());
+        when(conversationRepository.findAllBySecondStaff_StaffId(staffId)).thenReturn(new ArrayList<>());
+
+        assertThrows(Exception.class,
+                () -> conversationService.getStaffConversations(staffId));
+
+        // Verify
+        verify(conversationRepository).findAllByFirstStaff_StaffId(staffId);
+        verify(conversationRepository).findAllBySecondStaff_StaffId(staffId);
+        verifyNoMoreInteractions(conversationRepository);
+    }
+
+
+    @Test
     void testGetStaffChatDTO() {
         Long staffId = 1L;
 
@@ -146,6 +210,21 @@ public class ConversationServiceTests {
 
         assertNotNull(result);
     }
+
+    @Test
+    void testGetStaffChatDTO_StaffNotFoundException() {
+        Long staffId = 1L;
+
+        when(staffService.getStaffById(staffId)).thenThrow(new StaffNotFoundException("Staff not found."));
+
+        assertThrows(StaffNotFoundException.class,
+                () -> conversationService.getStaffChatDTO(staffId));
+
+        // Verify
+        verify(staffService).getStaffById(staffId);
+        verifyNoMoreInteractions(staffService, staffChatMapper);
+    }
+
 
     @Test
     void testCreateNewPatientConversation() {
@@ -172,6 +251,22 @@ public class ConversationServiceTests {
     }
 
     @Test
+    void testCreateNewPatientConversation_PatientNotFoundException() {
+        Long patientId = 1L;
+        Long staffId = 2L;
+
+        when(patientService.getPatientById(patientId)).thenThrow(new PatientNotFoundException("Patient not found."));
+
+        assertThrows(PatientNotFoundException.class,
+                () -> conversationService.createNewPatientConversation(patientId, staffId));
+
+        // Verify
+        verify(patientService).getPatientById(patientId);
+        verifyNoMoreInteractions(patientService, staffService, conversationRepository);
+    }
+
+
+    @Test
     void testCreateNewPatientConversationExisting() {
         Long patientId = 1L;
         Long staffId = 2L;
@@ -182,4 +277,21 @@ public class ConversationServiceTests {
         assertThrows(UnableToCreateConversationException.class,
                 () -> conversationService.createNewPatientConversation(patientId, staffId));
     }
+
+    @Test
+    void testCreateNewPatientConversationExisting_UnableToCreateConversationException() {
+        Long patientId = 1L;
+        Long staffId = 2L;
+
+        when(conversationRepository.findFirstByPatient_PatientIdAndFirstStaff_StaffId(
+                patientId, staffId)).thenReturn(List.of(new Conversation()));
+
+        assertThrows(UnableToCreateConversationException.class,
+                () -> conversationService.createNewPatientConversation(patientId, staffId));
+
+        // Verify
+        verify(conversationRepository).findFirstByPatient_PatientIdAndFirstStaff_StaffId(patientId, staffId);
+        verifyNoMoreInteractions(patientService, staffService, conversationRepository);
+    }
+
 }

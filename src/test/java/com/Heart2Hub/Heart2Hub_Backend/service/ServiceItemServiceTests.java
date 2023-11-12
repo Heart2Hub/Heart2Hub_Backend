@@ -75,6 +75,24 @@ public class ServiceItemServiceTests {
     }
 
     @Test
+    void testIsLoggedInUserAdmin_UserNotFound() {
+        // Mock data
+        Authentication authentication = mock(Authentication.class);
+        SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
+        User user = new User("nonexistentuser", "password", new ArrayList<>());
+        when(authentication.getPrincipal()).thenReturn(user);
+
+        // Test
+        assertThrows(ServiceItemNotFoundException.class, () -> serviceItemService.isLoggedInUserAdmin());
+
+        // Verify
+        verify(authentication).getPrincipal();
+        verify(staffRepository).findByUsername(user.getUsername());
+        verifyNoMoreInteractions(staffRepository);
+    }
+
+
+    @Test
     void testCreateServiceItem() {
         // Mock data
         Long unitId = 1L;
@@ -104,6 +122,27 @@ public class ServiceItemServiceTests {
     }
 
     @Test
+    void testCreateServiceItem_UnitNotFound() {
+        // Mock data
+        Long unitId = 1L;
+        ServiceItem newServiceItem = new ServiceItem();
+        newServiceItem.setInventoryItemName("New Service Item");
+        newServiceItem.setInventoryItemDescription("Description");
+        newServiceItem.setItemTypeEnum(ItemTypeEnum.OUTPATIENT);
+        newServiceItem.setRetailPricePerQuantity(BigDecimal.valueOf(25.0));
+
+        when(unitRepository.findById(unitId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(UnableToCreateServiceItemException.class, () -> serviceItemService.createServiceItem(unitId, newServiceItem));
+
+        // Verify
+        verify(unitRepository).findById(unitId);
+        verifyNoMoreInteractions(serviceItemRepository);
+    }
+
+
+    @Test
     void testDeleteServiceItem() {
         // Mock data
         Long inventoryItemId = 1L;
@@ -126,6 +165,22 @@ public class ServiceItemServiceTests {
             fail("Exception not expected");
         }
     }
+
+    @Test
+    void testDeleteServiceItem_ServiceItemNotFound() {
+        // Mock data
+        Long inventoryItemId = 1L;
+
+        when(serviceItemRepository.findById(inventoryItemId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(ServiceItemNotFoundException.class, () -> serviceItemService.deleteServiceItem(inventoryItemId));
+
+        // Verify
+        verify(serviceItemRepository).findById(inventoryItemId);
+        verifyNoMoreInteractions(transactionItemService, serviceItemRepository);
+    }
+
 
     @Test
     void testUpdateServiceItem() {
@@ -163,6 +218,27 @@ public class ServiceItemServiceTests {
     }
 
     @Test
+    void testUpdateServiceItem_ServiceItemNotFound() {
+        // Mock data
+        Long inventoryItemId = 1L;
+        ServiceItem updatedServiceItem = new ServiceItem();
+        updatedServiceItem.setInventoryItemName("Updated Service Item");
+        updatedServiceItem.setInventoryItemDescription("Updated Description");
+        updatedServiceItem.setItemTypeEnum(ItemTypeEnum.OUTPATIENT);
+        updatedServiceItem.setRetailPricePerQuantity(BigDecimal.valueOf(30.0));
+
+        when(serviceItemRepository.findById(inventoryItemId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(ServiceItemNotFoundException.class, () -> serviceItemService.updateServiceItem(inventoryItemId, updatedServiceItem));
+
+        // Verify
+        verify(serviceItemRepository).findById(inventoryItemId);
+        verifyNoMoreInteractions(serviceItemRepository);
+    }
+
+
+    @Test
     void testGetAllServiceItem() {
         // Mock data
         List<ServiceItem> serviceItemList = new ArrayList<>();
@@ -179,6 +255,7 @@ public class ServiceItemServiceTests {
         }
     }
 
+
     @Test
     void testGetAllServiceItemInUnit() {
         // Mock data
@@ -191,6 +268,21 @@ public class ServiceItemServiceTests {
         List<ServiceItem> result = serviceItemService.getAllServiceItemInUnit(unitId);
         assertNotNull(result);
         assertEquals(serviceItemList, result);
+        verify(serviceItemRepository).findAll();
+    }
+
+    @Test
+    void testGetAllServiceItemInUnit_NoItemsFound() {
+        // Mock data
+        Long unitId = 1L;
+        when(serviceItemRepository.findAll()).thenReturn(new ArrayList<>());
+
+        // Test
+        List<ServiceItem> result = serviceItemService.getAllServiceItemInUnit(unitId);
+
+        // Verify
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
         verify(serviceItemRepository).findAll();
     }
 
