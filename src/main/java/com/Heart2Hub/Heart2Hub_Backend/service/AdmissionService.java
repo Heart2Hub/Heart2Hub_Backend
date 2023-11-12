@@ -7,6 +7,7 @@ import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,15 +25,18 @@ public class AdmissionService {
     private final WardRepository wardRepository;
     private final WardAvailabilityRepository wardAvailabilityRepository;
     private final ElectronicHealthRecordService electronicHealthRecordService;
+    private final TransactionItemService transactionItemService;
+    private final ServiceItemRepository serviceItemRepository;
 
-
-    public AdmissionService(AdmissionRepository admissionRepository, PatientRepository patientRepository, WardRepository wardRepository, WardAvailabilityRepository wardAvailabilityRepository, ElectronicHealthRecordService electronicHealthRecordService, StaffRepository staffRepository) {
+    public AdmissionService(AdmissionRepository admissionRepository, PatientRepository patientRepository, WardRepository wardRepository, WardAvailabilityRepository wardAvailabilityRepository, ElectronicHealthRecordService electronicHealthRecordService, StaffRepository staffRepository, TransactionItemService transactionItemService, ServiceItemRepository serviceItemRepository) {
         this.admissionRepository = admissionRepository;
         this.patientRepository = patientRepository;
         this.wardRepository = wardRepository;
         this.wardAvailabilityRepository = wardAvailabilityRepository;
         this.electronicHealthRecordService = electronicHealthRecordService;
         this.staffRepository = staffRepository;
+        this.transactionItemService = transactionItemService;
+        this.serviceItemRepository = serviceItemRepository;
     }
 
     public List<Admission> getAllAdmissions() {
@@ -182,9 +186,19 @@ public class AdmissionService {
 
         Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
 
-
         admission.setArrived(arrivalStatus);
-        //appointment.setActualDateTime(LocalDateTime.now());
+
+        // Add Admission to Patient's cart
+        String serviceItemUnitName = admission.getWard().getWardClass().getWardClassName() + "1";
+        List<ServiceItem> wardClassRateList = serviceItemRepository.findByUnit_Name(serviceItemUnitName);
+        ServiceItem wardClassRate = wardClassRateList.get(0);
+
+        String inventoryItemDescription = "Ward Charges";
+        BigDecimal price = wardClassRate.getRetailPricePerQuantity();
+        BigDecimal totalPrice = price.multiply(new BigDecimal(admission.getDuration()));
+        transactionItemService.inpatientAddToCart(admission.getPatient().getPatientId(), wardClassRate.getInventoryItemName(),
+                inventoryItemDescription, admission.getDuration(), totalPrice, wardClassRate.getInventoryItemId());
+
         return admission;
     }
 

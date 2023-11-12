@@ -51,4 +51,9 @@ public class ServiceItemController {
             );
         }
 
+        @GetMapping("/getWardClassRates")
+        public ResponseEntity<ServiceItem> getWardClassRates() {
+            return ResponseEntity.ok(serviceItemService.getWardClassRates());
+        }
+
 }
