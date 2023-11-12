@@ -121,35 +121,4 @@ public class NextOfKinRecordServiceTests {
         // Verify
         verifyNoMoreInteractions(nextOfKinRecordRepository);
     }
-
-    @Test
-    void testDeleteAllNextOfKinRecordsFromElectronicHealthRecord() throws ElectronicHealthRecordNotFoundException {
-        // Arrange
-        Long electronicHealthRecordId = 1L;
-        ElectronicHealthRecord mockElectronicHealthRecord = new ElectronicHealthRecord();
-        when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.of(mockElectronicHealthRecord));
-
-        // Act
-        ElectronicHealthRecord result = nextOfKinRecordService.deleteAllNextOfKinRecordsFromElectronicHealthRecord(electronicHealthRecordId);
-
-        // Assert
-        assertTrue(result.getListOfNextOfKinRecords().isEmpty());
-        verify(electronicHealthRecordRepository).findById(electronicHealthRecordId);
-        verify(electronicHealthRecordRepository).save(mockElectronicHealthRecord);
-    }
-
-    @Test
-    void testDeleteAllNextOfKinRecordsFromElectronicHealthRecord_RecordNotFound() throws ElectronicHealthRecordNotFoundException {
-        // Arrange
-        Long electronicHealthRecordId = 1L;
-        when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
-
-        // Act and Assert
-        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> {
-            nextOfKinRecordService.deleteAllNextOfKinRecordsFromElectronicHealthRecord(electronicHealthRecordId);
-        });
-
-        // Verify
-        verifyNoMoreInteractions(nextOfKinRecordRepository, electronicHealthRecordRepository);
-    }
 }

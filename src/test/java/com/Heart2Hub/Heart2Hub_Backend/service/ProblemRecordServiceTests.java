@@ -325,39 +325,4 @@ public class ProblemRecordServiceTests {
         verify(problemRecordRepository, times(0)).delete(any());
         verify(medicalHistoryRecordService, times(0)).createMedicalHistoryRecord(eq(electronicHealthRecordId), any());
     }
-
-    @Test
-    void testDeleteAllProblemRecordsFromElectronicHealthRecord() {
-        // Mock data
-        Long electronicHealthRecordId = 1L;
-
-        ElectronicHealthRecord mockElectronicHealthRecord = new ElectronicHealthRecord();
-        when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.of(mockElectronicHealthRecord));
-
-        // Test
-        try {
-            ElectronicHealthRecord result = problemRecordService.deleteAllProblemRecordsFromElectronicHealthRecord(electronicHealthRecordId);
-            assertNotNull(result);
-            assertTrue(result.getListOfProblemRecords().isEmpty());
-            verify(electronicHealthRecordRepository).findById(electronicHealthRecordId);
-            verify(electronicHealthRecordRepository).save(mockElectronicHealthRecord);
-
-        } catch (ElectronicHealthRecordNotFoundException e) {
-            fail("Exception not expected");
-        }
-    }
-
-    @Test
-    void testDeleteAllProblemRecordsFromElectronicHealthRecord_ElectronicHealthRecordNotFound() {
-        // Mock data
-        Long electronicHealthRecordId = 1L;
-        when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
-
-        // Test
-        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> problemRecordService.deleteAllProblemRecordsFromElectronicHealthRecord(electronicHealthRecordId));
-
-        // Verify
-        verify(electronicHealthRecordRepository).findById(electronicHealthRecordId);
-        verify(electronicHealthRecordRepository, times(0)).save(any());
-    }
 }

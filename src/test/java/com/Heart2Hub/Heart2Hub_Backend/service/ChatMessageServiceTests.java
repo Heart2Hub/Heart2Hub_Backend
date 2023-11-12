@@ -15,7 +15,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class ChatMessageTests {
+public class ChatMessageServiceTests {
 
     @Mock
     private ChatMessageRepository chatMessageRepository;
