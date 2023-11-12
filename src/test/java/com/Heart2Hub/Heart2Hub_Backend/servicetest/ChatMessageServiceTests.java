@@ -1,4 +1,4 @@
-package com.Heart2Hub.Heart2Hub_Backend.service;
+package com.Heart2Hub.Heart2Hub_Backend.servicetest;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.ChatMessage;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ChatMessageRepository;
+import com.Heart2Hub.Heart2Hub_Backend.service.ChatMessageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

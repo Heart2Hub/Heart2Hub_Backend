@@ -1,4 +1,4 @@
-package com.Heart2Hub.Heart2Hub_Backend.service;
+package com.Heart2Hub.Heart2Hub_Backend.servicetest;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -9,6 +9,8 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateTreatmentPlanRecordException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.PostRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
+import com.Heart2Hub.Heart2Hub_Backend.service.ImageDocumentService;
+import com.Heart2Hub.Heart2Hub_Backend.service.PostService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

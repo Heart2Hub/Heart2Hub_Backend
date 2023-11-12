@@ -1,4 +1,4 @@
-package com.Heart2Hub.Heart2Hub_Backend.service;
+package com.Heart2Hub.Heart2Hub_Backend.servicetest;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.ElectronicHealthRecord;
 import com.Heart2Hub.Heart2Hub_Backend.entity.NextOfKinRecord;
@@ -7,6 +7,7 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.NextOfKinRecordNotFoundExceptio
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateNextOfKinRecordException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.NextOfKinRecordRepository;
+import com.Heart2Hub.Heart2Hub_Backend.service.NextOfKinRecordService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
