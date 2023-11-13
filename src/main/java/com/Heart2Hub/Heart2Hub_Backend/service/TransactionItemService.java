@@ -394,16 +394,20 @@ public class TransactionItemService {
         TransactionItem transactionItem = transactionItemRepository.findById(transactionItemId).get();
 
         InventoryItem item = transactionItem.getInventoryItem();
-        int oldQuantity = transactionItem.getTransactionItemQuantity();
-        Medication med = (Medication) item;
-        if (transactionItemQuantity > oldQuantity) {
-            if (med.getQuantityInStock() - (transactionItemQuantity - oldQuantity) < 0) {
-                throw new InsufficientInventoryException("Insufficient Inventory for Medication");
+
+        if (item instanceof Medication) {
+            int oldQuantity = transactionItem.getTransactionItemQuantity();
+            Medication med = (Medication) item;
+            if (transactionItemQuantity > oldQuantity) {
+                if (med.getQuantityInStock() - (transactionItemQuantity - oldQuantity) < 0) {
+                    throw new InsufficientInventoryException("Insufficient Inventory for Medication");
+                }
+                med.setQuantityInStock(med.getQuantityInStock() - (transactionItemQuantity - oldQuantity));
+            } else if (transactionItemQuantity < oldQuantity){
+                med.setQuantityInStock(med.getQuantityInStock() + (oldQuantity - transactionItemQuantity));
             }
-            med.setQuantityInStock(med.getQuantityInStock() - (transactionItemQuantity - oldQuantity));
-        } else if (transactionItemQuantity < oldQuantity){
-            med.setQuantityInStock(med.getQuantityInStock() + (oldQuantity - transactionItemQuantity));
         }
+
         transactionItem.setTransactionItemQuantity(transactionItemQuantity);
         return transactionItemRepository.save(transactionItem);
     }
@@ -413,9 +417,8 @@ public class TransactionItemService {
         TransactionItem transactionItem = new TransactionItem(inventoryItemName, inventoryItemDescription,
                 transactionItemQuantity, transactionItemPrice, inventoryItemRepository.findById(itemId).get());
         Patient p = patientRepository.findById(patientId).get();
-
-        transactionItemRepository.save(transactionItem);
-        p.getListOfTransactionItem().add(transactionItem);
+        TransactionItem addedItem = transactionItemRepository.save(transactionItem);
+        p.getListOfTransactionItem().add(addedItem);
         patientRepository.save(p);
     }
 }

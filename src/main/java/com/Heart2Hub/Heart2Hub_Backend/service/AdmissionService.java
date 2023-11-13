@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -152,35 +153,6 @@ public class AdmissionService {
         return admission;
     }
 
-//    public Admission assignAdmissionToAdmin(Long admissionId, Long toStaffId, Long fromStaffId) throws AdmissionNotFoundException, StaffNotFoundException, UnableToAssignAdmissionException {
-//
-//        Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
-//
-//        if (toStaffId == 0) {
-//            admission.setCurrentAssignedAdmin(null);
-//            return admission;
-//        } else {
-//            Staff toAdmin = staffRepository.findById(toStaffId).orElseThrow(() -> new StaffNotFoundException("Staff not found"));
-//
-//            if (toAdmin.getDisabled()) {
-//                throw new StaffDisabledException("Unable to assign admission to Disabled Staff");
-//            }
-//
-//            if (admission.getCurrentAssignedAdmin() == null
-//                    || (admission.getCurrentAssignedAdmin() != null && Objects.equals(
-//                    admission.getCurrentAssignedAdmin().getStaffId(), fromStaffId))) {
-//
-//                admission.setCurrentAssignedAdmin(toAdmin);
-//                toAdmin.getListOfAdminAdmissions().add(admission);
-//
-//                return admission;
-//            } else {
-//                throw new UnableToAssignAdmissionException(
-//                        "Unable to assign an admission ticket that is not yours");
-//            }
-//        }
-//    }
-
     public Admission updateAdmissionArrival(Long admissionId, Boolean arrivalStatus,
                                                 Long staffId) throws AdmissionNotFoundException {
 
@@ -189,8 +161,8 @@ public class AdmissionService {
         admission.setArrived(arrivalStatus);
 
         // Add Admission to Patient's cart
-        String serviceItemUnitName = admission.getWard().getWardClass().getWardClassName() + "1";
-        List<ServiceItem> wardClassRateList = serviceItemRepository.findByUnit_Name(serviceItemUnitName);
+        String serviceItemName = "Ward (Class " + admission.getWard().getWardClass().getWardClassName() + ") (daily)";
+        List<ServiceItem> wardClassRateList = serviceItemRepository.findByInventoryItemNameContainingIgnoreCase(serviceItemName);
         ServiceItem wardClassRate = wardClassRateList.get(0);
 
         String inventoryItemDescription = "Ward Charges";
@@ -273,6 +245,8 @@ public class AdmissionService {
                     patient.setAdmission(null);
                     patient.getElectronicHealthRecord().getListOfPastAdmissions().add(currentAdmission);
 
+                    //checkout
+                    transactionItemService.checkout(patient.getPatientId());
                 }
             }
         }
@@ -312,6 +286,21 @@ public class AdmissionService {
 
     public Admission getAdmissionByAdmissionId(Long admissionId) {
         return admissionRepository.findById(admissionId).get();
+    }
+
+    public Admission addImageAttachment(Long admissionId, String imageLink, String createdDate) {
+        Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss");
+        LocalDateTime createdDateTime = LocalDateTime.parse(createdDate, formatter);
+        ImageDocument imageDocument = new ImageDocument(imageLink, createdDateTime);
+        admission.getListOfImageDocuments().add(imageDocument);
+
+        return admission;
+    }
+
+    public List<ImageDocument> viewImageAttachments(Long admissionId) {
+        Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
+        return admission.getListOfImageDocuments();
     }
 
 }

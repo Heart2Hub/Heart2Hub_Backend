@@ -1685,25 +1685,25 @@ public class DataLoader implements CommandLineRunner {
         newServiceItem5.setUnit(unit5);
 
         //Ward Class Service Items
-        ServiceItem wardClassAServiceItem = serviceItemService.createServiceItem(Long.parseLong("12"),
-                new ServiceItem("Ward (Class A) (daily)", "Ward Class Rates", ItemTypeEnum.INPATIENT,
+        ServiceItem wardClassAServiceItem = serviceItemService.createServiceItem(Long.parseLong("1"),
+                new ServiceItem("Ward (Class A) (daily)", "Ward Class Rates", ItemTypeEnum.OUTPATIENT,
                         BigDecimal.valueOf(621)));
-        newServiceItem5.setUnit(wardA);
+        newServiceItem5.setUnit(unit1);
 
-        ServiceItem wardClassB1ServiceItem = serviceItemService.createServiceItem(Long.parseLong("15"),
-                new ServiceItem("Ward (Class B1) (daily)", "Ward Class Rates", ItemTypeEnum.INPATIENT,
+        ServiceItem wardClassB1ServiceItem = serviceItemService.createServiceItem(Long.parseLong("1"),
+                new ServiceItem("Ward (Class B1) (daily)", "Ward Class Rates", ItemTypeEnum.OUTPATIENT,
                         BigDecimal.valueOf(309.31)));
-        newServiceItem5.setUnit(wardB1);
+        newServiceItem5.setUnit(unit1);
 
-        ServiceItem wardClassB2ServiceItem = serviceItemService.createServiceItem(Long.parseLong("18"),
-                new ServiceItem("Ward (Class B2) (daily)", "Ward Class Rates", ItemTypeEnum.INPATIENT,
+        ServiceItem wardClassB2ServiceItem = serviceItemService.createServiceItem(Long.parseLong("1"),
+                new ServiceItem("Ward (Class B2) (daily)", "Ward Class Rates", ItemTypeEnum.OUTPATIENT,
                         BigDecimal.valueOf(57)));
-        newServiceItem5.setUnit(wardA);
+        newServiceItem5.setUnit(unit1);
 
-        ServiceItem wardClassCServiceItem = serviceItemService.createServiceItem(Long.parseLong("21"),
-                new ServiceItem("Ward (Class C) (daily)", "Ward Class Rates", ItemTypeEnum.INPATIENT,
+        ServiceItem wardClassCServiceItem = serviceItemService.createServiceItem(Long.parseLong("1"),
+                new ServiceItem("Ward (Class C) (daily)", "Ward Class Rates", ItemTypeEnum.OUTPATIENT,
                         BigDecimal.valueOf(40.70)));
-        newServiceItem5.setUnit(wardC);
+        newServiceItem5.setUnit(unit1);
     }
 
 

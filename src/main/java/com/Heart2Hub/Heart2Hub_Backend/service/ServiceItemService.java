@@ -32,11 +32,6 @@ public class ServiceItemService {
         this.transactionItemService = transactionItemService;
     }
 
-    public ServiceItem getWardClassRates() {
-        List<ServiceItem> wardClassRates = serviceItemRepository.findByUnit_Name("A1");
-        return wardClassRates.get(0);
-    }
-
     public boolean isLoggedInUserAdmin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = false;
