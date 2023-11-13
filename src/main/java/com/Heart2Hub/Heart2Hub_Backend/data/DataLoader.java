@@ -1868,7 +1868,7 @@ public class DataLoader implements CommandLineRunner {
 
         for (int month = 1; month <= 10; month++) {
             for (int j = 0; j < itemList.size(); j++) {
-                int randomQuantity = random.nextInt(7) + 1;
+                int randomQuantity = random.nextInt(5) + 1;
                 InventoryItem item = itemList.get(j);
                 if (item instanceof ServiceItem ) {
                     ServiceItem serviceItem = (ServiceItem) item;
