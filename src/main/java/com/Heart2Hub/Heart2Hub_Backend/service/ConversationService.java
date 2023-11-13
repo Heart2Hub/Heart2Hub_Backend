@@ -93,7 +93,16 @@ public class ConversationService {
 
     HashMap<Long,Conversation> result = new HashMap<>();
     for (Conversation convo : listOfAllConvos) {
-      Long otherStaffId = convo.getFirstStaff().getStaffId().equals(staffId) ? convo.getSecondStaff().getStaffId() : convo.getFirstStaff().getStaffId();
+      Long otherStaffId;
+      if (convo.getFirstStaff().getStaffId().equals(staffId)) {
+        if (convo.getSecondStaff() == null) {
+          otherStaffId = convo.getPatient().getPatientId() * 1000L;
+        } else {
+          otherStaffId = convo.getSecondStaff().getStaffId();
+        }
+      } else {
+        otherStaffId = convo.getFirstStaff().getStaffId();
+      }
       result.put(otherStaffId,convo);
     }
     return result;
@@ -120,5 +129,18 @@ public class ConversationService {
     Conversation conversation = new Conversation(patient1, staff1, null);
 
     return conversationRepository.save(conversation);
+  }
+
+  public HashMap<Long,Conversation> getPatientConversation(Long patientId) {
+
+    List<Conversation> listOfAllConvos = new ArrayList<>(
+            conversationRepository.findAllByPatient_PatientId(patientId));
+
+    HashMap<Long,Conversation> result = new HashMap<>();
+    for (Conversation convo : listOfAllConvos) {
+      Long staffId = convo.getFirstStaff().getStaffId();
+      result.put(staffId,convo);
+    }
+    return result;
   }
 }

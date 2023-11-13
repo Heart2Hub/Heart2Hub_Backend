@@ -16,4 +16,6 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
   List<Conversation> findFirstByPatient_PatientIdAndFirstStaff_StaffId(Long patientId, Long staffId);
 
   List<Conversation> findFirstByFirstStaff_StaffIdAndPatient_PatientId(Long patientId, Long staffId);
+
+  List<Conversation> findAllByPatient_PatientId(Long staffId);
 }
