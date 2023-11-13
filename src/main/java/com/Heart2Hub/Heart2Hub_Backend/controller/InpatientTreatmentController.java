@@ -27,4 +27,26 @@ public class InpatientTreatmentController {
     public ResponseEntity<InpatientTreatment> getInpatientTreatmentById(@RequestParam("inpatientTreatmentId") Long inpatientTreatmentId) {
         return ResponseEntity.ok(inpatientTreatmentService.getInpatientTreatmentById(inpatientTreatmentId));
     }
+
+    @PutMapping("/updateArrival")
+    public ResponseEntity<InpatientTreatment> updateArrival(
+            @RequestParam("inpatientTreatmentId") Long inpatientTreatmentId,
+            @RequestParam("arrivalStatus") Boolean arrivalStatus) {
+        return ResponseEntity.ok(inpatientTreatmentService.updateArrival(inpatientTreatmentId, arrivalStatus));
+    }
+
+    @PutMapping("/updateComplete")
+    public ResponseEntity<InpatientTreatment> updateComplete(
+            @RequestParam("inpatientTreatmentId") Long inpatientTreatmentId,
+            @RequestParam("admissionId") Long admissionId) {
+        return ResponseEntity.ok(inpatientTreatmentService.updateComplete(inpatientTreatmentId, admissionId));
+    }
+
+    @DeleteMapping("/deleteInpatientTreatment")
+    public ResponseEntity<String> deleteInpatientTreatment(
+            @RequestParam("inpatientTreatmentId") Long inpatientTreatmentId,
+            @RequestParam("admissionId") Long admissionId) {
+        return ResponseEntity.ok(inpatientTreatmentService.deleteInpatientTreatment(inpatientTreatmentId, admissionId));
+    }
+
 }

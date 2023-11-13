@@ -147,4 +147,18 @@ public class AdmissionController {
         return ResponseEntity.ok(admissionMapper.toDTO(admissionService.updateDischargeDate(admissionId, dischargeDate)));
     }
 
+    @PutMapping("/addImageAttachment")
+    public ResponseEntity<Admission> addImageAttachment(
+            @RequestParam("admissionId") Long admissionId,
+            @RequestParam("imageLink") String imageLink,
+            @RequestParam("createdDate") String createdDate) {
+        return ResponseEntity.ok(admissionService.addImageAttachment(admissionId, imageLink, createdDate));
+    }
+
+    @GetMapping("/viewImageAttachments")
+    public ResponseEntity<List<ImageDocument>> viewImageAttachments(
+            @RequestParam("admissionId") Long admissionId) {
+        return ResponseEntity.ok(admissionService.viewImageAttachments(admissionId));
+    }
+
 }

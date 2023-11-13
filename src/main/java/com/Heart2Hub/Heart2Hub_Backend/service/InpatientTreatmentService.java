@@ -9,6 +9,7 @@ import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,11 +28,14 @@ public class InpatientTreatmentService {
 
     private final ServiceItemRepository serviceItemRepository;
 
-    public InpatientTreatmentService(InpatientTreatmentRepository inpatientTreatmentRepository, AdmissionRepository admissionRepository, StaffRepository staffRepository, ServiceItemRepository serviceItemRepository) {
+    private final TransactionItemService transactionItemService;
+
+    public InpatientTreatmentService(InpatientTreatmentRepository inpatientTreatmentRepository, AdmissionRepository admissionRepository, StaffRepository staffRepository, ServiceItemRepository serviceItemRepository, TransactionItemService transactionItemService) {
         this.inpatientTreatmentRepository = inpatientTreatmentRepository;
         this.staffRepository = staffRepository;
         this.admissionRepository = admissionRepository;
         this.serviceItemRepository = serviceItemRepository;
+        this.transactionItemService = transactionItemService;
     }
 
     public InpatientTreatment createInpatientTreatment(Long serviceItemId, Long admissionId, Long staffId, InpatientTreatment inpatientTreatment) throws UnableToCreateInpatientTreatmentException {
@@ -75,6 +79,34 @@ public class InpatientTreatmentService {
         return inpatientTreatmentRepository.findById(inpatientTreatmentId).get();
     }
 
+    public InpatientTreatment updateArrival(Long inpatientTreatmentId, Boolean arrivalStatus) {
+        InpatientTreatment inpatientTreatment = inpatientTreatmentRepository.findById(inpatientTreatmentId).get();
+        inpatientTreatment.setArrived(arrivalStatus);
 
+        return inpatientTreatment;
+    }
+
+    public InpatientTreatment updateComplete(Long inpatientTreatmentId, Long admissionId) {
+        InpatientTreatment inpatientTreatment = inpatientTreatmentRepository.findById(inpatientTreatmentId).get();
+        Admission currentAdmission = admissionRepository.findById(admissionId).get();
+
+        inpatientTreatment.setIsCompleted(!inpatientTreatment.getIsCompleted());
+        String inventoryItemDescription = "Inpatient Treatment";
+        BigDecimal price = inpatientTreatment.getServiceItem().getRetailPricePerQuantity();
+
+        transactionItemService.inpatientAddToCart(currentAdmission.getPatient().getPatientId(), inpatientTreatment.getServiceItem().getInventoryItemName(),
+                inventoryItemDescription, 1, price, inpatientTreatment.getServiceItem().getInventoryItemId());
+
+        return inpatientTreatment;
+    }
+
+    public String deleteInpatientTreatment(Long inpatientTreatmentId, Long admissionId) {
+        InpatientTreatment inpatientTreatment = inpatientTreatmentRepository.findById(inpatientTreatmentId).get();
+        Admission admission = admissionRepository.findById(admissionId).get();
+        admission.getListOfInpatientTreatments().remove(inpatientTreatment);
+        inpatientTreatmentRepository.delete(inpatientTreatment);
+
+        return "Inpatient Treatment Deleted";
+    }
 
 }
