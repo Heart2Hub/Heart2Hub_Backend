@@ -44,9 +44,7 @@ public class Patient implements UserDetails {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "patient")
     private List<Invoice> listOfInvoices;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name = "patient_id", nullable = true)
-    private List<PaymentMethod> listOfPaymentMethods;
+
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
@@ -73,7 +71,7 @@ public class Patient implements UserDetails {
 
     public Patient() {
         this.listOfInvoices = new ArrayList<>();
-        this.listOfPaymentMethods = new ArrayList<>();
+//        this.listOfPaymentMethods = new ArrayList<>();
         this.listOfTransactionItem = new ArrayList<>();
         this.listOfCurrentAppointments = new ArrayList<>();
     }

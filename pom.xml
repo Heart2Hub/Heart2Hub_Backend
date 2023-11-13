@@ -95,6 +95,12 @@
 			<version>3.1.1</version>
 		</dependency>
 		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>24.1.0</version>
+		</dependency>
+
+		<dependency>
 			<groupId>net.javacrumbs.shedlock</groupId>
 			<artifactId>shedlock-spring</artifactId>
 			<version>5.8.0</version>

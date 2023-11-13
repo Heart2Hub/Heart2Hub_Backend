@@ -1,5 +1,6 @@
 package com.Heart2Hub.Heart2Hub_Backend.controller;
 
+import com.Heart2Hub.Heart2Hub_Backend.entity.ElectronicHealthRecord;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Subsidy;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.service.SubsidyService;
@@ -26,6 +27,18 @@ public class SubsidyController {
     @GetMapping("/getAllSubsidies")
     public ResponseEntity<List<Subsidy>> getAllSubsidies() {
         List<Subsidy> subsidies = subsidyService.findAllSubsidies();
+        return new ResponseEntity<>(subsidies, HttpStatus.OK);
+    }
+
+    @GetMapping("/findAllSubsidiesOfPatient/{username}")
+    public ResponseEntity<List<Subsidy>> findAllSubsidiesOfPatient(@PathVariable String username) {
+        List<Subsidy> subsidies = subsidyService.findAllSubsidiesOfPatient(username);
+        return new ResponseEntity<>(subsidies, HttpStatus.OK);
+    }
+
+    @GetMapping("/findAllSubsidyOfEhr/{id}")
+    public ResponseEntity<List<Subsidy>> findAllSubsidyOfEhr(@PathVariable Long id) {
+        List<Subsidy> subsidies = subsidyService.findAllSubsidyOfEhr(id);
         return new ResponseEntity<>(subsidies, HttpStatus.OK);
     }
 

@@ -1,8 +1,10 @@
-package com.Heart2Hub.Heart2Hub_Backend.service;
+package com.Heart2Hub.Heart2Hub_Backend.servicetest;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.Heart2Hub.Heart2Hub_Backend.service.MedicationService;
+import com.Heart2Hub.Heart2Hub_Backend.service.TransactionItemService;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -77,6 +79,24 @@ public class MedicationServiceTests {
     }
 
     @Test
+    void testIsLoggedInPharmacist_UserNotFound() {
+        // Mock data
+        Authentication authentication = mock(Authentication.class);
+        SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
+        User user = new User("username", "password", new ArrayList<>());
+        when(authentication.getPrincipal()).thenReturn(user);
+
+        when(staffRepository.findByUsername(user.getUsername())).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(AssertionError.class, () -> assertFalse(medicationService.isLoggedInPharmacist()));
+
+        // Verify
+        verify(authentication).getPrincipal();
+        verify(staffRepository).findByUsername(user.getUsername());
+    }
+
+    @Test
     void testGetAllergenEnums() {
         // Test
         List<String> result = medicationService.getAllergenEnums();
@@ -123,6 +143,26 @@ public class MedicationServiceTests {
     }
 
     @Test
+    void testCreateMedication_MedicationAlreadyExists() {
+        // Mock data
+        Medication newMedication = new Medication();
+        newMedication.setInventoryItemName("Existing Medication");
+
+        Medication existingMedication = new Medication();
+        existingMedication.setInventoryItemName("Existing Medication");
+        when(medicationRepository.findAll()).thenReturn(List.of(existingMedication));
+
+        // Test
+        assertThrows(UnableToCreateMedicationException.class, () -> medicationService.createMedication(newMedication));
+
+        // Verify
+        verify(medicationRepository).findAll();
+        verify(drugRestrictionRepository, times(0)).findAll();
+        verify(drugRestrictionRepository, times(0)).delete(any());
+        verify(medicationRepository, times(0)).save(any());
+    }
+
+    @Test
     void testDeleteMedication() {
         // Mock data
         Long inventoryItemId = 1L;
@@ -145,6 +185,22 @@ public class MedicationServiceTests {
         } catch (MedicationNotFoundException | UnableToDeleteServiceException e) {
             fail("Exception not expected");
         }
+    }
+
+    @Test
+    void testDeleteMedication_MedicationNotFound() {
+        // Mock data
+        Long inventoryItemId = 1L;
+        when(medicationRepository.findById(inventoryItemId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(MedicationNotFoundException.class, () -> medicationService.deleteMedication(inventoryItemId));
+
+        // Verify
+        verify(medicationRepository).findById(inventoryItemId);
+        verify(transactionItemService, times(0)).getAllItems();
+        verify(drugRestrictionRepository, times(0)).delete(any());
+        verify(medicationRepository, times(0)).delete(any());
     }
 
     @Test
@@ -187,6 +243,25 @@ public class MedicationServiceTests {
     }
 
     @Test
+    void testUpdateMedication_MedicationNotFound() {
+        // Mock data
+        Long inventoryItemId = 1L;
+        Medication updatedMedication = new Medication();
+        updatedMedication.setInventoryItemName("Updated Medication");
+
+        when(medicationRepository.findById(inventoryItemId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(MedicationNotFoundException.class, () -> medicationService.updateMedication(inventoryItemId, updatedMedication));
+
+        // Verify
+        verify(medicationRepository).findById(inventoryItemId);
+        verify(drugRestrictionRepository, times(0)).findAll();
+        verify(drugRestrictionRepository, times(0)).delete(any());
+        verify(medicationRepository, times(0)).save(any());
+    }
+
+    @Test
     void testFindMedicationByInventoryItemId() {
         // Mock data
         Long inventoryItemId = 1L;
@@ -197,6 +272,19 @@ public class MedicationServiceTests {
         Medication result = medicationService.findMedicationByInventoryItemId(inventoryItemId);
         assertNotNull(result);
         assertEquals(mockMedication, result);
+        verify(medicationRepository).findById(inventoryItemId);
+    }
+
+    @Test
+    void testFindMedicationByInventoryItemId_MedicationNotFound() {
+        // Mock data
+        Long inventoryItemId = 1L;
+        when(medicationRepository.findById(inventoryItemId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(MedicationNotFoundException.class, () -> medicationService.findMedicationByInventoryItemId(inventoryItemId));
+
+        // Verify
         verify(medicationRepository).findById(inventoryItemId);
     }
 
@@ -217,5 +305,19 @@ public class MedicationServiceTests {
         assertEquals(medicationList, result);
         verify(electronicHealthRecordRepository).findById(pId);
         verify(medicationRepository).findAll();
+    }
+
+    @Test
+    void testGetAllMedicationsByAllergy_EHRNotFound() {
+        // Mock data
+        Long pId = 1L;
+        when(electronicHealthRecordRepository.findById(pId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(MedicationNotFoundException.class, () -> medicationService.getAllMedicationsByAllergy(pId));
+
+        // Verify
+        verify(electronicHealthRecordRepository).findById(pId);
+        verify(medicationRepository, times(0)).findAll();
     }
 }

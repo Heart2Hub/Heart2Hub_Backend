@@ -1,4 +1,4 @@
-package com.Heart2Hub.Heart2Hub_Backend.service;
+package com.Heart2Hub.Heart2Hub_Backend.servicetest;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.FacilityStatusEnum;
@@ -7,6 +7,10 @@ import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.FacilityNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateFacilityException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.*;
+import com.Heart2Hub.Heart2Hub_Backend.service.AllocatedInventoryService;
+import com.Heart2Hub.Heart2Hub_Backend.service.FacilityBookingService;
+import com.Heart2Hub.Heart2Hub_Backend.service.FacilityService;
+import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
 import com.Heart2Hub.Heart2Hub_Backend.util.TestAuthenticationUtil;
 
 import org.junit.jupiter.api.AfterEach;
@@ -105,6 +109,27 @@ public class FacilityServiceTests {
     }
 
     @Test
+    void testIsLoggedInUserAdmin_UserNotAdmin() {
+        // Mocking
+        Authentication authentication = mock(Authentication.class);
+        when(authenticationManager.authenticate(any()))
+                .thenReturn(authentication);
+        when(authentication.getPrincipal())
+                .thenReturn(new User("staff1", "password1", Collections.emptyList()));
+        when(staffRepository.findByUsername("staff1"))
+                .thenReturn(Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.DOCTOR, true)));
+
+        // Test
+        assertFalse(facilityService.isLoggedInUserAdmin());
+
+        // Verify
+        verify(authenticationManager, times(1)).authenticate(any());
+        verify(authentication, times(1)).getPrincipal();
+        verify(staffRepository, times(1)).findByUsername("staff1");
+    }
+
+
+    @Test
     void testCreateFacility() {
         // Mocking
         Long departmentId = 1L;
@@ -129,6 +154,21 @@ public class FacilityServiceTests {
     }
 
     @Test
+    void testCreateFacility_DepartmentNotFound() {
+        // Mocking
+        Long departmentId = 1L;
+        when(departmentRepository.findById(departmentId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(UnableToCreateFacilityException.class, () -> facilityService.createFacility(departmentId, new Facility()));
+
+        // Verify
+        verify(departmentRepository, times(1)).findById(departmentId);
+        verify(facilityRepository, times(0)).save(any());
+    }
+
+
+    @Test
     void testDeleteFacility() {
         // Mocking
         Long facilityId = 1L;
@@ -146,6 +186,20 @@ public class FacilityServiceTests {
         verify(facilityBookingService, times(0)).deleteFacilityBooking(anyLong()); // To be added if needed
         verify(facilityRepository, times(1)).delete(facility);
     }
+
+    @Test
+    void testDeleteFacility_FacilityNotFound() {
+        // Mocking
+        Long facilityId = 1L;
+        when(facilityRepository.findById(facilityId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(FacilityNotFoundException.class, () -> facilityService.deleteFacility(facilityId));
+
+        // Verify
+        verify(facilityRepository, times(0)).delete(any());
+    }
+
 
     @Test
     void testUpdateFacility() {
@@ -178,6 +232,20 @@ public class FacilityServiceTests {
         assertEquals(updatedFacility.getFacilityTypeEnum(), result.getFacilityTypeEnum());
         verify(facilityRepository, times(1)).save(existingFacility);
     }
+
+    @Test
+    void testUpdateFacility_FacilityNotFound() {
+        // Mocking
+        Long facilityId = 1L;
+        when(facilityRepository.findById(facilityId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(FacilityNotFoundException.class, () -> facilityService.updateFacility(facilityId, new Facility()));
+
+        // Verify
+        verify(facilityRepository, times(0)).save(any());
+    }
+
 
     @Test
     void testGetAllFacilitiesByFacilityStatus() {
@@ -233,6 +301,20 @@ public class FacilityServiceTests {
         assertEquals(facility, result);
         verify(facilityRepository, times(1)).findById(facilityId);
     }
+
+    @Test
+    void testFindFacilityById_FacilityNotFound() {
+        // Mocking
+        Long facilityId = 1L;
+        when(facilityRepository.findById(facilityId)).thenReturn(Optional.empty());
+
+        // Test
+        assertThrows(FacilityNotFoundException.class, () -> facilityService.findFacilityById(facilityId));
+
+        // Verify
+        verify(facilityRepository, times(1)).findById(facilityId);
+    }
+
 
     @Test
     void testFindAllFacilities() {

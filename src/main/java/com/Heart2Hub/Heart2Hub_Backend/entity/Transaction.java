@@ -23,7 +23,7 @@ public class Transaction {
     private UUID transactionNehrId = UUID.randomUUID();
 
     @NotNull
-    @CreationTimestamp
+    //@CreationTimestamp
     private LocalDateTime transactionDate;
 
     @NotNull
@@ -33,8 +33,10 @@ public class Transaction {
     private ApprovalStatusEnum approvalStatusEnum;
 
     public Transaction(BigDecimal transactionAmount, ApprovalStatusEnum approvalStatusEnum) {
+//        this.transactionDate = LocalDateTime.now();
         this.transactionAmount = transactionAmount;
         this.approvalStatusEnum = approvalStatusEnum;
+        this.transactionDate = LocalDateTime.now();
     }
 
     public Transaction(){}
