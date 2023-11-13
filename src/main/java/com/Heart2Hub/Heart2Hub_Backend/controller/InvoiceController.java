@@ -89,6 +89,12 @@ public class InvoiceController {
         return ResponseEntity.ok(s);
     }
 
+    @GetMapping("/findPatientNRICOfInvoice/{id}")
+    public ResponseEntity<String> findPatientNRICOfInvoice(@PathVariable Long id) {
+        ElectronicHealthRecord ehr = invoiceService.findPatientOfInvoice(id);
+        return ResponseEntity.ok(ehr.getNric());
+    }
+
     @GetMapping("/findItemsOfInvoice/{id}")
     public ResponseEntity<List<TransactionItem>> findItemsOfInvoice(@PathVariable Long id) {
         return ResponseEntity.ok(invoiceService.findItemsOfInvoice(id));

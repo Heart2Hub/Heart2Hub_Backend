@@ -2,10 +2,10 @@ package com.Heart2Hub.Heart2Hub_Backend.controller;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.Transaction;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ApprovalStatusEnum;
-import com.Heart2Hub.Heart2Hub_Backend.service.JasperReportService;
+//import com.Heart2Hub.Heart2Hub_Backend.service.JasperReportService;
 import com.Heart2Hub.Heart2Hub_Backend.service.TransactionService;
 import lombok.RequiredArgsConstructor;
-import net.sf.jasperreports.engine.JRException;
+//import net.sf.jasperreports.engine.JRException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,12 +19,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TransactionController {
     private final TransactionService transactionService;
-    private final JasperReportService jasperReportService;
-
-    @GetMapping("/report/{format}")
-    public ResponseEntity<String> generateReport(@PathVariable String format) throws JRException, FileNotFoundException {
-        return ResponseEntity.ok(jasperReportService.exportReport(format));
-    }
+//    private final JasperReportService jasperReportService;
+//
+//    @GetMapping("/report/{format}")
+//    public ResponseEntity<String> generateReport(@PathVariable String format) throws JRException, FileNotFoundException {
+//        return ResponseEntity.ok(jasperReportService.exportReport(format));
+//    }
 
     @GetMapping("/getTotalSumOfTransactionsForCurrentYearByMonth/")
     public ResponseEntity<List<BigDecimal>> getTotalSumOfTransactionsForCurrentYearByMonth() {
