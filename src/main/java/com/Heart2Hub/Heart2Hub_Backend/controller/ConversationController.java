@@ -55,6 +55,19 @@ public class ConversationController {
     return ResponseEntity.status(HttpStatus.OK).body("yay");
   }
 
+  @PostMapping("/createPatientConversation")
+  public ResponseEntity<Conversation> createPatientConversation(@RequestParam("patientId1") Long patientId1,
+                                                         @RequestParam("staffId1") Long staffId1) {
+    Conversation createdConversation = conversationService.createNewPatientConversation(patientId1,
+            staffId1);
+    return ResponseEntity.status(HttpStatus.OK).body(createdConversation);
+  }
+
+  @GetMapping("/getPatientConversation")
+  public ResponseEntity<HashMap<Long,Conversation>> getPatientConversations(@RequestParam("patientId") Long patientId) {
+    return ResponseEntity.status(HttpStatus.OK).body(conversationService.getPatientConversation(patientId));
+  }
+
 //  // Endpoint for sending a chat message within a conversation
 //  @MessageMapping("/chat.sendPrivateMessage/{conversationId}")
 //  public void sendChatMessage(@Payload ChatMessage chatMessage,
