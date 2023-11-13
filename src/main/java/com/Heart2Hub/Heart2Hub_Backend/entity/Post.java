@@ -4,6 +4,7 @@ import com.Heart2Hub.Heart2Hub_Backend.enumeration.PostTypeEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,7 @@ public class Post {
     private String title;
 
     @NotNull
+    @Size(max = 5000)
     private String body;
 
     @NotNull
