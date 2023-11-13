@@ -1648,6 +1648,15 @@ public class DataLoader implements CommandLineRunner {
         Medication newMedication9 = medicationService.createMedication(
                 new Medication("Augmentin 625mg Tablets (1 piece)", "625mg per piece", ItemTypeEnum.MEDICINE_INPATIENT, 50,
                         BigDecimal.valueOf(4), BigDecimal.TEN, allergenList2, "", drugList1));
+        Medication newMedication10 = medicationService.createMedication(
+                new Medication("Paracetamol 500 mg Tablets (1 piece)", "500mg per piece", ItemTypeEnum.MEDICINE_INPATIENT, 1000000,
+                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList1));
+        Medication newMedication11 = medicationService.createMedication(
+                new Medication("Cetirizine 10mg Tablets (1 piece)", "10mg per piece", ItemTypeEnum.MEDICINE_INPATIENT, 10000,
+                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "Do not take with alcohol", drugList1));
+        Medication newMedication12 = medicationService.createMedication(
+                new Medication("Metformin 500mg Tablets (1 piece)", "500mg per piece", ItemTypeEnum.MEDICINE_INPATIENT, 1000,
+                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "Do not take with alcohol", drugList1));
     }
     private void createServiceItemData() {
 
@@ -1704,6 +1713,26 @@ public class DataLoader implements CommandLineRunner {
                 new ServiceItem("Ward (Class C) (daily)", "Ward Class Rates", ItemTypeEnum.OUTPATIENT,
                         BigDecimal.valueOf(40.70)));
         newServiceItem5.setUnit(unit1);
+
+        ServiceItem inpatientTreatment1 = serviceItemService.createServiceItem(Long.parseLong("1"),
+                new ServiceItem("IV Drip", "Inpatient Treatment", ItemTypeEnum.INPATIENT,
+                        BigDecimal.valueOf(50.00)));
+        newServiceItem5.setUnit(unit1);
+
+        ServiceItem inpatientTreatment2 = serviceItemService.createServiceItem(Long.parseLong("1"),
+                new ServiceItem("Blood Pressure Monitor", "Inpatient Treatment", ItemTypeEnum.INPATIENT,
+                        BigDecimal.valueOf(10.00)));
+        newServiceItem5.setUnit(unit1);
+
+        ServiceItem inpatientTreatment3 = serviceItemService.createServiceItem(Long.parseLong("1"),
+                new ServiceItem("Urinary Catheter", "Inpatient Treatment", ItemTypeEnum.INPATIENT,
+                        BigDecimal.valueOf(70.00)));
+        newServiceItem5.setUnit(unit1);
+
+        ServiceItem inpatientTreatment4 = serviceItemService.createServiceItem(Long.parseLong("1"),
+                new ServiceItem("Ice Pack", "Inpatient Treatment", ItemTypeEnum.INPATIENT,
+                        BigDecimal.valueOf(1.00)));
+        newServiceItem5.setUnit(unit1);
     }
 
 
@@ -1738,13 +1767,13 @@ public class DataLoader implements CommandLineRunner {
 
 
 //        ServiceItem serviceItem = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("14")).get();
-        ServiceItem serviceItem2 = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("15")).get();
-        ServiceItem serviceItem3 = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("16")).get();
-        ServiceItem serviceItem4 = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("17")).get();
-        ServiceItem serviceItem5 = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("18")).get();
+        ServiceItem serviceItem2 = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("18")).get();
+        ServiceItem serviceItem3 = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("19")).get();
+        ServiceItem serviceItem4 = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("20")).get();
+        ServiceItem serviceItem5 = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("21")).get();
 
 
-        ServiceItem serviceItem = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("15")).get();
+        ServiceItem serviceItem = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("18")).get();
 
         InventoryItem inventoryItem = inventoryItemRepository.findById(Long.parseLong("6")).get();
 
