@@ -262,6 +262,11 @@ public class AppointmentController {
             bookedDateTime, priority, patientUsername, departmentName));
   }
 
+  @GetMapping("/getAppointmentDTOById")
+  public ResponseEntity<AppointmentDTO> getAppointmentDTOById(@RequestParam("appointmentId") Long appointmentId) {
+    return ResponseEntity.ok(appointmentMapper.toDTO(appointmentService.findAppointmentByAppointmentId(appointmentId)));
+  }
+
   @GetMapping("/sse")
   public SseEmitter eventEmitter() {
     SseEmitter emitter = new SseEmitter();
