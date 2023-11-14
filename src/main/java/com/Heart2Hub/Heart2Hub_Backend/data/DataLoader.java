@@ -1742,14 +1742,14 @@ public class DataLoader implements CommandLineRunner {
         Subsidy subsidy1 = subsidyService.createSubsidy(BigDecimal.valueOf(0.5), ItemTypeEnum.MEDICINE, minDOB,
                 "Male", "All", "All", "SG Males Medicine Subsidy",
                 "Subsidised rates for all Singaporean Males");
-        Subsidy subsidy2 = subsidyService.createSubsidy(BigDecimal.valueOf(0.5), ItemTypeEnum.INPATIENT, minDOB,
+        Subsidy subsidy2 = subsidyService.createSubsidy(BigDecimal.valueOf(0.6), ItemTypeEnum.INPATIENT, minDOB,
                 "Male", "All", "All", "SG Males Service Subsidy",
                 "Subsidised rates for all Singaporean Males");
 
         Subsidy subsidy3 = subsidyService.createSubsidy(BigDecimal.valueOf(0.7), ItemTypeEnum.INPATIENT, minDOB,
                 "Female", "All", "All", "SG Females Service Subsidy",
                 "Subsidised rates for all Singaporean Females");
-        Subsidy subsidy4 = subsidyService.createSubsidy(BigDecimal.valueOf(0.7), ItemTypeEnum.MEDICINE, minDOB,
+        Subsidy subsidy4 = subsidyService.createSubsidy(BigDecimal.valueOf(0.6), ItemTypeEnum.MEDICINE, minDOB,
                 "Female", "All", "All", "SG Females Medicine Subsidy",
                 "Subsidised rates for all Singaporean Females");
     }

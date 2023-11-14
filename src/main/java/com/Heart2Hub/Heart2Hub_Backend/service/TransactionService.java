@@ -11,7 +11,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -98,9 +100,48 @@ public class TransactionService {
         Transaction transaction = new Transaction(transactionAmount, approvalStatusEnum);
         Invoice invoice = invoiceRepository.findById(invoiceId).get();
 
+        LocalDate currentDate = LocalDate.now();
+        LocalDateTime todayNoon = LocalDateTime.of(currentDate, LocalTime.NOON);
+        LocalDateTime localDateTime = todayNoon.plusNanos(10000);
+
+        transaction.setTransactionDate(localDateTime);
+
+        if (invoice.getTransaction() != null) {
+            // Existing transaction found, handle rejected transaction
+            Transaction rejectedTransaction = transactionRepository.findById(invoice.getTransaction().getTransactionId()).get();
+
+            if (approvalStatusEnum == ApprovalStatusEnum.APPROVED) {
+                // Create a new transaction for the approved status
+                rejectedTransaction.setApprovalStatusEnum(ApprovalStatusEnum.APPROVED);
+                //transactionRepository.save(approvedTransaction);
+                invoice.setTransaction(rejectedTransaction);
+            }
+
+        } else {
+            // No existing transaction, create a new one
+            transactionRepository.save(transaction);
+            invoice.setTransaction(transaction);
+        }
+
+        invoice.setInvoiceStatusEnum(InvoiceStatusEnum.PAID);
+        invoiceRepository.save(invoice);
+
+        return transaction;
+    }
+
+    public Transaction createFailedTransaction(Long invoiceId, BigDecimal transactionAmount, ApprovalStatusEnum approvalStatusEnum) {
+        Transaction transaction = new Transaction(transactionAmount, approvalStatusEnum);
+
+        LocalDate currentDate = LocalDate.now();
+        LocalDateTime todayNoon = LocalDateTime.of(currentDate, LocalTime.NOON);
+        LocalDateTime localDateTime = todayNoon.plusNanos(10000);
+
+        transaction.setTransactionDate(localDateTime);
+
+        Invoice invoice = invoiceRepository.findById(invoiceId).get();
+
         transactionRepository.save(transaction);
         invoice.setTransaction(transaction);
-        invoice.setInvoiceStatusEnum(InvoiceStatusEnum.PAID);
         invoiceRepository.save(invoice);
         return transaction;
     }

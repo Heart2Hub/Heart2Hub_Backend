@@ -69,4 +69,13 @@ public class TransactionController {
                 transactionAmount, ApprovalStatusEnum.APPROVED);
         return ResponseEntity.ok(transaction);
     }
+
+    @PostMapping("/createFailedTransaction/{invoiceId}/{amount}")
+    public ResponseEntity<Transaction> createFailedTransaction(@PathVariable Long invoiceId,
+                                                         @PathVariable Double amount) {
+        BigDecimal transactionAmount = BigDecimal.valueOf(amount);
+        Transaction transaction = transactionService.createFailedTransaction(invoiceId,
+                transactionAmount, ApprovalStatusEnum.REJECTED);
+        return ResponseEntity.ok(transaction);
+    }
 }
