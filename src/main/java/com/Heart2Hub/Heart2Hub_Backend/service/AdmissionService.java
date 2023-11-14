@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +43,27 @@ public class AdmissionService {
 
     public List<Admission> getAllAdmissions() {
         return admissionRepository.findAll();
+    }
+
+    public Ward createAdmissionInDataLoader(Admission admission, Long wardId) {
+        Ward ward = wardRepository.findById(wardId).get();
+        admission.setWard(ward);
+        ward.getListOfAdmissions().add(admission);
+
+        List<Admission> beds = ward.getListOfCurrentDayAdmissions();
+        for (int i = 0; i < beds.size(); i++) {
+            Admission bed = beds.get(i);
+            if (bed.getDuration() == null) {
+                admission.setRoom(bed.getRoom());
+                admission.setBed(bed.getBed());
+                beds.set(i, admission);
+                break;
+            }
+        }
+
+        wardRepository.save(ward);
+
+        return ward;
     }
 
     public Admission createAdmission(Integer duration, String reason, Long patientId, Long doctorId) throws PatientNotFoundException, StaffNotFoundException {
@@ -99,11 +121,16 @@ public class AdmissionService {
         return admission;
     }
 
-    public Admission updateDischargeDate(Long admissionId, String newDischargeString) {
+    public Admission updateDischargeDate(Long admissionId, String newDischargeString, Long transactionItemId) {
         Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
 
         LocalDateTime originalDischargeDate = admission.getDischargeDateTime();
         LocalDateTime newDischargeDate = LocalDateTime.parse(newDischargeString);
+
+        long daysDifference = ChronoUnit.DAYS.between(originalDischargeDate, newDischargeDate);
+        admission.setDuration(admission.getDuration() + (int) daysDifference);
+
+        transactionItemService.updateTransactionItem(transactionItemId, admission.getDuration());
 
         admission.setDischargeDateTime(newDischargeDate);
 

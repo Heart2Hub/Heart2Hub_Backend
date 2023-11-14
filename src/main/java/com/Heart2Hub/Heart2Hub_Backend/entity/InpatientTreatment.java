@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -47,7 +48,16 @@ public class InpatientTreatment {
     private ServiceItem serviceItem;
 
     public InpatientTreatment() {
+    }
 
+    public InpatientTreatment(String location, String comments, LocalDateTime startDate, LocalDateTime endDate, Boolean isCompleted, Boolean arrived, String createdBy) {
+        this.location = location;
+        this.comments = comments;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.isCompleted = isCompleted;
+        this.arrived = arrived;
+        this.createdBy = createdBy;
     }
 
 }

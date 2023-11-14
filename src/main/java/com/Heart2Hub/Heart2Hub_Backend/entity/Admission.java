@@ -110,13 +110,17 @@ public class Admission {
 //        this.comments = comments;
 //    }
 
-//    public Admission(LocalDateTime admissionDateTime, LocalDateTime dischargeDateTime, String comments, Ward ward) {
-//        this();
-//        this.admissionDateTime = admissionDateTime;
-//        this.dischargeDateTime = dischargeDateTime;
-//        this.comments = comments;
-//        this.ward = ward;
-//    }
+    public Admission(Integer duration, Integer room, Integer bed, String reason, Boolean arrived, LocalDateTime admissionDateTime, LocalDateTime dischargeDateTime, Patient patient) {
+        this();
+        this.duration = duration;
+        this.room = room;
+        this.bed = bed;
+        this.reason = reason;
+        this.arrived = arrived;
+        this.admissionDateTime = admissionDateTime;
+        this.dischargeDateTime = dischargeDateTime;
+        this.patient = patient;
+    }
 
 
 }

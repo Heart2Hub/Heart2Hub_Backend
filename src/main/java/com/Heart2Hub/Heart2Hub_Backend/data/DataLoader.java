@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Component("loader")
 @Transactional
@@ -83,6 +84,8 @@ public class DataLoader implements CommandLineRunner {
     private final ConversationService conversationService;
 
     private final ChatMessageService chatMessageService;
+    private final MedicationOrderService medicationOrderService;
+    private final InpatientTreatmentService inpatientTreatmentService;
 
     public DataLoader(StaffService staffService, ShiftService shiftService,
                       DepartmentService departmentService, AuthenticationManager authenticationManager,
@@ -103,7 +106,7 @@ public class DataLoader implements CommandLineRunner {
                       PrescriptionRecordRepository prescriptionRecordRepository, InvoiceService invoiceService,
                       DrugRestrictionService drugRestrictionService, UnitRepository unitRepository,
                       AdmissionService admissionService, ConversationService conversationService,
-                      ChatMessageService chatMessageService, TransactionService transactionService, StaffService staffService1, ShiftService shiftService1, DepartmentService departmentService1, AuthenticationManager authenticationManager1, FacilityService facilityService1, PatientService patientService1, NextOfKinRecordService nextOfKinRecordService1, PrescriptionRecordService prescriptionRecordService1, ProblemRecordService problemRecordService1, MedicalHistoryRecordService medicalHistoryRecordService1, TreatmentPlanRecordService treatmentPlanRecordService1, SubsidyService subsidyService1, LeaveService leaveService1, ShiftConstraintsService shiftConstraintsService1, ConsumableEquipmentService consumableEquipmentService1, AllocatedInventoryService allocatedInventoryService1, SubDepartmentRepository subDepartmentRepository1, DepartmentRepository departmentRepository1, WardService wardService1, WardClassService wardClassService1, MedicationService medicationService1, ServiceItemService serviceItemService1, TransactionItemService transactionItemService1, AppointmentService appointmentService1, InventoryItemRepository inventoryItemRepository1, PrescriptionRecordRepository prescriptionRecordRepository1, InvoiceService invoiceService1, DrugRestrictionService drugRestrictionService1, UnitRepository unitRepository1, AdmissionService admissionService1, InvoiceRepository invoiceRepository, StaffRepository staffRepository, PostService postService, ConversationService conversationService1, ChatMessageService chatMessageService1) {
+                      ChatMessageService chatMessageService, TransactionService transactionService, StaffService staffService1, ShiftService shiftService1, DepartmentService departmentService1, AuthenticationManager authenticationManager1, FacilityService facilityService1, PatientService patientService1, NextOfKinRecordService nextOfKinRecordService1, PrescriptionRecordService prescriptionRecordService1, ProblemRecordService problemRecordService1, MedicalHistoryRecordService medicalHistoryRecordService1, TreatmentPlanRecordService treatmentPlanRecordService1, SubsidyService subsidyService1, LeaveService leaveService1, ShiftConstraintsService shiftConstraintsService1, ConsumableEquipmentService consumableEquipmentService1, AllocatedInventoryService allocatedInventoryService1, SubDepartmentRepository subDepartmentRepository1, DepartmentRepository departmentRepository1, WardService wardService1, WardClassService wardClassService1, MedicationService medicationService1, ServiceItemService serviceItemService1, TransactionItemService transactionItemService1, AppointmentService appointmentService1, InventoryItemRepository inventoryItemRepository1, PrescriptionRecordRepository prescriptionRecordRepository1, InvoiceService invoiceService1, DrugRestrictionService drugRestrictionService1, UnitRepository unitRepository1, AdmissionService admissionService1, InvoiceRepository invoiceRepository, StaffRepository staffRepository, PostService postService, ConversationService conversationService1, ChatMessageService chatMessageService1, MedicationOrderService medicationOrderService, InpatientTreatmentService inpatientTreatmentService) {
         this.transactionService = transactionService;
         this.staffService = staffService1;
         this.shiftService = shiftService1;
@@ -140,6 +143,8 @@ public class DataLoader implements CommandLineRunner {
         this.postService = postService;
         this.conversationService = conversationService1;
         this.chatMessageService = chatMessageService1;
+        this.medicationOrderService = medicationOrderService;
+        this.inpatientTreatmentService = inpatientTreatmentService;
     }
 
 
@@ -1559,6 +1564,19 @@ public class DataLoader implements CommandLineRunner {
         appointmentService.updateAppointmentSwimlaneStatus(a8.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
         appointmentService.assignAppointmentToStaff(a8.getAppointmentId(), 5L, -1L);
 
+        //For SR4 Inpatient Use Cases
+        appointmentService.updateAppointmentSwimlaneStatus(a5.getAppointmentId(), SwimlaneStatusEnum.ADMISSION);
+        appointmentService.assignAppointmentToStaff(a5.getAppointmentId(), 11L, 5L);
+
+        appointmentService.updateAppointmentSwimlaneStatus(a6.getAppointmentId(), SwimlaneStatusEnum.ADMISSION);
+        appointmentService.assignAppointmentToStaff(a6.getAppointmentId(), 11L, 5L);
+
+        appointmentService.updateAppointmentSwimlaneStatus(a7.getAppointmentId(), SwimlaneStatusEnum.ADMISSION);
+        appointmentService.assignAppointmentToStaff(a7.getAppointmentId(), 11L, 5L);
+
+        appointmentService.updateAppointmentSwimlaneStatus(a8.getAppointmentId(), SwimlaneStatusEnum.ADMISSION);
+        appointmentService.assignAppointmentToStaff(a8.getAppointmentId(), 11L, 5L);
+
         //For SR4 Finance Use Cases
         appointmentService.updateAppointmentSwimlaneStatus(a9.getAppointmentId(), SwimlaneStatusEnum.DISCHARGE);
         appointmentService.assignAppointmentToStaff(a9.getAppointmentId(), 5L, -1L);
@@ -1695,22 +1713,22 @@ public class DataLoader implements CommandLineRunner {
 
         //Ward Class Service Items
         ServiceItem wardClassAServiceItem = serviceItemService.createServiceItem(Long.parseLong("1"),
-                new ServiceItem("Ward (Class A) (daily)", "Ward Class Rates", ItemTypeEnum.OUTPATIENT,
+                new ServiceItem("Ward (Class A) (daily)", "Ward Class Rates", ItemTypeEnum.INPATIENT,
                         BigDecimal.valueOf(621)));
         newServiceItem5.setUnit(unit1);
 
         ServiceItem wardClassB1ServiceItem = serviceItemService.createServiceItem(Long.parseLong("1"),
-                new ServiceItem("Ward (Class B1) (daily)", "Ward Class Rates", ItemTypeEnum.OUTPATIENT,
+                new ServiceItem("Ward (Class B1) (daily)", "Ward Class Rates", ItemTypeEnum.INPATIENT,
                         BigDecimal.valueOf(309.31)));
         newServiceItem5.setUnit(unit1);
 
         ServiceItem wardClassB2ServiceItem = serviceItemService.createServiceItem(Long.parseLong("1"),
-                new ServiceItem("Ward (Class B2) (daily)", "Ward Class Rates", ItemTypeEnum.OUTPATIENT,
+                new ServiceItem("Ward (Class B2) (daily)", "Ward Class Rates", ItemTypeEnum.INPATIENT,
                         BigDecimal.valueOf(57)));
         newServiceItem5.setUnit(unit1);
 
         ServiceItem wardClassCServiceItem = serviceItemService.createServiceItem(Long.parseLong("1"),
-                new ServiceItem("Ward (Class C) (daily)", "Ward Class Rates", ItemTypeEnum.OUTPATIENT,
+                new ServiceItem("Ward (Class C) (daily)", "Ward Class Rates", ItemTypeEnum.INPATIENT,
                         BigDecimal.valueOf(40.70)));
         newServiceItem5.setUnit(unit1);
 
@@ -1964,7 +1982,70 @@ public class DataLoader implements CommandLineRunner {
 
 
     private void createAdmissionData() {
-        //admissionService.createAdmission(2,"Cancer", 1L, 5L);
+        //1. Patient 5: Just admitted, discharging tomorrow
+        Patient patient5 = patientService.getPatientById(5L);
+        LocalDateTime admissionDate = LocalDateTime.now();
+        int day = admissionDate.getDayOfMonth();
+        int month = admissionDate.getMonthValue();
+        int year = admissionDate.getYear();
+        int hour = admissionDate.getHour();
+        LocalDateTime dischargeDate = LocalDateTime.of(year, month, day, 12, 00, 00).plusDays(1);
+
+        //For medication order and inpatient treatment
+        LocalDateTime currentOrderStart = LocalDateTime.of(year, month, day, hour, 00, 00).plusHours(1);
+        LocalDateTime currentOrderEnd = currentOrderStart.plusHours(1);
+        LocalDateTime pastMedicationOrderStart = currentOrderStart.minusHours(6);
+        LocalDateTime pastMedicationOrderEnd = currentOrderEnd.minusHours(6);
+        LocalDateTime pastInpatientTreatmentStart = currentOrderStart.minusHours(3);
+        LocalDateTime pastInpatientTreatmentEnd = currentOrderEnd.minusHours(3);
+
+        admissionService.createAdmissionInDataLoader(new Admission(1, 1, 1, "Heart attack", false, admissionDate, dischargeDate, patient5), 18L);
+
+        //2. Patient 6: Admitted 3 hours ago, discharging tomorrow
+        Patient patient6 = patientService.getPatientById(6L);
+        admissionService.createAdmissionInDataLoader(new Admission(1, 1, 2, "Heart attack", false, admissionDate.minusHours(3), dischargeDate, patient6), 18L);
+
+        //3. Patient 7: Admitted yesterday, discharging tomorrow, show medication orders and inpatient treatments
+        Patient patient7 = patientService.getPatientById(7L);
+        admissionService.createAdmissionInDataLoader(new Admission(2, 1, 3, "Heart attack", true, admissionDate.minusDays(1), dischargeDate, patient7), 18L);
+
+        //4. Patient 8: Admitted yesterday, discharging tomorrow, has past and current inpatient treatments
+        Patient patient8 = patientService.getPatientById(8L);
+        Ward ward = admissionService.createAdmissionInDataLoader(new Admission(2, 1, 4, "Heart attack", true, admissionDate.minusDays(1), dischargeDate, patient8), 18L);
+
+
+        List<Admission> currentAdmissions = ward.getListOfCurrentDayAdmissions().stream()
+                .filter(admission -> admission.getAdmissionDateTime() != null)
+                .collect(Collectors.toList());
+        for (Admission admission : currentAdmissions) {
+            admissionService.assignAdmissionToStaff(admission.getAdmissionId(), 5L);
+
+            if (admission.getPatient().getUsername().equals("patient7")) {
+                admissionService.assignAdmissionToStaff(admission.getAdmissionId(), 34L);
+                admissionService.assignAdmissionToStaff(admission.getAdmissionId(), 13L);
+
+                MedicationOrder currentMedicationOrder = new MedicationOrder("Medication Order", 1, "Take with food", currentOrderStart, currentOrderEnd, false, "Dr. John Wick");
+                MedicationOrder completedMedicationOrder = new MedicationOrder("Medication Order", 1, "Take with food", pastMedicationOrderStart, pastMedicationOrderEnd, true, "Dr. John Wick");
+                medicationOrderService.createMedicationOrder(15L, admission.getAdmissionId(), currentMedicationOrder);
+                medicationOrderService.createMedicationOrder(15L, admission.getAdmissionId(), completedMedicationOrder);
+
+                InpatientTreatment completedInpatientTreatment = new InpatientTreatment("test", "No food 2 hours before", pastInpatientTreatmentStart, pastInpatientTreatmentEnd, true, true, "Melvin");
+                inpatientTreatmentService.createInpatientTreatment(30L, admission.getAdmissionId(), 13L, completedInpatientTreatment);
+
+            } else if (admission.getPatient().getUsername().equals("patient8")) {
+                admissionService.assignAdmissionToStaff(admission.getAdmissionId(), 34L);
+                admissionService.assignAdmissionToStaff(admission.getAdmissionId(), 13L);
+
+                MedicationOrder completedMedicationOrder = new MedicationOrder("Medication Order", 1, "Take with food", pastInpatientTreatmentStart, pastInpatientTreatmentEnd, true, "Dr. John Wick");
+                MedicationOrder overdueMedicationOrder = new MedicationOrder("Medication Order", 1, "Take with food", pastInpatientTreatmentStart, pastInpatientTreatmentEnd, false, "Dr. John Wick");
+                medicationOrderService.createMedicationOrder(15L, admission.getAdmissionId(), completedMedicationOrder);
+                medicationOrderService.createMedicationOrder(16L, admission.getAdmissionId(), overdueMedicationOrder);
+
+                InpatientTreatment overdueInpatientTreatment = new InpatientTreatment("test", "No food 2 hours before", pastMedicationOrderStart, pastMedicationOrderEnd, false, false, "Melvin");
+                inpatientTreatmentService.createInpatientTreatment(30L, admission.getAdmissionId(), 13L, overdueInpatientTreatment);
+            }
+        }
+
     }
 
     private void createConversationData() {
