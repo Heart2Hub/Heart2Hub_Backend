@@ -10,8 +10,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,15 +28,18 @@ public class InvoiceService {
     private final TransactionItemRepository transactionItemRepository;
     private final TransactionRepository transactionRepository;
 
+    private final TransactionService transactionService;
+
     public InvoiceService(InvoiceRepository invoiceRepository, PatientRepository patientRepository, MedishieldClaimRepository medishieldClaimRepository, InsuranceClaimRepository insuranceClaimRepository,
                           TransactionItemRepository transactionItemRepository,
-                          TransactionRepository transactionRepository) {
+                          TransactionRepository transactionRepository, TransactionService transactionService) {
         this.invoiceRepository = invoiceRepository;
         this.patientRepository = patientRepository;
         this.medishieldClaimRepository = medishieldClaimRepository;
         this.insuranceClaimRepository = insuranceClaimRepository;
         this.transactionItemRepository = transactionItemRepository;
         this.transactionRepository = transactionRepository;
+        this.transactionService = transactionService;
     }
 
     public List<Invoice> findInvoicesOfAPatient(String username) {
@@ -110,8 +111,12 @@ public class InvoiceService {
             if (current.isAfter(invoiceDueDate)) {
                 Invoice invoice = invoiceList.get(i);
                 invoice.setInvoiceStatusEnum(InvoiceStatusEnum.OVERDUE);
+
+                Transaction t = transactionService.createTransaction(invoice.getInvoiceId(), invoice.getInvoiceAmount(), ApprovalStatusEnum.REJECTED);
+                invoice.setInvoiceStatusEnum(InvoiceStatusEnum.OVERDUE);
             }
         }
+
         invoiceRepository.saveAll(invoiceList);
         return invoiceRepository.findAll();
     }

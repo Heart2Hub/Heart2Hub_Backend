@@ -294,7 +294,6 @@ public class TransactionItemService {
         StringBuilder breakdown = new StringBuilder();
         BigDecimal totalInvoiceAmount = BigDecimal.ZERO;
         List<TransactionItem> subsidyItemMedicationList = new ArrayList<>();
-//        List<TransactionItem> subsidyItemConsumableList = new ArrayList<>();
         List<TransactionItem> subsidyItemServiceList = new ArrayList<>();
 
         for (TransactionItem item : listOfItems) {
@@ -316,7 +315,7 @@ public class TransactionItemService {
                 BigDecimal subsidyAmount = totalCost.multiply(subsidyRate);
                 totalInvoiceAmount = totalInvoiceAmount.subtract(subsidyAmount);
                 breakdown.append("Medication Subsidy: -$").append(subsidyAmount).append("\n");
-                TransactionItem subsidyItemMedication= new TransactionItem(item.getTransactionItemName() + "("+ subsidyMedication.getSubsidyName() + ")"
+                TransactionItem subsidyItemMedication= new TransactionItem(item.getTransactionItemName() + "("+ subsidyMedication.getSubsidyName() + " : "+ subsidyMedication.getSubsidyRate().multiply(BigDecimal.valueOf(100)) + "%)"
                         , subsidyMedication.getSubsidyDescription(), 1,
                         subsidyAmount.multiply(BigDecimal.valueOf(-1)), null);
                 transactionItemRepository.save(subsidyItemMedication);
@@ -340,7 +339,7 @@ public class TransactionItemService {
                 BigDecimal subsidyAmount = totalCost.multiply(subsidyRate);
                 totalInvoiceAmount = totalInvoiceAmount.subtract(subsidyAmount);
                 breakdown.append("Service Subsidy: -$").append(subsidyAmount).append("\n");
-                TransactionItem subsidyItemService = new TransactionItem(item.getTransactionItemName() + "("+ subsidyMedication.getSubsidyName() + ")"
+                TransactionItem subsidyItemService = new TransactionItem(item.getTransactionItemName() + " ("+ subsidyService.getSubsidyName() + " : "+ subsidyService.getSubsidyRate().multiply(BigDecimal.valueOf(100)) + "%)"
                         , subsidyService.getSubsidyDescription(), 1,
                         subsidyAmount.multiply(BigDecimal.valueOf(-1)), null);
                 transactionItemRepository.save(subsidyItemService);

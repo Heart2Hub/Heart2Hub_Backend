@@ -4,7 +4,6 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.ElectronicHealthRecord;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Patient;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Subsidy;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
-import com.Heart2Hub.Heart2Hub_Backend.exception.ElectronicHealthRecordNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.SubsidyRepository;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -88,6 +86,13 @@ public class SubsidyService {
     public void deleteSubsidyById(Long subsidyId) {
         // Find all Electronic Health Records where dateOfBath is at least minDOB
         List<ElectronicHealthRecord> listOfEHR = electronicHealthRecordService.getAllElectronicHealthRecords();
+//        Subsidy s = subsidyRepository.findById(subsidyId).get();
+//
+//        for (ElectronicHealthRecord ehr : listOfEHR) {
+//            if (ehr.getListOfSubsidies().contains(s)) {
+//                throw new SubsidyExistsInEHR("Subsidy cannot be deleted as it exists in EHR");
+//            }
+//        }
 
         // Delete the Subsidy object by ID
         subsidyRepository.deleteById(subsidyId);
