@@ -9,10 +9,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import junit.runner.Version;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.AllocatedInventory;
@@ -28,72 +31,77 @@ import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import com.Heart2Hub.Heart2Hub_Backend.service.ConsumableEquipmentService;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.test.context.junit4.SpringRunner;
 
-@SpringBootTest
-public class ConsumableEquipmentServiceTests {
-
-    @Mock
-    private StaffRepository staffRepository;
-
-    @Mock
-    private ConsumableEquipmentRepository consumableEquipmentRepository;
-
-    @Mock
-    private AllocatedInventoryRepository allocatedInventoryRepository;
+@RunWith(SpringRunner.class)
+class ConsumableEquipmentServiceTests {
 
     @InjectMocks
     private ConsumableEquipmentService consumableEquipmentService;
+    @Mock
+    private StaffRepository staffRepository;
+    @Mock
+    private ConsumableEquipmentRepository consumableEquipmentRepository;
+    @Mock
+    private AllocatedInventoryRepository allocatedInventoryRepository;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        System.out.println("JUnit version is: " + Version.id());
     }
 
     @Test
     void testIsLoggedInUserAdmin() {
-        // Mock data
-        Authentication authentication = mock(Authentication.class);
-        SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
-        User user = new User("username", "password", new ArrayList<>());
-        when(authentication.getPrincipal()).thenReturn(user);
-
-        Staff staff = new Staff();
-        staff.setStaffRoleEnum(StaffRoleEnum.ADMIN);
-        when(staffRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(staff));
+        // Mocking (Authentication)
+        UsernamePasswordAuthenticationToken authentication = mock(UsernamePasswordAuthenticationToken.class);
+        User user = new User("staff1", "password1", Collections.emptyList());
+        when(authentication.getPrincipal())
+                .thenReturn(user);
+        Optional<Staff> toReturn = Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.ADMIN, true));
+        when(staffRepository.findByUsername("staff1"))
+                .thenReturn(toReturn);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Test
-        boolean result = consumableEquipmentService.isLoggedInUserAdmin();
-        assertTrue(result);
-        verify(authentication).getPrincipal();
-        verify(staffRepository).findByUsername(user.getUsername());
+        assertTrue(consumableEquipmentService.isLoggedInUserAdmin());
+
+        // Verify
+        verify(authentication, times(1)).getPrincipal();
+        verify(staffRepository, times(1)).findByUsername("staff1");
     }
 
     @Test
-    void testIsLoggedInUserAdmin_UserNotFound() {
-        // Mock data
-        Authentication authentication = mock(Authentication.class);
-        SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
-        User user = new User("username", "password", new ArrayList<>());
-        when(authentication.getPrincipal()).thenReturn(user);
-
-        // Mocking staff not found
-        when(staffRepository.findByUsername(user.getUsername())).thenReturn(Optional.empty());
+    void testIsLoggedInUserAdmin_NotAdmin() {
+        // Mocking (Authentication)
+        UsernamePasswordAuthenticationToken authentication = mock(UsernamePasswordAuthenticationToken.class);
+        User user = new User("staff1", "password1", Collections.emptyList());
+        when(authentication.getPrincipal())
+                .thenReturn(user);
+        Optional<Staff> toReturn = Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.DOCTOR, true));
+        when(staffRepository.findByUsername("staff1"))
+                .thenReturn(toReturn);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Test
-        boolean result = consumableEquipmentService.isLoggedInUserAdmin();
-        assertFalse(result);
+        assertFalse(consumableEquipmentService.isLoggedInUserAdmin());
 
         // Verify
-        verify(authentication).getPrincipal();
-        verify(staffRepository).findByUsername(user.getUsername());
-        verifyNoMoreInteractions(authentication, staffRepository);
+        verify(authentication, times(1)).getPrincipal();
+        verify(staffRepository, times(1)).findByUsername("staff1");
     }
-
 
     @Test
     void testCreateConsumableEquipment() {

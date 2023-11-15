@@ -13,64 +13,89 @@ import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.WardClassRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.WardRepository;
 import com.Heart2Hub.Heart2Hub_Backend.service.WardService;
+import junit.runner.Version;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class WardServiceTests {
-
-    @Mock
-    private WardRepository wardRepository;
-
-    @Mock
-    private WardClassRepository wardClassRepository;
-
-    @Mock
-    private StaffRepository staffRepository;
+@RunWith(SpringRunner.class)
+class WardServiceTests {
 
     @InjectMocks
     private WardService wardService;
+    @Mock
+    private WardRepository wardRepository;
+    @Mock
+    private WardClassRepository wardClassRepository;
+    @Mock
+    private StaffRepository staffRepository;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        System.out.println("JUnit version is: " + Version.id());
     }
 
     @Test
     void testIsLoggedInUserAdmin() {
-        Authentication authentication = mock(Authentication.class);
+        // Mocking (Authentication)
+        UsernamePasswordAuthenticationToken authentication = mock(UsernamePasswordAuthenticationToken.class);
+        User user = new User("staff1", "password1", Collections.emptyList());
+        when(authentication.getPrincipal())
+                .thenReturn(user);
+        Optional<Staff> toReturn = Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.ADMIN, true));
+        when(staffRepository.findByUsername("staff1"))
+                .thenReturn(toReturn);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Mocking the principal to be a user with admin role
-        User user = new User("admin", "password", List.of(() -> "ROLE_ADMIN"));
-        when(authentication.getPrincipal()).thenReturn(user);
-
+        // Test
         assertTrue(wardService.isLoggedInUserAdmin());
+
+        // Verify
+        verify(authentication, times(1)).getPrincipal();
+        verify(staffRepository, times(1)).findByUsername("staff1");
     }
 
     @Test
-    void testIsLoggedInUserAdmin_NonAdminUser() {
-        // Mock data
-        Authentication authentication = mock(Authentication.class);
+    void testIsLoggedInUserAdmin_NotAdmin() {
+        // Mocking (Authentication)
+        UsernamePasswordAuthenticationToken authentication = mock(UsernamePasswordAuthenticationToken.class);
+        User user = new User("staff1", "password1", Collections.emptyList());
+        when(authentication.getPrincipal())
+                .thenReturn(user);
+        Optional<Staff> toReturn = Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.DOCTOR, true));
+        when(staffRepository.findByUsername("staff1"))
+                .thenReturn(toReturn);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        // Mocking the principal to be a user without admin role
-        User user = new User("nonadmin", "password", List.of(() -> "ROLE_USER"));
-        when(authentication.getPrincipal()).thenReturn(user);
 
         // Test
         assertFalse(wardService.isLoggedInUserAdmin());
-    }
 
+        // Verify
+        verify(authentication, times(1)).getPrincipal();
+        verify(staffRepository, times(1)).findByUsername("staff1");
+    }
 
     @Test
     void testCreateWard() throws UnableToCreateWardException {

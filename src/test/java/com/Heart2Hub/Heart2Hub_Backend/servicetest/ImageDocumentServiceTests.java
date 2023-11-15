@@ -7,25 +7,28 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateImageDocumentException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ImageDocumentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.service.ImageDocumentService;
+import junit.runner.Version;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
-@SpringBootTest
-public class ImageDocumentServiceTests {
-
-    @Mock
-    private ImageDocumentRepository imageDocumentRepository;
+@RunWith(SpringRunner.class)
+class ImageDocumentServiceTests {
 
     @InjectMocks
     private ImageDocumentService imageDocumentService;
+    @Mock
+    private ImageDocumentRepository imageDocumentRepository;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        System.out.println("JUnit version is: " + Version.id());
     }
 
     @Test

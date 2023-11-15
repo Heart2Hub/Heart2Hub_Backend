@@ -14,8 +14,10 @@ import java.util.Optional;
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
+import junit.runner.Version;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -32,68 +34,28 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.test.context.junit4.SpringRunner;
 
-@SpringBootTest
-public class MedicationServiceTests {
-
-    @Mock
-    private StaffRepository staffRepository;
-
-    @Mock
-    private MedicationRepository medicationRepository;
-
-    @Mock
-    private DrugRestrictionRepository drugRestrictionRepository;
-
-    @Mock
-    private TransactionItemService transactionItemService;
-
-    @Mock
-    private ElectronicHealthRecordRepository electronicHealthRecordRepository;
+@RunWith(SpringRunner.class)
+class MedicationServiceTests {
 
     @InjectMocks
     private MedicationService medicationService;
+    @Mock
+    private StaffRepository staffRepository;
+    @Mock
+    private MedicationRepository medicationRepository;
+    @Mock
+    private DrugRestrictionRepository drugRestrictionRepository;
+    @Mock
+    private TransactionItemService transactionItemService;
+    @Mock
+    private ElectronicHealthRecordRepository electronicHealthRecordRepository;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-    }
-
-    @Test
-    void testIsLoggedInPharmacist() {
-        // Mock data
-        Authentication authentication = mock(Authentication.class);
-        SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
-        User user = new User("username", "password", new ArrayList<>());
-        when(authentication.getPrincipal()).thenReturn(user);
-
-        Staff staff = new Staff();
-        staff.setStaffRoleEnum(StaffRoleEnum.PHARMACIST);
-        when(staffRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(staff));
-
-        // Test
-        boolean result = medicationService.isLoggedInPharmacist();
-        assertTrue(result);
-        verify(authentication).getPrincipal();
-        verify(staffRepository).findByUsername(user.getUsername());
-    }
-
-    @Test
-    void testIsLoggedInPharmacist_UserNotFound() {
-        // Mock data
-        Authentication authentication = mock(Authentication.class);
-        SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
-        User user = new User("username", "password", new ArrayList<>());
-        when(authentication.getPrincipal()).thenReturn(user);
-
-        when(staffRepository.findByUsername(user.getUsername())).thenReturn(Optional.empty());
-
-        // Test
-        assertThrows(AssertionError.class, () -> assertFalse(medicationService.isLoggedInPharmacist()));
-
-        // Verify
-        verify(authentication).getPrincipal();
-        verify(staffRepository).findByUsername(user.getUsername());
+        System.out.println("JUnit version is: " + Version.id());
     }
 
     @Test

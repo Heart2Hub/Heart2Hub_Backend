@@ -10,8 +10,10 @@ import java.util.Optional;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PriorityEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ProblemTypeEnum;
+import junit.runner.Version;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -27,25 +29,24 @@ import com.Heart2Hub.Heart2Hub_Backend.repository.ProblemRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.service.MedicalHistoryRecordService;
 import com.Heart2Hub.Heart2Hub_Backend.service.ProblemRecordService;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
-@SpringBootTest
-public class ProblemRecordServiceTests {
-
-    @Mock
-    private ProblemRecordRepository problemRecordRepository;
-
-    @Mock
-    private ElectronicHealthRecordRepository electronicHealthRecordRepository;
-
-    @Mock
-    private MedicalHistoryRecordService medicalHistoryRecordService;
+@RunWith(SpringRunner.class)
+class ProblemRecordServiceTests {
 
     @InjectMocks
     private ProblemRecordService problemRecordService;
+    @Mock
+    private ProblemRecordRepository problemRecordRepository;
+    @Mock
+    private ElectronicHealthRecordRepository electronicHealthRecordRepository;
+    @Mock
+    private MedicalHistoryRecordService medicalHistoryRecordService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        System.out.println("JUnit version is: " + Version.id());
     }
 
     @Test

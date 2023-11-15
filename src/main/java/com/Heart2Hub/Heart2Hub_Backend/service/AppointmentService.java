@@ -7,17 +7,22 @@ import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.SwimlaneStatusEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.*;
 import com.Heart2Hub.Heart2Hub_Backend.repository.AppointmentRepository;
+
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Service
 @Transactional
@@ -31,6 +36,8 @@ public class AppointmentService {
   private final ElectronicHealthRecordService electronicHealthRecordService;
   private final StaffService staffService;
   private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
+  private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
+
 
   public AppointmentService(AppointmentRepository appointmentRepository, PatientService patientService, DepartmentService departmentService, ElectronicHealthRecordService electronicHealthRecordService, StaffService staffService, ElectronicHealthRecordRepository electronicHealthRecordRepository) {
     this.appointmentRepository = appointmentRepository;
@@ -414,5 +421,23 @@ public class AppointmentService {
     a.setSwimlaneStatusEnum(SwimlaneStatusEnum.PHARMACY);
     a.setActualDateTime(a.getBookedDateTime());
     return a;
+  }
+
+  public void sendUpdateToClients(String message) {
+    emitters.values().forEach(emitter -> {
+      try {
+        emitter.send(SseEmitter.event().data(message));
+      } catch (IOException e) {
+        emitter.complete();
+      }
+    });
+  }
+
+  public void put(String key, SseEmitter emitter) {
+    emitters.put(key, emitter);
+  }
+
+  public void remove(String key) {
+    emitters.remove(key);
   }
 }

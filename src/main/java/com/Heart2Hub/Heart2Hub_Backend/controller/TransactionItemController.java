@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.controller;
 import com.Heart2Hub.Heart2Hub_Backend.entity.InventoryItem;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Invoice;
 import com.Heart2Hub.Heart2Hub_Backend.entity.TransactionItem;
+import com.Heart2Hub.Heart2Hub_Backend.service.AppointmentService;
 import com.Heart2Hub.Heart2Hub_Backend.service.TransactionItemService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.Map;
 public class TransactionItemController {
 
     private final TransactionItemService transactionItemService;
+    private final AppointmentService appointmentService;
 
     @GetMapping("/getCartItems/{patientId}")
     public ResponseEntity<List<TransactionItem>> getCartItems(@PathVariable Long patientId) {
@@ -62,6 +64,7 @@ public class TransactionItemController {
     public Invoice checkout(@PathVariable Long patientId, @PathVariable Long appointmentId) {
         Invoice i = transactionItemService.checkout(patientId);
         transactionItemService.dischargePatient(appointmentId);
+        appointmentService.sendUpdateToClients("swimlane");
         return i;
     }
 

@@ -371,13 +371,14 @@ public class TransactionItemService {
 
     public void dischargePatient(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId).get();
-        appointment.setSwimlaneStatusEnum(SwimlaneStatusEnum.DONE);
         if (appointment.getCurrentAssignedStaff() == null) {
             throw new UnableToAssignAppointmentException("Please assign a staff");
         }
         if (!appointment.getArrived()) {
             throw new UnableToAssignAppointmentException("Please check that patient has arrived");
         }
+
+        appointment.setSwimlaneStatusEnum(SwimlaneStatusEnum.DONE);
 
         //ASSOCIATION --> SHOULD REFACTOR TO BE IN APPOINTMENT SERVICE
         appointment.getCurrentAssignedStaff().getListOfAssignedAppointments().remove(appointment);
