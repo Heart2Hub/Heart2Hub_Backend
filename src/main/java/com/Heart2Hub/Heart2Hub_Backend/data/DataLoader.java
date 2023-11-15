@@ -1546,23 +1546,41 @@ public class DataLoader implements CommandLineRunner {
 //        appointmentService.updateAppointmentSwimlaneStatus(a2.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
 //        appointmentService.assignAppointmentToStaff(a2.getAppointmentId(), 5L, -1L);
 
+        appointmentService.assignAppointmentToStaff(a3.getAppointmentId(), 11L, -1L);
+        appointmentService.updateAppointmentSwimlaneStatus(a3.getAppointmentId(), SwimlaneStatusEnum.TRIAGE);
+        appointmentService.assignAppointmentToStaff(a3.getAppointmentId(), 8L, 11L);
         appointmentService.updateAppointmentSwimlaneStatus(a3.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
-        appointmentService.assignAppointmentToStaff(a3.getAppointmentId(), 5L, -1L);
+        appointmentService.assignAppointmentToStaff(a3.getAppointmentId(), 5L, 8L);
 
+        appointmentService.assignAppointmentToStaff(a4.getAppointmentId(), 11L, -1L);
+        appointmentService.updateAppointmentSwimlaneStatus(a4.getAppointmentId(), SwimlaneStatusEnum.TRIAGE);
+        appointmentService.assignAppointmentToStaff(a4.getAppointmentId(), 8L, 11L);
         appointmentService.updateAppointmentSwimlaneStatus(a4.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
-        appointmentService.assignAppointmentToStaff(a4.getAppointmentId(), 5L, -1L);
+        appointmentService.assignAppointmentToStaff(a4.getAppointmentId(), 5L, 8L);
 
+        appointmentService.assignAppointmentToStaff(a5.getAppointmentId(), 11L, -1L);
+        appointmentService.updateAppointmentSwimlaneStatus(a5.getAppointmentId(), SwimlaneStatusEnum.TRIAGE);
+        appointmentService.assignAppointmentToStaff(a5.getAppointmentId(), 8L, 11L);
         appointmentService.updateAppointmentSwimlaneStatus(a5.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
-        appointmentService.assignAppointmentToStaff(a5.getAppointmentId(), 5L, -1L);
+        appointmentService.assignAppointmentToStaff(a5.getAppointmentId(), 5L, 8L);
 
+        appointmentService.assignAppointmentToStaff(a6.getAppointmentId(), 11L, -1L);
+        appointmentService.updateAppointmentSwimlaneStatus(a6.getAppointmentId(), SwimlaneStatusEnum.TRIAGE);
+        appointmentService.assignAppointmentToStaff(a6.getAppointmentId(), 8L, 11L);
         appointmentService.updateAppointmentSwimlaneStatus(a6.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
-        appointmentService.assignAppointmentToStaff(a6.getAppointmentId(), 5L, -1L);
+        appointmentService.assignAppointmentToStaff(a6.getAppointmentId(), 5L, 8L);
 
+        appointmentService.assignAppointmentToStaff(a7.getAppointmentId(), 11L, -1L);
+        appointmentService.updateAppointmentSwimlaneStatus(a7.getAppointmentId(), SwimlaneStatusEnum.TRIAGE);
+        appointmentService.assignAppointmentToStaff(a7.getAppointmentId(), 8L, 11L);
         appointmentService.updateAppointmentSwimlaneStatus(a7.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
-        appointmentService.assignAppointmentToStaff(a7.getAppointmentId(), 5L, -1L);
+        appointmentService.assignAppointmentToStaff(a7.getAppointmentId(), 5L, 8L);
 
+        appointmentService.assignAppointmentToStaff(a8.getAppointmentId(), 11L, -1L);
+        appointmentService.updateAppointmentSwimlaneStatus(a8.getAppointmentId(), SwimlaneStatusEnum.TRIAGE);
+        appointmentService.assignAppointmentToStaff(a8.getAppointmentId(), 8L, 11L);
         appointmentService.updateAppointmentSwimlaneStatus(a8.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
-        appointmentService.assignAppointmentToStaff(a8.getAppointmentId(), 5L, -1L);
+        appointmentService.assignAppointmentToStaff(a8.getAppointmentId(), 5L, 8L);
 
         //For SR4 Inpatient Use Cases
         appointmentService.updateAppointmentSwimlaneStatus(a5.getAppointmentId(), SwimlaneStatusEnum.ADMISSION);
