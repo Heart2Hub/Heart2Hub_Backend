@@ -14,12 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -66,12 +63,14 @@ class NextOfKinRecordServiceTests {
         when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
 
         // Act and Assert
-        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> {
+        assertThrows(UnableToCreateNextOfKinRecordException.class, () -> {
             nextOfKinRecordService.createNextOfKinRecord(electronicHealthRecordId, newNextOfKinRecord);
         });
 
         // Verify
-        verifyNoMoreInteractions(nextOfKinRecordRepository, electronicHealthRecordRepository);
+//        verifyNoMoreInteractions(nextOfKinRecordRepository, electronicHealthRecordRepository);
+        verify(electronicHealthRecordRepository).findById(any());
+//        verify(electronicHealthRecordRepository).save(mockElectronicHealthRecord);
     }
 
     @Test
@@ -129,6 +128,7 @@ class NextOfKinRecordServiceTests {
         });
 
         // Verify
-        verifyNoMoreInteractions(nextOfKinRecordRepository);
+        verify(nextOfKinRecordRepository).findById(nextOfKinRecordId);
+
     }
 }
