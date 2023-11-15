@@ -315,6 +315,14 @@ public class AdmissionService {
         return admissionRepository.findById(admissionId).get();
     }
 
+//    public Admission getAdmissionByUsername(String username) {
+//        Patient patient = patientRepository.findByUsername(username).get();
+//        Admission admission = patient.getAdmission();
+//        if (patient.getAdmission() == null) {
+//            throw new AdmissionNotFoundException("Patient is ")
+//        } else if ()
+//    }
+
     public Admission addImageAttachment(Long admissionId, String imageLink, String createdDate) {
         Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss");

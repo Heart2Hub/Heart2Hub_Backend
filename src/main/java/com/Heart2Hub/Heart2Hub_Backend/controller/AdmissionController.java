@@ -28,8 +28,14 @@ public class AdmissionController {
     private final StaffService staffService;
 
     @GetMapping("/getAllAdmissions")
-    public ResponseEntity<List<Admission>> getAllAdmissions() {
-        return ResponseEntity.ok(admissionService.getAllAdmissions());
+    public ResponseEntity<List<AdmissionDTO>> getAllAdmissions() {
+        List<Admission> allAdmissions = admissionService.getAllAdmissions();
+        List<Admission> scheduledAdmissions = allAdmissions.stream()
+                .filter(admission -> admission.getAdmissionDateTime() != null)
+                .collect(Collectors.toList());
+        List<AdmissionDTO> admissionDTOS = scheduledAdmissions.stream().map(admission -> admissionMapper.toDTO(admission)).collect(
+                Collectors.toList());
+        return ResponseEntity.ok(admissionDTOS);
     }
 
     @GetMapping("/getAdmissionsForWard")
@@ -37,7 +43,7 @@ public class AdmissionController {
         Ward ward = wardService.getAllWardsByName(wardName).get(0);
         List<Admission> currentAdmissions = ward.getListOfCurrentDayAdmissions().stream()
                 .filter(admission -> admission.getAdmissionDateTime() != null)
-                .collect(Collectors.toList());;
+                .collect(Collectors.toList());
         List<AdmissionDTO> admissionDTOS = currentAdmissions.stream().map(admission -> admissionMapper.toDTO(admission)).collect(
                 Collectors.toList());
         return ResponseEntity.ok(admissionDTOS);

@@ -383,18 +383,18 @@ public class DataLoader implements CommandLineRunner {
         wardClassService.createWardClass(new WardClass("B2", new BigDecimal("57"), 6));
         wardClassService.createWardClass(new WardClass("C", new BigDecimal("40.70"), 8));
 
-        wardService.createWard(new Ward("A1", "Block 1", 10), "A");
-        wardService.createWard(new Ward("A2", "Block 2", 10), "A");
-        wardService.createWard(new Ward("A3", "Block 3", 10), "A");
-        wardService.createWard(new Ward("B11", "Block 4", 12), "B1");
-        wardService.createWard(new Ward("B12", "Block 5", 12), "B1");
-        wardService.createWard(new Ward("B13", "Block 6", 12), "B1");
-        wardService.createWard(new Ward("B21", "Block 7", 18), "B2");
-        wardService.createWard(new Ward("B22", "Block 8", 18), "B2");
-        wardService.createWard(new Ward("B23", "Block 9", 18), "B2");
-        wardService.createWard(new Ward("C1", "Block 10", 24), "C");
-        wardService.createWard(new Ward("C2", "Block 11", 24), "C");
-        wardService.createWard(new Ward("C3", "Block 12", 24), "C");
+        wardService.createWard(new Ward("A1", "Block 1 Level 3", 10), "A");
+        wardService.createWard(new Ward("A2", "Block 2 Level 3", 10), "A");
+        wardService.createWard(new Ward("A3", "Block 3 Level 3", 10), "A");
+        wardService.createWard(new Ward("B11", "Block 4 Level 3", 12), "B1");
+        wardService.createWard(new Ward("B12", "Block 5 Level 3", 12), "B1");
+        wardService.createWard(new Ward("B13", "Block 6 Level 3", 12), "B1");
+        wardService.createWard(new Ward("B21", "Block 7 Level 3", 18), "B2");
+        wardService.createWard(new Ward("B22", "Block 8 Level 3", 18), "B2");
+        wardService.createWard(new Ward("B23", "Block 9 Level 3", 18), "B2");
+        wardService.createWard(new Ward("C1", "Block 10 Level 3", 24), "C");
+        wardService.createWard(new Ward("C2", "Block 11 Level 3", 24), "C");
+        wardService.createWard(new Ward("C3", "Block 12 Level 3", 24), "C");
 
 //    departmentService.createDepartment(new Department("Ward B-1"));
 //    departmentService.createDepartment(new Department("Ward B-2"));
@@ -1565,8 +1565,8 @@ public class DataLoader implements CommandLineRunner {
         appointmentService.assignAppointmentToStaff(a8.getAppointmentId(), 5L, -1L);
 
         //For SR4 Inpatient Use Cases
-        appointmentService.updateAppointmentSwimlaneStatus(a5.getAppointmentId(), SwimlaneStatusEnum.ADMISSION);
-        appointmentService.assignAppointmentToStaff(a5.getAppointmentId(), 11L, 5L);
+        //appointmentService.updateAppointmentSwimlaneStatus(a5.getAppointmentId(), SwimlaneStatusEnum.ADMISSION);
+        //appointmentService.assignAppointmentToStaff(a5.getAppointmentId(), 11L, 5L);
 
         appointmentService.updateAppointmentSwimlaneStatus(a6.getAppointmentId(), SwimlaneStatusEnum.ADMISSION);
         appointmentService.assignAppointmentToStaff(a6.getAppointmentId(), 11L, 5L);
@@ -1711,46 +1711,49 @@ public class DataLoader implements CommandLineRunner {
                         BigDecimal.valueOf(90)));
         newServiceItem5.setUnit(unit5);
 
-        //Ward Class Service Items
-        ServiceItem wardClassAServiceItem = serviceItemService.createServiceItem(Long.parseLong("1"),
-                new ServiceItem("Ward (Class A) (daily)", "Ward Class Rates", ItemTypeEnum.INPATIENT,
-                        BigDecimal.valueOf(621)));
-        newServiceItem5.setUnit(unit1);
-
-        ServiceItem wardClassB1ServiceItem = serviceItemService.createServiceItem(Long.parseLong("1"),
-                new ServiceItem("Ward (Class B1) (daily)", "Ward Class Rates", ItemTypeEnum.INPATIENT,
-                        BigDecimal.valueOf(309.31)));
-        newServiceItem5.setUnit(unit1);
-
-        ServiceItem wardClassB2ServiceItem = serviceItemService.createServiceItem(Long.parseLong("1"),
-                new ServiceItem("Ward (Class B2) (daily)", "Ward Class Rates", ItemTypeEnum.INPATIENT,
-                        BigDecimal.valueOf(57)));
-        newServiceItem5.setUnit(unit1);
-
-        ServiceItem wardClassCServiceItem = serviceItemService.createServiceItem(Long.parseLong("1"),
-                new ServiceItem("Ward (Class C) (daily)", "Ward Class Rates", ItemTypeEnum.INPATIENT,
-                        BigDecimal.valueOf(40.70)));
-        newServiceItem5.setUnit(unit1);
-
+        //Inpatient treatments
         ServiceItem inpatientTreatment1 = serviceItemService.createServiceItem(Long.parseLong("1"),
-                new ServiceItem("IV Drip", "Inpatient Treatment", ItemTypeEnum.INPATIENT,
-                        BigDecimal.valueOf(50.00)));
+                new ServiceItem("X-Ray Imaging", "Inpatient Treatment", ItemTypeEnum.INPATIENT,
+                        BigDecimal.valueOf(50)));
         newServiceItem5.setUnit(unit1);
 
         ServiceItem inpatientTreatment2 = serviceItemService.createServiceItem(Long.parseLong("1"),
-                new ServiceItem("Blood Pressure Monitor", "Inpatient Treatment", ItemTypeEnum.INPATIENT,
-                        BigDecimal.valueOf(10.00)));
+                new ServiceItem("ECG", "Inpatient Treatment", ItemTypeEnum.INPATIENT,
+                        BigDecimal.valueOf(80)));
         newServiceItem5.setUnit(unit1);
 
         ServiceItem inpatientTreatment3 = serviceItemService.createServiceItem(Long.parseLong("1"),
-                new ServiceItem("Urinary Catheter", "Inpatient Treatment", ItemTypeEnum.INPATIENT,
-                        BigDecimal.valueOf(70.00)));
+                new ServiceItem("Angioplasty", "Inpatient Treatment", ItemTypeEnum.INPATIENT,
+                        BigDecimal.valueOf(1500)));
         newServiceItem5.setUnit(unit1);
 
         ServiceItem inpatientTreatment4 = serviceItemService.createServiceItem(Long.parseLong("1"),
-                new ServiceItem("Ice Pack", "Inpatient Treatment", ItemTypeEnum.INPATIENT,
-                        BigDecimal.valueOf(1.00)));
+                new ServiceItem("Valve Replacement", "Inpatient Treatment", ItemTypeEnum.INPATIENT,
+                        BigDecimal.valueOf(3000)));
         newServiceItem5.setUnit(unit1);
+
+        //Ward Class Service Items
+        ServiceItem wardClassAServiceItem = serviceItemService.createServiceItem(Long.parseLong("5"),
+                new ServiceItem("Ward (Class A) (daily)", "Ward Class Rates", ItemTypeEnum.INPATIENT,
+                        BigDecimal.valueOf(621)));
+        newServiceItem5.setUnit(unit5);
+
+        ServiceItem wardClassB1ServiceItem = serviceItemService.createServiceItem(Long.parseLong("5"),
+                new ServiceItem("Ward (Class B1) (daily)", "Ward Class Rates", ItemTypeEnum.INPATIENT,
+                        BigDecimal.valueOf(309.31)));
+        newServiceItem5.setUnit(unit5);
+
+        ServiceItem wardClassB2ServiceItem = serviceItemService.createServiceItem(Long.parseLong("5"),
+                new ServiceItem("Ward (Class B2) (daily)", "Ward Class Rates", ItemTypeEnum.INPATIENT,
+                        BigDecimal.valueOf(57)));
+        newServiceItem5.setUnit(unit5);
+
+        ServiceItem wardClassCServiceItem = serviceItemService.createServiceItem(Long.parseLong("5"),
+                new ServiceItem("Ward (Class C) (daily)", "Ward Class Rates", ItemTypeEnum.INPATIENT,
+                        BigDecimal.valueOf(40.70)));
+        newServiceItem5.setUnit(unit5);
+
+
     }
 
 

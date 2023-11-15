@@ -22,6 +22,7 @@ public class AdmissionDTO {
     private LocalDateTime admissionDateTime;
     private LocalDateTime dischargeDateTime;
     private String ward;
+    private String location;
 
 //    private Long assignedNurseId = null;
 //    private Long assignedDoctorId = null;

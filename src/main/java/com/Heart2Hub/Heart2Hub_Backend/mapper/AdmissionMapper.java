@@ -33,6 +33,7 @@ public class AdmissionMapper {
         //Ward
         if (admission.getWard() != null) {
             dto.setWard(admission.getWard().getName());
+            dto.setLocation(admission.getWard().getLocation());
         }
 
         //Assigned staff
