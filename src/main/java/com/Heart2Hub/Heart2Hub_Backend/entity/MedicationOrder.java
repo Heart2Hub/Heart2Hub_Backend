@@ -71,13 +71,14 @@ public class MedicationOrder {
     public MedicationOrder() {
     }
 
-    public MedicationOrder(String title, Integer quantity, String comments, LocalDateTime startDate, LocalDateTime endDate, String createdBy) {
+    public MedicationOrder(String title, Integer quantity, String comments, LocalDateTime startDate, LocalDateTime endDate, Boolean isCompleted, String createdBy) {
         this();
         this.title = title;
         this.quantity = quantity;
         this.comments = comments;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.isCompleted = isCompleted;
         this.createdBy = createdBy;
     }
 }

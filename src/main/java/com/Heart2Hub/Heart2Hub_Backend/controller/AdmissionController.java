@@ -143,8 +143,9 @@ public class AdmissionController {
     @PutMapping("/updateDischargeDate")
     public ResponseEntity<AdmissionDTO> updateDischargeDate(
             @RequestParam("admissionId") Long admissionId,
-            @RequestParam("dischargeDate") String dischargeDate) {
-        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.updateDischargeDate(admissionId, dischargeDate)));
+            @RequestParam("dischargeDate") String dischargeDate,
+            @RequestParam("transactionItemId") Long transactionItemId) {
+        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.updateDischargeDate(admissionId, dischargeDate, transactionItemId)));
     }
 
     @PutMapping("/addImageAttachment")

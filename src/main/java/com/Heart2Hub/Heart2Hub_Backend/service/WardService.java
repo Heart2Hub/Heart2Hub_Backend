@@ -6,6 +6,7 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.DepartmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.SubDepartmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateDepartmentException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateWardException;
+import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.WardClassRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.WardRepository;
@@ -29,11 +30,13 @@ public class WardService {
     private final WardRepository wardRepository;
     private final WardClassRepository wardClassRepository;
     private final StaffRepository staffRepository;
+    private final PatientRepository patientRepository;
 
-    public WardService(WardRepository wardRepository, WardClassRepository wardClassRepository, StaffRepository staffRepository) {
+    public WardService(WardRepository wardRepository, WardClassRepository wardClassRepository, StaffRepository staffRepository, PatientRepository patientRepository) {
         this.wardRepository = wardRepository;
         this.wardClassRepository = wardClassRepository;
         this.staffRepository = staffRepository;
+        this.patientRepository = patientRepository;
     }
 
 
@@ -83,6 +86,7 @@ public class WardService {
                 int year = firstDate.getYear();
                 int hour = firstDate.getHour();
                 firstDate = LocalDateTime.of(year, month, day, 12, 00, 00);
+
                 if (hour >= 12) {
                     firstDate = firstDate.plusDays(1);
                 }
@@ -90,8 +94,8 @@ public class WardService {
                 for (int i = 0; i < 7; i++) {
                     WardAvailability wardAvailability;
 
-                    if (wc.getWardClassName().equals("A") && i == 1) {
-                        wardAvailability = new WardAvailability(firstDate, 0, newWard);
+                    if (newWard.getName().equals("B21") && i == 0) {
+                        wardAvailability = new WardAvailability(firstDate, 14, newWard);
                     } else {
                         wardAvailability = new WardAvailability(firstDate, newWard.getCapacity(), newWard);
                     }
@@ -108,6 +112,7 @@ public class WardService {
                         admission.setRoom(i);
                         admission.setBed(j);
                         newWard.getListOfCurrentDayAdmissions().add(admission);
+
                     }
                 }
 
