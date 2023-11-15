@@ -35,7 +35,6 @@ public class AppointmentController {
   private final AppointmentService appointmentService;
 
   private final AppointmentMapper appointmentMapper;
-  private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
   @GetMapping("/findAppointmentByAppointmentId")
   public ResponseEntity<Appointment> findAppointmentByAppointmentId(
       @RequestParam("appointmentId") Long appointmentId) {
@@ -88,7 +87,7 @@ public class AppointmentController {
       @RequestParam("toStaffId") Long toStaffId,
       @RequestParam("fromStaffId") Long fromStaffId) {
     Appointment appointment = appointmentService.assignAppointmentToStaff(appointmentId, toStaffId, fromStaffId);
-    sendUpdateToClients("assign");
+    appointmentService.sendUpdateToClients("assign");
     return ResponseEntity.ok(appointment);
   }
 
@@ -129,7 +128,7 @@ public class AppointmentController {
       @RequestParam("staffId") Long staffId) {
     AppointmentDTO appointmentDTO = appointmentMapper.toDTO(
             appointmentService.updateAppointmentArrival(appointmentId, arrivalStatus, staffId));
-    sendUpdateToClients("arrive");
+    appointmentService.sendUpdateToClients("arrive");
     return ResponseEntity.ok(appointmentDTO);
 //    return ResponseEntity.ok(appointmentMapper.convertToDto(
 //        appointmentService.updateAppointmentArrival(appointmentId, arrivalStatus, staffId)));
@@ -157,7 +156,7 @@ public class AppointmentController {
     AppointmentDTO appointmentDTO = appointmentMapper.toDTO(
             appointmentService.updateAppointmentSwimlaneStatus(appointmentId,
                     SwimlaneStatusEnum.valueOf(swimlaneStatus.toUpperCase())));
-    sendUpdateToClients("swimlane");
+    appointmentService.sendUpdateToClients("swimlane");
     return ResponseEntity.ok(appointmentDTO);
   }
 
@@ -241,7 +240,7 @@ public class AppointmentController {
     AppointmentDTO appointmentDTO = appointmentMapper.toDTO(
             appointmentService.updateAppointmentDispensaryStatus(appointmentId,
                     DispensaryStatusEnum.valueOf(dispensaryStatus.toUpperCase())));
-    sendUpdateToClients("dispensary");
+    appointmentService.sendUpdateToClients("dispensary");
     return ResponseEntity.ok(appointmentDTO);
   }
 
@@ -271,20 +270,10 @@ public class AppointmentController {
   public SseEmitter eventEmitter() {
     SseEmitter emitter = new SseEmitter();
     String key = UUID.randomUUID().toString();
-    emitters.put(key, emitter);
-    emitter.onCompletion(() -> emitters.remove(key));
-    emitter.onTimeout(() -> emitters.remove(key));
+    appointmentService.put(key, emitter);
+    emitter.onCompletion(() -> appointmentService.remove(key));
+    emitter.onTimeout(() -> appointmentService.remove(key));
     return emitter;
-  }
-
-  public void sendUpdateToClients(String message) {
-    emitters.values().forEach(emitter -> {
-      try {
-        emitter.send(SseEmitter.event().data(message));
-      } catch (IOException e) {
-        emitter.complete();
-      }
-    });
   }
 
 }
