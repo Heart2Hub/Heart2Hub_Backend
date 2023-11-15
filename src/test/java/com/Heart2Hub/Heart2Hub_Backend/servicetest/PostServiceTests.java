@@ -11,8 +11,10 @@ import com.Heart2Hub.Heart2Hub_Backend.repository.PostRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import com.Heart2Hub.Heart2Hub_Backend.service.ImageDocumentService;
 import com.Heart2Hub.Heart2Hub_Backend.service.PostService;
+import junit.runner.Version;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -22,25 +24,24 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
-@SpringBootTest
-public class PostServiceTests {
-
-    @Mock
-    private PostRepository postRepository;
-
-    @Mock
-    private ImageDocumentService imageDocumentService;
-
-    @Mock
-    private StaffRepository staffRepository;
+@RunWith(SpringRunner.class)
+class PostServiceTests {
 
     @InjectMocks
     private PostService postService;
+    @Mock
+    private PostRepository postRepository;
+    @Mock
+    private ImageDocumentService imageDocumentService;
+    @Mock
+    private StaffRepository staffRepository;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        System.out.println("JUnit version is: " + Version.id());
     }
 
     @Test

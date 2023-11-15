@@ -8,11 +8,16 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateNextOfKinRecordEx
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.NextOfKinRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.service.NextOfKinRecordService;
+import junit.runner.Version;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -20,17 +25,21 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
-public class NextOfKinRecordServiceTests {
-
-    @Mock
-    private NextOfKinRecordRepository nextOfKinRecordRepository;
-
-    @Mock
-    private ElectronicHealthRecordRepository electronicHealthRecordRepository;
+@RunWith(SpringRunner.class)
+class NextOfKinRecordServiceTests {
 
     @InjectMocks
     private NextOfKinRecordService nextOfKinRecordService;
+    @Mock
+    private NextOfKinRecordRepository nextOfKinRecordRepository;
+    @Mock
+    private ElectronicHealthRecordRepository electronicHealthRecordRepository;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        System.out.println("JUnit version is: " + Version.id());
+    }
 
     @Test
     void testCreateNextOfKinRecord() throws UnableToCreateNextOfKinRecordException {

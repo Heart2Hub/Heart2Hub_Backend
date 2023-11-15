@@ -5,42 +5,38 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Facility;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.DepartmentNotFoundException;
-import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateDepartmentException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import com.Heart2Hub.Heart2Hub_Backend.service.DepartmentService;
 import com.Heart2Hub.Heart2Hub_Backend.service.FacilityService;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
-import com.Heart2Hub.Heart2Hub_Backend.util.TestAuthenticationUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithSecurityContext;
 
-import java.lang.annotation.*;
 import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import junit.runner.Version;
+import org.springframework.test.context.junit4.SpringRunner;
 
-@SpringBootTest
-public class DepartmentServiceTests {
+@RunWith(SpringRunner.class)
+class DepartmentServiceTests {
 
-    @Mock
-    private AuthenticationManager authenticationManager;
+    @InjectMocks
+    private DepartmentService departmentService;
     @Mock
     private DepartmentRepository departmentRepository;
     @Mock
@@ -50,68 +46,45 @@ public class DepartmentServiceTests {
     @Mock
     private FacilityService facilityService;
 
-    @InjectMocks
-    private DepartmentService departmentService;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        System.out.println("JUnit version is: " + Version.id());
     }
 
     @Test
-//    @WithMockUser(username = "staff1", password = "password1", roles="ADMIN")
     void testIsLoggedInUserAdmin() {
-        // Mocking
-//        Authentication authentication = mock(Authentication.class);
+        // Mocking (Authentication)
         UsernamePasswordAuthenticationToken authentication = mock(UsernamePasswordAuthenticationToken.class);
-//        when(authenticationManager.authenticate(any()))
-//                .thenReturn(authentication);
         User user = new User("staff1", "password1", Collections.emptyList());
         when(authentication.getPrincipal())
                 .thenReturn(user);
         Optional<Staff> toReturn = Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.ADMIN, true));
-        when(staffRepository.findByUsername(user.getUsername()))
+        when(staffRepository.findByUsername("staff1"))
                 .thenReturn(toReturn);
-//        when(departmentService.isLoggedInUserAdmin())
-//                .thenReturn(true);
-//        doReturn(true).when(departmentService).isLoggedInUserAdmin();
-
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        //when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(new User("staff1", "password1", Collections.emptyList()));
-
-        System.out.println("ASDSAD" + securityContext);
-        System.out.println("ASDSAD" + securityContext.getAuthentication());
-        System.out.println("ASDSAD" + securityContext.getAuthentication().getPrincipal());
-        //User user = (User) securityContext.getAuthentication().getPrincipal();
-        System.out.println("ASDSAD" + user);
-        System.out.println("ASDSAD" + user.getUsername());
-        System.out.println("ASDSAD" + staffRepository.findByUsername(user.getUsername()));
-        System.out.println("ASDSAD" + staffRepository.findByUsername(user.getUsername()).get().getStaffRoleEnum());
-        System.out.println("ASDSAD" + departmentService.isLoggedInUserAdmin());
 
         // Test
         assertTrue(departmentService.isLoggedInUserAdmin());
 
         // Verify
-//        verify(authenticationManager, times(1)).authenticate(any());
-//        verify(authentication, times(1)).getPrincipal();
-//        verify(staffRepository, times(1)).findByUsername("staff1");
+        verify(authentication, times(1)).getPrincipal();
+        verify(staffRepository, times(1)).findByUsername("staff1");
     }
 
     @Test
     void testIsLoggedInUserAdmin_NotAdmin() {
-        // Mocking
+        // Mocking (Authentication)
         UsernamePasswordAuthenticationToken authentication = mock(UsernamePasswordAuthenticationToken.class);
         User user = new User("staff1", "password1", Collections.emptyList());
         when(authentication.getPrincipal())
                 .thenReturn(user);
         Optional<Staff> toReturn = Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.DOCTOR, true));
-        when(staffRepository.findByUsername(user.getUsername()))
+        when(staffRepository.findByUsername("staff1"))
                 .thenReturn(toReturn);
-
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);

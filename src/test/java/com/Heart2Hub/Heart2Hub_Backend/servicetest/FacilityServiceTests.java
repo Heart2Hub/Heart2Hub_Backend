@@ -11,23 +11,26 @@ import com.Heart2Hub.Heart2Hub_Backend.service.AllocatedInventoryService;
 import com.Heart2Hub.Heart2Hub_Backend.service.FacilityBookingService;
 import com.Heart2Hub.Heart2Hub_Backend.service.FacilityService;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
-import com.Heart2Hub.Heart2Hub_Backend.util.TestAuthenticationUtil;
 
+import junit.runner.Version;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -35,95 +38,70 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration
-@SpringBootTest
-public class FacilityServiceTests {
-
-    private AuthenticationManager authenticationManager;
-    @Mock
-    private FacilityRepository facilityRepository;
-
-    @Mock
-    private StaffRepository staffRepository;
-
-    @Mock
-    private StaffService staffService;
-
-    @Mock
-    private DepartmentRepository departmentRepository;
-
-    @Mock
-    private AllocatedInventoryService allocatedInventoryService;
-
-    @Mock
-    private ShiftConstraintsRepository shiftConstraintsRepository;
-
-    @Mock
-    private FacilityBookingService facilityBookingService;
+@RunWith(SpringRunner.class)
+class FacilityServiceTests {
 
     @InjectMocks
     private FacilityService facilityService;
-
-    private TestAuthenticationUtil testAuthenticationUtil;
+    @Mock
+    private FacilityRepository facilityRepository;
+    @Mock
+    private StaffRepository staffRepository;
+    @Mock
+    private DepartmentRepository departmentRepository;
+    @Mock
+    private AllocatedInventoryService allocatedInventoryService;
+    @Mock
+    private FacilityBookingService facilityBookingService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        testAuthenticationUtil = new TestAuthenticationUtil(authenticationManager, staffService);
-
-        // Mock the SecurityContext
-        SecurityContext securityContext = mock(SecurityContext.class);
-        SecurityContextHolder.setContext(securityContext);
-
-        // Set up authentication for the test user
-        Authentication authentication = testAuthenticationUtil.authenticateUser("staff1", "password1");
-
-        // Set the mock authentication in the SecurityContext
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-    }
-
-    @AfterEach
-    void tearDown() {
-        SecurityContextHolder.clearContext();
+        System.out.println("JUnit version is: " + Version.id());
     }
 
     @Test
     void testIsLoggedInUserAdmin() {
-        // Mocking
-        Authentication authentication = mock(Authentication.class);
-        when(authenticationManager.authenticate(any()))
-                .thenReturn(authentication);
+        // Mocking (Authentication)
+        UsernamePasswordAuthenticationToken authentication = mock(UsernamePasswordAuthenticationToken.class);
+        User user = new User("staff1", "password1", Collections.emptyList());
         when(authentication.getPrincipal())
-                .thenReturn(new User("staff1", "password1", Collections.emptyList()));
+                .thenReturn(user);
+        Optional<Staff> toReturn = Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.ADMIN, true));
         when(staffRepository.findByUsername("staff1"))
-                .thenReturn(Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.ADMIN, true)));
+                .thenReturn(toReturn);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Test
         assertTrue(facilityService.isLoggedInUserAdmin());
 
         // Verify
-        verify(authenticationManager, times(1)).authenticate(any());
         verify(authentication, times(1)).getPrincipal();
         verify(staffRepository, times(1)).findByUsername("staff1");
     }
 
     @Test
-    void testIsLoggedInUserAdmin_UserNotAdmin() {
-        // Mocking
-        Authentication authentication = mock(Authentication.class);
-        when(authenticationManager.authenticate(any()))
-                .thenReturn(authentication);
+    void testIsLoggedInUserAdmin_NotAdmin() {
+        // Mocking (Authentication)
+        UsernamePasswordAuthenticationToken authentication = mock(UsernamePasswordAuthenticationToken.class);
+        User user = new User("staff1", "password1", Collections.emptyList());
         when(authentication.getPrincipal())
-                .thenReturn(new User("staff1", "password1", Collections.emptyList()));
+                .thenReturn(user);
+        Optional<Staff> toReturn = Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.DOCTOR, true));
         when(staffRepository.findByUsername("staff1"))
-                .thenReturn(Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.DOCTOR, true)));
+                .thenReturn(toReturn);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Test
         assertFalse(facilityService.isLoggedInUserAdmin());
 
         // Verify
-        verify(authenticationManager, times(1)).authenticate(any());
         verify(authentication, times(1)).getPrincipal();
         verify(staffRepository, times(1)).findByUsername("staff1");
     }

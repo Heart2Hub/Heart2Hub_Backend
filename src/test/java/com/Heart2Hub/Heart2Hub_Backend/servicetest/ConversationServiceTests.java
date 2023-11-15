@@ -17,42 +17,41 @@ import com.Heart2Hub.Heart2Hub_Backend.service.ChatMessageService;
 import com.Heart2Hub.Heart2Hub_Backend.service.ConversationService;
 import com.Heart2Hub.Heart2Hub_Backend.service.PatientService;
 import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
+import junit.runner.Version;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-@SpringBootTest
-public class ConversationServiceTests {
-
-    @Mock
-    private ChatMessageService chatMessageService;
-
-    @Mock
-    private ConversationRepository conversationRepository;
-
-    @Mock
-    private StaffService staffService;
-
-    @Mock
-    private StaffChatMapper staffChatMapper;
-
-    @Mock
-    private PatientService patientService;
+@RunWith(SpringRunner.class)
+class ConversationServiceTests {
 
     @InjectMocks
     private ConversationService conversationService;
+    @Mock
+    private ChatMessageService chatMessageService;
+    @Mock
+    private ConversationRepository conversationRepository;
+    @Mock
+    private StaffService staffService;
+    @Mock
+    private StaffChatMapper staffChatMapper;
+    @Mock
+    private PatientService patientService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        System.out.println("JUnit version is: " + Version.id());
     }
 
     @Test
