@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class ConversationService {
+public class  ConversationService {
 
   private final ChatMessageService chatMessageService;
   private final ConversationRepository conversationRepository;
