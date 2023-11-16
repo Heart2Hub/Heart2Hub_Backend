@@ -121,19 +121,12 @@ public class FacilityService {
                 System.out.println("help??");
                 if (!facilityBookings.isEmpty()) {
                     throw new FacilityNotFoundException("Bookings for Facility found. Facility cannot be deleted");
-//                } else {
-//                    for (int i = facilityBookings.size() - 1; i >= 0; i--) {
-//                        FacilityBooking facilityBooking = facilityBookings.get(i);
-//                        System.out.println(facilityBooking.getFacilityBookingId());
-//                        facilityBookings.remove(i);
-//                        facilityBooking.setFacility(null);
-//                    }
                 }
 
                 System.out.println("facility Booking done()");
                 facility.getListOfFacilityBookings().clear();
 
-List<ShiftConstraints> shiftConstraintsList = shiftConstraintsRepository.findByFacility(facility);
+                List<ShiftConstraints> shiftConstraintsList = shiftConstraintsRepository.findByFacility(facility);
                 System.out.println("Hello??");
                 for (int i = shiftConstraintsList.size() - 1; i >= 0; i--) {
                     ShiftConstraints shiftConstraint = shiftConstraintsList.get(i);

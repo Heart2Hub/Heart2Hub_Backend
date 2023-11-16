@@ -335,11 +335,18 @@ class DepartmentServiceTests {
         SecurityContextHolder.setContext(securityContext);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Long departmentId = 2L;
-        when(departmentRepository.findById(departmentId)).thenReturn(Optional.empty());
+        Long departmentId = 1L;
+        Department existingDepartment = new Department();
+        existingDepartment.setName("Cardiology");
+
+        Department updatedDepartment = new Department();
+        updatedDepartment.setName("Updated Cardiology");
+
+        Optional<Department> departmentOptional = Optional.of(existingDepartment);
+        when(departmentRepository.findById(departmentId)).thenReturn(departmentOptional);
 
         // Test
-        assertThrows(UnableToUpdateDepartmentException.class, () -> departmentService.updateDepartment(departmentId, new Department()));
+        assertThrows(UnableToUpdateDepartmentException.class, () -> departmentService.updateDepartment(departmentId, updatedDepartment));
 
         // Verify
         verify(departmentRepository, never()).save(any(Department.class));
