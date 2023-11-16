@@ -1543,8 +1543,9 @@ public class DataLoader implements CommandLineRunner {
         appointmentService.updateAppointmentSwimlaneStatus(a1.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
         appointmentService.assignAppointmentToStaff(a1.getAppointmentId(), 5L, 8L);
 
-//        appointmentService.updateAppointmentSwimlaneStatus(a2.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
-//        appointmentService.assignAppointmentToStaff(a2.getAppointmentId(), 5L, -1L);
+        appointmentService.assignAppointmentToStaff(a1.getAppointmentId(), 11L, -1L);
+        appointmentService.updateAppointmentSwimlaneStatus(a1.getAppointmentId(), SwimlaneStatusEnum.TRIAGE);
+        appointmentService.assignAppointmentToStaff(a1.getAppointmentId(), 8L, 11L);
 
         appointmentService.assignAppointmentToStaff(a3.getAppointmentId(), 11L, -1L);
         appointmentService.updateAppointmentSwimlaneStatus(a3.getAppointmentId(), SwimlaneStatusEnum.TRIAGE);
@@ -2095,13 +2096,25 @@ public class DataLoader implements CommandLineRunner {
     private void createConversationData() {
         Conversation convo1 = conversationService.createNewStaffConversation(5L, 11L);
         Conversation convo2 = conversationService.createNewStaffConversation(12L, 11L);
+        Conversation convo3 = conversationService.createNewPatientConversation(8L, 11L);
+        Conversation convo4 = conversationService.createNewPatientConversation(7L, 11L);
 
         ChatMessage msg1 = new ChatMessage("You dumbdumb", MessageTypeEnum.CHAT, 5L);
         ChatMessage msg2 = new ChatMessage("No, You dumbdumb", MessageTypeEnum.CHAT, 11L);
+        ChatMessage msg3 = new ChatMessage("How do I change my appointment date?", MessageTypeEnum.CHAT, 8L);
+        ChatMessage msg4 = new ChatMessage("In your mobile app, go to Services and Appointments, then find your Appointment and make your change from there", MessageTypeEnum.CHAT, 11L);
+        ChatMessage msg5 = new ChatMessage("How do I get a vasectomy?", MessageTypeEnum.CHAT, 7L);
         chatMessageService.saveChatMessage(msg1);
         chatMessageService.saveChatMessage(msg2);
+        chatMessageService.saveChatMessage(msg3);
+        chatMessageService.saveChatMessage(msg4);
 
         convo1.getListOfChatMessages().add(msg1);
         convo1.getListOfChatMessages().add(msg2);
+        convo3.getListOfChatMessages().add(msg3);
+        convo3.getListOfChatMessages().add(msg4);
+        convo4.getListOfChatMessages().add(msg5);
+        convo4.getListOfChatMessages().add(msg4);
+
     }
 }
