@@ -2103,7 +2103,7 @@ public class DataLoader implements CommandLineRunner {
         ChatMessage msg2 = new ChatMessage("No, You dumbdumb", MessageTypeEnum.CHAT, 11L);
         ChatMessage msg3 = new ChatMessage("How do I change my appointment date?", MessageTypeEnum.CHAT, 8L);
         ChatMessage msg4 = new ChatMessage("In your mobile app, go to Services and Appointments, then find your Appointment and make your change from there", MessageTypeEnum.CHAT, 11L);
-        ChatMessage msg5 = new ChatMessage("How do I get a vasectomy?", MessageTypeEnum.CHAT, 7L);
+//        ChatMessage msg5 = new ChatMessage("How do I get a vasectomy?", MessageTypeEnum.CHAT, 7L);
         chatMessageService.saveChatMessage(msg1);
         chatMessageService.saveChatMessage(msg2);
         chatMessageService.saveChatMessage(msg3);
@@ -2113,8 +2113,8 @@ public class DataLoader implements CommandLineRunner {
         convo1.getListOfChatMessages().add(msg2);
         convo3.getListOfChatMessages().add(msg3);
         convo3.getListOfChatMessages().add(msg4);
-        convo4.getListOfChatMessages().add(msg5);
-        convo4.getListOfChatMessages().add(msg4);
+//        convo4.getListOfChatMessages().add(msg5);
+//        convo4.getListOfChatMessages().add(msg4);
 
     }
 }
