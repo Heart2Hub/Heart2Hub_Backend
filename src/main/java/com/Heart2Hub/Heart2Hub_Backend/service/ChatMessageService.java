@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.service;
 import com.Heart2Hub.Heart2Hub_Backend.dto.StaffChatDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ChatMessage;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateChatMessageException;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.StaffChatMapper;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ChatMessageRepository;
 import java.util.ArrayList;
@@ -18,16 +19,21 @@ public class ChatMessageService {
 
   private final ChatMessageRepository chatMessageRepository;
 
-  private final StaffChatMapper staffChatMapper;
+//  private final StaffChatMapper staffChatMapper;
 
   public ChatMessageService(ChatMessageRepository chatMessageRepository,
       StaffChatMapper staffChatMapper) {
     this.chatMessageRepository = chatMessageRepository;
-    this.staffChatMapper = staffChatMapper;
+//    this.staffChatMapper = staffChatMapper;
   }
 
   public ChatMessage saveChatMessage(ChatMessage chatMessage) {
-    return chatMessageRepository.save(chatMessage);
+
+    try {
+      return chatMessageRepository.save(chatMessage);
+    } catch (Exception ex) {
+      throw new UnableToCreateChatMessageException(ex.getMessage());
+    }
   }
 
 
