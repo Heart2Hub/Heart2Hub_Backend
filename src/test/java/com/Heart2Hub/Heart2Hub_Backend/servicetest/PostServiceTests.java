@@ -6,6 +6,11 @@ import static org.mockito.Mockito.*;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Post;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.PostTypeEnum;
+import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.PostNotFoundException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.StaffNotFoundException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToRemoveImageException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateTreatmentPlanRecordException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.PostRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
@@ -19,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -65,12 +71,35 @@ class PostServiceTests {
         when(postRepository.findById(postId)).thenReturn(Optional.empty());
 
         // Test
-        assertThrows(AssertionError.class, () -> assertNull(postService.findPostAuthor(postId)));
+        assertThrows(PostNotFoundException.class, () -> postService.findPostAuthor(postId));
 
         // Verify
         verify(postRepository).findById(postId);
         verify(staffRepository, times(0)).findById(any());
     }
+
+    @Test
+    public void testFindPostAuthor_StaffDoesNotExist() {
+        // Mock data
+        Long postId = 1L;
+        Long staffId = 100L;
+
+        Post post = new Post("Title", "Body", PostTypeEnum.ADMINISTRATIVE);
+        Staff staff = new Staff("john_doe", "password123", "John", "Doe", 1234567890L, StaffRoleEnum.ADMIN, false);
+        post.setStaff(staff);
+
+        // Mocking the repository behavior
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
+        when(staffRepository.findById(staff.getStaffId())).thenReturn(Optional.empty());
+
+        // Assert the exception is thrown
+        assertThrows(StaffNotFoundException.class, () -> postService.findPostAuthor(postId));
+
+        // Verify that the repository methods were called with the correct arguments
+        verify(postRepository, times(1)).findById(postId);
+        verify(staffRepository, times(1)).findById(staff.getStaffId());
+    }
+
 
     @Test
     void testGetAllPosts() {
@@ -100,7 +129,7 @@ class PostServiceTests {
         when(postRepository.findById(postId)).thenReturn(Optional.empty());
 
         // Test
-        assertThrows(AssertionError.class, () -> assertNull(postService.getPostById(postId)));
+        assertThrows(PostNotFoundException.class, () -> assertNull(postService.getPostById(postId)));
 
         // Verify
         verify(postRepository).findById(postId);
@@ -115,8 +144,11 @@ class PostServiceTests {
         Post post = new Post();
         when(staffRepository.findById(staffId)).thenReturn(Optional.of(author));
         when(imageDocumentService.createImageDocument(imageDocument)).thenReturn(imageDocument);
-        when(postRepository.save(post)).thenReturn(new Post());
-
+        when(postRepository.save(any(Post.class))).thenAnswer(invocation -> {
+            Post savedPost = invocation.getArgument(0);
+            savedPost.setPostId(1L); // Set the expected postId
+            return savedPost;
+        });
         Post result = postService.createPost(post, staffId, imageDocument);
 
         assertEquals(postId, result.getPostId());
@@ -133,7 +165,7 @@ class PostServiceTests {
         when(staffRepository.findById(staffId)).thenReturn(Optional.empty());
 
         // Test
-        assertThrows(AssertionError.class, () -> postService.createPost(post, staffId, imageDocument));
+        assertThrows(StaffNotFoundException.class, () -> postService.createPost(post, staffId, imageDocument));
 
         // Verify
         verify(staffRepository).findById(staffId);
@@ -143,17 +175,23 @@ class PostServiceTests {
 
     @Test
     void testAddImageToPost() {
+        // Arrange
         Long postId = 1L;
         ImageDocument imageDocument = new ImageDocument();
         Post post = new Post();
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
         when(imageDocumentService.createImageDocument(imageDocument)).thenReturn(imageDocument);
-        when(postRepository.save(post)).thenReturn(new Post());
+        when(postRepository.save(post)).thenReturn(post);
 
+        // Act
         Post result = postService.addImageToPost(imageDocument, postId);
 
+        // Assert
         assertEquals(post, result);
         assertEquals(imageDocument, result.getListOfImageDocuments().get(0));
+        verify(postRepository, times(1)).findById(postId);
+        verify(imageDocumentService, times(1)).createImageDocument(imageDocument);
+        verify(postRepository, times(1)).save(post);
     }
 
     @Test
@@ -164,26 +202,60 @@ class PostServiceTests {
         when(postRepository.findById(postId)).thenReturn(Optional.empty());
 
         // Test
-        assertThrows(AssertionError.class, () -> postService.addImageToPost(imageDocument, postId));
+        assertThrows(PostNotFoundException.class, () -> postService.addImageToPost(imageDocument, postId));
 
         // Verify
-        verify(postRepository).findById(postId);
-        verify(imageDocumentService, times(0)).createImageDocument(any());
-        verify(postRepository, times(0)).save(any());
+        verify(postRepository).findById(postId); // Ensure findById is called with the correct postId
+        verify(imageDocumentService, times(0)).createImageDocument(any()); // Ensure createImageDocument is not called
+        verify(postRepository, times(0)).save(any()); // Ensure save is not called
     }
 
     @Test
-    void testRemoveImageFromPost() {
+    public void testRemoveImageFromPost() {
+        // Mock data
+        Long postId = 1L;
+        String imageLinkToRemove = "example.jpg";
+        List<ImageDocument> imageDocuments = new ArrayList<>();
+        imageDocuments.add(new ImageDocument("image1.jpg", LocalDateTime.now()));
+        imageDocuments.add(new ImageDocument(imageLinkToRemove, LocalDateTime.now()));
+        imageDocuments.add(new ImageDocument("image3.jpg", LocalDateTime.now()));
+
+        Post existingPost = new Post( "Title", "Body", PostTypeEnum.ADMINISTRATIVE);
+        existingPost.setListOfImageDocuments(imageDocuments);
+
+        // Mocking the repository behavior
+        when(postRepository.findById(postId)).thenReturn(Optional.of(existingPost));
+        when(postRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Call the method to be tested
+        Post result = postService.removeImageFromPost(imageLinkToRemove, postId);
+
+        // Verify that the repository methods were called with the correct arguments
+        verify(postRepository, times(1)).findById(postId);
+        verify(postRepository, times(1)).save(existingPost);
+
+        // Assert the result
+        assertNotNull(result);
+        assertEquals(2, result.getListOfImageDocuments().size());
+        assertFalse(result.getListOfImageDocuments().stream()
+                .anyMatch(imageDocument -> imageDocument.getImageLink().equals(imageLinkToRemove)));
+    }
+
+    @Test
+    void testRemoveImageFromPost_NoImageExists() {
+        // Mock data
         Long postId = 1L;
         String imageLink = "link";
-        ImageDocument imageDocument = new ImageDocument();
-        Post post = new Post();
-        post.getListOfImageDocuments().add(imageDocument);
-        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
+        when(postRepository.findById(postId)).thenReturn(Optional.of(new Post())); // Create a post with an empty list of image documents
 
-        Post result = postService.removeImageFromPost(imageLink, postId);
+        // Test
+        UnableToRemoveImageException exception = assertThrows(UnableToRemoveImageException.class,
+                () -> postService.removeImageFromPost(imageLink, postId));
 
-        assertTrue(result.getListOfImageDocuments().isEmpty());
+        // Verify
+        assertEquals("No image exists", exception.getMessage());
+        verify(postRepository).findById(postId);
+        verify(postRepository, never()).save(any()); // Ensure save is not called when an exception is thrown
     }
 
     @Test
@@ -194,11 +266,12 @@ class PostServiceTests {
         when(postRepository.findById(postId)).thenReturn(Optional.empty());
 
         // Test
-        assertThrows(AssertionError.class, () -> postService.removeImageFromPost(imageLink, postId));
+        assertThrows(PostNotFoundException.class, () -> postService.removeImageFromPost(imageLink, postId));
 
         // Verify
         verify(postRepository).findById(postId);
     }
+
 
     @Test
     void testRemoveImageFromPostImageNotFound() {
@@ -207,21 +280,34 @@ class PostServiceTests {
         Post post = new Post();
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
 
-        assertThrows(UnableToUpdateTreatmentPlanRecordException.class, () -> postService.removeImageFromPost(imageLink, postId));
+        assertThrows(UnableToRemoveImageException.class, () -> postService.removeImageFromPost(imageLink, postId));
     }
 
     @Test
-    void testUpdatePost() {
+    public void testUpdatePost() {
+        // Mock data
         Long postId = 1L;
-        Post post = new Post();
-        Post updatedPost = new Post();
-        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
-        when(postRepository.save(post)).thenReturn(updatedPost);
+        Post existingPost = new Post("Old Title", "Old Body", PostTypeEnum.ADMINISTRATIVE);
+        Post updatedPost = new Post("Updated Title", "Updated Body", PostTypeEnum.ENRICHMENT);
 
-        Post result = postService.updatePost(postId, post);
+        // Mocking the repository behavior
+        when(postRepository.findById(postId)).thenReturn(Optional.of(existingPost));
+        when(postRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        assertEquals(updatedPost, result);
+        // Call the method to be tested
+        Post result = postService.updatePost(postId, updatedPost);
+
+        // Verify that the repository methods were called with the correct arguments
+        verify(postRepository, times(1)).findById(postId);
+        verify(postRepository, times(1)).save(existingPost);
+
+        // Assert the result
+        assertNotNull(result);
+        assertEquals(updatedPost.getPostTypeEnum(), result.getPostTypeEnum());
+        assertEquals(updatedPost.getTitle(), result.getTitle());
+        assertEquals(updatedPost.getBody(), result.getBody());
     }
+
 
     @Test
     void testUpdatePost_PostNotFound() {
@@ -231,7 +317,7 @@ class PostServiceTests {
         when(postRepository.findById(postId)).thenReturn(Optional.empty());
 
         // Test
-        assertThrows(AssertionError.class, () -> postService.updatePost(postId, post));
+        assertThrows(PostNotFoundException.class, () -> postService.updatePost(postId, post));
 
         // Verify
         verify(postRepository).findById(postId);
@@ -261,7 +347,7 @@ class PostServiceTests {
         when(postRepository.findById(postId)).thenReturn(Optional.empty());
 
         // Test
-        assertThrows(AssertionError.class, () -> postService.deletePost(postId));
+        assertThrows(PostNotFoundException.class, () -> postService.deletePost(postId));
 
         // Verify
         verify(postRepository).findById(postId);
