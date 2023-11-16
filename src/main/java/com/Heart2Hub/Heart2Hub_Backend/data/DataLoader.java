@@ -1583,16 +1583,19 @@ public class DataLoader implements CommandLineRunner {
         appointmentService.assignAppointmentToStaff(a8.getAppointmentId(), 5L, 8L);
 
         //For SR4 Inpatient Use Cases
-        //appointmentService.updateAppointmentSwimlaneStatus(a5.getAppointmentId(), SwimlaneStatusEnum.ADMISSION);
-        //appointmentService.assignAppointmentToStaff(a5.getAppointmentId(), 11L, 5L);
+        appointmentService.updateAppointmentSwimlaneStatus(a3.getAppointmentId(), SwimlaneStatusEnum.DISCHARGE);
+        appointmentService.assignAppointmentToStaff(a3.getAppointmentId(), 11L, 5L);
 
-        appointmentService.updateAppointmentSwimlaneStatus(a6.getAppointmentId(), SwimlaneStatusEnum.ADMISSION);
+        appointmentService.updateAppointmentSwimlaneStatus(a4.getAppointmentId(), SwimlaneStatusEnum.DISCHARGE);
+        appointmentService.assignAppointmentToStaff(a4.getAppointmentId(), 11L, 5L);
+
+        appointmentService.updateAppointmentSwimlaneStatus(a6.getAppointmentId(), SwimlaneStatusEnum.DISCHARGE);
         appointmentService.assignAppointmentToStaff(a6.getAppointmentId(), 11L, 5L);
 
-        appointmentService.updateAppointmentSwimlaneStatus(a7.getAppointmentId(), SwimlaneStatusEnum.ADMISSION);
+        appointmentService.updateAppointmentSwimlaneStatus(a7.getAppointmentId(), SwimlaneStatusEnum.DISCHARGE);
         appointmentService.assignAppointmentToStaff(a7.getAppointmentId(), 11L, 5L);
 
-        appointmentService.updateAppointmentSwimlaneStatus(a8.getAppointmentId(), SwimlaneStatusEnum.ADMISSION);
+        appointmentService.updateAppointmentSwimlaneStatus(a8.getAppointmentId(), SwimlaneStatusEnum.DISCHARGE);
         appointmentService.assignAppointmentToStaff(a8.getAppointmentId(), 11L, 5L);
 
         //For SR4 Finance Use Cases
@@ -2003,14 +2006,12 @@ public class DataLoader implements CommandLineRunner {
 
 
     private void createAdmissionData() {
-        //1. Patient 5: Just admitted, discharging tomorrow
-        Patient patient5 = patientService.getPatientById(5L);
         LocalDateTime admissionDate = LocalDateTime.now();
         int day = admissionDate.getDayOfMonth();
         int month = admissionDate.getMonthValue();
         int year = admissionDate.getYear();
         int hour = admissionDate.getHour();
-        LocalDateTime dischargeDate = LocalDateTime.of(year, month, day, 12, 00, 00).plusDays(1);
+        LocalDateTime dischargeDate = LocalDateTime.of(year, month, day, 12, 00, 00).plusDays(2);
 
         //For medication order and inpatient treatment
         LocalDateTime currentOrderStart = LocalDateTime.of(year, month, day, hour, 00, 00).plusHours(1);
@@ -2020,19 +2021,25 @@ public class DataLoader implements CommandLineRunner {
         LocalDateTime pastInpatientTreatmentStart = currentOrderStart.minusHours(3);
         LocalDateTime pastInpatientTreatmentEnd = currentOrderEnd.minusHours(3);
 
-        admissionService.createAdmissionInDataLoader(new Admission(1, 1, 1, "Heart attack", false, admissionDate, dischargeDate, patient5), 18L);
-
-        //2. Patient 6: Admitted 3 hours ago, discharging tomorrow
+        //1. Patient 6: Admitted 3 hours ago
         Patient patient6 = patientService.getPatientById(6L);
-        admissionService.createAdmissionInDataLoader(new Admission(1, 1, 2, "Heart attack", false, admissionDate.minusHours(3), dischargeDate, patient6), 18L);
+        admissionService.createAdmissionInDataLoader(new Admission(2, 1, 1, "Heart attack", false, admissionDate.minusHours(3), dischargeDate, patient6), 18L);
 
-        //3. Patient 7: Admitted yesterday, discharging tomorrow, show medication orders and inpatient treatments
+        //2. Patient 7: Admitted yesterday, show medication orders and inpatient treatments
         Patient patient7 = patientService.getPatientById(7L);
-        admissionService.createAdmissionInDataLoader(new Admission(2, 1, 3, "Heart attack", true, admissionDate.minusDays(1), dischargeDate, patient7), 18L);
+        admissionService.createAdmissionInDataLoader(new Admission(3, 1, 2, "Heart attack", false, admissionDate.minusDays(1), dischargeDate.minusDays(1), patient7), 18L);
 
-        //4. Patient 8: Admitted yesterday, discharging tomorrow, has past and current inpatient treatments
+        //3. Patient 8: Admitted yesterday, has overdue medication orders inpatient treatments
         Patient patient8 = patientService.getPatientById(8L);
-        Ward ward = admissionService.createAdmissionInDataLoader(new Admission(2, 1, 4, "Heart attack", true, admissionDate.minusDays(1), dischargeDate, patient8), 18L);
+        Ward ward = admissionService.createAdmissionInDataLoader(new Admission(3, 1, 3, "Heart attack", false, admissionDate.minusDays(1), dischargeDate, patient8), 18L);
+
+
+        //1. Patient 3 and 4: Other Ward
+        Patient patient3 = patientService.getPatientById(3L);
+        Patient patient4 = patientService.getPatientById(4L);
+
+        admissionService.createAdmissionInDataLoader(new Admission(2, 1, 1, "Heart attack", false, admissionDate, dischargeDate, patient3), 21L);
+        Ward ward1 = admissionService.createAdmissionInDataLoader(new Admission(2, 1, 2, "Heart attack", false, admissionDate, dischargeDate, patient4), 21L);
 
 
         List<Admission> currentAdmissions = ward.getListOfCurrentDayAdmissions().stream()
@@ -2042,29 +2049,45 @@ public class DataLoader implements CommandLineRunner {
             admissionService.assignAdmissionToStaff(admission.getAdmissionId(), 5L);
 
             if (admission.getPatient().getUsername().equals("patient7")) {
+                admissionService.updateAdmissionArrival(admission.getAdmissionId(), true, -1L);
                 admissionService.assignAdmissionToStaff(admission.getAdmissionId(), 34L);
+                admissionService.assignAdmissionToStaff(admission.getAdmissionId(), 31L);
                 admissionService.assignAdmissionToStaff(admission.getAdmissionId(), 13L);
 
                 MedicationOrder currentMedicationOrder = new MedicationOrder("Medication Order", 1, "Take with food", currentOrderStart, currentOrderEnd, false, "Dr. John Wick");
-                MedicationOrder completedMedicationOrder = new MedicationOrder("Medication Order", 1, "Take with food", pastMedicationOrderStart, pastMedicationOrderEnd, true, "Dr. John Wick");
+                MedicationOrder completedMedicationOrder = new MedicationOrder("Medication Order", 1, "Take with food", pastMedicationOrderStart, pastMedicationOrderEnd, false, "Dr. John Wick");
                 medicationOrderService.createMedicationOrder(15L, admission.getAdmissionId(), currentMedicationOrder);
-                medicationOrderService.createMedicationOrder(15L, admission.getAdmissionId(), completedMedicationOrder);
+                MedicationOrder completedMedicationOrder1 = medicationOrderService.createMedicationOrder(15L, admission.getAdmissionId(), completedMedicationOrder);
+                medicationOrderService.updateComplete(completedMedicationOrder1.getMedicationOrderId(), admission.getAdmissionId(), true);
 
-                InpatientTreatment completedInpatientTreatment = new InpatientTreatment("test", "No food 2 hours before", pastInpatientTreatmentStart, pastInpatientTreatmentEnd, true, true, "Melvin");
-                inpatientTreatmentService.createInpatientTreatment(30L, admission.getAdmissionId(), 13L, completedInpatientTreatment);
+                InpatientTreatment completedInpatientTreatment = new InpatientTreatment("X-Ray Room 1 Cardiology (Level 3)", "No food 2 hours before", pastInpatientTreatmentStart, pastInpatientTreatmentEnd, false, true, "Meeeeeeeeelvin Tan (DIAGNOSTIC_RADIOGRAPHERS)");
+                InpatientTreatment completedInpatientTreatment1 = inpatientTreatmentService.createInpatientTreatment(23L, admission.getAdmissionId(), 13L, completedInpatientTreatment);
+                inpatientTreatmentService.updateComplete(completedInpatientTreatment1.getInpatientTreatmentId(), admission.getAdmissionId());
 
             } else if (admission.getPatient().getUsername().equals("patient8")) {
+                admissionService.updateAdmissionArrival(admission.getAdmissionId(), true, -1L);
                 admissionService.assignAdmissionToStaff(admission.getAdmissionId(), 34L);
+                admissionService.assignAdmissionToStaff(admission.getAdmissionId(), 31L);
                 admissionService.assignAdmissionToStaff(admission.getAdmissionId(), 13L);
 
-                MedicationOrder completedMedicationOrder = new MedicationOrder("Medication Order", 1, "Take with food", pastInpatientTreatmentStart, pastInpatientTreatmentEnd, true, "Dr. John Wick");
+                MedicationOrder completedMedicationOrder = new MedicationOrder("Medication Order", 1, "Take with food", pastInpatientTreatmentStart, pastInpatientTreatmentEnd, false, "Dr. John Wick");
                 MedicationOrder overdueMedicationOrder = new MedicationOrder("Medication Order", 1, "Take with food", pastInpatientTreatmentStart, pastInpatientTreatmentEnd, false, "Dr. John Wick");
-                medicationOrderService.createMedicationOrder(15L, admission.getAdmissionId(), completedMedicationOrder);
+                MedicationOrder completedMedicationOrder1 = medicationOrderService.createMedicationOrder(15L, admission.getAdmissionId(), completedMedicationOrder);
+                medicationOrderService.updateComplete(completedMedicationOrder1.getMedicationOrderId(), admission.getAdmissionId(), true);
                 medicationOrderService.createMedicationOrder(16L, admission.getAdmissionId(), overdueMedicationOrder);
 
-                InpatientTreatment overdueInpatientTreatment = new InpatientTreatment("test", "No food 2 hours before", pastMedicationOrderStart, pastMedicationOrderEnd, false, false, "Melvin");
-                inpatientTreatmentService.createInpatientTreatment(30L, admission.getAdmissionId(), 13L, overdueInpatientTreatment);
+                InpatientTreatment overdueInpatientTreatment = new InpatientTreatment("X-Ray Room 1 Cardiology (Level 3)", "No food 2 hours before", pastMedicationOrderStart, pastMedicationOrderEnd, false, false, "Meeeeeeeeelvin Tan (DIAGNOSTIC_RADIOGRAPHERS)");
+                inpatientTreatmentService.createInpatientTreatment(23L, admission.getAdmissionId(), 13L, overdueInpatientTreatment);
+                InpatientTreatment currentInpatientTreatment = new InpatientTreatment("X-Ray Room 1 Cardiology (Level 3)", "No food 2 hours before", currentOrderStart, currentOrderEnd, false, false, "Meeeeeeeeelvin Tan (DIAGNOSTIC_RADIOGRAPHERS)");
+                inpatientTreatmentService.createInpatientTreatment(23L, admission.getAdmissionId(), 13L, currentInpatientTreatment);
             }
+        }
+
+        List<Admission> currentAdmissions1 = ward1.getListOfCurrentDayAdmissions().stream()
+                .filter(admission -> admission.getAdmissionDateTime() != null)
+                .collect(Collectors.toList());
+        for (Admission admission : currentAdmissions1) {
+            admissionService.assignAdmissionToStaff(admission.getAdmissionId(), 5L);
         }
 
     }

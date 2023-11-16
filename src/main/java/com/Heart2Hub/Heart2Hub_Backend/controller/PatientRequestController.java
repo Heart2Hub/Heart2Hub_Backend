@@ -1,6 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.controller;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.PatientRequest;
+import com.Heart2Hub.Heart2Hub_Backend.service.AppointmentService;
 import com.Heart2Hub.Heart2Hub_Backend.service.PatientRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,8 @@ public class PatientRequestController {
     public ResponseEntity<PatientRequest> createPatientRequest(
             @RequestParam("requestName") String requestName,
             @RequestParam("username") String username) {
-        return ResponseEntity.ok(patientRequestService.createPatientRequest(requestName, username));
+        PatientRequest patientRequest = patientRequestService.createPatientRequest(requestName, username);
+        return ResponseEntity.ok(patientRequest);
     }
 
     @DeleteMapping("/deletePatientRequest")

@@ -94,8 +94,8 @@ public class WardService {
                 for (int i = 0; i < 7; i++) {
                     WardAvailability wardAvailability;
 
-                    if (newWard.getName().equals("B21") && i == 0) {
-                        wardAvailability = new WardAvailability(firstDate, 14, newWard);
+                    if (newWard.getName().equals("B21") && i <= 1) {
+                        wardAvailability = new WardAvailability(firstDate, 15, newWard);
                     } else {
                         wardAvailability = new WardAvailability(firstDate, newWard.getCapacity(), newWard);
                     }

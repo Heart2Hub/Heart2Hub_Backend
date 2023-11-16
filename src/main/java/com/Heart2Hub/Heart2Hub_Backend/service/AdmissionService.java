@@ -221,6 +221,7 @@ public class AdmissionService {
         Patient patient = admissionToCancel.getPatient();
         patient.setAdmission(null);
         patient.getElectronicHealthRecord().getListOfPastAdmissions().add(admissionToCancel);
+        admissionToCancel.setPatient(null);
 
 
         Ward ward = wardRepository.findById(wardId).get();
