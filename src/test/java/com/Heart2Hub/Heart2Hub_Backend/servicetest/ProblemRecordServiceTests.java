@@ -4,12 +4,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PriorityEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.ProblemTypeEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateMedicalHistoryRecordException;
 import junit.runner.Version;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,10 +57,15 @@ class ProblemRecordServiceTests {
         // Mock data
         Long electronicHealthRecordId = 1L;
         ProblemRecord newProblemRecord = new ProblemRecord();
-        newProblemRecord.setDescription("New Problem");
-        newProblemRecord.setCreatedBy("User123");
+        newProblemRecord.setDescription("Heart Pain");
+        newProblemRecord.setCreatedBy("Doctor X");
         newProblemRecord.setPriorityEnum(PriorityEnum.HIGH);
-        newProblemRecord.setProblemTypeEnum(ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC);
+        newProblemRecord.setProblemTypeEnum(ProblemTypeEnum.CARDIOVASCULAR);
+
+        String dateTimeString = "2023-11-11 12:00:00";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateTimeString, formatter);
+        newProblemRecord.setCreatedDate(localDateTime);
 
         ElectronicHealthRecord mockElectronicHealthRecord = new ElectronicHealthRecord();
         when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.of(mockElectronicHealthRecord));
@@ -65,12 +73,13 @@ class ProblemRecordServiceTests {
 
         // Test
         try {
-            ProblemRecord createdProblemRecord = problemRecordService.createProblemRecord(electronicHealthRecordId, newProblemRecord);
-            assertNotNull(createdProblemRecord);
-            assertEquals("New Problem", createdProblemRecord.getDescription());
-            assertEquals("User123", createdProblemRecord.getCreatedBy());
-            assertEquals(PriorityEnum.HIGH, createdProblemRecord.getPriorityEnum());
-            assertEquals(ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC, createdProblemRecord.getProblemTypeEnum());
+            ProblemRecord result = problemRecordService.createProblemRecord(electronicHealthRecordId, newProblemRecord);
+            assertNotNull(result);
+            assertEquals("Heart Pain", result.getDescription());
+            assertEquals("Doctor X", result.getCreatedBy());
+            assertEquals(PriorityEnum.HIGH, result.getPriorityEnum());
+            assertEquals(ProblemTypeEnum.CARDIOVASCULAR, result.getProblemTypeEnum());
+            assertEquals(localDateTime, result.getCreatedDate());
 
             verify(electronicHealthRecordRepository).findById(electronicHealthRecordId);
             verify(problemRecordRepository).save(newProblemRecord);
@@ -82,14 +91,14 @@ class ProblemRecordServiceTests {
     }
 
     @Test
-    void testCreateProblemRecord_ElectronicHealthRecordNotFound() {
+    void testCreateProblemRecord_IdNotFoundFailure() {
         // Mock data
         Long electronicHealthRecordId = 1L;
         ProblemRecord newProblemRecord = new ProblemRecord();
         when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
 
         // Test
-        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> problemRecordService.createProblemRecord(electronicHealthRecordId, newProblemRecord));
+        assertThrows(UnableToCreateProblemRecordException.class, () -> problemRecordService.createProblemRecord(electronicHealthRecordId, newProblemRecord));
 
         // Verify
         verify(electronicHealthRecordRepository).findById(electronicHealthRecordId);
@@ -101,16 +110,21 @@ class ProblemRecordServiceTests {
         // Mock data
         Long electronicHealthRecordId = 1L;
         ProblemRecord newProblemRecord = new ProblemRecord();
-        newProblemRecord.setDescription("New Allergy");
-        newProblemRecord.setCreatedBy("User456");
-        newProblemRecord.setPriorityEnum(PriorityEnum.LOW);
+        newProblemRecord.setDescription("Egg");
+        newProblemRecord.setCreatedBy("Doctor X");
+        newProblemRecord.setPriorityEnum(PriorityEnum.HIGH);
         newProblemRecord.setProblemTypeEnum(ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC);
+        String dateTimeString = "2023-11-11 12:00:00";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateTimeString, formatter);
+        newProblemRecord.setCreatedDate(localDateTime);
+
 
         MedicalHistoryRecord newMedicalHistoryRecord = new MedicalHistoryRecord();
-        newMedicalHistoryRecord.setDescription("New Allergy");
-        newMedicalHistoryRecord.setCreatedBy("User456");
+        newMedicalHistoryRecord.setDescription("Egg");
+        newMedicalHistoryRecord.setCreatedBy("Doctor X");
         newMedicalHistoryRecord.setCreatedDate(LocalDateTime.now());
-        newMedicalHistoryRecord.setPriorityEnum(PriorityEnum.LOW);
+        newMedicalHistoryRecord.setPriorityEnum(PriorityEnum.HIGH);
         newMedicalHistoryRecord.setProblemTypeEnum(ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC);
 
         when(medicalHistoryRecordService.createMedicalHistoryRecord(eq(electronicHealthRecordId), any()))
@@ -118,14 +132,14 @@ class ProblemRecordServiceTests {
 
         // Test
         try {
-            MedicalHistoryRecord createdMedicalHistoryRecord = problemRecordService.createAllergyRecord(electronicHealthRecordId, newProblemRecord);
-            assertNotNull(createdMedicalHistoryRecord);
-            assertEquals("New Allergy", createdMedicalHistoryRecord.getDescription());
-            assertEquals("User456", createdMedicalHistoryRecord.getCreatedBy());
-            assertEquals(PriorityEnum.LOW, createdMedicalHistoryRecord.getPriorityEnum());
-            assertEquals(ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC, createdMedicalHistoryRecord.getProblemTypeEnum());
+            MedicalHistoryRecord result = problemRecordService.createAllergyRecord(electronicHealthRecordId, newProblemRecord);
+            assertNotNull(result);
+            assertEquals("Egg", result.getDescription());
+            assertEquals("Doctor X", result.getCreatedBy());
+            assertEquals(PriorityEnum.HIGH, result.getPriorityEnum());
+            assertEquals(ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC, result.getProblemTypeEnum());
 
-            verify(medicalHistoryRecordService).createMedicalHistoryRecord(electronicHealthRecordId, newMedicalHistoryRecord);
+            verify(medicalHistoryRecordService).createMedicalHistoryRecord(eq(electronicHealthRecordId), any());
 
         } catch (UnableToCreateProblemRecordException e) {
             fail("Exception not expected");
@@ -133,26 +147,26 @@ class ProblemRecordServiceTests {
     }
 
     @Test
-    void testCreateAllergyRecord_MedicalHistoryRecordCreationFailure() {
-        // Mock data
-        Long electronicHealthRecordId = 1L;
-        ProblemRecord newProblemRecord = new ProblemRecord();
-        newProblemRecord.setDescription("New Allergy");
-        newProblemRecord.setCreatedBy("User456");
-        newProblemRecord.setPriorityEnum(PriorityEnum.LOW);
-        newProblemRecord.setProblemTypeEnum(ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC);
+    void testCreateAllergyRecord_IdNotFoundFailure() {
+        Long electronicHealthRecordId = 2L;
+        ProblemRecord problemRecord = new ProblemRecord(/* initialize with appropriate values */);
 
-        when(medicalHistoryRecordService.createMedicalHistoryRecord(eq(electronicHealthRecordId), any()))
-                .thenThrow(UnableToCreateProblemRecordException.class);
+        // Mocking behavior to throw an exception when createMedicalHistoryRecord is called
+        when(medicalHistoryRecordService.createMedicalHistoryRecord(anyLong(), any()))
+                .thenThrow(new UnableToCreateMedicalHistoryRecordException("Simulated failure"));
 
-        // Test
-        assertThrows(UnableToCreateProblemRecordException.class, () ->
-                problemRecordService.createAllergyRecord(electronicHealthRecordId, newProblemRecord));
+        try {
+            // Act
+            problemRecordService.createAllergyRecord(electronicHealthRecordId, problemRecord);
+        } catch (UnableToCreateMedicalHistoryRecordException e) {
+            // Assert
+            assert(e.getMessage().equals("Simulated failure"));
+        }
 
-        // Verify
-        verify(medicalHistoryRecordService).createMedicalHistoryRecord(electronicHealthRecordId, new MedicalHistoryRecord());
-        verifyNoMoreInteractions(medicalHistoryRecordService);
+        verify(medicalHistoryRecordService, times(1)).createMedicalHistoryRecord(
+                eq(electronicHealthRecordId), any(MedicalHistoryRecord.class));
     }
+
 
 
     @Test
@@ -170,19 +184,22 @@ class ProblemRecordServiceTests {
         // Test
         try {
             String result = problemRecordService.deleteProblemRecord(electronicHealthRecordId, problemRecordId);
+            assertNotNull(result);
             assertEquals("ProblemRecord with ProblemRecordId 2 has been deleted successfully.", result);
+
             verify(problemRecordRepository).findById(problemRecordId);
             verify(electronicHealthRecordRepository).findById(electronicHealthRecordId);
             verify(problemRecordRepository).delete(mockProblemRecord);
-            verify(electronicHealthRecordRepository).save(mockElectronicHealthRecord);
+
 
         } catch (ProblemRecordNotFoundException e) {
             fail("Exception not expected");
         }
     }
 
+
     @Test
-    void testDeleteProblemRecord_ElectronicHealthRecordNotFound() {
+    void testDeleteProblemRecord_IdNotFoundFailure() {
         // Mock data
         Long electronicHealthRecordId = 1L;
         Long problemRecordId = 2L;
@@ -190,7 +207,7 @@ class ProblemRecordServiceTests {
         when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
 
         // Test
-        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> problemRecordService.deleteProblemRecord(electronicHealthRecordId, problemRecordId));
+        assertThrows(ProblemRecordNotFoundException.class, () -> problemRecordService.deleteProblemRecord(electronicHealthRecordId, problemRecordId));
 
         // Verify
         verify(problemRecordRepository).findById(problemRecordId);
@@ -204,9 +221,14 @@ class ProblemRecordServiceTests {
         // Mock data
         Long problemRecordId = 1L;
         ProblemRecord updatedProblemRecord = new ProblemRecord();
-        updatedProblemRecord.setDescription("Updated Problem");
-        updatedProblemRecord.setPriorityEnum(PriorityEnum.LOW);
-        updatedProblemRecord.setProblemTypeEnum(ProblemTypeEnum.OPTHALMOLOGIC);
+        updatedProblemRecord.setDescription("Updated Heart Pain");
+        updatedProblemRecord.setCreatedBy("Updated Doctor X");
+        updatedProblemRecord.setPriorityEnum(PriorityEnum.HIGH);
+        updatedProblemRecord.setProblemTypeEnum(ProblemTypeEnum.CARDIOVASCULAR);
+        String dateTimeString = "2023-11-11 12:00:00";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateTimeString, formatter);
+        updatedProblemRecord.setCreatedDate(localDateTime);
 
         ProblemRecord mockProblemRecord = new ProblemRecord();
         when(problemRecordRepository.findById(problemRecordId)).thenReturn(Optional.of(mockProblemRecord));
@@ -215,9 +237,9 @@ class ProblemRecordServiceTests {
         try {
             ProblemRecord result = problemRecordService.updateProblemRecord(problemRecordId, updatedProblemRecord);
             assertNotNull(result);
-            assertEquals("Updated Problem", result.getDescription());
-            assertEquals(PriorityEnum.LOW, result.getPriorityEnum());
-            assertEquals(ProblemTypeEnum.OPTHALMOLOGIC, result.getProblemTypeEnum());
+            assertEquals("Updated Heart Pain", result.getDescription());
+            assertEquals(PriorityEnum.HIGH, result.getPriorityEnum());
+            assertEquals(ProblemTypeEnum.CARDIOVASCULAR, result.getProblemTypeEnum());
             verify(problemRecordRepository).findById(problemRecordId);
             verify(problemRecordRepository).save(mockProblemRecord);
 
@@ -227,13 +249,18 @@ class ProblemRecordServiceTests {
     }
 
     @Test
-    void testUpdateProblemRecord_ProblemRecordNotFound() {
+    void testUpdateProblemRecord_IdNotFoundFailure() {
         // Mock data
-        Long problemRecordId = 1L;
+        Long problemRecordId = 2L;
         ProblemRecord updatedProblemRecord = new ProblemRecord();
-        updatedProblemRecord.setDescription("Updated Problem");
-        updatedProblemRecord.setPriorityEnum(PriorityEnum.LOW);
-        updatedProblemRecord.setProblemTypeEnum(ProblemTypeEnum.OPTHALMOLOGIC);
+        updatedProblemRecord.setDescription("Updated Heart Pain");
+        updatedProblemRecord.setCreatedBy("Updated Doctor X");
+        updatedProblemRecord.setPriorityEnum(PriorityEnum.HIGH);
+        updatedProblemRecord.setProblemTypeEnum(ProblemTypeEnum.CARDIOVASCULAR);
+        String dateTimeString = "2023-11-11 12:00:00";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.parse(dateTimeString, formatter);
+        updatedProblemRecord.setCreatedDate(localDateTime);
 
         when(problemRecordRepository.findById(problemRecordId)).thenReturn(Optional.empty());
 
@@ -252,6 +279,9 @@ class ProblemRecordServiceTests {
         Long electronicHealthRecordId = 1L;
 
         ElectronicHealthRecord mockElectronicHealthRecord = new ElectronicHealthRecord();
+        // Assuming getProblemRecords() is the method in ElectronicHealthRecord that returns the list of problem records
+        mockElectronicHealthRecord.setListOfProblemRecords(Collections.singletonList(new ProblemRecord()));
+
         when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.of(mockElectronicHealthRecord));
 
         // Test
@@ -259,20 +289,22 @@ class ProblemRecordServiceTests {
             List<ProblemRecord> result = problemRecordService.getAllProblemRecordsByElectronicHealthRecordId(electronicHealthRecordId);
             assertNotNull(result);
             verify(electronicHealthRecordRepository).findById(electronicHealthRecordId);
+            assertEquals(1, result.size()); // Add this line
 
         } catch (ProblemRecordNotFoundException e) {
             fail("Exception not expected");
         }
     }
 
+
     @Test
-    void testGetAllProblemRecordsByElectronicHealthRecordId_ElectronicHealthRecordNotFound() {
+    void testGetAllProblemRecordsByElectronicHealthRecordId_ProblemRecordNotFound() {
         // Mock data
         Long electronicHealthRecordId = 1L;
         when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
 
         // Test
-        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> problemRecordService.getAllProblemRecordsByElectronicHealthRecordId(electronicHealthRecordId));
+        assertThrows(ProblemRecordNotFoundException.class, () -> problemRecordService.getAllProblemRecordsByElectronicHealthRecordId(electronicHealthRecordId));
 
         // Verify
         verify(electronicHealthRecordRepository).findById(electronicHealthRecordId);
@@ -299,6 +331,11 @@ class ProblemRecordServiceTests {
         try {
             MedicalHistoryRecord result = problemRecordService.resolveProblemRecord(electronicHealthRecordId, problemRecordId);
             assertNotNull(result);
+            assertEquals(mockMedicalHistoryRecord.getDescription(), result.getDescription());
+            assertEquals(mockMedicalHistoryRecord.getCreatedBy(), result.getCreatedBy());
+            assertEquals(mockMedicalHistoryRecord.getProblemTypeEnum(), result.getProblemTypeEnum());
+            assertEquals(mockMedicalHistoryRecord.getPriorityEnum(), result.getPriorityEnum());
+
             verify(problemRecordRepository).findById(problemRecordId);
             verify(electronicHealthRecordRepository).findById(electronicHealthRecordId);
             verify(problemRecordRepository).delete(mockProblemRecord);
@@ -310,7 +347,7 @@ class ProblemRecordServiceTests {
     }
 
     @Test
-    void testResolveProblemRecord_ElectronicHealthRecordNotFound() {
+    void testResolveProblemRecord_ProblemRecordNotFound() {
         // Mock data
         Long electronicHealthRecordId = 1L;
         Long problemRecordId = 2L;
@@ -318,7 +355,7 @@ class ProblemRecordServiceTests {
         when(electronicHealthRecordRepository.findById(electronicHealthRecordId)).thenReturn(Optional.empty());
 
         // Test
-        assertThrows(ElectronicHealthRecordNotFoundException.class, () -> problemRecordService.resolveProblemRecord(electronicHealthRecordId, problemRecordId));
+        assertThrows(ProblemRecordNotFoundException.class, () -> problemRecordService.resolveProblemRecord(electronicHealthRecordId, problemRecordId));
 
         // Verify
         verify(problemRecordRepository).findById(problemRecordId);

@@ -12,10 +12,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -151,7 +148,10 @@ public class AppointmentService {
   }
 
   public List<Appointment> viewPatientAppointments(String patientUsername) {
-    return appointmentRepository.findAllByPatientUsername(patientUsername);
+    List<Appointment> toReturn = new ArrayList<>();
+    toReturn.addAll(electronicHealthRecordRepository.findByPatientUsername(patientUsername).get().getListOfPastAppointments());
+    toReturn.addAll(appointmentRepository.findAllByPatientUsername(patientUsername));
+    return toReturn;
   }
 
 //  public List<Appointment> viewStaffAppointments(Integer startDay, Integer startMonth,

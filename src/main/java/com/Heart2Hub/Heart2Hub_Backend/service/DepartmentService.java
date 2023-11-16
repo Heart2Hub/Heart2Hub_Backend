@@ -73,7 +73,7 @@ public class DepartmentService {
 
   public String deleteDepartment(Long departmentId) throws DepartmentNotFoundException {
     if (!isLoggedInUserAdmin()) {
-      throw new UnableToCreateDepartmentException(
+      throw new UnableToDeleteDepartmentException(
           "Staff cannot delete departments as he/she is not an admin.");
     }
     try {
@@ -97,7 +97,7 @@ public class DepartmentService {
   public Department updateDepartment(Long departmentId, Department updatedDepartment)
       throws DepartmentNotFoundException {
     if (!isLoggedInUserAdmin()) {
-      throw new UnableToCreateDepartmentException(
+      throw new UnableToUpdateDepartmentException(
           "Staff cannot update sub departments as he/she is not an Admin.");
     }
     try {
@@ -123,7 +123,7 @@ public class DepartmentService {
       List<Department> departmentList = departmentRepository.findByNameContainingIgnoreCase(name);
       return departmentList;
     } catch (Exception ex) {
-      throw new SubDepartmentNotFoundException(ex.getMessage());
+      throw new DepartmentNotFoundException(ex.getMessage());
     }
   }
 

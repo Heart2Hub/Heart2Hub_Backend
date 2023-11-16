@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.ChatMessage;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.MessageTypeEnum;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateChatMessageException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ChatMessageRepository;
 import com.Heart2Hub.Heart2Hub_Backend.service.ChatMessageService;
 import junit.runner.Version;
@@ -16,11 +17,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+//@SpringBootTest
 class ChatMessageServiceTests {
 
     @InjectMocks
@@ -53,13 +54,13 @@ class ChatMessageServiceTests {
 
     @Test
     void testSaveChatMessage_Failure() {
-        // Mocking
         ChatMessage chatMessage = new ChatMessage();
-        when(chatMessageRepository.save(chatMessage)).thenReturn(null);
+        doThrow(new DataIntegrityViolationException("Simulating ConstraintViolationException")).when(chatMessageRepository).save(chatMessage);
 
-        // Test
-        ChatMessage result = chatMessageService.saveChatMessage(chatMessage);
-        assertNull(result);
+        // Test and verify exception
+        assertThrows(UnableToCreateChatMessageException.class, () -> {
+            chatMessageService.saveChatMessage(chatMessage);
+        });
 
         // Verify
         verify(chatMessageRepository, times(1)).save(chatMessage);

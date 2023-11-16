@@ -8,6 +8,7 @@ import com.Heart2Hub.Heart2Hub_Backend.enumeration.ItemTypeEnum;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.ConsumableEquipmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateConsumableEquipmentException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToUpdateConsumableEquipmentException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.AllocatedInventoryRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ConsumableEquipmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
@@ -118,24 +119,24 @@ public class ConsumableEquipmentService {
                 ConsumableEquipment consumableEquipment = consumableEquipmentOptional.get();
                 String name = consumableEquipment.getInventoryItemName();
                 if (name.trim().equals("")) {
-                    throw new UnableToCreateConsumableEquipmentException("Name must be present.");
+                    throw new UnableToUpdateConsumableEquipmentException("Name must be present.");
                 }
                 String description = consumableEquipment.getInventoryItemDescription();
                 if (description.trim().equals("")) {
-                    throw new UnableToCreateConsumableEquipmentException("Description must be present.");
+                    throw new UnableToUpdateConsumableEquipmentException("Description must be present.");
                 }
                 ItemTypeEnum itemTypeEnum = consumableEquipment.getItemTypeEnum();
                 if (itemTypeEnum == null) {
-                    throw new UnableToCreateConsumableEquipmentException("Item Type must be present");
+                    throw new UnableToUpdateConsumableEquipmentException("Item Type must be present");
                 }
                 Integer quantity = consumableEquipment.getQuantityInStock();
                 System.out.println("Quantity " + updatedConsumableEquipment.getQuantityInStock());
                 if (updatedConsumableEquipment.getQuantityInStock() < 0) {
-                    throw new UnableToCreateConsumableEquipmentException("Quantity in stock cannot be less than 0");
+                    throw new UnableToUpdateConsumableEquipmentException("Quantity in stock cannot be less than 0");
                 }
                 BigDecimal price = consumableEquipment.getRestockPricePerQuantity();
                 if (price.equals(BigDecimal.ZERO)) {
-                    throw new UnableToCreateConsumableEquipmentException("Price must be more than 0.00");
+                    throw new UnableToUpdateConsumableEquipmentException("Price must be more than 0.00");
                 }
                 if (updatedConsumableEquipment.getInventoryItemName() != null) consumableEquipment.setInventoryItemName(updatedConsumableEquipment.getInventoryItemName());
                 if (updatedConsumableEquipment.getInventoryItemDescription() != null) consumableEquipment.setInventoryItemDescription(updatedConsumableEquipment.getInventoryItemDescription());

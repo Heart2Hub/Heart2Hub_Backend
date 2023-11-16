@@ -17,6 +17,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
+
 @RunWith(SpringRunner.class)
 class ImageDocumentServiceTests {
 
@@ -33,7 +35,7 @@ class ImageDocumentServiceTests {
 
     @Test
     void testCreateImageDocument() throws UnableToCreateImageDocumentException {
-        ImageDocument imageDocument = new ImageDocument();
+        ImageDocument imageDocument = new ImageDocument("Id1.png", LocalDateTime.of(2023, 11, 11, 12, 0, 0));
 
         // Mocking the repository to return the same image document
         when(imageDocumentRepository.save(imageDocument)).thenReturn(imageDocument);
@@ -46,8 +48,8 @@ class ImageDocumentServiceTests {
     }
 
     @Test
-    void testCreateImageDocumentException() {
-        ImageDocument imageDocument = new ImageDocument();
+    void testCreateImageDocument_NullImageLinkFailure() {
+        ImageDocument imageDocument = new ImageDocument("null", LocalDateTime.of(2023, 11, 11, 12, 0, 0));
 
         // Mocking the repository to throw an exception
         when(imageDocumentRepository.save(imageDocument)).thenThrow(new RuntimeException("Database error"));

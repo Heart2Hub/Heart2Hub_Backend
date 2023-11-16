@@ -78,7 +78,7 @@ public class MedicalHistoryRecordService {
             List<MedicalHistoryRecord> medicalHistoryRecordList = electronicHealthRecordRepository.findById(electronicHealthRecordId).get().getListOfMedicalHistoryRecords();
             return medicalHistoryRecordList;
         } catch (Exception ex) {
-            throw new MedicalHistoryRecordNotFoundException(ex.getMessage());
+            throw new ElectronicHealthRecordNotFoundException(ex.getMessage());
         }
     }
 
