@@ -4,6 +4,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ProblemRecord;
 import com.Heart2Hub.Heart2Hub_Backend.exception.ElectronicHealthRecordNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.ProblemRecordNotFoundException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateMedicalHistoryRecordException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateProblemRecordException;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ProblemRecordRepository;
@@ -71,7 +72,7 @@ public class ProblemRecordService {
       return newMedicalHistoryRecord;
     } catch (
         Exception ex) {
-      throw new ProblemRecordNotFoundException(ex.getMessage());
+      throw new UnableToCreateMedicalHistoryRecordException(ex.getMessage());
     }
   }
 

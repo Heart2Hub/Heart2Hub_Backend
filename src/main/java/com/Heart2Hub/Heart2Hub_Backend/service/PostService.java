@@ -51,7 +51,7 @@ public class PostService {
 
     public Post createPost(Post post, Long staffId, ImageDocument imageDocument) {
         Staff staff = staffRepository.findById(staffId)
-                .orElseThrow(() -> new StaffNotFoundException("Staff not found with id: " + staffId));
+                .orElseThrow(() -> new UnableToCreatePostException("Staff not found with id: " + staffId));
 
         post.setStaff(staff);
 
