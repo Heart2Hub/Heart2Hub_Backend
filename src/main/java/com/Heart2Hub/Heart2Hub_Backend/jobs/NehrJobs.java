@@ -3,6 +3,7 @@ package com.Heart2Hub.Heart2Hub_Backend.jobs;
 import com.Heart2Hub.Heart2Hub_Backend.dto.NehrDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.ElectronicHealthRecord;
 import com.Heart2Hub.Heart2Hub_Backend.exception.ElectronicHealthRecordNotFoundException;
+import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreatePatientException;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.NehrMapper;
 import com.Heart2Hub.Heart2Hub_Backend.service.ElectronicHealthRecordService;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -29,8 +30,8 @@ public class NehrJobs {
         this.electronicHealthRecordService = electronicHealthRecordService;
     }
 
-    // @Scheduled(cron = "0 0 2 * * *") // Pull every 2am for deployment
-//    @Scheduled(cron = "0 * * * * *") // Pull every minute for debugging
+    // @Scheduled(cron = "0 0 2 * * *") // Push every 2am for deployment
+//    @Scheduled(cron = "0 * * * * *") // Push every minute for debugging
 //    @SchedulerLock(name = "pushToNehr")
 //    public void pushToNehr() {
 //        LOGGER.info("Pushing to NEHR at "+ LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
@@ -39,17 +40,23 @@ public class NehrJobs {
 //            for (ElectronicHealthRecord record : records) {
 //                RestTemplate restTemplate = new RestTemplate();
 //                String nricToUpdate = record.getNric();
+//                String endpointUrl = "http://localhost:3002/records/" + nricToUpdate;
+//                HttpHeaders headers = new HttpHeaders();
+//                headers.set("encoded-message", electronicHealthRecordService.encodeSecretMessage());
+//                headers.setContentType(MediaType.APPLICATION_JSON);
 //                NehrMapper nehrMapper = new NehrMapper();
 //                NehrDTO payload = nehrMapper.convertToDto(record);
-//                String nehrUpdateUrl = "http://localhost:3002/records/" + nricToUpdate;
-//                HttpHeaders headers = new HttpHeaders();
-//                headers.setContentType(MediaType.APPLICATION_JSON);
 //                HttpEntity<NehrDTO> requestEntity = new HttpEntity<>(payload, headers);
-//                restTemplate.exchange(nehrUpdateUrl, HttpMethod.PUT, requestEntity, NehrDTO.class);
+//                ResponseEntity<NehrDTO> responseEntity = restTemplate.exchange(endpointUrl, HttpMethod.PUT, requestEntity, NehrDTO.class);
+//                if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+//                    NehrDTO nehrResponse = responseEntity.getBody();
+//                    LOGGER.info("Problem pushing to NEHR server: " + nehrResponse);
+//                }
+//
 //            }
 //            LOGGER.info("Updated records to NEHR server.");
 //        } catch (Exception ex) {
-//            LOGGER.info("Problem pushing to NEHR server.");
+//            LOGGER.info("Problem pushing to NEHR server: " + ex.getMessage());
 //        }
 //    }
 
