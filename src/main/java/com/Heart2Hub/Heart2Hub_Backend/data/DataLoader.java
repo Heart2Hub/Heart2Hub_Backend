@@ -1054,7 +1054,7 @@ public class DataLoader implements CommandLineRunner {
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
         // Cardiology admin shifts - Working hours (8am - 4pm)
-        shiftService.createShift("adminCardiology2", 10L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+        shiftService.createShift("adminCardiology1", 9L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
         // Cardiology diagnostic radiographers shifts - Working hours (8am - 4pm)
@@ -1119,7 +1119,7 @@ public class DataLoader implements CommandLineRunner {
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
         // Cardiology admin shifts - Working hours (8am - 4pm)
-        shiftService.createShift("adminCardiology1", 9L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+        shiftService.createShift("adminCardiology2", 10L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
         // Cardiology diagnostic radiographers shifts - Working hours (8am - 4pm)
