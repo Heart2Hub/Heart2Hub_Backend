@@ -959,7 +959,7 @@ public class DataLoader implements CommandLineRunner {
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
         // Cardiology diagnostic radiographers shifts - Working hours (8am - 4pm)
-        shiftService.createShift("diagnoticRadiographersCardiology1", 11L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+        shiftService.createShift("diagnoticRadiographersCardiology3", 11L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
         shiftService.createShift("diagnoticRadiographersCardiology2", 12L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
@@ -1058,7 +1058,7 @@ public class DataLoader implements CommandLineRunner {
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
         // Cardiology diagnostic radiographers shifts - Working hours (8am - 4pm)
-        shiftService.createShift("diagnoticRadiographersCardiology3", 11L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+        shiftService.createShift("diagnoticRadiographersCardiology1", 11L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
         shiftService.createShift("diagnoticRadiographersCardiology4", 12L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
@@ -2058,7 +2058,7 @@ public class DataLoader implements CommandLineRunner {
                 MedicationOrder currentMedicationOrder = new MedicationOrder("Medication Order", 1, "Take with food", currentOrderStart, currentOrderEnd, false, "Dr. John Wick");
                 MedicationOrder completedMedicationOrder = new MedicationOrder("Medication Order", 1, "Take with food", pastMedicationOrderStart, pastMedicationOrderEnd, false, "Dr. John Wick");
                 medicationOrderService.createMedicationOrder(15L, admission.getAdmissionId(), currentMedicationOrder);
-                MedicationOrder completedMedicationOrder1 = medicationOrderService.createMedicationOrder(15L, admission.getAdmissionId(), completedMedicationOrder);
+                MedicationOrder completedMedicationOrder1 = medicationOrderService.createMedicationOrder(16L, admission.getAdmissionId(), completedMedicationOrder);
                 medicationOrderService.updateComplete(completedMedicationOrder1.getMedicationOrderId(), admission.getAdmissionId(), true);
 
                 InpatientTreatment completedInpatientTreatment = new InpatientTreatment("X-Ray Room 1 Cardiology (Level 3)", "No food 2 hours before", pastInpatientTreatmentStart, pastInpatientTreatmentEnd, false, true, "Meeeeeeeeelvin Tan (DIAGNOSTIC_RADIOGRAPHERS)");
