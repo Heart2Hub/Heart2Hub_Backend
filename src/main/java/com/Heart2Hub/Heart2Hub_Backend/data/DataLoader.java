@@ -856,15 +856,11 @@ public class DataLoader implements CommandLineRunner {
         // Cardiology doctor shifts - Working hours (8am - 4pm)
         shiftService.createShift("doctorCardiology1", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-        shiftService.createShift("doctorCardiology2", 2L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
-                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
         shiftService.createShift("doctorCardiology3", 3L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
         // Cardiology nurse shifts - Working hours (8am - 4pm)
         shiftService.createShift("nurseCardiology1", 4L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
-                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-        shiftService.createShift("nurseCardiology2", 5L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
         shiftService.createShift("nurseCardiology3", 6L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
@@ -903,8 +899,6 @@ public class DataLoader implements CommandLineRunner {
 
         // Pharmacy admin shifts - Working hours (8am - 4pm)
         shiftService.createShift("adminPharmacy1", 107L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
-                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-        shiftService.createShift("adminPharmacy2", 108L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
         // Psychiatry doctor shifts -  Working hours (8am - 4pm)
@@ -959,9 +953,9 @@ public class DataLoader implements CommandLineRunner {
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
         // Cardiology diagnostic radiographers shifts - Working hours (8am - 4pm)
-        shiftService.createShift("diagnoticRadiographersCardiology1", 11L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+        shiftService.createShift("diagnoticRadiographersCardiology3", 11L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-        shiftService.createShift("diagnoticRadiographersCardiology2", 12L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+        shiftService.createShift("diagnoticRadiographersCardiology4", 12L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
         // Cardiology dietitians shifts - Working hours (8am - 4pm)
@@ -1044,11 +1038,15 @@ public class DataLoader implements CommandLineRunner {
         // Cardiology doctor shifts - Working hours (8am - 4pm)
         shiftService.createShift("doctorCardiology1", 1L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+        shiftService.createShift("doctorCardiology2", 2L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
         shiftService.createShift("doctorCardiology3", 3L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
         // Cardiology nurse shifts - Working hours (8am - 4pm)
         shiftService.createShift("nurseCardiology1", 4L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+        shiftService.createShift("nurseCardiology2", 5L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
         shiftService.createShift("nurseCardiology3", 6L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
@@ -1056,11 +1054,13 @@ public class DataLoader implements CommandLineRunner {
         // Cardiology admin shifts - Working hours (8am - 4pm)
         shiftService.createShift("adminCardiology1", 9L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+        shiftService.createShift("adminCardiology2", 10L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
         // Cardiology diagnostic radiographers shifts - Working hours (8am - 4pm)
-        shiftService.createShift("diagnoticRadiographersCardiology3", 11L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+        shiftService.createShift("diagnoticRadiographersCardiology1", 11L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
-        shiftService.createShift("diagnoticRadiographersCardiology4", 12L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+        shiftService.createShift("diagnoticRadiographersCardiology2", 12L, new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
                 LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
 
         // Cardiology dietitians shifts - Working hours (8am - 4pm)
