@@ -105,11 +105,11 @@ class ConsumableEquipmentServiceTests {
     void testCreateConsumableEquipment() {
         // Mock data
         UsernamePasswordAuthenticationToken authentication = mock(UsernamePasswordAuthenticationToken.class);
-        User user = new User("doctorCardiology1", "password", Collections.emptyList());
+        User user = new User("staff1", "password1", Collections.emptyList());
         when(authentication.getPrincipal())
                 .thenReturn(user);
-        Optional<Staff> toReturn = Optional.of(new Staff("doctorCardiology1", "password", "Ernest", "Chan", 97882145L, StaffRoleEnum.DOCTOR, true));
-        when(staffRepository.findByUsername("doctorCardiology1"))
+        Optional<Staff> toReturn = Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.ADMIN, true));
+        when(staffRepository.findByUsername("staff1"))
                 .thenReturn(toReturn);
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
