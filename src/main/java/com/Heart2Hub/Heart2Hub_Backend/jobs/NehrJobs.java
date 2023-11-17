@@ -30,7 +30,7 @@ public class NehrJobs {
         this.electronicHealthRecordService = electronicHealthRecordService;
     }
 
-    // @Scheduled(cron = "0 0 2 * * *") // Push every 2am for deployment
+//    @Scheduled(cron = "0 0 2 * * *") // Push every 2am for deployment
 //    @Scheduled(cron = "0 * * * * *") // Push every minute for debugging
 //    @SchedulerLock(name = "pushToNehr")
 //    public void pushToNehr() {
@@ -52,7 +52,6 @@ public class NehrJobs {
 //                    NehrDTO nehrResponse = responseEntity.getBody();
 //                    LOGGER.info("Problem pushing to NEHR server: " + nehrResponse);
 //                }
-//
 //            }
 //            LOGGER.info("Updated records to NEHR server.");
 //        } catch (Exception ex) {
@@ -60,29 +59,42 @@ public class NehrJobs {
 //        }
 //    }
 
-    // This runs very often. May want to think of a way to improve efficiency. E.g. setting flags if updated.
-    // @Scheduled(cron = "0 0/30 * * * *") // Pull every half hour for deployment
+//     This runs very often. May want to think of a way to improve efficiency. E.g. setting flags if updated.
+//     @Scheduled(cron = "0 0/30 * * * *") // Pull every half hour for deployment
 //    @Scheduled(cron = "0 * * * * *") // Pull every minute for debugging
 //    @SchedulerLock(name = "pullFromNehr")
 //    public void pullFromNehr() {
-//        LOGGER.info("Pulling NEHR records at" + LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
-//        RestTemplate restTemplate = new RestTemplate();
-//        NehrDTO[] nehrDTOS = restTemplate.getForObject("http://localhost:3002/records", NehrDTO[].class);
-//        if (nehrDTOS != null) {
-//            for (NehrDTO nehrDTO : nehrDTOS) {
-//                try {
-//                    NehrMapper nehrMapper = new NehrMapper();
-//                    ElectronicHealthRecord record = nehrMapper.convertToEntity(nehrDTO);
-//                    electronicHealthRecordService.updateCascadeElectronicHealthRecord(electronicHealthRecordService.findByNric(record.getNric()).getElectronicHealthRecordId(), record);
-//                } catch (ElectronicHealthRecordNotFoundException ex) {
-//                    LOGGER.info("EHR record not in Heart2Hub. Skipping...");
-//                } catch (Exception ex) {
-//                    LOGGER.info("Problem updating EHR record from NEHR server. Skipping...");
+//        try {
+//            LOGGER.info("Pulling NEHR records at" + LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
+//            RestTemplate restTemplate = new RestTemplate();
+//            String endpointUrl = "http://localhost:3002/records";
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.set("encoded-message", electronicHealthRecordService.encodeSecretMessage());
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+//            ResponseEntity<NehrDTO[]> responseEntity = restTemplate.exchange(
+//                    endpointUrl, HttpMethod.GET, requestEntity, NehrDTO[].class
+//            );
+//            NehrDTO[] nehrDTOS = responseEntity.getBody();
+//            if (nehrDTOS != null) {
+//                for (NehrDTO nehrDTO : nehrDTOS) {
+//                    try {
+//                        LOGGER.info("Updating record:" + nehrDTO);
+//                        NehrMapper nehrMapper = new NehrMapper();
+//                        ElectronicHealthRecord record = nehrMapper.convertToEntity(nehrDTO);
+//                        electronicHealthRecordService.updateCascadeElectronicHealthRecord(electronicHealthRecordService.findByNric(record.getNric()).getElectronicHealthRecordId(), record);
+//                    } catch (ElectronicHealthRecordNotFoundException ex) {
+//                        LOGGER.info("EHR record not in Heart2Hub. Skipping...");
+//                    } catch (Exception ex) {
+//                        LOGGER.info("Problem updating EHR record from NEHR server. Skipping...");
+//                    }
 //                }
+//                LOGGER.info("Updated records from NEHR server.");
+//            } else {
+//                LOGGER.info("Records are null from NEHR server.");
 //            }
-//            LOGGER.info("Updated records from NEHR server.");
-//        } else {
-//            LOGGER.info("Problem pulling from NEHR server.");
+//        } catch (Exception ex) {
+//            LOGGER.info("Problem pulling from NEHR server: " + ex.getMessage());
 //        }
 //    }
 
