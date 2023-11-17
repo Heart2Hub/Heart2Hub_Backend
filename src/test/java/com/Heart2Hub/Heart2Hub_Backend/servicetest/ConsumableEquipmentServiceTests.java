@@ -105,11 +105,11 @@ class ConsumableEquipmentServiceTests {
     void testCreateConsumableEquipment() {
         // Mock data
         UsernamePasswordAuthenticationToken authentication = mock(UsernamePasswordAuthenticationToken.class);
-        User user = new User("doctorCardiology1", "password", Collections.emptyList());
+        User user = new User("staff1", "password1", Collections.emptyList());
         when(authentication.getPrincipal())
                 .thenReturn(user);
-        Optional<Staff> toReturn = Optional.of(new Staff("doctorCardiology1", "password", "Ernest", "Chan", 97882145L, StaffRoleEnum.DOCTOR, true));
-        when(staffRepository.findByUsername("doctorCardiology1"))
+        Optional<Staff> toReturn = Optional.of(new Staff("staff1", "password1", "Elgin", "Chan", 97882145L, StaffRoleEnum.ADMIN, true));
+        when(staffRepository.findByUsername("staff1"))
                 .thenReturn(toReturn);
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -125,18 +125,12 @@ class ConsumableEquipmentServiceTests {
 
         // Test
 //        try {
-            ConsumableEquipment result = consumableEquipmentService.createConsumableEquipment(newConsumableEquipment);
-            assertNotNull(result);
-            assertEquals(newConsumableEquipment, result);
-//            assertEquals("New Consumable Equipment", result.getInventoryItemName());
-//            assertEquals("Description", result.getInventoryItemDescription());
-//            assertEquals(ItemTypeEnum.CONSUMABLE, result.getItemTypeEnum());
-//            assertEquals(10, result.getQuantityInStock());
-//            assertEquals(BigDecimal.valueOf(25.0), result.getRestockPricePerQuantity());
-            verify(consumableEquipmentRepository, times(1)).save(result);
-//        } catch (UnableToCreateConsumableEquipmentException e) {
-//            fail("Exception not expected");
-//        }
+        ConsumableEquipment result = consumableEquipmentService.createConsumableEquipment(newConsumableEquipment);
+        assertNotNull(result);
+        assertEquals(newConsumableEquipment, result);
+
+        verify(consumableEquipmentRepository, times(1)).save(result);
+
     }
     @Test
     void testCreateConsumableEquipment_NotAdmin() {

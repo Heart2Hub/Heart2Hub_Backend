@@ -1584,6 +1584,12 @@ public class DataLoader implements CommandLineRunner {
         appointmentService.updateAppointmentSwimlaneStatus(a8.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
         appointmentService.assignAppointmentToStaff(a8.getAppointmentId(), 5L, 8L);
 
+        appointmentService.assignAppointmentToStaff(a9.getAppointmentId(), 11L, -1L);
+        appointmentService.updateAppointmentSwimlaneStatus(a9.getAppointmentId(), SwimlaneStatusEnum.TRIAGE);
+        appointmentService.assignAppointmentToStaff(a9.getAppointmentId(), 8L, 11L);
+        appointmentService.updateAppointmentSwimlaneStatus(a9.getAppointmentId(), SwimlaneStatusEnum.CONSULTATION);
+        appointmentService.assignAppointmentToStaff(a9.getAppointmentId(), 5L, 8L);
+
         //For SR4 Inpatient Use Cases
         appointmentService.updateAppointmentSwimlaneStatus(a3.getAppointmentId(), SwimlaneStatusEnum.DISCHARGE);
         appointmentService.assignAppointmentToStaff(a3.getAppointmentId(), 11L, 5L);
