@@ -164,6 +164,7 @@ public class ElectronicHealthRecordService {
             hmac.init(secretKeySpec);
 
             byte[] hash = hmac.doFinal(SECRET_MESSAGE.getBytes(StandardCharsets.UTF_8));
+            System.out.println("SECRET HERE: " +  Base64.getEncoder().encodeToString(hash));
             return Base64.getEncoder().encodeToString(hash);
 
         } catch (Exception e) {
@@ -540,8 +541,8 @@ public class ElectronicHealthRecordService {
                             TreatmentPlanRecord treatmentPlanRecordToUpdate = treatmentPlanRecordToUpdateOptional.get();
 
                             treatmentPlanRecordToUpdate.setDescription(treatmentPlanRecord.getDescription());
-                            treatmentPlanRecordToUpdate.setPrimaryDoctor(treatmentPlanRecord.getPrimaryDoctor());
-                            treatmentPlanRecordToUpdate.setSecondaryDoctors(treatmentPlanRecord.getSecondaryDoctors());
+//                            treatmentPlanRecordToUpdate.setPrimaryDoctor(treatmentPlanRecord.getPrimaryDoctor());
+//                            treatmentPlanRecordToUpdate.setSecondaryDoctors(treatmentPlanRecord.getSecondaryDoctors());
                             treatmentPlanRecordToUpdate.setStartDate(treatmentPlanRecord.getStartDate());
                             treatmentPlanRecordToUpdate.setEndDate(treatmentPlanRecord.getEndDate());
                             treatmentPlanRecordToUpdate.setTreatmentPlanTypeEnum(treatmentPlanRecord.getTreatmentPlanTypeEnum());

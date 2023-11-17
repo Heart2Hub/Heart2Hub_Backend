@@ -39,21 +39,21 @@ public class MedicationService {
         this.electronicHealthRecordRepository = electronicHealthRecordRepository;
     }
 
-    public boolean isLoggedInPharmacist() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        boolean isPharmacist = false;
-        if (authentication != null) {
-            User user = (User) authentication.getPrincipal();
-            Optional<Staff> currStaff = staffRepository.findByUsername(user.getUsername());
-            if (currStaff.isPresent()) {
-                StaffRoleEnum role = currStaff.get().getStaffRoleEnum();
-                if (role == StaffRoleEnum.PHARMACIST) {
-                    isPharmacist = true;
-                }
-            }
-        }
-        return isPharmacist;
-    }
+//    public boolean isLoggedInPharmacist() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        boolean isPharmacist = false;
+//        if (authentication != null) {
+//            User user = (User) authentication.getPrincipal();
+//            Optional<Staff> currStaff = staffRepository.findByUsername(user.getUsername());
+//            if (currStaff.isPresent()) {
+//                StaffRoleEnum role = currStaff.get().getStaffRoleEnum();
+//                if (role == StaffRoleEnum.PHARMACIST) {
+//                    isPharmacist = true;
+//                }
+//            }
+//        }
+//        return isPharmacist;
+//    }
 
     public List<String> getAllergenEnums() {
         List<String> allergenEnumsString = new ArrayList<>();
@@ -137,7 +137,7 @@ public class MedicationService {
                     }
 
                 medicationRepository.delete(medication);
-                return "Consumable Equipment with inventoryItemId  " + inventoryItemId + " has been deleted successfully.";
+                return "Medication with inventoryItemId  " + inventoryItemId + " has been deleted successfully.";
             } else {
                 throw new MedicationNotFoundException("Medication with ID: " + inventoryItemId + " is not found");
             }
