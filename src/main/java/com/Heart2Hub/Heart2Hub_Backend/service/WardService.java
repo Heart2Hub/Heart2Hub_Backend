@@ -65,17 +65,17 @@ public class WardService {
             Integer capacity = newWard.getCapacity();
             String location = newWard.getLocation();
             if (name == null) {
-                throw new UnableToCreateDepartmentException("Name must be present.");
+                throw new UnableToCreateWardException("Name must be present.");
             }
             if (capacity == null) {
-                throw new UnableToCreateDepartmentException("Capacity must be present.");
+                throw new UnableToCreateWardException("Capacity must be present.");
             }
             if (location == null) {
-                throw new UnableToCreateDepartmentException("Location must be present.");
+                throw new UnableToCreateWardException("Location must be present.");
             }
             List<WardClass> wardClassList = wardClassRepository.findByWardClassNameContainingIgnoreCase(wardClassName);
             if (wardClassList.size() == 0) {
-                throw new UnableToCreateDepartmentException("Ward class not found.");
+                throw new UnableToCreateWardException("Ward class not found.");
             } else {
                 WardClass wc = wardClassList.get(0);
                 newWard.setWardClass(wc);
@@ -130,7 +130,7 @@ public class WardService {
             List<Ward> wardList = wardRepository.findByNameContainingIgnoreCase(name);
             return wardList;
         } catch (Exception ex) {
-            throw new SubDepartmentNotFoundException(ex.getMessage());
+            throw new DepartmentNotFoundException(ex.getMessage());
         }
     }
 

@@ -364,14 +364,14 @@ class ConsumableEquipmentServiceTests {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Test
-        ConsumableEquipment newConsumableEquipment = new ConsumableEquipment();
-        newConsumableEquipment.setInventoryItemName("New Consumable Equipment");
-        newConsumableEquipment.setInventoryItemDescription("Description");
-        newConsumableEquipment.setItemTypeEnum(ItemTypeEnum.CONSUMABLE);
-        newConsumableEquipment.setQuantityInStock(10);
-        newConsumableEquipment.setRestockPricePerQuantity(BigDecimal.valueOf(25.0));
+        Long inventoryItemId = 1L;
+        ConsumableEquipment mockConsumableEquipment = new ConsumableEquipment();
+        when(consumableEquipmentRepository.findById(inventoryItemId)).thenReturn(Optional.of(mockConsumableEquipment));
 
-        assertThrows(UnableToCreateConsumableEquipmentException.class, () -> consumableEquipmentService.createConsumableEquipment(newConsumableEquipment));
+        List<AllocatedInventory> mockAllocatedInventoryList = new ArrayList<>();
+        when(allocatedInventoryRepository.findAllocatedInventoriesByConsumableEquipment(mockConsumableEquipment)).thenReturn(mockAllocatedInventoryList);
+
+        assertThrows(UnableToCreateConsumableEquipmentException.class, () -> consumableEquipmentService.deleteConsumableEquipment(inventoryItemId));
 
         // Verify
         verify(allocatedInventoryRepository, never()).delete(any(AllocatedInventory.class));
@@ -747,8 +747,8 @@ class ConsumableEquipmentServiceTests {
     @Test
     void testGetAllConsumableEquipmentByName() {
         // Mock data
-ConsumableEquipment consumableEquipment = new ConsumableEquipment();
-when(consumableEquipmentRepository.findAll()).thenReturn(Collections.singletonList(consumableEquipment));
+        ConsumableEquipment consumableEquipment = new ConsumableEquipment();
+        when(consumableEquipmentRepository.findAll()).thenReturn(Collections.singletonList(consumableEquipment));
 
         // Test
 
