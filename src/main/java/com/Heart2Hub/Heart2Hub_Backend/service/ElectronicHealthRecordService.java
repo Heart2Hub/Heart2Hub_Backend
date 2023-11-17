@@ -541,8 +541,8 @@ public class ElectronicHealthRecordService {
                             TreatmentPlanRecord treatmentPlanRecordToUpdate = treatmentPlanRecordToUpdateOptional.get();
 
                             treatmentPlanRecordToUpdate.setDescription(treatmentPlanRecord.getDescription());
-                            treatmentPlanRecordToUpdate.setPrimaryDoctor(treatmentPlanRecord.getPrimaryDoctor());
-                            treatmentPlanRecordToUpdate.setSecondaryDoctors(treatmentPlanRecord.getSecondaryDoctors());
+//                            treatmentPlanRecordToUpdate.setPrimaryDoctor(treatmentPlanRecord.getPrimaryDoctor());
+//                            treatmentPlanRecordToUpdate.setSecondaryDoctors(treatmentPlanRecord.getSecondaryDoctors());
                             treatmentPlanRecordToUpdate.setStartDate(treatmentPlanRecord.getStartDate());
                             treatmentPlanRecordToUpdate.setEndDate(treatmentPlanRecord.getEndDate());
                             treatmentPlanRecordToUpdate.setTreatmentPlanTypeEnum(treatmentPlanRecord.getTreatmentPlanTypeEnum());

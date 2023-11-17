@@ -31,12 +31,6 @@ public class TreatmentPlanRecord {
     private String description;
 
     @NotNull
-    private String primaryDoctor;
-
-    @ElementCollection
-    private List<String> secondaryDoctors;
-
-    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startDate;
