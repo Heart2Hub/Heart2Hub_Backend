@@ -190,6 +190,7 @@ public class DataLoader implements CommandLineRunner {
 
         createConversationData();
         createTransactionAnalysisData();
+        createDummyCart();
         //code ends here
 
         long endTime = System.currentTimeMillis();
@@ -1445,7 +1446,7 @@ public class DataLoader implements CommandLineRunner {
                 patient8.getElectronicHealthRecord().getNric(),
                 "Cardiology");
 
-        Appointment a9 = appointmentService.createNewAppointment("Hear Pulpitations",
+        Appointment a9 = appointmentService.createNewAppointment("Heart Pulpitations",
                 date3.toString(),
 //            LocalDateTime.now().minusDays(14).toString(),
                 "LOW",
@@ -1601,7 +1602,7 @@ public class DataLoader implements CommandLineRunner {
 
         //For SR4 Finance Use Cases
         appointmentService.updateAppointmentSwimlaneStatus(a9.getAppointmentId(), SwimlaneStatusEnum.DISCHARGE);
-        appointmentService.assignAppointmentToStaff(a9.getAppointmentId(), 5L, -1L);
+        appointmentService.assignAppointmentToStaff(a9.getAppointmentId(), 11L, 5L);
 
 
     }
@@ -1666,37 +1667,37 @@ public class DataLoader implements CommandLineRunner {
                         BigDecimal.TEN, BigDecimal.TEN, allergenList1, "", drugList1));
         Medication newMedication2 = medicationService.createMedication(
                 new Medication("Cetirizine 10mg Tablets (12 pieces)", "10mg per piece", ItemTypeEnum.MEDICINE, 100,
-                        BigDecimal.valueOf(5), BigDecimal.TEN, allergenList1, "Do not take with alcohol", drugList1));
+                        BigDecimal.TEN, BigDecimal.valueOf(5), allergenList1, "Do not take with alcohol", drugList1));
         Medication newMedication3 = medicationService.createMedication(
                 new Medication("Augmentin 625mg Tablets (12 pieces)", "625mg per piece", ItemTypeEnum.MEDICINE, 50,
-                        BigDecimal.valueOf(4), BigDecimal.TEN, allergenList2, "", drugList1));
+                        BigDecimal.TEN, BigDecimal.valueOf(4), allergenList2, "", drugList1));
         Medication newMedication4 = medicationService.createMedication(
                 new Medication("Metformin 500mg Tablets (12 pieces)", "500mg per piece", ItemTypeEnum.MEDICINE, 1000,
-                        BigDecimal.valueOf(2), BigDecimal.TEN, allergenList1, "Do not take with alcohol", drugList1));
+                        BigDecimal.TEN, BigDecimal.valueOf(2), allergenList1, "Do not take with alcohol", drugList1));
         Medication newMedication5 = medicationService.createMedication(
                 new Medication("Augmentin 228mg Suspension (1 bottle)", "5ml per bottle", ItemTypeEnum.MEDICINE, 100,
-                        BigDecimal.valueOf(3), BigDecimal.TEN, allergenList2, "", drugList1));
+                        BigDecimal.TEN, BigDecimal.valueOf(3), allergenList2, "", drugList1));
         Medication newMedication6 = medicationService.createMedication(
                 new Medication("Warfarin 1mg Tablet (1 piece)", "1mg per piece", ItemTypeEnum.MEDICINE_INPATIENT, 10000,
-                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList4));
+                        BigDecimal.TEN, BigDecimal.valueOf(1), allergenList1, "", drugList4));
         Medication newMedication7 = medicationService.createMedication(
                 new Medication("Warfarin 3mg Tablet (28 pieces)", "3mg per piece", ItemTypeEnum.MEDICINE, 10000,
-                        BigDecimal.valueOf(4), BigDecimal.valueOf(5), allergenList1, "", drugList1));
+                        BigDecimal.TEN, BigDecimal.valueOf(4), allergenList1, "", drugList1));
         Medication newMedication8 = medicationService.createMedication(
                 new Medication("Warfarin 3mg Tablet (1 piece)", "1mg per piece", ItemTypeEnum.MEDICINE_INPATIENT, 10000,
-                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList2));
+                        BigDecimal.TEN, BigDecimal.valueOf(1), allergenList1, "", drugList2));
         Medication newMedication9 = medicationService.createMedication(
                 new Medication("Augmentin 625mg Tablets (1 piece)", "625mg per piece", ItemTypeEnum.MEDICINE_INPATIENT, 50,
-                        BigDecimal.valueOf(4), BigDecimal.TEN, allergenList2, "", drugList1));
+                        BigDecimal.TEN, BigDecimal.valueOf(4), allergenList2, "", drugList1));
         Medication newMedication10 = medicationService.createMedication(
                 new Medication("Paracetamol 500 mg Tablets (1 piece)", "500mg per piece", ItemTypeEnum.MEDICINE_INPATIENT, 1000000,
-                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "", drugList1));
+                        BigDecimal.TEN, BigDecimal.valueOf(1), allergenList1, "", drugList1));
         Medication newMedication11 = medicationService.createMedication(
                 new Medication("Cetirizine 10mg Tablets (1 piece)", "10mg per piece", ItemTypeEnum.MEDICINE_INPATIENT, 10000,
-                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "Do not take with alcohol", drugList1));
+                        BigDecimal.TEN, BigDecimal.valueOf(1), allergenList1, "Do not take with alcohol", drugList1));
         Medication newMedication12 = medicationService.createMedication(
                 new Medication("Metformin 500mg Tablets (1 piece)", "500mg per piece", ItemTypeEnum.MEDICINE_INPATIENT, 1000,
-                        BigDecimal.valueOf(1), BigDecimal.valueOf(1), allergenList1, "Do not take with alcohol", drugList1));
+                        BigDecimal.TEN, BigDecimal.valueOf(1), allergenList1, "Do not take with alcohol", drugList1));
     }
     private void createServiceItemData() {
 
@@ -1835,7 +1836,7 @@ public class DataLoader implements CommandLineRunner {
 //            consumableEquipment));
         transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem(medication.getInventoryItemName(),
                 "Medication", 2,
-                medication.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(2)),
+                medication.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(2)),
                 medication));
         transactionItemService.addToCartDataLoader(Long.parseLong("1"), new TransactionItem(serviceItem.getInventoryItemName(),
                 "Service", 2,
@@ -1845,7 +1846,7 @@ public class DataLoader implements CommandLineRunner {
 
         transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem(medication2.getInventoryItemName(),
                 "Medication", 2,
-                medication2.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(2)),
+                medication2.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(2)),
                 medication2));
         transactionItemService.addToCartDataLoader(Long.parseLong("2"), new TransactionItem(serviceItem2.getInventoryItemName(),
                 "Service", 2,
@@ -1854,7 +1855,7 @@ public class DataLoader implements CommandLineRunner {
 
         transactionItemService.addToCartDataLoader(Long.parseLong("3"), new TransactionItem(medication3.getInventoryItemName(),
                 "Medication", 2,
-                medication3.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(2)),
+                medication3.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(2)),
                 medication3));
         transactionItemService.addToCartDataLoader(Long.parseLong("3"), new TransactionItem(serviceItem3.getInventoryItemName(),
                 "Service", 2,
@@ -1863,7 +1864,7 @@ public class DataLoader implements CommandLineRunner {
 
         transactionItemService.addToCartDataLoader(Long.parseLong("4"), new TransactionItem(medication4.getInventoryItemName(),
                 "Medication", 2,
-                medication4.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(2)),
+                medication4.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(2)),
                 medication4));
         transactionItemService.addToCartDataLoader(Long.parseLong("4"), new TransactionItem(serviceItem4.getInventoryItemName(),
                 "Service", 2,
@@ -1872,7 +1873,7 @@ public class DataLoader implements CommandLineRunner {
 
         transactionItemService.addToCartDataLoader(Long.parseLong("5"), new TransactionItem(medication5.getInventoryItemName(),
                 "Medication", 1,
-                medication5.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                medication5.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
                 medication5));
         transactionItemService.addToCartDataLoader(Long.parseLong("5"), new TransactionItem(serviceItem5.getInventoryItemName(),
                 "Service", 1,
@@ -1881,7 +1882,7 @@ public class DataLoader implements CommandLineRunner {
 
         transactionItemService.addToCartDataLoader(Long.parseLong("6"), new TransactionItem(medication6.getInventoryItemName(),
                 "Medication", 1,
-                medication6.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                medication6.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
                 medication6));
         transactionItemService.addToCartDataLoader(Long.parseLong("6"), new TransactionItem(serviceItem2.getInventoryItemName(),
                 "Service", 1,
@@ -1890,7 +1891,7 @@ public class DataLoader implements CommandLineRunner {
 
         transactionItemService.addToCartDataLoader(Long.parseLong("7"), new TransactionItem(medication7.getInventoryItemName(),
                 "Medication", 1,
-                medication7.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                medication7.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
                 medication7));
         transactionItemService.addToCartDataLoader(Long.parseLong("7"), new TransactionItem(serviceItem4.getInventoryItemName(),
                 "Service", 1,
@@ -1899,7 +1900,7 @@ public class DataLoader implements CommandLineRunner {
 
         transactionItemService.addToCartDataLoader(Long.parseLong("8"), new TransactionItem(medication8.getInventoryItemName(),
                 "Medication", 1,
-                medication8.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                medication8.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
                 medication8));
         transactionItemService.addToCartDataLoader(Long.parseLong("8"), new TransactionItem(serviceItem3.getInventoryItemName(),
                 "Service", 1,
@@ -1908,7 +1909,7 @@ public class DataLoader implements CommandLineRunner {
 
         transactionItemService.addToCartDataLoader(Long.parseLong("9"), new TransactionItem(medication3.getInventoryItemName(),
                 "Medication", 1,
-                medication3.getRestockPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                medication3.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
                 medication3));
         transactionItemService.addToCartDataLoader(Long.parseLong("9"), new TransactionItem(serviceItem4.getInventoryItemName(),
                 "Service", 1,
@@ -1964,7 +1965,7 @@ public class DataLoader implements CommandLineRunner {
 
         for (int month = 1; month <= 10; month++) {
             for (int j = 0; j < itemList.size(); j++) {
-                int randomQuantity = random.nextInt(5) + 1;
+                int randomQuantity = random.nextInt(3) + 1;
                 InventoryItem item = itemList.get(j);
                 if (item instanceof ServiceItem ) {
                     ServiceItem serviceItem = (ServiceItem) item;
@@ -2115,6 +2116,33 @@ public class DataLoader implements CommandLineRunner {
         convo3.getListOfChatMessages().add(msg4);
 //        convo4.getListOfChatMessages().add(msg5);
 //        convo4.getListOfChatMessages().add(msg4);
+
+    }
+
+    private void createDummyCart() {
+        Medication medication = (Medication) inventoryItemRepository.findById(Long.parseLong("6")).get();
+        Medication medication2 = (Medication) inventoryItemRepository.findById(Long.parseLong("7")).get();
+        Medication medication3 = (Medication) inventoryItemRepository.findById(Long.parseLong("9")).get();
+        ServiceItem serviceItem = (ServiceItem) inventoryItemRepository.findById(Long.parseLong("18")).get();
+        transactionItemService.addToCartDataLoader(Long.parseLong("9"), new TransactionItem(medication.getInventoryItemName(),
+                medication.getInventoryItemName(), 5,
+                medication.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                medication));
+
+        transactionItemService.addToCartDataLoader(Long.parseLong("9"), new TransactionItem(medication2.getInventoryItemName(),
+                medication2.getInventoryItemName(), 5,
+                medication2.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                medication2));
+
+        transactionItemService.addToCartDataLoader(Long.parseLong("9"), new TransactionItem(medication3.getInventoryItemName(),
+                medication3.getInventoryItemName(), 5,
+                medication3.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                medication3));
+
+        transactionItemService.addToCartDataLoader(Long.parseLong("9"), new TransactionItem(serviceItem.getInventoryItemName(),
+                serviceItem.getInventoryItemName(), 1,
+                serviceItem.getRetailPricePerQuantity().multiply(BigDecimal.valueOf(1)),
+                serviceItem));
 
     }
 }

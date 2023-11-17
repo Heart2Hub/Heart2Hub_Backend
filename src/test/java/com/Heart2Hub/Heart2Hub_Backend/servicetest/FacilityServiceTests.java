@@ -542,6 +542,7 @@ class FacilityServiceTests {
 
         // Test
         Facility updatedFacility = new Facility();
+        updatedFacility.setFacilityNehrId(existingFacility.getFacilityNehrId());
         updatedFacility.setName("Updated Consultation Room");
         updatedFacility.setCapacity(10);
         updatedFacility.setLocation("Updated 1A");
@@ -552,11 +553,7 @@ class FacilityServiceTests {
 
         // Verify
         assertNotNull(result);
-        assertEquals(updatedFacility.getName(), result.getName());
-        assertEquals(updatedFacility.getCapacity(), result.getCapacity());
-        assertEquals(updatedFacility.getLocation(), result.getLocation());
-        assertEquals(updatedFacility.getFacilityStatusEnum(), result.getFacilityStatusEnum());
-        assertEquals(updatedFacility.getFacilityTypeEnum(), result.getFacilityTypeEnum());
+        assertEquals(updatedFacility,result);
         verify(facilityRepository, times(1)).save(result);
     }
     @Test
@@ -586,6 +583,7 @@ class FacilityServiceTests {
 
         // Test
         Facility updatedFacility = new Facility();
+        updatedFacility.setFacilityNehrId(existingFacility.getFacilityNehrId());
         updatedFacility.setName("Updated Consultation Room");
         updatedFacility.setCapacity(10);
         updatedFacility.setLocation("Updated 1A");
@@ -623,6 +621,7 @@ class FacilityServiceTests {
 
         // Test
         Facility updatedFacility = new Facility();
+        updatedFacility.setFacilityNehrId(existingFacility.getFacilityNehrId());
         updatedFacility.setName("Updated Consultation Room");
         updatedFacility.setCapacity(10);
         updatedFacility.setLocation("Updated 1A");
@@ -663,6 +662,7 @@ class FacilityServiceTests {
 
         // Test
         Facility updatedFacility = new Facility();
+        updatedFacility.setFacilityNehrId(existingFacility.getFacilityNehrId());
         updatedFacility.setName(null);
         updatedFacility.setCapacity(10);
         updatedFacility.setLocation("Updated 1A");
@@ -707,6 +707,7 @@ class FacilityServiceTests {
 
         // Test
         Facility updatedFacility = new Facility();
+        updatedFacility.setFacilityNehrId(existingFacility.getFacilityNehrId());
         updatedFacility.setName("Updated Facility");
         updatedFacility.setCapacity(-1);
         updatedFacility.setLocation("Updated 1A");
@@ -750,6 +751,7 @@ class FacilityServiceTests {
 
         // Test
         Facility updatedFacility = new Facility();
+        updatedFacility.setFacilityNehrId(existingFacility.getFacilityNehrId());
         updatedFacility.setName("Updated Facility");
         updatedFacility.setCapacity(10);
         updatedFacility.setLocation("");
@@ -793,6 +795,7 @@ class FacilityServiceTests {
 
         // Test
         Facility updatedFacility = new Facility();
+        updatedFacility.setFacilityNehrId(existingFacility.getFacilityNehrId());
         updatedFacility.setName("Updated Facility");
         updatedFacility.setCapacity(10);
         updatedFacility.setLocation("1A");
@@ -836,6 +839,7 @@ class FacilityServiceTests {
 
         // Test
         Facility updatedFacility = new Facility();
+        updatedFacility.setFacilityNehrId(existingFacility.getFacilityNehrId());
         updatedFacility.setName("Updated Facility");
         updatedFacility.setCapacity(10);
         updatedFacility.setLocation("1A");
@@ -881,6 +885,7 @@ class FacilityServiceTests {
 
         // Test
         Facility updatedFacility = new Facility();
+        updatedFacility.setFacilityNehrId(existingFacility.getFacilityNehrId());
         updatedFacility.setName("Updated Facility");
         updatedFacility.setCapacity(10);
         updatedFacility.setLocation("1A");

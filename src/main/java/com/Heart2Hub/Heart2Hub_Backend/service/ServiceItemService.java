@@ -98,7 +98,7 @@ public class ServiceItemService {
                     }
                 }
                 serviceItemRepository.delete(serviceItem);
-                return "Service Item with inventoryItemId  " + inventoryItemId + " has been deleted successfully.";
+                return "Service Item with inventoryItemId " + inventoryItemId + " has been deleted successfully.";
             } else {
                 throw new ServiceItemNotFoundException("Service Item with ID: " + inventoryItemId + " is not found");
             }
