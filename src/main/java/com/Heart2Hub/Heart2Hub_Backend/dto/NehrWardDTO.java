@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @Data
 public class NehrWardDTO {
-    private UUID wardNehrId;
+    private UUID unitNehrId;
     private String name;
     private String location;
     private NehrWardClassDTO wardClass;
