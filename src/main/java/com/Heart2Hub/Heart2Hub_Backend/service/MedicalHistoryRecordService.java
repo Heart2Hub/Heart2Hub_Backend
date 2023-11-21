@@ -1,6 +1,7 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
+import com.Heart2Hub.Heart2Hub_Backend.exception.ElectronicHealthRecordNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.MedicalHistoryRecordNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateMedicalHistoryRecordException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateSubDepartmentException;
@@ -77,7 +78,7 @@ public class MedicalHistoryRecordService {
             List<MedicalHistoryRecord> medicalHistoryRecordList = electronicHealthRecordRepository.findById(electronicHealthRecordId).get().getListOfMedicalHistoryRecords();
             return medicalHistoryRecordList;
         } catch (Exception ex) {
-            throw new MedicalHistoryRecordNotFoundException(ex.getMessage());
+            throw new ElectronicHealthRecordNotFoundException(ex.getMessage());
         }
     }
 

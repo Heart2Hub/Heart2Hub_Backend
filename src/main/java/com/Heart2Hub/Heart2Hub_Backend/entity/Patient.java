@@ -1,6 +1,5 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -10,6 +9,8 @@ import jakarta.validation.constraints.Size;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,6 +28,10 @@ public class Patient implements UserDetails {
     private Long patientId;
 
     @NotNull
+    @Column(unique = true)
+    private UUID patientNehrId = UUID.randomUUID();
+
+    @NotNull
     @Size(min = 6)
     @Column(unique = true)
     private String username;
@@ -39,9 +44,7 @@ public class Patient implements UserDetails {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "patient")
     private List<Invoice> listOfInvoices;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name = "patient_id", nullable = true)
-    private List<PaymentMethod> listOfPaymentMethods;
+
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
@@ -68,7 +71,7 @@ public class Patient implements UserDetails {
 
     public Patient() {
         this.listOfInvoices = new ArrayList<>();
-        this.listOfPaymentMethods = new ArrayList<>();
+//        this.listOfPaymentMethods = new ArrayList<>();
         this.listOfTransactionItem = new ArrayList<>();
         this.listOfCurrentAppointments = new ArrayList<>();
     }

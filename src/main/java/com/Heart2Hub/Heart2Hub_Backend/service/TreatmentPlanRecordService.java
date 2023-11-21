@@ -7,6 +7,7 @@ import com.Heart2Hub.Heart2Hub_Backend.entity.Invitation;
 import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
 import com.Heart2Hub.Heart2Hub_Backend.entity.TreatmentPlanRecord;
 import com.Heart2Hub.Heart2Hub_Backend.entity.NextOfKinRecord;
+import com.Heart2Hub.Heart2Hub_Backend.exception.ElectronicHealthRecordNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.TreatmentPlanRecordNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToAddImageAttachmentToAppointmentException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateTreatmentPlanRecordException;
@@ -28,6 +29,8 @@ import org.springframework.cglib.core.Local;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @Transactional

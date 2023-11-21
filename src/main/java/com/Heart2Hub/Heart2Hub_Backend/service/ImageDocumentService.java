@@ -23,7 +23,7 @@ public class ImageDocumentService {
             imageDocumentRepository.save(imageDocument);
             return imageDocument;
         } catch (Exception ex) {
-            throw new UnableToCreateDepartmentException(ex.getMessage());
+            throw new UnableToCreateImageDocumentException(ex.getMessage());
         }
     }
 }

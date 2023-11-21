@@ -294,7 +294,6 @@ public class TransactionItemService {
         StringBuilder breakdown = new StringBuilder();
         BigDecimal totalInvoiceAmount = BigDecimal.ZERO;
         List<TransactionItem> subsidyItemMedicationList = new ArrayList<>();
-//        List<TransactionItem> subsidyItemConsumableList = new ArrayList<>();
         List<TransactionItem> subsidyItemServiceList = new ArrayList<>();
 
         for (TransactionItem item : listOfItems) {
@@ -316,7 +315,7 @@ public class TransactionItemService {
                 BigDecimal subsidyAmount = totalCost.multiply(subsidyRate);
                 totalInvoiceAmount = totalInvoiceAmount.subtract(subsidyAmount);
                 breakdown.append("Medication Subsidy: -$").append(subsidyAmount).append("\n");
-                TransactionItem subsidyItemMedication= new TransactionItem(item.getTransactionItemName() + "("+ subsidyMedication.getSubsidyName() + ")"
+                TransactionItem subsidyItemMedication= new TransactionItem(item.getTransactionItemName() + "("+ subsidyMedication.getSubsidyName() + " : "+ subsidyMedication.getSubsidyRate().multiply(BigDecimal.valueOf(100)) + "%)"
                         , subsidyMedication.getSubsidyDescription(), 1,
                         subsidyAmount.multiply(BigDecimal.valueOf(-1)), null);
                 transactionItemRepository.save(subsidyItemMedication);
@@ -340,7 +339,7 @@ public class TransactionItemService {
                 BigDecimal subsidyAmount = totalCost.multiply(subsidyRate);
                 totalInvoiceAmount = totalInvoiceAmount.subtract(subsidyAmount);
                 breakdown.append("Service Subsidy: -$").append(subsidyAmount).append("\n");
-                TransactionItem subsidyItemService = new TransactionItem(item.getTransactionItemName() + "("+ subsidyMedication.getSubsidyName() + ")"
+                TransactionItem subsidyItemService = new TransactionItem(item.getTransactionItemName() + " ("+ subsidyService.getSubsidyName() + " : "+ subsidyService.getSubsidyRate().multiply(BigDecimal.valueOf(100)) + "%)"
                         , subsidyService.getSubsidyDescription(), 1,
                         subsidyAmount.multiply(BigDecimal.valueOf(-1)), null);
                 transactionItemRepository.save(subsidyItemService);
@@ -372,13 +371,14 @@ public class TransactionItemService {
 
     public void dischargePatient(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId).get();
-        appointment.setSwimlaneStatusEnum(SwimlaneStatusEnum.DONE);
         if (appointment.getCurrentAssignedStaff() == null) {
             throw new UnableToAssignAppointmentException("Please assign a staff");
         }
         if (!appointment.getArrived()) {
             throw new UnableToAssignAppointmentException("Please check that patient has arrived");
         }
+
+        appointment.setSwimlaneStatusEnum(SwimlaneStatusEnum.DONE);
 
         //ASSOCIATION --> SHOULD REFACTOR TO BE IN APPOINTMENT SERVICE
         appointment.getCurrentAssignedStaff().getListOfAssignedAppointments().remove(appointment);
@@ -394,18 +394,32 @@ public class TransactionItemService {
         TransactionItem transactionItem = transactionItemRepository.findById(transactionItemId).get();
 
         InventoryItem item = transactionItem.getInventoryItem();
-        int oldQuantity = transactionItem.getTransactionItemQuantity();
-        Medication med = (Medication) item;
-        if (transactionItemQuantity > oldQuantity) {
-            if (med.getQuantityInStock() - (transactionItemQuantity - oldQuantity) < 0) {
-                throw new InsufficientInventoryException("Insufficient Inventory for Medication");
+
+        if (item instanceof Medication) {
+            int oldQuantity = transactionItem.getTransactionItemQuantity();
+            Medication med = (Medication) item;
+            if (transactionItemQuantity > oldQuantity) {
+                if (med.getQuantityInStock() - (transactionItemQuantity - oldQuantity) < 0) {
+                    throw new InsufficientInventoryException("Insufficient Inventory for Medication");
+                }
+                med.setQuantityInStock(med.getQuantityInStock() - (transactionItemQuantity - oldQuantity));
+            } else if (transactionItemQuantity < oldQuantity){
+                med.setQuantityInStock(med.getQuantityInStock() + (oldQuantity - transactionItemQuantity));
             }
-            med.setQuantityInStock(med.getQuantityInStock() - (transactionItemQuantity - oldQuantity));
-        } else if (transactionItemQuantity < oldQuantity){
-            med.setQuantityInStock(med.getQuantityInStock() + (oldQuantity - transactionItemQuantity));
         }
+
         transactionItem.setTransactionItemQuantity(transactionItemQuantity);
         return transactionItemRepository.save(transactionItem);
+    }
+
+    public void inpatientAddToCart(Long patientId, String inventoryItemName, String inventoryItemDescription,
+                                     Integer transactionItemQuantity, BigDecimal transactionItemPrice, Long itemId) {
+        TransactionItem transactionItem = new TransactionItem(inventoryItemName, inventoryItemDescription,
+                transactionItemQuantity, transactionItemPrice, inventoryItemRepository.findById(itemId).get());
+        Patient p = patientRepository.findById(patientId).get();
+        TransactionItem addedItem = transactionItemRepository.save(transactionItem);
+        p.getListOfTransactionItem().add(addedItem);
+        patientRepository.save(p);
     }
 }
 

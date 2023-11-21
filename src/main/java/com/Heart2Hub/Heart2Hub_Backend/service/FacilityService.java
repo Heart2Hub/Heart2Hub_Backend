@@ -121,19 +121,12 @@ public class FacilityService {
                 System.out.println("help??");
                 if (!facilityBookings.isEmpty()) {
                     throw new FacilityNotFoundException("Bookings for Facility found. Facility cannot be deleted");
-//                } else {
-//                    for (int i = facilityBookings.size() - 1; i >= 0; i--) {
-//                        FacilityBooking facilityBooking = facilityBookings.get(i);
-//                        System.out.println(facilityBooking.getFacilityBookingId());
-//                        facilityBookings.remove(i);
-//                        facilityBooking.setFacility(null);
-//                    }
                 }
 
                 System.out.println("facility Booking done()");
                 facility.getListOfFacilityBookings().clear();
 
-List<ShiftConstraints> shiftConstraintsList = shiftConstraintsRepository.findByFacility(facility);
+                List<ShiftConstraints> shiftConstraintsList = shiftConstraintsRepository.findByFacility(facility);
                 System.out.println("Hello??");
                 for (int i = shiftConstraintsList.size() - 1; i >= 0; i--) {
                     ShiftConstraints shiftConstraint = shiftConstraintsList.get(i);
@@ -240,6 +233,43 @@ List<ShiftConstraints> shiftConstraintsList = shiftConstraintsRepository.findByF
 
     public List<Facility> findAllFacilities() {
         return facilityRepository.findAll();
+    }
+
+    public Long[] getFacilityIdRange(String unit) {
+        Long[] ans = new Long[2];
+        if (unit.equalsIgnoreCase("Cardiology")) {
+            ans[0] = 1L;
+            ans[1] = 16L;
+        } else if (unit.equalsIgnoreCase("Orthopedics")) {
+            ans[0] = 17L;
+            ans[1] = 26L;
+        } else if (unit.equalsIgnoreCase("Pediatrics")) {
+            ans[0] = 27L;
+            ans[1] = 36L;
+        } else if (unit.equalsIgnoreCase("Neurology")) {
+            ans[0] = 37L;
+            ans[1] = 46L;
+        } else if (unit.equalsIgnoreCase("Emergency Medicine")) {
+            ans[0] = 47L;
+            ans[1] = 58L;
+        } else if (unit.equalsIgnoreCase("Surgery")) {
+            ans[0] = 59L;
+            ans[1] = 68L;
+        } else if (unit.equalsIgnoreCase("Ophthalmology")) {
+            ans[0] = 69L;
+            ans[1] = 78L;
+        } else if (unit.equalsIgnoreCase("Psychiatry")) {
+            ans[0] = 79L;
+            ans[1] = 93L;
+        } else if (unit.equalsIgnoreCase("Radiology")) {
+            ans[0] = 94L;
+            ans[1] = 103L;
+        } else if (unit.equalsIgnoreCase("Pharmacy")) {
+            ans[0] = 104L;
+            ans[1] = 108L;
+        }
+
+        return ans;
     }
 
 }

@@ -166,6 +166,8 @@ public class StaffController {
     return ResponseEntity.ok(listOfOutpatientStaff);
   }
 
+
+
   @GetMapping("/getStaffsWorkingInCurrentShiftAndWard")
   public ResponseEntity<List<InpatientStaffDTO>> getNurses(
           @RequestParam("wardName") String wardName) {
@@ -185,5 +187,9 @@ public class StaffController {
   public ResponseEntity<List<Staff>> getStaffsInUnit(
           @RequestParam("unit") String unit) {
     return ResponseEntity.ok(staffService.getAllStaffByUnit(unit));
+  }
+  @GetMapping("/getAllStaffs")
+  public ResponseEntity<List<Staff>> getAllStaffs() {
+    return ResponseEntity.ok(staffService.getAllStaff());
   }
 }

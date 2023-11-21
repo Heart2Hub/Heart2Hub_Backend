@@ -39,21 +39,21 @@ public class MedicationService {
         this.electronicHealthRecordRepository = electronicHealthRecordRepository;
     }
 
-    public boolean isLoggedInPharmacist() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        boolean isPharmacist = false;
-        if (authentication != null) {
-            User user = (User) authentication.getPrincipal();
-            Optional<Staff> currStaff = staffRepository.findByUsername(user.getUsername());
-            if (currStaff.isPresent()) {
-                StaffRoleEnum role = currStaff.get().getStaffRoleEnum();
-                if (role == StaffRoleEnum.PHARMACIST) {
-                    isPharmacist = true;
-                }
-            }
-        }
-        return isPharmacist;
-    }
+//    public boolean isLoggedInPharmacist() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        boolean isPharmacist = false;
+//        if (authentication != null) {
+//            User user = (User) authentication.getPrincipal();
+//            Optional<Staff> currStaff = staffRepository.findByUsername(user.getUsername());
+//            if (currStaff.isPresent()) {
+//                StaffRoleEnum role = currStaff.get().getStaffRoleEnum();
+//                if (role == StaffRoleEnum.PHARMACIST) {
+//                    isPharmacist = true;
+//                }
+//            }
+//        }
+//        return isPharmacist;
+//    }
 
     public List<String> getAllergenEnums() {
         List<String> allergenEnumsString = new ArrayList<>();
@@ -137,7 +137,7 @@ public class MedicationService {
                     }
 
                 medicationRepository.delete(medication);
-                return "Consumable Equipment with inventoryItemId  " + inventoryItemId + " has been deleted successfully.";
+                return "Medication with inventoryItemId  " + inventoryItemId + " has been deleted successfully.";
             } else {
                 throw new MedicationNotFoundException("Medication with ID: " + inventoryItemId + " is not found");
             }
@@ -282,4 +282,38 @@ public class MedicationService {
 
         return medicationList;
     }
+
+    public List<Medication> getAllInpatientMedicationsByAllergy(Long pId) {
+        ElectronicHealthRecord ehr = electronicHealthRecordRepository.findById(pId).get();
+        List<Medication> medicationList = medicationRepository.findByItemTypeEnum(ItemTypeEnum.MEDICINE_INPATIENT);
+        //List<Medication> newList = new ArrayList<>();
+        List<MedicalHistoryRecord>  mhrList = ehr.getListOfMedicalHistoryRecords();
+
+        for (MedicalHistoryRecord mhr : mhrList) {
+            if (mhr.getProblemTypeEnum() == ProblemTypeEnum.ALLERGIES_AND_IMMUNOLOGIC) {
+                List<Medication> removalList = new ArrayList<>();
+                AllergenEnum allergy = AllergenEnum.valueOf(mhr.getDescription());
+
+                for (int j = 0; j < medicationList.size(); j++) {
+                    Medication m = medicationList.get(j);
+                    if (m.getAllergenEnumList().contains(allergy)) {
+                        removalList.add(m);
+                    }
+                }
+
+                medicationList.removeAll(removalList);
+            }
+        }
+
+        return medicationList;
+    }
+
+   public List<Medication> getAllInpatientMedication() throws MedicationNotFoundException{
+       try {
+        List<Medication> medications = medicationRepository.findByItemTypeEnum(ItemTypeEnum.MEDICINE_INPATIENT);
+        return medications;
+       } catch (Exception ex) {
+           throw new MedicationNotFoundException(ex.getMessage());
+       }
+   }
 }

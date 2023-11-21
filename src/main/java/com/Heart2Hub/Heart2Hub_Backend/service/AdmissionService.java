@@ -7,7 +7,11 @@ import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -23,19 +27,43 @@ public class AdmissionService {
     private final WardRepository wardRepository;
     private final WardAvailabilityRepository wardAvailabilityRepository;
     private final ElectronicHealthRecordService electronicHealthRecordService;
+    private final TransactionItemService transactionItemService;
+    private final ServiceItemRepository serviceItemRepository;
 
-
-    public AdmissionService(AdmissionRepository admissionRepository, PatientRepository patientRepository, WardRepository wardRepository, WardAvailabilityRepository wardAvailabilityRepository, ElectronicHealthRecordService electronicHealthRecordService, StaffRepository staffRepository) {
+    public AdmissionService(AdmissionRepository admissionRepository, PatientRepository patientRepository, WardRepository wardRepository, WardAvailabilityRepository wardAvailabilityRepository, ElectronicHealthRecordService electronicHealthRecordService, StaffRepository staffRepository, TransactionItemService transactionItemService, ServiceItemRepository serviceItemRepository) {
         this.admissionRepository = admissionRepository;
         this.patientRepository = patientRepository;
         this.wardRepository = wardRepository;
         this.wardAvailabilityRepository = wardAvailabilityRepository;
         this.electronicHealthRecordService = electronicHealthRecordService;
         this.staffRepository = staffRepository;
+        this.transactionItemService = transactionItemService;
+        this.serviceItemRepository = serviceItemRepository;
     }
 
     public List<Admission> getAllAdmissions() {
         return admissionRepository.findAll();
+    }
+
+    public Ward createAdmissionInDataLoader(Admission admission, Long wardId) {
+        Ward ward = wardRepository.findById(wardId).get();
+        admission.setWard(ward);
+        ward.getListOfAdmissions().add(admission);
+
+        List<Admission> beds = ward.getListOfCurrentDayAdmissions();
+        for (int i = 0; i < beds.size(); i++) {
+            Admission bed = beds.get(i);
+            if (bed.getDuration() == null) {
+                admission.setRoom(bed.getRoom());
+                admission.setBed(bed.getBed());
+                beds.set(i, admission);
+                break;
+            }
+        }
+
+        wardRepository.save(ward);
+
+        return ward;
     }
 
     public Admission createAdmission(Integer duration, String reason, Long patientId, Long doctorId) throws PatientNotFoundException, StaffNotFoundException {
@@ -93,17 +121,52 @@ public class AdmissionService {
         return admission;
     }
 
-    public Admission assignAdmissionToStaff(Long admissionId, Long toStaffId, Long fromStaffId) throws AdmissionNotFoundException, StaffNotFoundException, UnableToAssignAdmissionException {
+    public Admission updateDischargeDate(Long admissionId, String newDischargeString, Long transactionItemId) {
+        Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
 
+        LocalDateTime originalDischargeDate = admission.getDischargeDateTime();
+        LocalDateTime newDischargeDate = LocalDateTime.parse(newDischargeString);
+
+        long daysDifference = ChronoUnit.DAYS.between(originalDischargeDate, newDischargeDate);
+        admission.setDuration(admission.getDuration() + (int) daysDifference);
+
+        transactionItemService.updateTransactionItem(transactionItemId, admission.getDuration());
+
+        admission.setDischargeDateTime(newDischargeDate);
+
+        List<WardAvailability> wardAvailabilitiesToUpdate;
+
+        if (newDischargeDate.isBefore(originalDischargeDate)) {
+            newDischargeDate = newDischargeDate.plusDays(1);
+            wardAvailabilitiesToUpdate = wardAvailabilityRepository.findByWardAndDateBetween(admission.getWard(), newDischargeDate, originalDischargeDate);
+            for (WardAvailability wardAvailability: wardAvailabilitiesToUpdate) {
+                wardAvailability.setBedsAvailable(wardAvailability.getBedsAvailable() + 1);
+            }
+        } else if (newDischargeDate.isAfter(originalDischargeDate)) {
+            originalDischargeDate = originalDischargeDate.plusDays(1);
+            wardAvailabilitiesToUpdate = wardAvailabilityRepository.findByWardAndDateBetween(admission.getWard(), originalDischargeDate, newDischargeDate);
+            for (WardAvailability wardAvailability: wardAvailabilitiesToUpdate) {
+                wardAvailability.setBedsAvailable(wardAvailability.getBedsAvailable() - 1);
+            }
+        }
+
+        return admission;
+    }
+
+
+
+    public Admission assignAdmissionToStaff(Long admissionId, Long toStaffId) {
         Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
         Staff toStaff = staffRepository.findById(toStaffId).orElseThrow(() -> new StaffNotFoundException("Staff not found"));
+
+        toStaff.getListOfAssignedAdmissions().add(admission);
 
         boolean reassigned = false;
         List<Staff> listOfAssignedStaff = admission.getListOfAssignedStaff();
 
         for (int i = 0; i < listOfAssignedStaff.size(); i++) {
             Staff assignedStaff = listOfAssignedStaff.get(i);
-            if (assignedStaff.getStaffId() == fromStaffId) {
+            if (assignedStaff.getStaffRoleEnum() == toStaff.getStaffRoleEnum()) {
                 listOfAssignedStaff.set(i, toStaff);
                 reassigned = true;
                 break;
@@ -115,46 +178,26 @@ public class AdmissionService {
         }
 
         return admission;
-
     }
-
-//    public Admission assignAdmissionToAdmin(Long admissionId, Long toStaffId, Long fromStaffId) throws AdmissionNotFoundException, StaffNotFoundException, UnableToAssignAdmissionException {
-//
-//        Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
-//
-//        if (toStaffId == 0) {
-//            admission.setCurrentAssignedAdmin(null);
-//            return admission;
-//        } else {
-//            Staff toAdmin = staffRepository.findById(toStaffId).orElseThrow(() -> new StaffNotFoundException("Staff not found"));
-//
-//            if (toAdmin.getDisabled()) {
-//                throw new StaffDisabledException("Unable to assign admission to Disabled Staff");
-//            }
-//
-//            if (admission.getCurrentAssignedAdmin() == null
-//                    || (admission.getCurrentAssignedAdmin() != null && Objects.equals(
-//                    admission.getCurrentAssignedAdmin().getStaffId(), fromStaffId))) {
-//
-//                admission.setCurrentAssignedAdmin(toAdmin);
-//                toAdmin.getListOfAdminAdmissions().add(admission);
-//
-//                return admission;
-//            } else {
-//                throw new UnableToAssignAdmissionException(
-//                        "Unable to assign an admission ticket that is not yours");
-//            }
-//        }
-//    }
 
     public Admission updateAdmissionArrival(Long admissionId, Boolean arrivalStatus,
                                                 Long staffId) throws AdmissionNotFoundException {
 
         Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
 
-
         admission.setArrived(arrivalStatus);
-        //appointment.setActualDateTime(LocalDateTime.now());
+
+        // Add Admission to Patient's cart
+        String serviceItemName = "Ward (Class " + admission.getWard().getWardClass().getWardClassName() + ") (daily)";
+        List<ServiceItem> wardClassRateList = serviceItemRepository.findByInventoryItemNameContainingIgnoreCase(serviceItemName);
+        ServiceItem wardClassRate = wardClassRateList.get(0);
+
+        String inventoryItemDescription = "Ward Charges";
+        BigDecimal price = wardClassRate.getRetailPricePerQuantity();
+        BigDecimal totalPrice = price.multiply(new BigDecimal(admission.getDuration()));
+        transactionItemService.inpatientAddToCart(admission.getPatient().getPatientId(), wardClassRate.getInventoryItemName(),
+                inventoryItemDescription, admission.getDuration(), totalPrice, wardClassRate.getInventoryItemId());
+
         return admission;
     }
 
@@ -175,6 +218,12 @@ public class AdmissionService {
 
     public String cancelAdmission(Long admissionIdToCancel, Long wardId) {
         Admission admissionToCancel = admissionRepository.findById(admissionIdToCancel).get();
+        Patient patient = admissionToCancel.getPatient();
+        patient.setAdmission(null);
+        patient.getElectronicHealthRecord().getListOfPastAdmissions().add(admissionToCancel);
+        admissionToCancel.setPatient(null);
+
+
         Ward ward = wardRepository.findById(wardId).get();
         List<Admission> currentAdmissions = ward.getListOfCurrentDayAdmissions();
         for (int i = 0; i < currentAdmissions.size(); i++) {
@@ -209,13 +258,23 @@ public class AdmissionService {
 
             for (int i = 0; i < currentAdmissions.size(); i++) {
                 Admission currentAdmission = currentAdmissions.get(i);
+                Patient patient = currentAdmission.getPatient();
+
                 if (currentAdmission.getDischargeDateTime() != null && currentAdmission.getDischargeDateTime().isEqual(date)) {
+
                     Admission emptyAdmission = new Admission();
                     emptyAdmission.setRoom(currentAdmission.getRoom());
                     emptyAdmission.setBed(currentAdmission.getBed());
                     admissionRepository.save(emptyAdmission);
 
                     currentAdmissions.set(i, emptyAdmission);
+
+                    //Add current admission to list of past admissions in EHR
+                    patient.setAdmission(null);
+                    patient.getElectronicHealthRecord().getListOfPastAdmissions().add(currentAdmission);
+
+                    //checkout
+                    transactionItemService.checkout(patient.getPatientId());
                 }
             }
         }
@@ -251,6 +310,33 @@ public class AdmissionService {
         }
 
         return "Allocation done";
+    }
+
+    public Admission getAdmissionByAdmissionId(Long admissionId) {
+        return admissionRepository.findById(admissionId).get();
+    }
+
+//    public Admission getAdmissionByUsername(String username) {
+//        Patient patient = patientRepository.findByUsername(username).get();
+//        Admission admission = patient.getAdmission();
+//        if (patient.getAdmission() == null) {
+//            throw new AdmissionNotFoundException("Patient is ")
+//        } else if ()
+//    }
+
+    public Admission addImageAttachment(Long admissionId, String imageLink, String createdDate) {
+        Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss");
+        LocalDateTime createdDateTime = LocalDateTime.parse(createdDate, formatter);
+        ImageDocument imageDocument = new ImageDocument(imageLink, createdDateTime);
+        admission.getListOfImageDocuments().add(imageDocument);
+
+        return admission;
+    }
+
+    public List<ImageDocument> viewImageAttachments(Long admissionId) {
+        Admission admission = admissionRepository.findById(admissionId).orElseThrow(() -> new AdmissionNotFoundException("Admission not found"));
+        return admission.getListOfImageDocuments();
     }
 
 }

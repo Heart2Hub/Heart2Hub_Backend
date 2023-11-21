@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Entity
 @Data
 @Table(name = "unit")
@@ -14,6 +16,10 @@ public class Unit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long unitId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID unitNehrId = UUID.randomUUID();
 
     @Size(max = 100)
     @NotNull

@@ -6,6 +6,7 @@ import com.Heart2Hub.Heart2Hub_Backend.exception.DepartmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.SubDepartmentNotFoundException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateDepartmentException;
 import com.Heart2Hub.Heart2Hub_Backend.exception.UnableToCreateWardException;
+import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.StaffRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.WardClassRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.WardRepository;
@@ -29,11 +30,13 @@ public class WardService {
     private final WardRepository wardRepository;
     private final WardClassRepository wardClassRepository;
     private final StaffRepository staffRepository;
+    private final PatientRepository patientRepository;
 
-    public WardService(WardRepository wardRepository, WardClassRepository wardClassRepository, StaffRepository staffRepository) {
+    public WardService(WardRepository wardRepository, WardClassRepository wardClassRepository, StaffRepository staffRepository, PatientRepository patientRepository) {
         this.wardRepository = wardRepository;
         this.wardClassRepository = wardClassRepository;
         this.staffRepository = staffRepository;
+        this.patientRepository = patientRepository;
     }
 
 
@@ -62,17 +65,17 @@ public class WardService {
             Integer capacity = newWard.getCapacity();
             String location = newWard.getLocation();
             if (name == null) {
-                throw new UnableToCreateDepartmentException("Name must be present.");
+                throw new UnableToCreateWardException("Name must be present.");
             }
             if (capacity == null) {
-                throw new UnableToCreateDepartmentException("Capacity must be present.");
+                throw new UnableToCreateWardException("Capacity must be present.");
             }
             if (location == null) {
-                throw new UnableToCreateDepartmentException("Location must be present.");
+                throw new UnableToCreateWardException("Location must be present.");
             }
             List<WardClass> wardClassList = wardClassRepository.findByWardClassNameContainingIgnoreCase(wardClassName);
             if (wardClassList.size() == 0) {
-                throw new UnableToCreateDepartmentException("Ward class not found.");
+                throw new UnableToCreateWardException("Ward class not found.");
             } else {
                 WardClass wc = wardClassList.get(0);
                 newWard.setWardClass(wc);
@@ -83,6 +86,7 @@ public class WardService {
                 int year = firstDate.getYear();
                 int hour = firstDate.getHour();
                 firstDate = LocalDateTime.of(year, month, day, 12, 00, 00);
+
                 if (hour >= 12) {
                     firstDate = firstDate.plusDays(1);
                 }
@@ -90,8 +94,8 @@ public class WardService {
                 for (int i = 0; i < 7; i++) {
                     WardAvailability wardAvailability;
 
-                    if (wc.getWardClassName().equals("A") && i == 1) {
-                        wardAvailability = new WardAvailability(firstDate, 0, newWard);
+                    if (newWard.getName().equals("B21") && i <= 1) {
+                        wardAvailability = new WardAvailability(firstDate, 15, newWard);
                     } else {
                         wardAvailability = new WardAvailability(firstDate, newWard.getCapacity(), newWard);
                     }
@@ -108,6 +112,7 @@ public class WardService {
                         admission.setRoom(i);
                         admission.setBed(j);
                         newWard.getListOfCurrentDayAdmissions().add(admission);
+
                     }
                 }
 
@@ -125,7 +130,7 @@ public class WardService {
             List<Ward> wardList = wardRepository.findByNameContainingIgnoreCase(name);
             return wardList;
         } catch (Exception ex) {
-            throw new SubDepartmentNotFoundException(ex.getMessage());
+            throw new DepartmentNotFoundException(ex.getMessage());
         }
     }
 

@@ -13,6 +13,7 @@ import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @EqualsAndHashCode(exclude="department")
 @Entity
@@ -23,6 +24,10 @@ public class Facility {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long facilityId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID facilityNehrId = UUID.randomUUID();
 
     @Size(max = 100)
     @NotBlank(message = "Name cannot be blank")

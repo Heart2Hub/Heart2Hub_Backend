@@ -2,10 +2,7 @@ package com.Heart2Hub.Heart2Hub_Backend.mapper;
 
 import com.Heart2Hub.Heart2Hub_Backend.dto.AdmissionDTO;
 import com.Heart2Hub.Heart2Hub_Backend.dto.AppointmentDTO;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Admission;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
-import com.Heart2Hub.Heart2Hub_Backend.entity.ImageDocument;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Staff;
+import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +33,7 @@ public class AdmissionMapper {
         //Ward
         if (admission.getWard() != null) {
             dto.setWard(admission.getWard().getName());
+            dto.setLocation(admission.getWard().getLocation());
         }
 
         //Assigned staff
@@ -45,6 +43,22 @@ public class AdmissionMapper {
                 .map(Staff::getStaffId) // Assuming you have a getStaffId method in Staff
                 .collect(Collectors.toList());
         dto.setListOfStaffsId(listOfStaffIds);
+
+        //Medication order
+        List<MedicationOrder> listOfMedicationOrders = admission.getListOfMedicationOrders();
+        List<Long> listOfMedicationOrderIds = listOfMedicationOrders
+                .stream()
+                .map(MedicationOrder::getMedicationOrderId) // Assuming you have a getStaffId method in Staff
+                .collect(Collectors.toList());
+        dto.setListOfMedicationOrderIds(listOfMedicationOrderIds);
+
+        //Inpatient treatment
+        List<InpatientTreatment> listOfInpatientTreatments = admission.getListOfInpatientTreatments();
+        List<Long> listOfInpatientTreatmentIds = listOfInpatientTreatments
+                .stream()
+                .map(InpatientTreatment::getInpatientTreatmentId)
+                .collect(Collectors.toList());
+        dto.setListOfInpatientTreatmentIds(listOfInpatientTreatmentIds);
 
 //        for (Staff staff : listOfAssignedStaff) {
 //            String fullname = staff.getFirstname() + " " + staff.getLastname();

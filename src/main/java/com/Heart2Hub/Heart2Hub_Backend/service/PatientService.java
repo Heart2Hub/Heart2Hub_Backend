@@ -1,8 +1,10 @@
 package com.Heart2Hub.Heart2Hub_Backend.service;
 
+import com.Heart2Hub.Heart2Hub_Backend.dto.NehrDTO;
 import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.StaffRoleEnum;
 import com.Heart2Hub.Heart2Hub_Backend.exception.*;
+import com.Heart2Hub.Heart2Hub_Backend.mapper.NehrMapper;
 import com.Heart2Hub.Heart2Hub_Backend.repository.DepartmentRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.ElectronicHealthRecordRepository;
 import com.Heart2Hub.Heart2Hub_Backend.repository.PatientRepository;
@@ -32,10 +34,8 @@ public class PatientService {
 
     private final PatientRepository patientRepository;
     private final PasswordEncoder passwordEncoder;
-
     private final ElectronicHealthRecordRepository electronicHealthRecordRepository;
     private final ElectronicHealthRecordService electronicHealthRecordService;
-
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final ImageDocumentService imageDocumentService;
@@ -91,10 +91,7 @@ public class PatientService {
             patientRepository.save(newPatient);
             return newPatient;
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
             throw new UnableToCreatePatientException(ex.getMessage());
-            //DUPLICATE USERNAME
-            //throw new UnableToCreatePatientException("Username already exists");
         }
     }
 
@@ -116,19 +113,23 @@ public class PatientService {
                 newPatient.setProfilePicture(createdImageDocument);
             }
 
+            NehrMapper nehrMapper = new NehrMapper();
+            NehrDTO newNehrDTO = nehrMapper.convertToDto(newElectronicHealthRecord);
+
             newElectronicHealthRecord.setPatient(newPatient);
             newPatient.setElectronicHealthRecord(newElectronicHealthRecord);
             electronicHealthRecordRepository.save(newElectronicHealthRecord);
             patientRepository.save(newPatient);
+
             RestTemplate restTemplate = new RestTemplate();
             String endpointUrl = "http://localhost:3002/records";
             HttpHeaders headers = new HttpHeaders();
             headers.set("encoded-message", electronicHealthRecordService.encodeSecretMessage());
             headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<ElectronicHealthRecord> requestEntity = new HttpEntity<>(newElectronicHealthRecord, headers);
-            ResponseEntity<ElectronicHealthRecord> responseEntity = restTemplate.postForEntity(endpointUrl, requestEntity, ElectronicHealthRecord.class);
+            HttpEntity<NehrDTO> requestEntity = new HttpEntity<>(newNehrDTO, headers);
+            ResponseEntity<NehrDTO> responseEntity = restTemplate.postForEntity(endpointUrl, requestEntity, NehrDTO.class);
             if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                ElectronicHealthRecord ehrResponse = responseEntity.getBody();
+                NehrDTO nehrResponse = responseEntity.getBody();
                 electronicHealthRecordRepository.save(newElectronicHealthRecord);
                 patientRepository.save(newPatient);
                 return newPatient;
@@ -137,8 +138,6 @@ public class PatientService {
             }
         } catch (Exception ex) {
             throw new UnableToCreatePatientException(ex.getMessage());
-            //DUPLICATE USERNAME
-            //throw new UnableToCreatePatientException("Username already exists");
         }
     }
 
@@ -171,17 +170,6 @@ public class PatientService {
                 patientsWithElectronicHealthRecordSummary.put("profilePicture",electronicHealthRecord.getPatient().getProfilePicture() != null ? electronicHealthRecord.getPatient().getProfilePicture().getImageLink() : "");
                 patientsWithElectronicHealthRecordSummaryList.add(patientsWithElectronicHealthRecordSummary);
             }
-            // By username
-//            List<Patient> patientList = new ArrayList<>(patientRepository.findByUsernameContainsIgnoreCase(name));
-//            for (Patient patient : patientList) {
-//                JSONObject patientsWithElectronicHealthRecordSummary = new JSONObject();
-//                patientsWithElectronicHealthRecordSummary.put("username",patient.getUsername());
-//                patientsWithElectronicHealthRecordSummary.put("firstName",patient.getElectronicHealthRecord().getFirstName());
-//                patientsWithElectronicHealthRecordSummary.put("lastName",patient.getElectronicHealthRecord().getLastName());
-//                patientsWithElectronicHealthRecordSummary.put("sex",patient.getElectronicHealthRecord().getSex());
-//                patientsWithElectronicHealthRecordSummary.put("profilePicture",patient.getProfilePicture() != null ? patient.getProfilePicture().getImageLink() : "");
-//                patientsWithElectronicHealthRecordSummaryList.add(patientsWithElectronicHealthRecordSummary);
-//            }
             return patientsWithElectronicHealthRecordSummaryList;
         } catch (Exception ex) {
             throw new PatientNotFoundException(ex.getMessage());
@@ -222,5 +210,9 @@ public class PatientService {
 
     public List<Patient> findAllPatients() {
         return patientRepository.findAll();
+    }
+
+    public Patient getPatientById(Long id) {
+        return patientRepository.getPatientByPatientId(id);
     }
 }

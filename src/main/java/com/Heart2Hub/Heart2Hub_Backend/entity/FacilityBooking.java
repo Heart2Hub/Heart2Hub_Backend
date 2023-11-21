@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -20,6 +21,10 @@ public class FacilityBooking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long facilityBookingId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID facilityBookingNehrId = UUID.randomUUID();
 
     @NotNull
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")

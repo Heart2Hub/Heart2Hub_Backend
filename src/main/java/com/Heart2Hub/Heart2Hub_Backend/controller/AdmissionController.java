@@ -2,11 +2,11 @@ package com.Heart2Hub.Heart2Hub_Backend.controller;
 
 import com.Heart2Hub.Heart2Hub_Backend.dto.AdmissionDTO;
 import com.Heart2Hub.Heart2Hub_Backend.dto.AppointmentDTO;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Admission;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Appointment;
-import com.Heart2Hub.Heart2Hub_Backend.entity.Ward;
+import com.Heart2Hub.Heart2Hub_Backend.entity.*;
 import com.Heart2Hub.Heart2Hub_Backend.mapper.AdmissionMapper;
 import com.Heart2Hub.Heart2Hub_Backend.service.AdmissionService;
+import com.Heart2Hub.Heart2Hub_Backend.service.AppointmentService;
+import com.Heart2Hub.Heart2Hub_Backend.service.StaffService;
 import com.Heart2Hub.Heart2Hub_Backend.service.WardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,18 +26,43 @@ public class AdmissionController {
 
     private final WardService wardService;
 
+    private final StaffService staffService;
+    private final AppointmentService appointmentService;
+
     @GetMapping("/getAllAdmissions")
-    public ResponseEntity<List<Admission>> getAllAdmissions() {
-        return ResponseEntity.ok(admissionService.getAllAdmissions());
+    public ResponseEntity<List<AdmissionDTO>> getAllAdmissions() {
+        List<Admission> allAdmissions = admissionService.getAllAdmissions();
+        List<Admission> scheduledAdmissions = allAdmissions.stream()
+                .filter(admission -> admission.getAdmissionDateTime() != null)
+                .collect(Collectors.toList());
+        List<AdmissionDTO> admissionDTOS = scheduledAdmissions.stream().map(admission -> admissionMapper.toDTO(admission)).collect(
+                Collectors.toList());
+        return ResponseEntity.ok(admissionDTOS);
     }
 
     @GetMapping("/getAdmissionsForWard")
     public ResponseEntity<List<AdmissionDTO>> getAdmissionsForWard(@RequestParam("wardName") String wardName) {
         Ward ward = wardService.getAllWardsByName(wardName).get(0);
-        List<Admission> currentAdmissions = ward.getListOfCurrentDayAdmissions();
+        List<Admission> currentAdmissions = ward.getListOfCurrentDayAdmissions().stream()
+                .filter(admission -> admission.getAdmissionDateTime() != null)
+                .collect(Collectors.toList());
         List<AdmissionDTO> admissionDTOS = currentAdmissions.stream().map(admission -> admissionMapper.toDTO(admission)).collect(
                 Collectors.toList());
         return ResponseEntity.ok(admissionDTOS);
+    }
+
+    @GetMapping("/getAdmissionsForStaff")
+    public ResponseEntity<List<AdmissionDTO>> getAdmissionsForStaff(@RequestParam("staffId") Long staffId) {
+        Staff staff = staffService.getStaffById(staffId);
+        List<Admission> staffAdmissions = staff.getListOfAssignedAdmissions();
+        List<AdmissionDTO> admissionDTOS = staffAdmissions.stream().map(admission -> admissionMapper.toDTO(admission)).collect(
+                Collectors.toList());
+        return ResponseEntity.ok(admissionDTOS);
+    }
+
+    @GetMapping("/getAdmissionByAdmissionId")
+    public ResponseEntity<AdmissionDTO> getAdmissionByAdmissionId(@RequestParam("admissionId") Long admissionId) {
+        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.getAdmissionByAdmissionId(admissionId)));
     }
 
     @PostMapping("/createAdmission")
@@ -55,15 +80,24 @@ public class AdmissionController {
             @RequestParam("wardAvailabilityId") Long wardAvailabilityId,
             @RequestParam("admission") String admission,
             @RequestParam("discharge") String discharge) {
-        return ResponseEntity.ok(admissionService.scheduleAdmission(admissionId, wardAvailabilityId, admission, discharge));
+        Admission scheduledAdmission = admissionService.scheduleAdmission(admissionId, wardAvailabilityId, admission, discharge);
+        appointmentService.sendUpdateToClients("swimlane");
+        return ResponseEntity.ok(scheduledAdmission);
     }
+
+//    @PutMapping("/assignAdmissionToStaff")
+//    public ResponseEntity<AdmissionDTO> assignAdmissionToStaff(
+//            @RequestParam("admissionId") Long admissionId,
+//            @RequestParam("toStaffId") Long toStaffId,
+//            @RequestParam("fromStaffId") Long fromStaffId) {
+//        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.assignAdmissionToStaff(admissionId, toStaffId, fromStaffId)));
+//    }
 
     @PutMapping("/assignAdmissionToStaff")
     public ResponseEntity<AdmissionDTO> assignAdmissionToStaff(
             @RequestParam("admissionId") Long admissionId,
-            @RequestParam("toStaffId") Long toStaffId,
-            @RequestParam("fromStaffId") Long fromStaffId) {
-        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.assignAdmissionToStaff(admissionId, toStaffId, fromStaffId)));
+            @RequestParam("toStaffId") Long toStaffId) {
+        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.assignAdmissionToStaff(admissionId, toStaffId)));
     }
 
 //    @PutMapping("/assignAdmissionToNurse")
@@ -87,7 +121,9 @@ public class AdmissionController {
             @RequestParam("admissionId") Long admissionId,
             @RequestParam("arrivalStatus") Boolean arrivalStatus,
             @RequestParam("staffId") Long staffId) {
-        return ResponseEntity.ok(admissionMapper.toDTO(admissionService.updateAdmissionArrival(admissionId, arrivalStatus, staffId)));
+        AdmissionDTO admissionDTO = admissionMapper.toDTO(admissionService.updateAdmissionArrival(admissionId, arrivalStatus, staffId));
+        appointmentService.sendUpdateToClients("arrive");
+        return ResponseEntity.ok(admissionDTO);
     }
 
     @PutMapping("/updateAdmissionComments")
@@ -102,7 +138,9 @@ public class AdmissionController {
     public ResponseEntity<String> cancelAdmission(
             @RequestParam("admissionId") Long admissionId,
             @RequestParam("wardId") Long wardId) {
-        return ResponseEntity.ok(admissionService.cancelAdmission(admissionId, wardId));
+        String msg = admissionService.cancelAdmission(admissionId, wardId);
+        appointmentService.sendUpdateToClients("swimlane");
+        return ResponseEntity.ok(msg);
     }
 
 
@@ -114,6 +152,30 @@ public class AdmissionController {
     @PutMapping("/handleAllocateIncoming")
     public ResponseEntity<String> handleAllocateIncoming(@RequestParam("date") String date) {
         return ResponseEntity.ok(admissionService.allocateScheduledAdmissions(date));
+    }
+
+    @PutMapping("/updateDischargeDate")
+    public ResponseEntity<AdmissionDTO> updateDischargeDate(
+            @RequestParam("admissionId") Long admissionId,
+            @RequestParam("dischargeDate") String dischargeDate,
+            @RequestParam("transactionItemId") Long transactionItemId) {
+        AdmissionDTO admissionDTO = admissionMapper.toDTO(admissionService.updateDischargeDate(admissionId, dischargeDate, transactionItemId));
+        appointmentService.sendUpdateToClients("swimlane");
+        return ResponseEntity.ok(admissionDTO);
+    }
+
+    @PutMapping("/addImageAttachment")
+    public ResponseEntity<Admission> addImageAttachment(
+            @RequestParam("admissionId") Long admissionId,
+            @RequestParam("imageLink") String imageLink,
+            @RequestParam("createdDate") String createdDate) {
+        return ResponseEntity.ok(admissionService.addImageAttachment(admissionId, imageLink, createdDate));
+    }
+
+    @GetMapping("/viewImageAttachments")
+    public ResponseEntity<List<ImageDocument>> viewImageAttachments(
+            @RequestParam("admissionId") Long admissionId) {
+        return ResponseEntity.ok(admissionService.viewImageAttachments(admissionId));
     }
 
 }

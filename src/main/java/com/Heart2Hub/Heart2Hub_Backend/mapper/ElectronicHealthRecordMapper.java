@@ -26,7 +26,7 @@ public class ElectronicHealthRecordMapper {
 //        .addMapping(src -> src.getContactNumber() != null ? src.getContactNumber() : null,
 //            ElectronicHealthRecordDTO::setContactNumber)
         .addMapping(src -> (src.getListOfMedicalHistoryRecords() != null) ?
-                src.getListOfMedicalHistoryRecords().stream().map(MedicalHistoryRecord::getMedicalRecordId).collect(Collectors.toList())
+                src.getListOfMedicalHistoryRecords().stream().map(MedicalHistoryRecord::getMedicalHistoryRecordId).collect(Collectors.toList())
                 : null,
             ElectronicHealthRecordDTO::setListOfMedicalHistoryRecordsId)
         .addMapping(src -> (src.getListOfProblemRecords() != null) ?

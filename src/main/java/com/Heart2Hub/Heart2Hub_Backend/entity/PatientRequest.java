@@ -1,12 +1,10 @@
 package com.Heart2Hub.Heart2Hub_Backend.entity;
 import com.Heart2Hub.Heart2Hub_Backend.enumeration.PatientRequestEnum;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
+import java.util.UUID;
 
 @Entity
 @Data
@@ -15,6 +13,10 @@ public class PatientRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long patientRequestId;
+
+    @NotNull
+    @Column(unique = true)
+    private UUID patientRequestNehrId = UUID.randomUUID();
 
     @NotNull
     private PatientRequestEnum patientRequestEnum;

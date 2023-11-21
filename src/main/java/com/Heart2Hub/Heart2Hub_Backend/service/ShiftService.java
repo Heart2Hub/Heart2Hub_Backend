@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -24,18 +26,23 @@ public class ShiftService {
   private final ShiftRepository shiftRepository;
   private final StaffRepository staffRepository;
   private final FacilityBookingRepository facilityBookingRepository;
-
   private final LeaveRepository leaveRepository;
   private final FacilityRepository facilityRepository;
   private final FacilityBookingService facilityBookingService;
+  private final FacilityService facilityService;
+  private final ShiftConstraintsRepository shiftConstraintsRepository;
+  private final WardRepository wardRepository;
 
-  public ShiftService(ShiftRepository shiftRepository, StaffRepository staffRepository, FacilityBookingService facilityBookingService, FacilityBookingRepository facilityBookingRepository, LeaveRepository leaveRepository, FacilityRepository facilityRepository) {
+  public ShiftService(ShiftRepository shiftRepository, StaffRepository staffRepository, FacilityBookingService facilityBookingService, FacilityBookingRepository facilityBookingRepository, LeaveRepository leaveRepository, FacilityRepository facilityRepository, FacilityService facilityService, ShiftConstraintsRepository shiftConstraintsRepository, WardRepository wardRepository) {
     this.shiftRepository = shiftRepository;
     this.staffRepository = staffRepository;
     this.facilityBookingService = facilityBookingService;
     this.facilityBookingRepository = facilityBookingRepository;
     this.leaveRepository = leaveRepository;
     this.facilityRepository = facilityRepository;
+    this.facilityService = facilityService;
+    this.shiftConstraintsRepository = shiftConstraintsRepository;
+    this.wardRepository = wardRepository;
   }
 
   public boolean isLoggedInUserHead() {
@@ -283,8 +290,14 @@ public class ShiftService {
     try {
       StaffRoleEnum staffRoleEnum = StaffRoleEnum.valueOf(role.toUpperCase());
       LocalDateTime start = LocalDateTime.parse(date + " 00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-      LocalDateTime end = LocalDateTime.parse(date + " 23:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-      return shiftRepository.findByStaffStaffRoleEnumAndStaffUnitNameAndStartTimeBetween(staffRoleEnum, unitName, start, end);
+      List<Shift> shiftList = shiftRepository.findByStaffStaffRoleEnumAndStaffUnitNameContainsIgnoreCase(staffRoleEnum, unitName);
+      List<Shift> shifts = new ArrayList<>();
+      for (Shift shift : shiftList) {
+        if (shift.getStartTime().toLocalDate().isEqual(start.toLocalDate())) {
+          shifts.add(shift);
+        }
+      }
+      return shifts;
     } catch (Exception ex) {
       throw new StaffRoleNotFoundException(ex.getMessage());
     }
@@ -311,6 +324,375 @@ public class ShiftService {
         return shiftRepository.findByStaffUsernameAndStartTimeBetween(username, startDate, endDate);
     } catch (Exception ex) {
       throw new StaffRoleNotFoundException(ex.getMessage());
+    }
+  }
+
+  public void automaticallyAllocateShifts(String start, String end, String role, String department, Integer shift1, Integer shift2, Integer shift3) throws InterruptedException {
+    LocalDate startDate = LocalDate.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    LocalDate endDate = LocalDate.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+    long weeks = daysBetween / 7;
+    int numShifts = shift1 + shift2 + shift3;
+
+    LocalDate currentDate = startDate;
+
+    List<Staff> staffList = staffRepository.findByStaffRoleEnumAndUnitNameEqualsIgnoreCase(StaffRoleEnum.valueOf(role.toUpperCase()), department);
+    List<Facility> fList = facilityRepository.findByDepartmentNameContainingIgnoreCase(department);
+    boolean isWard = false;
+    if (fList.isEmpty() && role.equalsIgnoreCase("NURSE")) isWard = true;
+    Long[] range = facilityService.getFacilityIdRange(department);
+    HashMap<Long, Integer> capacityMap = new HashMap<>();
+    long s = range[0], e = range[1];
+    if (!isWard) {
+      if (role.equalsIgnoreCase("DOCTOR")) {
+        e = s + 2;
+      } else if (role.equalsIgnoreCase("NURSE")) {
+        s = s + 3;
+        e = s + 5;
+      } else if (role.equalsIgnoreCase("ADMIN")) {
+        s = s + 8;
+        e = s + 9;
+      } else if (role.equalsIgnoreCase("DIAGNOSTIC_RADIOGRAPHERS")) {
+        s = s + 10;
+        e = s + 11;
+      } else if (role.equalsIgnoreCase("DIETITIANS")) {
+        s = s + 12;
+        e = s + 13;
+      } else if (role.equalsIgnoreCase("OCCUPATIONAL_THERAPISTS")) {
+        s = s + 14;
+        e = s + 15;
+      } else if (role.equalsIgnoreCase("PSYCHOLOGISTS")) {
+        s = e - 4;
+      } else if (role.equalsIgnoreCase("PHARMACIST")) {
+        e = s + 2;
+      }
+      for (long a=s; a<=e; a++) {
+        capacityMap.put(a,0);
+      }
+    }
+
+    for (int week=0; week<weeks; week++) {
+      for (int i=0; i<7; i++) {
+        int day = currentDate.getDayOfMonth();
+        int month = currentDate.getMonthValue();
+        int year = currentDate.getYear();
+
+        long id = 0;
+        for (Staff staff : staffList) {
+          String dayStr = day + "";
+          int shiftToPick = -1;
+          if (day < 10) dayStr = "0" + day;
+          String date = year+"-"+month+"-"+dayStr;
+          List<Shift> listOfShifts = viewDailyRoster(date, role, department);
+          List<ShiftConstraints> listOfShiftConstraints = new ArrayList<>();
+          List<Facility> facilityList = facilityRepository.findByDepartmentNameContainingIgnoreCase(department);
+          for (Facility facility : facilityList) {
+            List<ShiftConstraints> temp = shiftConstraintsRepository.findByStaffRoleEnumAndFacilityName(StaffRoleEnum.valueOf(role.toUpperCase()), facility.getName());
+            listOfShiftConstraints.addAll(temp);
+          }
+          HashMap<String, Integer> mapOfMinPax = new HashMap<>();
+          LocalTime shift1Start = LocalTime.of(0,0,0);
+          LocalTime shift2Start = LocalTime.of(8,0,0);
+          LocalTime shift3Start = LocalTime.of(16,0,0);
+          LocalTime shift3End = LocalTime.of(23,59,0);
+          for (ShiftConstraints sc : listOfShiftConstraints) {
+            LocalTime startTime1 = sc.getStartTime();
+            LocalTime endTime1 = sc.getEndTime();
+            if (startTime1.equals(shift1Start) && endTime1.equals(shift2Start)) {
+              mapOfMinPax.put(("1+"+sc.getFacility().getFacilityId()), mapOfMinPax.getOrDefault(("1+"+sc.getFacility().getName()), 0)+sc.getMinPax());
+            } else if (startTime1.equals(shift2Start) && endTime1.equals(shift3Start)) {
+              mapOfMinPax.put(("2+"+sc.getFacility().getFacilityId()), mapOfMinPax.getOrDefault(("2+"+sc.getFacility().getName()), 0)+sc.getMinPax());
+            } else if (startTime1.equals(shift3Start) && endTime1.equals(shift3End)) {
+              mapOfMinPax.put(("3+"+sc.getFacility().getFacilityId()), mapOfMinPax.getOrDefault(("3+"+sc.getFacility().getName()), 0)+sc.getMinPax());
+            } else {
+              mapOfMinPax.put(("4+"+sc.getFacility().getFacilityId()), mapOfMinPax.getOrDefault(("4+"+sc.getFacility().getName()), 0)+sc.getMinPax());
+            }
+          }
+          for (Shift shift : listOfShifts) {
+            LocalTime startTime1 = shift.getStartTime().toLocalTime();
+            LocalTime endTime1 = shift.getEndTime().toLocalTime();
+            if (startTime1.equals(shift1Start) && endTime1.equals(shift2Start)) {
+              mapOfMinPax.put(("1+"+shift.getFacilityBooking().getFacility().getFacilityId()), mapOfMinPax.getOrDefault(("1+"+shift.getFacilityBooking().getFacility().getName()), 0)-1);
+            } else if (startTime1.equals(shift2Start) && endTime1.equals(shift3Start)) {
+              mapOfMinPax.put(("2+"+shift.getFacilityBooking().getFacility().getFacilityId()), mapOfMinPax.getOrDefault(("2+"+shift.getFacilityBooking().getFacility().getName()), 0)-1);
+            } else if (startTime1.equals(shift3Start) && endTime1.equals(shift3End)) {
+              mapOfMinPax.put(("3+"+shift.getFacilityBooking().getFacility().getFacilityId()), mapOfMinPax.getOrDefault(("3+"+shift.getFacilityBooking().getFacility().getName()), 0)-1);
+            } else {
+              mapOfMinPax.put(("4+"+shift.getFacilityBooking().getFacility().getFacilityId()), mapOfMinPax.getOrDefault(("4+"+shift.getFacilityBooking().getFacility().getName()), 0)-1);
+            }
+          }
+          List<String> list = new ArrayList<>();
+          for (Map.Entry<String,Integer> entry : mapOfMinPax.entrySet()) {
+            if (entry.getValue() > 0) {
+              String num = entry.getKey().substring(0,1);
+              String key = entry.getKey().substring(2);
+              list.add(num + "," + key);
+            }
+          }
+          long dayOff = (staff.getStaffId()*2) % 7;
+          if (i != dayOff) {
+            if (isWard) {
+              if (numShifts == 1) {
+                if (shift1 == 1) {
+                  createShift(staff.getUsername(), null,
+                          new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
+                                  LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+                } else if (shift2 == 1) {
+                  createShift(staff.getUsername(), null,
+                          new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                                  LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+                } else {
+                  createShift(staff.getUsername(), null,
+                          new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
+                                  LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+                }
+              } else if (numShifts == 2) {
+                if (shift1 == 1 && shift3 == 1) {
+                  boolean randomOfTwo = new Random().nextBoolean();
+                  if (randomOfTwo) {
+                    createShift(staff.getUsername(), null,
+                            new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
+                                    LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+                  } else {
+                    List<Shift> shifts = shiftRepository.findShiftsByStaff(staff);
+                    LocalDateTime startTime = LocalDateTime.of(year, month, day, 0, 0, 0);
+                    boolean canCreate = true;
+                    for (Shift prevShift : shifts) {
+                      if (prevShift.getEndTime().compareTo(startTime) == -1 && prevShift.getEndTime().until(startTime, ChronoUnit.HOURS) < 8) {
+                        canCreate = false;
+                      }
+                    }
+                    if (canCreate) {
+                      createShift(staff.getUsername(), null,
+                              new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
+                                      LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+                    }
+                  }
+                } else {
+                  // shift 1 and shift 2 or shift 2 and shift 3
+                  boolean randomOfTwo = new Random().nextBoolean();
+                  if (randomOfTwo) {
+                    createShift(staff.getUsername(), null,
+                            new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                                    LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+                  } else {
+                    if (shift1 == 1) {
+                      createShift(staff.getUsername(), null,
+                              new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
+                                      LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+                    } else {
+                      createShift(staff.getUsername(), null,
+                              new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
+                                      LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+                    }
+                  }
+                }
+              }
+              else if (numShifts == 3) {
+                int shiftToAdd = new Random().nextInt(3);
+                if (shiftToAdd == 0) {
+                  List<Shift> shifts = shiftRepository.findShiftsByStaff(staff);
+                  LocalDateTime startTime = LocalDateTime.of(year, month, day, 0, 0, 0);
+                  boolean canCreate = true;
+                  for (Shift prevShift : shifts) {
+                    if (prevShift.getEndTime().compareTo(startTime) == -1 && prevShift.getEndTime().until(startTime, ChronoUnit.HOURS) < 8) {
+                      canCreate = false;
+                    }
+                  }
+                  if (canCreate) {
+                    createShift(staff.getUsername(), null,
+                            new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
+                                    LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+                  }
+                } else if (shiftToAdd == 1) {
+                  createShift(staff.getUsername(), null,
+                          new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                                  LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+                } else {
+                  createShift(staff.getUsername(), null,
+                          new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
+                                  LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+                }
+              }
+            } else {
+              int min = Integer.MAX_VALUE;
+              for (Map.Entry<Long,Integer> entry : capacityMap.entrySet()) {
+                min = Math.min(min, entry.getValue());
+              }
+              for (Map.Entry<Long,Integer> entry : capacityMap.entrySet()) {
+                if (min == entry.getValue()) {
+                  id = entry.getKey();
+                }
+              }
+
+              for (String sc : list) {
+                String[] scArr = sc.split(",");
+                int shiftNum = Integer.parseInt(scArr[0]);
+                Long facId = Long.parseLong(scArr[1]);
+                shiftToPick = shiftNum;
+                id = facId;
+              }
+
+              if (numShifts == 1) {
+                if (shift1 == 1) {
+                  createShift(staff.getUsername(), id,
+                          new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
+                                  LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+                } else if (shift2 == 1) {
+                  createShift(staff.getUsername(), id,
+                          new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                                  LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+                } else {
+                  createShift(staff.getUsername(), id,
+                          new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
+                                  LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+                }
+              } else if (numShifts == 2) {
+                if (shift1 == 1 && shift3 == 1) {
+                  if (shiftToPick > 0 && shiftToPick != 2) {
+                    if (shiftToPick == 3) {
+                      createShift(staff.getUsername(), id,
+                              new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
+                                      LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+                    } else {
+                      List<Shift> shifts = shiftRepository.findShiftsByStaff(staff);
+                      LocalDateTime startTime = LocalDateTime.of(year, month, day, 0, 0, 0);
+                      boolean canCreate = true;
+                      for (Shift prevShift : shifts) {
+                        if (prevShift.getEndTime().compareTo(startTime) == -1 && prevShift.getEndTime().until(startTime, ChronoUnit.HOURS) < 8) {
+                          canCreate = false;
+                        }
+                      }
+                      if (canCreate) {
+                        createShift(staff.getUsername(), id,
+                                new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
+                                        LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+                      } else {
+                        continue;
+                      }
+                    }
+                  } else {
+                    boolean randomOfTwo = new Random().nextBoolean();
+                    if (randomOfTwo) {
+                      createShift(staff.getUsername(), id,
+                              new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
+                                      LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+                    } else {
+                      List<Shift> shifts = shiftRepository.findShiftsByStaff(staff);
+                      LocalDateTime startTime = LocalDateTime.of(year, month, day, 0, 0, 0);
+                      boolean canCreate = true;
+                      for (Shift prevShift : shifts) {
+                        if (prevShift.getEndTime().compareTo(startTime) == -1 && prevShift.getEndTime().until(startTime, ChronoUnit.HOURS) < 8) {
+                          canCreate = false;
+                        }
+                      }
+                      if (canCreate) {
+                        createShift(staff.getUsername(), id,
+                                new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
+                                        LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+                      } else {
+                        continue;
+                      }
+                    }
+                  }
+                } else {
+                  // shift 1 and shift 2 or shift 2 and shift 3
+                  if (shiftToPick > 0) {
+                    if (shiftToPick == 2) {
+                      createShift(staff.getUsername(), id,
+                              new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                                      LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+                    } else if (shiftToPick == 1) {
+                      createShift(staff.getUsername(), id,
+                              new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
+                                      LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+                    } else {
+                      createShift(staff.getUsername(), id,
+                              new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
+                                      LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+                    }
+                  } else {
+                    boolean randomOfTwo = new Random().nextBoolean();
+                    if (randomOfTwo) {
+                      createShift(staff.getUsername(), id,
+                              new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                                      LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+                    } else {
+                      if (shift1 == 1) {
+                        createShift(staff.getUsername(), id,
+                                new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
+                                        LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+                      } else {
+                        createShift(staff.getUsername(), id,
+                                new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
+                                        LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+                      }
+                    }
+                  }
+                }
+              }
+              else if (numShifts == 3) {
+                int shiftToAdd = new Random().nextInt(3);
+                if (shiftToPick > 0) {
+                  if (shiftToPick == 1) {
+                    List<Shift> shifts = shiftRepository.findShiftsByStaff(staff);
+                    LocalDateTime startTime = LocalDateTime.of(year, month, day, 0, 0, 0);
+                    boolean canCreate = true;
+                    for (Shift prevShift : shifts) {
+                      if (prevShift.getEndTime().compareTo(startTime) == -1 && prevShift.getEndTime().until(startTime, ChronoUnit.HOURS) < 8) {
+                        canCreate = false;
+                      }
+                    }
+                    if (canCreate) {
+                      createShift(staff.getUsername(), id,
+                              new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
+                                      LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+                    } else {
+                      continue;
+                    }
+                  } else if (shiftToPick == 2) {
+                    createShift(staff.getUsername(), id,
+                            new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                                    LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+                  } else if (shiftToPick == 3) {
+                    createShift(staff.getUsername(), id,
+                            new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
+                                    LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+                  }
+                } else {
+                  if (shiftToAdd == 0) {
+                    List<Shift> shifts = shiftRepository.findShiftsByStaff(staff);
+                    LocalDateTime startTime = LocalDateTime.of(year, month, day, 0, 0, 0);
+                    boolean canCreate = true;
+                    for (Shift prevShift : shifts) {
+                      if (prevShift.getEndTime().compareTo(startTime) == -1 && prevShift.getEndTime().until(startTime, ChronoUnit.HOURS) < 8) {
+                        canCreate = false;
+                      }
+                    }
+                    if (canCreate) {
+                      createShift(staff.getUsername(), id,
+                              new Shift(LocalDateTime.of(year, month, day, 0, 0, 0),
+                                      LocalDateTime.of(year, month, day, 8, 0, 0), "Staff is working shift 1"));
+                    } else {
+                      continue;
+                    }
+                  } else if (shiftToAdd == 1) {
+                    createShift(staff.getUsername(), id,
+                            new Shift(LocalDateTime.of(year, month, day, 8, 0, 0),
+                                    LocalDateTime.of(year, month, day, 16, 0, 0), "Staff is working shift 2"));
+                  } else {
+                    createShift(staff.getUsername(), id,
+                            new Shift(LocalDateTime.of(year, month, day, 16, 0, 0),
+                                    LocalDateTime.of(year, month, day, 23, 59, 0), "Staff is working shift 3"));
+                  }
+                }
+              }
+              capacityMap.put(id, capacityMap.getOrDefault(id,0)+1);
+            }
+          }
+        }
+        currentDate = currentDate.plusDays(1);
+      }
     }
   }
 }
